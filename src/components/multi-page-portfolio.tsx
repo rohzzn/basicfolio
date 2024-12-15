@@ -1,48 +1,72 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Github, ExternalLink, Circle, Menu, X } from 'lucide-react';
+import { Github, ExternalLink, Circle, Menu, X, Sun, Moon } from 'lucide-react';
+import Link from 'next/link';
 
-const NavLink = ({ href, children, currentPage, setCurrentPage }) => (
-  <button
-    onClick={() => {
-      setCurrentPage(href);
-      window.history.pushState({}, '', href === '/' ? '/' : `/${href}`);
-    }}
+interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+  currentPage: string;
+  setCurrentPage: (page: string) => void;
+}
+
+const NavLink: React.FC<NavLinkProps> = ({ href, children, currentPage, setCurrentPage }) => (
+  <Link
+    href={href}
     className={`block px-2 py-1.5 text-sm transition-colors capitalize w-full text-left
-      ${currentPage === href 
-        ? 'text-black dark:text-white' 
-        : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'}`}
+      ${
+        currentPage === href
+          ? 'text-black dark:text-white'
+          : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
+      }`}
+    onClick={() => setCurrentPage(href)}
   >
     {children}
-  </button>
+  </Link>
 );
 
 // Layout Component
-const Layout = ({ children, currentPage, setCurrentPage }) => {
+interface LayoutProps {
+  children: React.ReactNode;
+  currentPage: string;
+  setCurrentPage: (page: string) => void;
+  isDarkMode: boolean;
+  toggleTheme: () => void;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children, currentPage, setCurrentPage, isDarkMode, toggleTheme }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [lanyardData, setLanyardData] = useState(null);
-  const discordId = "407922731645009932";
+  const [lanyardData, setLanyardData] = useState<any>(null);
+  const discordId = "407922731645009932"; // Your Discord ID
 
   useEffect(() => {
-    const ws = new WebSocket('wss://api.lanyard.rest/socket');
-    ws.onopen = () => {
-      ws.send(JSON.stringify({
-        op: 2,
-        d: { subscribe_to_id: discordId }
-      }));
+    // Fetch Lanyard Data using REST API
+    const fetchLanyardData = async () => {
+      try {
+        const response = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`);
+        const data = await response.json();
+        if (data.success) {
+          setLanyardData(data.data);
+        } else {
+          console.error('Failed to fetch Lanyard data:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching Lanyard data:', error);
+      }
     };
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.op === 0) setLanyardData(data.d);
-    };
-    return () => ws.close();
-  }, []);
+
+    fetchLanyardData();
+
+    const interval = setInterval(fetchLanyardData, 60000); // Refresh every 60 seconds
+
+    return () => clearInterval(interval);
+  }, [discordId]);
 
   // Handle browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname.slice(1) || '/';
-      setCurrentPage(path);
+      setCurrentPage(path === '' ? '/' : `/${path}`);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -55,6 +79,7 @@ const Layout = ({ children, currentPage, setCurrentPage }) => {
       <button 
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="lg:hidden fixed top-4 right-4 z-50 p-2 text-zinc-600 dark:text-zinc-400"
+        aria-label="Toggle Menu"
       >
         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
@@ -74,11 +99,11 @@ const Layout = ({ children, currentPage, setCurrentPage }) => {
 
         <nav className="space-y-1 flex-1">
           {[
-            { path: '/', label: 'about' },
-            { path: 'projects', label: 'projects' },
-            { path: 'stack', label: 'stack' },
-            { path: 'hobbies', label: 'hobbies' },
-            { path: 'blog', label: 'blog' }
+            { path: '/', label: 'About' },
+            { path: '/projects', label: 'Projects' },
+            { path: '/stack', label: 'Stack' },
+            { path: '/hobbies', label: 'Hobbies' },
+            { path: '/blog', label: 'Blog' }
           ].map((item) => (
             <NavLink
               key={item.path}
@@ -91,6 +116,18 @@ const Layout = ({ children, currentPage, setCurrentPage }) => {
           ))}
         </nav>
 
+        {/* Theme Toggle Button */}
+        <div className="mt-6">
+          <button 
+            onClick={toggleTheme}
+            className="flex items-center gap-2 px-2 py-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+          >
+            {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+            <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+          </button>
+        </div>
+
+        {/* Discord Status */}
         {lanyardData && (
           <div className="py-4 border-t border-zinc-200 dark:border-zinc-800">
             <div className="flex items-center gap-2">
@@ -100,9 +137,16 @@ const Layout = ({ children, currentPage, setCurrentPage }) => {
                 className={lanyardData.discord_status === 'online' ? 'text-green-500' : 'text-gray-500'}
               />
               <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                {lanyardData.discord_status}
+                {lanyardData.discord_status.charAt(0).toUpperCase() + lanyardData.discord_status.slice(1)}
               </span>
             </div>
+            {lanyardData.activities && lanyardData.activities.length > 0 && (
+              <div className="mt-2">
+                <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                  {lanyardData.activities[0].name}: {lanyardData.activities[0].state}
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -115,18 +159,47 @@ const Layout = ({ children, currentPage, setCurrentPage }) => {
   );
 };
 
-// Page Components remain the same as before, just removing the react-router specific code
-const About = () => (
+// Page Components
+
+interface AboutProps {
+  lanyardData: any;
+}
+
+const About: React.FC<AboutProps> = ({ lanyardData }) => (
   <div className="max-w-2xl">
     <h2 className="text-lg font-medium mb-6 dark:text-white">About</h2>
     <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
       I'm a software engineer focused on building exceptional digital experiences. 
       Currently, I'm working on creating accessible, human-centered products.
     </p>
+
+    {/* Discord Status and Activity */}
+    {lanyardData && (
+      <div className="mt-6 p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+        <h3 className="text-sm font-medium mb-2 dark:text-white">Discord Status</h3>
+        <div className="flex items-center gap-2">
+          <Circle 
+            size={8} 
+            fill={lanyardData.discord_status === 'online' ? '#43b581' : '#747f8d'} 
+            className={lanyardData.discord_status === 'online' ? 'text-green-500' : 'text-gray-500'}
+          />
+          <span className="text-xs text-zinc-600 dark:text-zinc-400">
+            {lanyardData.discord_status.charAt(0).toUpperCase() + lanyardData.discord_status.slice(1)}
+          </span>
+        </div>
+        {lanyardData.activities && lanyardData.activities.length > 0 && (
+          <div className="mt-4">
+            <h4 className="text-sm font-medium dark:text-white">Current Activity</h4>
+            <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+              {lanyardData.activities[0].name}: {lanyardData.activities[0].state}
+            </p>
+          </div>
+        )}
+      </div>
+    )}
   </div>
 );
 
-// Projects component with the same content as before...
 const Projects = () => (
   <div>
     <h2 className="text-lg font-medium mb-6 dark:text-white">Projects</h2>
@@ -159,10 +232,10 @@ const Projects = () => (
               ))}
             </div>
             <div className="flex gap-3 ml-auto">
-              <a href={project.github} className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white">
+              <a href={project.github} className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white" target="_blank" rel="noopener noreferrer">
                 <Github size={16} />
               </a>
-              <a href={project.live} className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white">
+              <a href={project.live} className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white" target="_blank" rel="noopener noreferrer">
                 <ExternalLink size={16} />
               </a>
             </div>
@@ -173,7 +246,6 @@ const Projects = () => (
   </div>
 );
 
-// Stack component with the same content as before...
 const Stack = () => (
   <div>
     <h2 className="text-lg font-medium mb-6 dark:text-white">Stack</h2>
@@ -253,12 +325,11 @@ const Blog = () => (
             <span>{post.readTime}</span>
           </div>
           <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-3">{post.excerpt}</p>
-          <button 
-            onClick={() => window.history.pushState({}, '', `/blog/${post.slug}`)}
-            className="inline-block mt-4 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            Read more →
-          </button>
+          <Link href={`/blog/${post.slug}`}>
+            <span className="inline-block mt-4 text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+              Read more →
+            </span>
+          </Link>
         </div>
       ))}
     </div>
@@ -266,33 +337,66 @@ const Blog = () => (
 );
 
 // Main App Component
-const App = () => {
+const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('/');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [lanyardData, setLanyardData] = useState<any>(null);
 
   useEffect(() => {
-    const path = window.location.pathname.slice(1) || '/';
-    setCurrentPage(path);
+    const path = window.location.pathname;
+    setCurrentPage(path === '/' ? '/' : path);
   }, []);
+
+  // Handle theme on initial load
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      setIsDarkMode(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
+    }
+  }, []);
+
+  // Toggle theme
+  const toggleTheme = () => {
+    if (isDarkMode) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDarkMode(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDarkMode(true);
+    }
+  };
 
   const renderContent = () => {
     switch (currentPage) {
       case '/':
-        return <About />;
-      case 'projects':
+      case '/about':
+        return <About lanyardData={lanyardData} />;
+      case '/projects':
         return <Projects />;
-      case 'stack':
+      case '/stack':
         return <Stack />;
-      case 'hobbies':
+      case '/hobbies':
         return <Hobbies />;
-      case 'blog':
+      case '/blog':
         return <Blog />;
       default:
-        return <About />;
+        return <About lanyardData={lanyardData} />;
     }
   };
 
   return (
-    <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
+    <Layout 
+      currentPage={currentPage} 
+      setCurrentPage={setCurrentPage} 
+      isDarkMode={isDarkMode} 
+      toggleTheme={toggleTheme}
+    >
       {renderContent()}
     </Layout>
   );

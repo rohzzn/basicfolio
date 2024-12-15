@@ -1,5 +1,7 @@
-import Portfolio from '../components/multi-page-portfolio'
+// src/app/page.tsx
+
+import About from './about/page';
 
 export default function Home() {
-  return <Portfolio />
+  return <About />;
 }
