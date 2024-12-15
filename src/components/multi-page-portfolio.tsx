@@ -5,7 +5,6 @@ import React, { useState, useEffect } from 'react';
 import { Github, ExternalLink, Circle, Menu, X, Sun, Moon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
 interface NavLinkProps {
   href: string;
   children: React.ReactNode;
@@ -29,7 +28,38 @@ const NavLink: React.FC<NavLinkProps> = ({ href, children }) => {
     </Link>
   );
 };
+// Add these helper functions above your component or within it
 
+const getStatusColor = (status: string) => {
+    switch(status) {
+      case 'online':
+        return 'text-green-500';
+      case 'idle':
+        return 'text-yellow-500';
+      case 'dnd':
+        return 'text-red-500';
+      case 'offline':
+        return 'text-gray-500';
+      default:
+        return 'text-gray-500';
+    }
+  };
+  
+  const getStatusLabel = (status: string) => {
+    switch(status) {
+      case 'online':
+        return 'Online';
+      case 'idle':
+        return 'Idle';
+      case 'dnd':
+        return 'Do Not Disturb';
+      case 'offline':
+        return 'Offline';
+      default:
+        return 'Unknown';
+    }
+  };
+  
 // Layout Component
 interface LayoutProps {
   children: React.ReactNode;
@@ -42,13 +72,13 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const discordId = "407922731645009932"; // Your Discord ID
 
   useEffect(() => {
-    // Fetch Lanyard Data using REST API
     const fetchLanyardData = async () => {
       try {
         const response = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`);
         const data = await response.json();
         if (data.success) {
           setLanyardData(data.data);
+          console.log('Lanyard Data:', data.data); // Add this line
         } else {
           console.error('Failed to fetch Lanyard data:', data);
         }
@@ -56,13 +86,14 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         console.error('Error fetching Lanyard data:', error);
       }
     };
-
+  
     fetchLanyardData();
-
+  
     const interval = setInterval(fetchLanyardData, 60000); // Refresh every 60 seconds
-
+  
     return () => clearInterval(interval);
   }, [discordId]);
+  
 
   // Handle theme on initial load
   useEffect(() => {
@@ -119,7 +150,8 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             { path: '/projects', label: 'Projects' },
             { path: '/stack', label: 'Stack' },
             { path: '/hobbies', label: 'Hobbies' },
-            { path: '/blog', label: 'Blog' }
+            { path: '/blog', label: 'Blog' },
+            { path: '/timeline', label: 'Timeline' }
           ].map((item) => (
             <NavLink
               key={item.path}
@@ -141,20 +173,21 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           </button>
         </div>
 
-        {/* Discord Status */}
-        {lanyardData && (
-          <div className="py-4 border-t border-zinc-200 dark:border-zinc-800">
-            {/* Status Section */}
-            <div className="flex items-center gap-2 mb-2">
-              <Circle 
-                size={8} 
-                fill={lanyardData.discord_status === 'online' ? '#43b581' : '#747f8d'} 
-                className={lanyardData.discord_status === 'online' ? 'text-green-500' : 'text-gray-500'}
-              />
-              <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                {lanyardData.discord_status.charAt(0).toUpperCase() + lanyardData.discord_status.slice(1)}
-              </span>
-            </div>
+{/* Discord Status */}
+{lanyardData && (
+  <div className="py-4 border-t border-zinc-200 dark:border-zinc-800">
+    {/* Status Section */}
+    <div className="flex items-center gap-2 mb-2">
+      {/* Circle Icon with Dynamic Color */}
+      <Circle 
+        size={8} 
+        className={`text-xs ${getStatusColor(lanyardData.discord_status)}`}
+      />
+      {/* Status Label */}
+      <span className="text-xs text-zinc-600 dark:text-zinc-400">
+        {getStatusLabel(lanyardData.discord_status)}
+      </span>
+    </div>
             {/* Activity Section */}
             {lanyardData.activities && lanyardData.activities.length > 0 && (
               <div>
