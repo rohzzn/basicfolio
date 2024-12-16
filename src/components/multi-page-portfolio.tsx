@@ -53,8 +53,11 @@ interface LayoutProps {
 
 const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [lanyardData, setLanyardData] = useState<any>(null);
-  const discordId = "407922731645009932"; // Your Discord ID
+  const [lanyardData, setLanyardData] = useState<{
+    discord_status: string;
+    activities?: { name: string; state: string; details?: string }[];
+  } | null>(null);
+    const discordId = "407922731645009932"; // Your Discord ID
 
   useEffect(() => {
     const fetchLanyardData = async () => {
