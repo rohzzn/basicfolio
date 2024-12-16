@@ -166,18 +166,9 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           </nav>
         </div>
 
-        {/* Bottom Section: Theme Toggle and Social Icons */}
         <div>
-          {/* Theme Toggle and Social Icons */}
           <div className="mb-4 flex items-center gap-4 justify-center">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="flex items-center justify-center w-8 h-8 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
-              aria-label="Toggle Theme"
-            >
-              {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
+            
 
             {/* Instagram Icon */}
             <a
