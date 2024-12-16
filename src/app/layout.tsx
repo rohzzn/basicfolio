@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "John Doe's Portfolio",
+  title: "Rohan's Portfolio",
   description: "A portfolio site built with Next.js",
 };
 

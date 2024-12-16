@@ -140,7 +140,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         z-40
       `}>
         <div className="mb-12">
-          <h1 className="text-2xl font-bold dark:text-white">John Doe</h1>
+          <h1 className="text-2xl font-bold dark:text-white">Rohan</h1>
           <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">Software Engineer</p>
         </div>
 
