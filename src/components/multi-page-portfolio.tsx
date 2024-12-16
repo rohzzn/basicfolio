@@ -7,13 +7,9 @@ import {
   ExternalLink, 
   Circle, 
   Menu, 
-  Sun, 
-  Moon, 
-  Discord, 
-  FileText, 
-  Instagram, // Existing
-  Twitter,    // Existing
-  Linkedin     // Added
+  Instagram, 
+  Twitter, 
+  Linkedin 
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -58,8 +54,6 @@ const getStatusColor = (status: string) => {
   }
 };
 
-// Removed getStatusLabel as it's no longer needed
-
 // Layout Component
 interface LayoutProps {
   children: React.ReactNode;
@@ -67,7 +61,6 @@ interface LayoutProps {
 
 const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [lanyardData, setLanyardData] = useState<any>(null);
   const discordId = "407922731645009932"; // Your Discord ID
 
@@ -99,25 +92,10 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme === "dark") {
       document.documentElement.classList.add("dark");
-      setIsDarkMode(true);
     } else {
       document.documentElement.classList.remove("dark");
-      setIsDarkMode(false);
     }
   }, []);
-
-  // Toggle theme
-  const toggleTheme = () => {
-    if (isDarkMode) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-      setIsDarkMode(false);
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-      setIsDarkMode(true);
-    }
-  };
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
@@ -166,52 +144,51 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           </nav>
         </div>
 
+        {/* Bottom Section: Social Text Links */}
         <div>
-          <div className="mb-4 flex items-center gap-4 justify-center">
-            
-
-            {/* Instagram Icon */}
+          <div className="mb-4 flex items-center gap-4 justify-start">
+            {/* Instagram */}
             <a
               href="https://instagram.com/rohzzn" // Replace with your Instagram URL
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="text-zinc-600 dark:text-zinc-400 hover:text-pink-500 dark:hover:text-pink-300 transition-colors"
+              className="text-zinc-600 dark:text-zinc-400 hover:text-pink-500 dark:hover:text-pink-300 transition-colors text-sm font-medium"
             >
-              <Instagram size={16} />
+              IG.
             </a>
 
-            {/* Twitter (X) Icon */}
+            {/* Twitter (X) */}
             <a
               href="https://twitter.com/rohzzn" // Replace with your Twitter URL
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twitter"
-              className="text-zinc-600 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
+              className="text-zinc-600 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors text-sm font-medium"
             >
-              <Twitter size={16} />
+              TW.
             </a>
 
-            {/* LinkedIn Icon */}
+            {/* LinkedIn */}
             <a
               href="https://linkedin.com/in/rohzzn" // Replace with your LinkedIn URL
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
-              className="text-zinc-600 dark:text-zinc-400 hover:text-blue-700 dark:hover:text-blue-500 transition-colors"
+              className="text-zinc-600 dark:text-zinc-400 hover:text-blue-700 dark:hover:text-blue-500 transition-colors text-sm font-medium"
             >
-              <Linkedin size={16} />
+              IN.
             </a>
 
-            {/* GitHub Icon */}
+            {/* GitHub */}
             <a
               href="https://github.com/rohzzn" // Replace with your GitHub URL
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
-              className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+              className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm font-medium"
             >
-              <Github size={16} />
+              GH.
             </a>
           </div>
 
