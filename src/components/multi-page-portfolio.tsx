@@ -2,13 +2,9 @@
 
 "use client";
 import React, { useState, useEffect } from "react";
-import { 
-  Circle, 
-  Menu,  
-} from "lucide-react";
+import { Circle, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
 
 interface NavLinkProps {
   href: string;
@@ -57,7 +53,7 @@ interface LayoutProps {
 
 const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [lanyardData, setLanyardData] = useState<setLanyardData>(null);
+  const [lanyardData, setLanyardData] = useState<any>(null);
   const discordId = "407922731645009932"; // Your Discord ID
 
   useEffect(() => {
@@ -82,16 +78,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
     return () => clearInterval(interval);
   }, [discordId]);
-
-  // Handle theme on initial load
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
