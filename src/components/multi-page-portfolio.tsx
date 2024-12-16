@@ -3,16 +3,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { 
-  Github, 
-  ExternalLink, 
   Circle, 
-  Menu, 
-  Instagram, 
-  Twitter, 
-  Linkedin 
+  Menu,  
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { X } from "lucide-react";
 
 interface NavLinkProps {
   href: string;
@@ -61,7 +57,7 @@ interface LayoutProps {
 
 const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [lanyardData, setLanyardData] = useState<any>(null);
+  const [lanyardData, setLanyardData] = useState<setLanyardData>(null);
   const discordId = "407922731645009932"; // Your Discord ID
 
   useEffect(() => {

@@ -7,13 +7,13 @@ import React from 'react';
 const Home: React.FC = () => (
   <div className="max-w-2xl">
     {/* Existing Content */}
-    <h2 className="text-lg font-medium mb-6 dark:text-white">Hey, I'm Rohan</h2>
+    <h2 className="text-lg font-medium mb-6 dark:text-white">Hey, I&#39;m Rohan</h2>
     <p className="text-zinc-600 dark:text-zinc-400">
-      I'm currently pursuing my master's in Computer Science at the University of Cincinnati. Previously, I worked as a Software Development Engineer at Ixigo.
+      I&#39;m currently pursuing my master&#39;s in Computer Science at the University of Cincinnati. Previously, I worked as a Software Development Engineer at Ixigo.
     </p>
     <br />
     <p className="text-zinc-600 dark:text-zinc-400">
-      I've spent the past few years doing things on the internet — building side projects, doing independent research, and trying to understand how things work. You get the idea.
+    I&#39;ve spent the past few years doing things on the internet — building side projects, doing independent research, and trying to understand how things work. You get the idea.
     </p>
     <br />
     <p className="text-zinc-600 dark:text-zinc-400">
