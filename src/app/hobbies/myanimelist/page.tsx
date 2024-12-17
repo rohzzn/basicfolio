@@ -239,9 +239,9 @@ const MyAnimeList: React.FC = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">MyAnimeList</h2>
+      <h2 className="text-lg font-medium mb-6 dark:text-white">Anime List</h2>
       <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-        Welcome to my MyAnimeList page! Here you&#39;ll find my favorite anime and manga collections.
+        Here is my anime list! You can track and explore my anime collection below.
       </p>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-paper dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">

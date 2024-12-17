@@ -18,7 +18,7 @@ const Hobbies: React.FC = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* MyAnimeList */}
       <Link href="/hobbies/myanimelist" className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <h3 className="text-xl font-serif mb-2">MyAnimeList</h3>
+        <h3 className="text-xl font-serif mb-2">Anime List</h3>
         <p className="text-zinc-600 dark:text-zinc-400">Track and explore my anime and manga collections.</p>
       </Link>
 
