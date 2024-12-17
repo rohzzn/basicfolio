@@ -113,7 +113,7 @@ const animeList: Anime[] = [
   { id: 103, title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 2nd Season", score: 7 },
   { id: 104, title: "Yuru Camp△", score: 8 },
   { id: 105, title: "Chainsaw Man", score: 8 },
-  { id: 106, title: "&#39;Oshi no Ko&#39;", score: 8 },
+  { id: 106, title: "Oshi no Ko", score: 8 },
   { id: 107, title: "Baki", score: 5 },
   { id: 108, title: "Black Clover", score: 5 },
   { id: 109, title: "Boku no Hero Academia 5th Season", score: 7 },
