@@ -12,7 +12,7 @@ const Hobbies: React.FC = () => (
         contributing to open-source projects, and learning about system design.
       </p>
       <p>
-        I also enjoy reading technical blogs, participating in hackathons,
+        I also enjoy reading technical writings, participating in hackathons,
         and experimenting with new programming languages.
       </p>
     </div>

@@ -46,7 +46,6 @@ const getStatusColor = (status: string) => {
   }
 };
 
-// Layout Component
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -57,7 +56,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
     discord_status: string;
     activities?: { name: string; state: string; details?: string }[];
   } | null>(null);
-    const discordId = "407922731645009932"; // Your Discord ID
+  const discordId = "407922731645009932"; // Your Discord ID
 
   useEffect(() => {
     const fetchLanyardData = async () => {
@@ -66,7 +65,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         const data = await response.json();
         if (data.success) {
           setLanyardData(data.data);
-          console.log("Lanyard Data:", data.data); // For debugging
         } else {
           console.error("Failed to fetch Lanyard data:", data);
         }
@@ -97,15 +95,15 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       <div
         className={`
           fixed lg:static inset-0 w-64 bg-zinc-50 dark:bg-zinc-900 
-          border-r border-zinc-200 dark:border-zinc-800 p-8 
-          flex flex-col justify-between 
+          border-r border-zinc-200 dark:border-zinc-800 
+          flex flex-col 
           transform lg:transform-none transition-transform duration-200 ease-in-out
           ${isMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           z-40
         `}
       >
         {/* Top Section: Header and Navigation */}
-        <div>
+        <div className="flex-1 overflow-y-auto p-8">
           {/* Header */}
           <div className="mb-12">
             <h1 className="text-2xl font-bold dark:text-white">Rohan</h1>
@@ -119,8 +117,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
               { path: "/projects", label: "Projects" },
               { path: "/stack", label: "Stack" },
               { path: "/hobbies", label: "Hobbies" },
-              { path: "/blog", label: "Blog" },
-              { path: "/timeline", label: "Timeline" },
+              { path: "/writing", label: "writing" },
             ].map((item) => (
               <NavLink key={item.path} href={item.path}>
                 {item.label}
@@ -129,12 +126,12 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           </nav>
         </div>
 
-        {/* Bottom Section: Social Text Links */}
-        <div>
+        {/* Bottom Section: Social Text Links & Discord Status */}
+        <div className="sticky bottom-0 p-8 bg-zinc-50 dark:bg-zinc-900">
           <div className="mb-4 flex items-center gap-4 justify-start">
             {/* Instagram */}
             <a
-              href="https://instagram.com/rohzzn" // Replace with your Instagram URL
+              href="https://instagram.com/rohzzn"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -143,9 +140,9 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
               IG.
             </a>
 
-            {/* Twitter (X) */}
+            {/* Twitter */}
             <a
-              href="https://twitter.com/rohzzn" // Replace with your Twitter URL
+              href="https://twitter.com/rohzzn"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twitter"
@@ -156,7 +153,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
             {/* LinkedIn */}
             <a
-              href="https://linkedin.com/in/rohzzn" // Replace with your LinkedIn URL
+              href="https://linkedin.com/in/rohzzn"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
@@ -167,7 +164,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
             {/* GitHub */}
             <a
-              href="https://github.com/rohzzn" // Replace with your GitHub URL
+              href="https://github.com/rohzzn"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
@@ -180,12 +177,8 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           {/* Discord Status */}
           {lanyardData && (
             <div className="py-4 border-t border-zinc-200 dark:border-zinc-800">
-              {/* Status and Activity */}
               <div className="flex items-start gap-2">
-                {/* Circle Icon with Dynamic Color */}
                 <Circle size={8} className={`text-xs mt-1 ${getStatusColor(lanyardData.discord_status)}`} />
-                
-                {/* Activity Details */}
                 {lanyardData.activities && lanyardData.activities.length > 0 && (
                   <div>
                     <span className="text-xs text-zinc-600 dark:text-zinc-400">

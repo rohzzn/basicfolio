@@ -1,12 +1,12 @@
-// src/app/blog/page.tsx
+// src/app/writing/page.tsx
 
 "use client";
 import React from 'react';
 import Link from 'next/link';
 
-const Blog: React.FC = () => (
+const writing: React.FC = () => (
   <div>
-    <h2 className="text-lg font-medium mb-6 dark:text-white">Blog</h2>
+    <h2 className="text-lg font-medium mb-6 dark:text-white">Writing</h2>
     <div className="grid gap-8 md:grid-cols-2">
       {[
         {
@@ -32,7 +32,7 @@ const Blog: React.FC = () => (
             <span>{post.readTime}</span>
           </div>
           <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-3">{post.excerpt}</p>
-          <Link href={`/blog/${post.slug}`}>
+          <Link href={`/writing/${post.slug}`}>
             <span className="inline-block mt-4 text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
               Read more →
             </span>
@@ -43,4 +43,4 @@ const Blog: React.FC = () => (
   </div>
 );
 
-export default Blog;
+export default writing;
