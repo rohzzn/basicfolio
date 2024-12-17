@@ -5,18 +5,21 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --font-inter: 'Inter', sans-serif;
+  --background: #f5f5dc; /* Old paper color */
+  --foreground: #333333; /* Darker text for better contrast */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: "Apple Garamond", serif;
 }
 
 .dark {
-  --background: #0a0a0a;
+  --background: #1e1e1e; /* Adjusted dark mode background for better contrast */
   --foreground: #ededed;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-inter);
+  font-family: var(--font-sans);
+  position: relative;
+  overflow-x: hidden;
 }

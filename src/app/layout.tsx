@@ -1,14 +1,9 @@
-// src/app/layout.tsx
+/* src/app/layout.tsx */
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import MultiPagePortfolio from '../components/multi-page-portfolio';
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+import NoiseOverlay from '../components/NoiseOverlay'; // Import the component
 
 export const metadata: Metadata = {
   title: "Rohan",
@@ -22,10 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <body className="font-sans antialiased">
         <MultiPagePortfolio>
           {children}
         </MultiPagePortfolio>
+        <NoiseOverlay /> {/* Add the NoiseOverlay here */}
       </body>
     </html>
   );
