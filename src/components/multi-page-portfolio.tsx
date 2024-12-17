@@ -39,7 +39,7 @@ const getStatusColor = (status: string) => {
       return "text-yellow-500";
     case "dnd":
       return "text-red-500";
-    case "offline":
+    case "AFK":
       return "text-gray-500";
     default:
       return "text-gray-500";
@@ -117,7 +117,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
               { path: "/projects", label: "Projects" },
               { path: "/stack", label: "Stack" },
               { path: "/hobbies", label: "Hobbies" },
-              { path: "/writing", label: "writing" },
+              { path: "/writing", label: "Writing" },
             ].map((item) => (
               <NavLink key={item.path} href={item.path}>
                 {item.label}
@@ -177,13 +177,22 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           {/* Discord Status */}
           {lanyardData && (
             <div className="py-4 border-t border-zinc-200 dark:border-zinc-800">
-              <div className="flex items-start gap-2">
-                <Circle size={8} className={`text-xs mt-1 ${getStatusColor(lanyardData.discord_status)}`} />
+              <div className="flex flex-col items-start gap-1">
+                {/* Status Indicator and Text on the Same Line */}
+                <div className="flex items-center gap-2">
+                  <Circle size={8} className={`text-xs ${getStatusColor(lanyardData.discord_status)}`} />
+                  <span className="text-xs text-zinc-600 dark:text-zinc-400 capitalize">
+                    {lanyardData.discord_status}
+                  </span>
+                </div>
+
+                {/* Activity Details */}
                 {lanyardData.activities && lanyardData.activities.length > 0 && (
-                  <div>
+                  <div className="mt-1">
                     <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                      {lanyardData.activities[0].name}: <br /> {lanyardData.activities[0].state} <br />
-                      {lanyardData.activities[0].details}
+                      {lanyardData.activities[0].name}
+                      {lanyardData.activities[0].state ? `: ${lanyardData.activities[0].state}` : ""}
+                      {lanyardData.activities[0].details ? ` - ${lanyardData.activities[0].details}` : ""}
                     </span>
                   </div>
                 )}
