@@ -164,7 +164,7 @@ const MyAnimeList: React.FC = () => {
   const [cursorPosition, setCursorPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const sortedAnime = useMemo(() => {
-    let sortableAnime = [...animeList];
+    const sortableAnime = [...animeList];
     if (sortConfig !== null) {
       sortableAnime.sort((a, b) => {
         let aKey = a[sortConfig.key];
