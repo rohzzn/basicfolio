@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 
 interface Anime {
   id: number;
@@ -113,7 +114,7 @@ const animeList: Anime[] = [
   { id: 103, title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 2nd Season", score: 7 },
   { id: 104, title: "Yuru Camp△", score: 8 },
   { id: 105, title: "Chainsaw Man", score: 8 },
-  { id: 106, title: "Oshi no Ko", score: 8 },
+  { id: 106, title: "&#39;Oshi no Ko&#39;", score: 8 },
   { id: 107, title: "Baki", score: 5 },
   { id: 108, title: "Black Clover", score: 5 },
   { id: 109, title: "Boku no Hero Academia 5th Season", score: 7 },
@@ -264,7 +265,7 @@ const MyAnimeList: React.FC = () => {
             {sortedAnime.map((anime) => (
               <tr key={anime.id} className="hover:bg-zinc-100 dark:hover:bg-zinc-700">
                 <td
-                  className="py-2 px-4 border-b border-zinc-200 dark:border-zinc-700 text-sm text-zinc-600 dark:text-zinc-300 cursor-pointer"
+                  className="py-2 px-4 border-b border-zinc-200 dark:border-zinc-700 text-sm text-zinc-600 dark:text-zinc-300 cursor-pointer relative"
                   onMouseEnter={() => handleMouseEnter(anime)}
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
@@ -286,10 +287,12 @@ const MyAnimeList: React.FC = () => {
           className="fixed z-50 pointer-events-none"
           style={{ top: cursorPosition.y + 20, left: cursorPosition.x + 20 }}
         >
-          <img
+          <Image
             src={imageCache[hoveredAnime.id]}
             alt={`${hoveredAnime.title} Cover`}
-            className="w-40 h-auto rounded shadow-lg"
+            width={160}
+            height={240}
+            className="rounded shadow-lg object-cover"
           />
         </div>
       )}

@@ -7,7 +7,7 @@ const Hobbies: React.FC = () => (
     <h2 className="text-lg font-medium mb-6 dark:text-white">Hobbies</h2>
     <div className="space-y-4 text-zinc-600 dark:text-zinc-400 mb-8">
       <p>
-        When I&#39m not coding, you can find me exploring mechanical keyboards,
+        When I&#39;m not coding, you can find me exploring mechanical keyboards,
         contributing to open-source projects, and learning about system design.
       </p>
       <p>
