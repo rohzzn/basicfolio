@@ -2,7 +2,7 @@
 
 "use client";
 import React, { useState, useEffect } from "react";
-import { Circle, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -30,19 +30,19 @@ const NavLink: React.FC<NavLinkProps> = ({ href, children }) => {
   );
 };
 
-// Helper Functions for Discord Status
-const getStatusColor = (status: string) => {
+// Helper Function for Discord Status
+const getStatusColor = (status: string): string => {
   switch (status) {
     case "online":
-      return "text-green-500";
+      return "#22C55E"; // green-500
     case "idle":
-      return "text-yellow-500";
+      return "#F59E0B"; // yellow-500
     case "dnd":
-      return "text-red-500";
-    case "AFK":
-      return "text-gray-500";
+      return "#EF4444"; // red-500
+    case "offline":
+      return "#6B7280"; // gray-500
     default:
-      return "text-gray-500";
+      return "#6B7280"; // default to gray-500
   }
 };
 
@@ -180,20 +180,35 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
               <div className="flex flex-col items-start gap-1">
                 {/* Status Indicator and Text on the Same Line */}
                 <div className="flex items-center gap-2">
-                  <Circle size={8} className={`text-xs ${getStatusColor(lanyardData.discord_status)}`} />
+                  {/* Filled Circle with Glow */}
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{
+                      backgroundColor: getStatusColor(lanyardData.discord_status),
+                      boxShadow: `0 0 8px ${getStatusColor(lanyardData.discord_status)}`,
+                    }}
+                  ></div>
                   <span className="text-xs text-zinc-600 dark:text-zinc-400 capitalize">
                     {lanyardData.discord_status}
                   </span>
                 </div>
 
-                {/* Activity Details */}
+                {/* Activity Details on Separate Lines */}
                 {lanyardData.activities && lanyardData.activities.length > 0 && (
-                  <div className="mt-1">
-                    <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                  <div className="mt-1 space-y-0.5">
+                    <div className="text-xs text-zinc-600 dark:text-zinc-400">
                       {lanyardData.activities[0].name}
-                      {lanyardData.activities[0].state ? `: ${lanyardData.activities[0].state}` : ""}
-                      {lanyardData.activities[0].details ? ` - ${lanyardData.activities[0].details}` : ""}
-                    </span>
+                    </div>
+                    {lanyardData.activities[0].state && (
+                      <div className="text-xs text-zinc-600 dark:text-zinc-400">
+                        {lanyardData.activities[0].state}
+                      </div>
+                    )}
+                    {lanyardData.activities[0].details && (
+                      <div className="text-xs text-zinc-600 dark:text-zinc-400">
+                        {lanyardData.activities[0].details}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
