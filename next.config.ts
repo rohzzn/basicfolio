@@ -7,4 +7,14 @@ const nextConfig = {
   },
 };
 
+module.exports = {
+  images: {
+    domains: [
+      'cdn.dribbble.com', // Dribbble image domain
+      // Add any other domains if needed
+    ],
+  },
+  // ... other configurations
+};
+
 module.exports = nextConfig;

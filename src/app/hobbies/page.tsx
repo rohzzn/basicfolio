@@ -30,7 +30,7 @@ const Hobbies: React.FC = () => (
 
       {/* Art */}
       <Link href="/hobbies/art" className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <h3 className="text-xl font-serif mb-2">Art</h3>
+        <h3 className="text-xl font-serif mb-2">Design</h3>
         <p className="text-zinc-600 dark:text-zinc-400">My artistic creations and designs.</p>
       </Link>
 
