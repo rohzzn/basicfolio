@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image'; // Import Image from next/image
 
 interface Book {
   title: string;
@@ -53,7 +54,7 @@ const Readings: React.FC = () => {
           if (data.items && data.items.length > 0) {
             const volume = data.items[0].volumeInfo;
             if (volume.imageLinks && volume.imageLinks.thumbnail) {
-              newCovers[book.title] = volume.imageLinks.thumbnail;
+              newCovers[book.title] = volume.imageLinks.thumbnail.replace('http:', 'https:');
             } else {
               newCovers[book.title] = "";
             }
@@ -92,11 +93,15 @@ const Readings: React.FC = () => {
                 }}
               >
                 {coverUrl ? (
-                  <img
-                    src={coverUrl}
-                    alt={book.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={coverUrl}
+                      alt={book.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center p-2 text-sm text-zinc-700 dark:text-zinc-300">
                     {book.title}
