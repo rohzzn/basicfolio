@@ -10,8 +10,7 @@ interface Book {
 }
 
 const books: Book[] = [
-  { title: "Steal Like an Artist", review: "Inspiring creative thinking.", score: 4 },
-  { title: "Keep Going", review: "A reminder to stay consistent.", score: 4 },
+ 
   { title: "The Subtle Art of Not Giving a F*ck", review: "Refreshing honesty about priorities.", score: 4 },
   { title: "Shoe Dog", review: "A raw look into Nike’s origin.", score: 5 },
   { title: "Make Time by Jake Knapp", review: "Tactical tips for focusing on what matters.", score: 4 },
@@ -28,6 +27,8 @@ const books: Book[] = [
   { title: "The Black Swan", review: "Understanding rare, impactful events.", score: 5 },
   { title: "Feel Good Productivity", review: "Finding joy in achieving personal goals.", score: 3 },
   { title: "The Creative Act", review: "A fresh look at artistry in everyday life.", score: 4 },
+  { title: "Steal Like an Artist", review: "Inspiring creative thinking.", score: 4 },
+  { title: "Keep Going", review: "A reminder to stay consistent.", score: 4 },
   { title: "The Almanack of Naval Ravikant", review: "Timeless wisdom on wealth and happiness.", score: 5 },
   { title: "The Book of Five Rings", review: "Strategies and philosophy from a legendary samurai.", score: 4 },
   { title: "Flowers for Algernon", review: "A touching, tragic look at intelligence and empathy.", score: 5 },
