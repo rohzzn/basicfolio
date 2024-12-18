@@ -3,29 +3,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["cdn.myanimelist.net"], // Add other domains if needed
-  },
-};
-
-module.exports = {
-  images: {
     domains: [
-      'cdn.dribbble.com', // Dribbble image domain
-      // Add any other domains if needed
+      "cdn.myanimelist.net",
+      "cdn.dribbble.com",
+      "books.googleusercontent.com",
+      "lh3.googleusercontent.com",
+      "books.google.com" // Add this domain
     ],
   },
   // ... other configurations
 };
-// next.config.js
-// next.config.js
-module.exports = {
-  images: {
-    domains: [
-      'books.googleusercontent.com',
-      'books.google.com', // Add this line
-    ],
-  },
-};
-
 
 module.exports = nextConfig;
