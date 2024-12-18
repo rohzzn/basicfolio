@@ -25,7 +25,7 @@ A personal portfolio built with [Next.js](https://nextjs.org), [React](https://r
 
 ```bash
 git clone https://github.com/rohzzn/basicfolio.git
-cd portfolio-site
+cd basicfolio
 npm install
 npm run dev
 ```
@@ -39,7 +39,3 @@ Easily deploy on [Vercel](https://vercel.com). See [Next.js deployment docs](htt
 ## License
 
 [MIT](./LICENSE)
-
----
-
-*Thanks for visiting!*
