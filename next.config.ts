@@ -16,5 +16,16 @@ module.exports = {
   },
   // ... other configurations
 };
+// next.config.js
+// next.config.js
+module.exports = {
+  images: {
+    domains: [
+      'books.googleusercontent.com',
+      'books.google.com', // Add this line
+    ],
+  },
+};
+
 
 module.exports = nextConfig;

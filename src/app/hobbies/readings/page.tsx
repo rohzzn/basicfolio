@@ -8,6 +8,7 @@ interface Book {
   score: number; // out of 5
 }
 
+
 const books: Book[] = [
   // Original + previously added books
 
@@ -38,7 +39,6 @@ const books: Book[] = [
   { title: "The 4-Hour Workweek", review: "Rethinking productivity and lifestyle design.", score: 4 },
   { title: "Sapiens: A Brief History of Humankind", review: "A sweeping overview of our species’ journey.", score: 5 },
 ];
-
 const Readings: React.FC = () => {
   const [covers, setCovers] = useState<{ [title: string]: string }>({});
 
