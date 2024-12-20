@@ -2,7 +2,7 @@
 
 "use client";
 import React from 'react';
-
+import Link from 'next/link';
 
 const Home: React.FC = () => (
   <div className="max-w-2xl">
@@ -13,7 +13,7 @@ const Home: React.FC = () => (
     </p>
     <br />
     <p className="text-zinc-600 dark:text-zinc-400">
-    I&#39;ve spent the past few years doing things on the internet — building side projects, doing independent research, and trying to understand how things work. You get the idea.
+      I&#39;ve spent the past few years doing things on the internet — building side projects, doing independent research, and trying to understand how things work. You get the idea.
     </p>
     <br />
     <p className="text-zinc-600 dark:text-zinc-400">
@@ -24,18 +24,15 @@ const Home: React.FC = () => (
       Work things aside, I’m a big fan of first-person shooters – I’ve been playing <a href="https://steamcommunity.com/id/rohzzn/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">Counter-Strike</a> for as long as I can remember and later picked up Valorant. Sometimes, I like editing videos and <a href="https://youtube.com/@rohzzn" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">create content</a>.
     </p>
 
-
     {/* Buttons Container */}
     <div className="mt-9 flex space-x-4 justify-start">
       {/* Download Resume Button */}
-      <a
-        href="https://drive.google.com/file/d/15ldUNRR5SeBCkw_C7RXmrvWYisoDX-GD/view"
-        target="_blank"
-        rel="noopener noreferrer"
+      <Link
+        href="/stack"
         className="px-3 py-1 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-100 transition-colors text-center w-24 sm:w-32 text-sm"
       >
         Resume
-      </a>
+      </Link>
 
       {/* Contact Me Button */}
       <a

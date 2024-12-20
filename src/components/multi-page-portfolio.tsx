@@ -115,9 +115,8 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             {[
               { path: "/", label: "About" },
               { path: "/projects", label: "Projects" },
-              { path: "/stack", label: "Stack" },
-              { path: "/hobbies", label: "Hobbies" },
               { path: "/writing", label: "Writing" },
+              { path: "/hobbies", label: "Hobbies" },
             ].map((item) => (
               <NavLink key={item.path} href={item.path}>
                 {item.label}
