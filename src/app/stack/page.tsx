@@ -1,7 +1,5 @@
-// src/app/stack/page.tsx
-
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   SiPython, 
   SiCplusplus, 
@@ -23,7 +21,44 @@ import { AiOutlineSetting } from 'react-icons/ai';
 import { FiSettings } from 'react-icons/fi';
 import { BiUserVoice } from 'react-icons/bi';
 
+interface LeetCodeStats {
+  status: string;
+  message: string;
+  totalSolved: number;
+  totalQuestions: number;
+  easySolved: number;
+  totalEasy: number;
+  mediumSolved: number;
+  totalMedium: number;
+  hardSolved: number;
+  totalHard: number;
+  acceptanceRate: number;
+  ranking: number;
+  contributionPoints: number;
+  reputation: number;
+  submissionCalendar: Record<string, number>;
+}
+
 const Stack: React.FC = () => {
+  const [leetcodeStats, setLeetcodeStats] = useState<LeetCodeStats | null>(null);
+  const [loadingLeetCode, setLoadingLeetCode] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchLeetCodeStats = async () => {
+      try {
+        const response = await fetch('https://leetcode-stats-api.herokuapp.com/rohzzn');
+        const data = await response.json();
+        setLeetcodeStats(data);
+      } catch (error) {
+        console.error('Error fetching LeetCode stats:', error);
+      } finally {
+        setLoadingLeetCode(false);
+      }
+    };
+
+    fetchLeetCodeStats();
+  }, []);
+
   const certifications = [
     {
       name: "Azure Fundamentals",
@@ -60,7 +95,6 @@ const Stack: React.FC = () => {
       url: "https://drive.google.com/file/d/1ipvg-jlWsyByW3xbfnvtEwjw5SgCsdN-/view?usp=share_link",
       issuer: "Udemy",
     },
-
   ];
 
   const education = [
@@ -77,7 +111,6 @@ const Stack: React.FC = () => {
         "Large Scale Software Engineering",
         "Visual Interfaces Data",
         "Software Testing and Quality Assurance",
-
       ],
     },
     {
@@ -101,10 +134,9 @@ const Stack: React.FC = () => {
       role: "Software Development Engineer",
       type: "Internship",
       duration: "June 2023 - September 2023",
-      
-      techStackUsed: ["Node.js", "Docker", "Express", "MongoDB"],
+      // Removed techStackUsed to hide "Tech Stack" bullet list
+      // Add more experience as needed
     },
-    // Add more experience as needed
   ];
 
   const skills = [
@@ -160,17 +192,12 @@ const Stack: React.FC = () => {
         <h3 className="text-2xl font-semibold mb-6 dark:text-white">Experience</h3>
         <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
           {experience.map((exp, index) => (
-            <div key={index} className="mb-6">
-              <h4 className="text-xl font-medium dark:text-white">{exp.company}</h4>
-              <p className="text-gray-700 dark:text-gray-300">{exp.role}</p>
-              <p className="text-gray-700 dark:text-gray-300">{exp.duration}</p>
-              <div className="mt-2">
-                <span className="text-gray-700 dark:text-gray-300 font-semibold">Tech Stack:</span>
-                <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
-                  {exp.techStackUsed.map((tech, idx) => (
-                    <li key={idx}>{tech}</li>
-                  ))}
-                </ul>
+            <div key={index} className="mb-6 flex items-start justify-between">
+              {/* Left side: text */}
+              <div>
+                <h4 className="text-xl font-medium dark:text-white">{exp.company}</h4>
+                <p className="text-gray-700 dark:text-gray-300">{exp.role}</p>
+                <p className="text-gray-700 dark:text-gray-300">{exp.duration}</p>
               </div>
             </div>
           ))}
@@ -217,13 +244,36 @@ const Stack: React.FC = () => {
         </div>
       </section>
 
+      {/* LeetCode Stats Section */}
+      <section className="mb-12">
+        <h3 className="text-2xl font-semibold mb-6 dark:text-white">LeetCode Stats</h3>
+        <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          {loadingLeetCode && <p className="text-gray-700 dark:text-gray-300">Loading...</p>}
+          {!loadingLeetCode && leetcodeStats && leetcodeStats.status === 'success' ? (
+            <div className="space-y-2 text-gray-700 dark:text-gray-300">
+              <p>Total Solved: {leetcodeStats.totalSolved} / {leetcodeStats.totalQuestions}</p>
+              <p>Easy: {leetcodeStats.easySolved} / {leetcodeStats.totalEasy}</p>
+              <p>Medium: {leetcodeStats.mediumSolved} / {leetcodeStats.totalMedium}</p>
+              <p>Hard: {leetcodeStats.hardSolved} / {leetcodeStats.totalHard}</p>
+              <p>Acceptance Rate: {leetcodeStats.acceptanceRate}%</p>
+              <p>Ranking: {leetcodeStats.ranking}</p>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
       {/* Certifications Section */}
       <section className="mb-12">
         <h3 className="text-2xl font-semibold mb-6 dark:text-white">Certifications</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {certifications.map((cert, index) => (
             <div key={index} className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-lg">
+              <a
+                href={cert.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-lg"
+              >
                 {cert.name}
               </a>
               <p className="text-gray-700 dark:text-gray-300">{cert.issuer}</p>
@@ -236,7 +286,7 @@ const Stack: React.FC = () => {
       <div className="mt-12 flex space-x-6">
         {/* Download Resume Button */}
         <a
-          href="https://drive.google.com/file/d/15ldUNRR5SeBCkw_C7RXmrvWYisoDX-GD/view?usp=share_link" // Google Drive resume link
+          href="https://drive.google.com/file/d/15ldUNRR5SeBCkw_C7RXmrvWYisoDX-GD/view?usp=share_link"
           target="_blank"
           rel="noopener noreferrer"
           className="px-6 py-3 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-100 transition-colors flex items-center justify-center w-40 text-sm"
