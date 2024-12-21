@@ -8,7 +8,9 @@ const nextConfig = {
       "cdn.dribbble.com",
       "books.googleusercontent.com",
       "lh3.googleusercontent.com",
-      "books.google.com" // Add this domain
+      "books.google.com", // Add this domain
+      "avatars.steamstatic.com",
+      'media.steampowered.com'
     ],
   },
   // ... other configurations
