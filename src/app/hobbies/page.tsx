@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 
 const Hobbies: React.FC = () => (
-  <div className="max-w-full p-6">
+  <div className="max-w-7xl">
     <h2 className="text-lg font-medium mb-6 dark:text-white">Hobbies</h2>
     <div className="space-y-4 text-zinc-600 dark:text-zinc-400 mb-8">
       <p>

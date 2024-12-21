@@ -50,15 +50,11 @@ const categories: Category[] = [
     projects: [
       {
         title: "Meet",
-        description:
-          "Video call application with advanced features like screen sharing and recording.",
+        description: "Video call application with advanced features like screen sharing and recording.",
         tech: ["React", "Node.js", "Socket.io"],
         links: [
           { label: "GitHub", url: "https://github.com/rohzzn/meet" },
-          {
-            label: "Live Demo",
-            url: "https://ckvyqugj7184663idk0i811d0su-8rbb2fvau-calatop.vercel.app/authenticate",
-          },
+          { label: "Live Demo", url: "https://ckvyqugj7184663idk0i811d0su-8rbb2fvau-calatop.vercel.app/authenticate" },
         ],
       },
       {
@@ -85,10 +81,7 @@ const categories: Category[] = [
         tech: ["JavaScript", "Discord.js", "Node.js"],
         links: [
           { label: "GitHub", url: "https://github.com/rohzzn/Zenitsu-bot" },
-          {
-            label: "Invite",
-            url: "https://discord.com/oauth2/authorize?client_id=766218598913146901&permissions=8&scope=bot",
-          },
+          { label: "Invite", url: "https://discord.com/oauth2/authorize?client_id=766218598913146901&permissions=8&scope=bot" },
         ],
       },
       {
@@ -97,10 +90,7 @@ const categories: Category[] = [
         tech: ["CSS", "JSON"],
         links: [
           { label: "GitHub", url: "https://github.com/rohzzn/tanoshi" },
-          {
-            label: "Marketplace",
-            url: "https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi",
-          },
+          { label: "Marketplace", url: "https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi" },
         ],
       },
       {
@@ -109,10 +99,7 @@ const categories: Category[] = [
         tech: ["JavaScript", "Chrome Extensions", "CSS"],
         links: [
           { label: "GitHub", url: "https://github.com/rohzzn/hexpicker" },
-          {
-            label: "Marketplace",
-            url: "https://chrome.google.com/webstore/detail/hex-picker/jmnkgndafoldkblpnmmollbgkdfemmfc/related?hl=en-GB&authuser=3",
-          },
+          { label: "Marketplace", url: "https://chrome.google.com/webstore/detail/hex-picker/jmnkgndafoldkblpnmmollbgkdfemmfc/related?hl=en-GB&authuser=3" },
         ],
       },
     ],
@@ -194,10 +181,7 @@ const categories: Category[] = [
         tech: ["Python", "Pandas", "Matplotlib"],
         links: [
           { label: "GitHub", url: "https://github.com/rohzzn/automobile" },
-          {
-            label: "Notes",
-            url: "https://github.com/rohzzn/automobile/blob/main/colab.ipynb",
-          },
+          { label: "Notes", url: "https://github.com/rohzzn/automobile/blob/main/colab.ipynb" },
         ],
       },
     ],
@@ -207,15 +191,11 @@ const categories: Category[] = [
     projects: [
       {
         title: "Smart Agriculture",
-        description:
-          "Agriculture using automation for optimal growth and reduced labor costs.",
+        description: "Agriculture using automation for optimal growth and reduced labor costs.",
         tech: ["Arduino", "C++", "Sensors"],
         links: [
           { label: "GitHub", url: "https://github.com/rohzzn/smart_agriculture" },
-          {
-            label: "Paper",
-            url: "https://github.com/rohzzn/smart_agriculture/blob/main/Smart.pdf",
-          },
+          { label: "Paper", url: "https://github.com/rohzzn/smart_agriculture/blob/main/Smart.pdf" },
         ],
       },
     ],
@@ -264,24 +244,20 @@ const categories: Category[] = [
 ];
 
 const Projects: React.FC = () => (
-  <div className="p-4">
+  <div className="max-w-7xl">
     <h2 className="text-lg font-medium mb-6 dark:text-white">Projects</h2>
     {categories.map((category, catIndex) => (
       <div key={catIndex} className="mb-8">
-        {/* Category Header */}
-        <h3 className="text-xl font-semibold mb-4 dark:text-white">{category.name}</h3>
-        <div className="grid gap-8 md:grid-cols-2">
+        <h3 className="text-base font-medium mb-4 dark:text-white">{category.name}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {category.projects.map((project, projIndex) => (
             <div
               key={projIndex}
-              className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 shadow-sm dark:shadow-gray-700"
+              className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 shadow-sm dark:shadow-gray-700"
             >
-              <h4 className="text-base font-medium dark:text-white">{project.title}</h4>
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-2 mb-4">
-                {project.description}
-              </p>
+              <h4 className="text-sm font-medium dark:text-white">{project.title}</h4>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 mb-4">{project.description}</p>
               <div className="flex flex-wrap items-center gap-4">
-                {/* Tech Stack */}
                 <div className="flex flex-wrap gap-2">
                   {project.tech.map((tech, techIndex) => (
                     <span
@@ -292,7 +268,6 @@ const Projects: React.FC = () => (
                     </span>
                   ))}
                 </div>
-                {/* Links */}
                 <div className="flex gap-3 ml-auto">
                   {project.links.map((link, linkIndex) => (
                     <a

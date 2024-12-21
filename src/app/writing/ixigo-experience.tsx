@@ -27,8 +27,7 @@ const IxigoExperience: React.FC<IxigoExperienceProps> = ({ onBack }) => {
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
           <time dateTime="2023-10-10">October 10, 2023</time>
-          <span>·</span>
-          <span>3 min read</span>
+
         </div>
       </header>
 
