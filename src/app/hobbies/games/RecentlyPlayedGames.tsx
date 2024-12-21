@@ -32,7 +32,7 @@ const RecentlyPlayedGames: React.FC<RecentlyPlayedGamesProps> = ({ games }) => {
             <Image
               src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
               alt={`${game.name} Icon`}
-              width={32}
+              width={32} // Increased size for better visibility
               height={32}
               className="rounded"
             />

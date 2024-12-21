@@ -34,7 +34,6 @@ const CSGOStatsComponent: React.FC<CSGOStatsProps> = ({ stats }) => {
   const totalDeaths = statMap['total_deaths'] || 'N/A';
   const totalWins = statMap['total_wins'] || 'N/A';
 
-
   return (
     <div className="space-y-2">
       <p><strong>Kills:</strong> {totalKills}</p>

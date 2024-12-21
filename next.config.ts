@@ -10,7 +10,8 @@ const nextConfig = {
       "lh3.googleusercontent.com",
       "books.google.com", // Add this domain
       "avatars.steamstatic.com",
-      'media.steampowered.com'
+      'media.steampowered.com',
+      'steamuserimages-a.akamaihd.net'
     ],
   },
   // ... other configurations
