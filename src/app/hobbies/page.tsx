@@ -15,29 +15,54 @@ const Hobbies: React.FC = () => (
         and experimenting with new programming languages.
       </p>
     </div>
+
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* MyAnimeList */}
-      <Link href="/hobbies/myanimelist" className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <h3 className="text-xl font-serif mb-2">Anime List</h3>
-        <p className="text-zinc-600 dark:text-zinc-400">Track and explore my anime and manga collections.</p>
+      <Link
+        href="/hobbies/myanimelist"
+        className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg 
+                   shadow hover:shadow-xl transition-transform 
+                   transform hover:-translate-y-1"
+      >
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Anime.
+        </p>
       </Link>
 
       {/* Readings */}
-      <Link href="/hobbies/readings" className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <h3 className="text-xl font-serif mb-2">Readings</h3>
-        <p className="text-zinc-600 dark:text-zinc-400">My favorite books and articles.</p>
+      <Link
+        href="/hobbies/readings"
+        className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg 
+                   shadow hover:shadow-xl transition-transform 
+                   transform hover:-translate-y-1"
+      >
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Books.
+        </p>
       </Link>
 
       {/* Art */}
-      <Link href="/hobbies/art" className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <h3 className="text-xl font-serif mb-2">Design</h3>
-        <p className="text-zinc-600 dark:text-zinc-400">My artistic creations and designs.</p>
+      <Link
+        href="/hobbies/art"
+        className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg 
+                   shadow hover:shadow-xl transition-transform 
+                   transform hover:-translate-y-1"
+      >
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Designs.
+        </p>
       </Link>
 
       {/* Games */}
-      <Link href="/hobbies/games" className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <h3 className="text-xl font-serif mb-2">Games</h3>
-        <p className="text-zinc-600 dark:text-zinc-400">My favorite games and gaming experiences.</p>
+      <Link
+        href="/hobbies/games"
+        className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg 
+                   shadow hover:shadow-xl transition-transform 
+                   transform hover:-translate-y-1"
+      >
+        <p className="text-zinc-600 dark:text-zinc-400">
+         Gaming.
+        </p>
       </Link>
     </div>
   </div>
