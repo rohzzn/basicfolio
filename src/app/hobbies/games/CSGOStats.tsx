@@ -31,14 +31,14 @@ const CSGOStatsComponent: React.FC<CSGOStatsProps> = ({ stats }) => {
 
   // Example stats extraction (adjust based on available stats)
   const totalKills = statMap['total_kills'] || 'N/A';
-  const totalDeaths = statMap['total_deaths'] || 'N/A';
   const totalWins = statMap['total_wins'] || 'N/A';
 
   return (
     <div className="space-y-2">
+      <p><strong>Rank:</strong> Distinguished Master Guardian</p>
       <p><strong>Kills:</strong> {totalKills}</p>
-      <p><strong>Deaths:</strong> {totalDeaths}</p>
       <p><strong>Wins:</strong> {totalWins}</p>
+      
 
       {/* Add more stats as needed */}
     </div>

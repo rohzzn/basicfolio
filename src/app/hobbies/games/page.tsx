@@ -98,19 +98,17 @@ const Games: React.FC = async () => {
 
         {/* Steam Profile Section */}
         <section>
-          <h3 className="text-2xl font-bold mb-6 dark:text-white">Steam Profile</h3>
           <Profile profile={profile} />
         </section>
 
         {/* Recently Played Games Section */}
         <section>
-          <h3 className="text-2xl font-bold mb-6 dark:text-white">Recently Played Games</h3>
           <RecentlyPlayedGames games={recentGames} />
         </section>
 
         {/* CS:GO Statistics Section */}
         <section>
-          <h3 className="text-2xl font-bold mb-6 dark:text-white">CS:GO Statistics</h3>
+          <h3 className="text-2xl font-bold mb-6 dark:text-white">CS Statistics</h3>
 
           {/* CS:GO Stats and Tweaks in a Flex Container */}
           <div className="flex flex-col md:flex-row gap-6">
@@ -139,7 +137,7 @@ const Games: React.FC = async () => {
               href="https://settings.gg/player/279387466"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition-colors"
+              className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors"
             >
               View Config
             </a>
