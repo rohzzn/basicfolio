@@ -30,12 +30,17 @@ const IPadCursor = () => {
       }
     };
 
-    // Hide the default cursor
-    document.body.style.cursor = 'none';
-    const links = document.querySelectorAll('a, button, [role="button"], input, select, textarea');
-    links.forEach(link => {
-      (link as HTMLElement).style.cursor = 'none';
-    });
+    // Add global styles to hide cursor
+    const style = document.createElement('style');
+    style.textContent = `
+      * {
+        cursor: none !important;
+      }
+      a, button, [role="button"], input, select, textarea {
+        cursor: none !important;
+      }
+    `;
+    document.head.appendChild(style);
 
     // Add event listeners
     document.addEventListener('mousemove', updateCursorPosition, { passive: true });
@@ -44,10 +49,7 @@ const IPadCursor = () => {
 
     // Clean up
     return () => {
-      document.body.style.cursor = 'auto';
-      links.forEach(link => {
-        (link as HTMLElement).style.cursor = 'auto';
-      });
+      document.head.removeChild(style);
       document.removeEventListener('mousemove', updateCursorPosition);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
