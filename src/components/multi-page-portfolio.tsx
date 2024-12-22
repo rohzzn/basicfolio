@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import IPadCursor from './IPadCursor';
+import BackgroundMusic from './BackgroundMusic';
 
 interface NavLinkProps {
   href: string;
@@ -199,6 +200,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       </div>
       
       <IPadCursor />
+      <BackgroundMusic />
     </div>
   );
 };
