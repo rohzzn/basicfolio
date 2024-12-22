@@ -4,7 +4,6 @@ import React from 'react';
 import Profile from './Profile';
 import RecentlyPlayedGames from './RecentlyPlayedGames';
 import CSGOStatsComponent from './CSGOStats';
-import Image from 'next/image';
 
 interface SteamProfile {
   personaname: string;
@@ -93,69 +92,54 @@ const Games: React.FC = async () => {
     const statsData: CSGOStats = await statsResponse.json();
 
     return (
-      <div className="max-w-7xl mx-auto p-6 space-y-12 relative">
-        {/* Corner Image */}
-        <Image
-          src="https://steamuserimages-a.akamaihd.net/ugc/1761441441770633915/D5C9445C04723815B909A2A8A36FC8B250F99559/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"
-          alt="Corner Decoration"
-          width={200}
-          height={200}
-          className="absolute top-4 right-4 opacity-50"
-        />
+      <div className="max-w-7xl mx-auto p-6 space-y-12">
+        {/* Page Title */}
+        <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming</h2>
 
-        {/* Peripherals Section */}
-        <section className="bg-paper dark:bg-zinc-800 p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4 dark:text-white">Peripherals</h2>
-          <ul className="list-disc list-inside space-y-2 text-zinc-600 dark:text-zinc-400">
-            <li><strong>Monitor:</strong> Benq 165Hz</li>
-            <li><strong>Mouse:</strong> Razer DeathAdder V2, Glorious Model O Mini</li>
-            <li><strong>Keyboard:</strong> GK61 Gateron, Keychron K8 Brown Switches</li>
-            <li><strong>Headset:</strong> Razer Kraken, Apple Earphones</li>
-            <li><strong>Microphone:</strong> Blue Snowball</li>
-          </ul>
-        </section>
-
-        {/* Introduction Section */}
+        {/* Steam Profile Section */}
         <section>
-
-          {/* Profile Information */}
+          <h3 className="text-2xl font-bold mb-6 dark:text-white">Steam Profile</h3>
           <Profile profile={profile} />
-
-          {/* Recently Played Games */}
-          <div className="mt-6">
-            <RecentlyPlayedGames games={recentGames} />
-          </div>
         </section>
 
-        {/* CS:GO Profile Section */}
+        {/* Recently Played Games Section */}
         <section>
-          <h2 className="text-2xl font-bold mb-6 dark:text-white">CS Statistics</h2>
+          <h3 className="text-2xl font-bold mb-6 dark:text-white">Recently Played Games</h3>
+          <RecentlyPlayedGames games={recentGames} />
+        </section>
 
-          {/* CS:GO Stats */}
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-2 dark:text-white">Statistics</h3>
-            <CSGOStatsComponent stats={statsData} />
-          </div>
+        {/* CS:GO Statistics Section */}
+        <section>
+          <h3 className="text-2xl font-bold mb-6 dark:text-white">CS:GO Statistics</h3>
 
-          {/* Tweaks Section */}
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-2 dark:text-white">Tweaks</h3>
-            <ul className="list-disc list-inside space-y-1 text-zinc-600 dark:text-zinc-400">
-              <li>Improved Radio Mod</li>
-              <li>Vibrance GUI</li>
-              <li>Text Color Mod</li>
-              <li>Simple Radar</li>
-              <li>Custom Font - <em>superstar_memesbruh03</em></li>
-            </ul>
+          {/* CS:GO Stats and Tweaks in a Flex Container */}
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* CS:GO Stats Box */}
+            <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg shadow-md">
+              <h4 className="text-xl font-semibold mb-4 dark:text-white">Statistics</h4>
+              <CSGOStatsComponent stats={statsData} />
+            </div>
+
+            {/* Tweaks Box */}
+            <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg shadow-md">
+              <h4 className="text-xl font-semibold mb-4 dark:text-white">Tweaks</h4>
+              <ul className="list-disc list-inside space-y-1 text-zinc-600 dark:text-zinc-400">
+                <li>Improved Radio Mod</li>
+                <li>Vibrance GUI</li>
+                <li>Text Color Mod</li>
+                <li>Simple Radar</li>
+                <li>Custom Font - <em>superstar_memesbruh03</em></li>
+              </ul>
+            </div>
           </div>
 
           {/* Config URL */}
-          <div>
+          <div className="mt-6">
             <a
               href="https://settings.gg/player/279387466"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition-colors"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition-colors"
             >
               View Config
             </a>
