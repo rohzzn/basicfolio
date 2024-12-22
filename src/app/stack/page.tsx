@@ -134,8 +134,6 @@ const Stack: React.FC = () => {
       role: "Software Development Engineer",
       type: "Internship",
       duration: "June 2023 - September 2023",
-      // Removed techStackUsed to hide "Tech Stack" bullet list
-      // Add more experience as needed
     },
   ];
 
@@ -185,11 +183,11 @@ const Stack: React.FC = () => {
   return (
     <div className="max-w-4xl p-4">
       {/* Title */}
-      <h2 className="text-4xl font-bold mb-12 dark:text-white">Resume</h2>
+      <h2 className="text-lg font-medium mb-6 dark:text-white">Resume</h2>
 
       {/* Experience Section */}
       <section className="mb-12">
-        <h3 className="text-2xl font-semibold mb-6 dark:text-white">Experience</h3>
+        <h3 className="text-base font-semibold mb-6 dark:text-white">Experience</h3>
         <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
           {experience.map((exp, index) => (
             <div key={index} className="mb-6 flex items-start justify-between">
@@ -206,7 +204,7 @@ const Stack: React.FC = () => {
 
       {/* Education Section */}
       <section className="mb-12">
-        <h3 className="text-2xl font-semibold mb-6 dark:text-white">Education</h3>
+        <h3 className="text-base font-semibold mb-6 dark:text-white">Education</h3>
         <div className="flex flex-col md:flex-row gap-8">
           {education.map((edu, index) => (
             <div key={index} className="flex-1 bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
@@ -226,7 +224,7 @@ const Stack: React.FC = () => {
 
       {/* Skills Section */}
       <section className="mb-12">
-        <h3 className="text-2xl font-semibold mb-6 dark:text-white">Skills</h3>
+        <h3 className="text-base font-semibold mb-6 dark:text-white">Skills</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {skills.map((skillCategory, index) => (
             <div key={index} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
@@ -246,7 +244,7 @@ const Stack: React.FC = () => {
 
       {/* LeetCode Stats Section */}
       <section className="mb-12">
-        <h3 className="text-2xl font-semibold mb-6 dark:text-white">LeetCode Stats</h3>
+        <h3 className="text-base font-semibold mb-6 dark:text-white">LeetCode Stats</h3>
         <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
           {loadingLeetCode && <p className="text-gray-700 dark:text-gray-300">Loading...</p>}
           {!loadingLeetCode && leetcodeStats && leetcodeStats.status === 'success' ? (
@@ -264,7 +262,7 @@ const Stack: React.FC = () => {
 
       {/* Certifications Section */}
       <section className="mb-12">
-        <h3 className="text-2xl font-semibold mb-6 dark:text-white">Certifications</h3>
+        <h3 className="text-base font-semibold mb-6 dark:text-white">Certifications</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {certifications.map((cert, index) => (
             <div key={index} className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">

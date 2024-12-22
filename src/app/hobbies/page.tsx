@@ -17,51 +17,39 @@ const Hobbies: React.FC = () => (
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {/* MyAnimeList */}
       <Link
         href="/hobbies/myanimelist"
-        className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg 
-                   shadow hover:shadow-xl transition-transform 
-                   transform hover:-translate-y-1"
+        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
       >
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Anime.
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          Anime
         </p>
       </Link>
 
-      {/* Readings */}
       <Link
         href="/hobbies/readings"
-        className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg 
-                   shadow hover:shadow-xl transition-transform 
-                   transform hover:-translate-y-1"
+        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
       >
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Books.
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          Books
         </p>
       </Link>
 
-      {/* Art */}
       <Link
         href="/hobbies/art"
-        className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg 
-                   shadow hover:shadow-xl transition-transform 
-                   transform hover:-translate-y-1"
+        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
       >
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Designs.
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          Designs
         </p>
       </Link>
 
-      {/* Games */}
       <Link
         href="/hobbies/games"
-        className="block bg-paper dark:bg-zinc-800 p-6 rounded-lg 
-                   shadow hover:shadow-xl transition-transform 
-                   transform hover:-translate-y-1"
+        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
       >
-        <p className="text-zinc-600 dark:text-zinc-400">
-         Gaming.
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          Gaming
         </p>
       </Link>
     </div>
