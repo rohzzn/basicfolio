@@ -19,36 +19,36 @@ const Hobbies: React.FC = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <Link
         href="/hobbies/myanimelist"
-        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+        className="block bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
       >
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-zinc-700 dark:text-zinc-300">
           Anime
         </p>
       </Link>
 
       <Link
         href="/hobbies/readings"
-        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+        className="block bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
       >
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-zinc-700 dark:text-zinc-300">
           Books
         </p>
       </Link>
 
       <Link
         href="/hobbies/art"
-        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+        className="block bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
       >
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-zinc-700 dark:text-zinc-300">
           Designs
         </p>
       </Link>
 
       <Link
         href="/hobbies/games"
-        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+        className="block bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
       >
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-zinc-700 dark:text-zinc-300">
           Gaming
         </p>
       </Link>

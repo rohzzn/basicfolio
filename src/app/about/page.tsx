@@ -5,7 +5,7 @@ import { FaArrowRight, FaEnvelope } from 'react-icons/fa';
 
 const Home: React.FC = () => (
   <div className="max-w-7xl">
-    <h2 className="text-lg font-medium mb-6 dark:text-white">Hey, I&#39;m Rohan</h2>
+    <h2 className="text-lg font-medium mb-6 dark:text-white">Hey, I&#39;m Rohan Pothuru</h2>
     <div className="space-y-4">
       <p className="text-zinc-600 dark:text-zinc-400">
         I&#39;m currently pursuing my master&#39;s in Computer Science at the University of Cincinnati. Previously, I worked as a Software Development Engineer at Ixigo.
