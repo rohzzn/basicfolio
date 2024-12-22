@@ -1,29 +1,16 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { 
-  SiPython, 
-  SiCplusplus, 
-  SiJavascript, 
-  SiHtml5, 
-  SiReact, 
-  SiDjango, 
-  SiTailwindcss, 
-  SiBootstrap, 
-  SiMysql, 
-  SiGit, 
-  SiDocker, 
-  SiFigma, 
-  SiAdobephotoshop, 
-  SiAdobeillustrator 
+  SiPython, SiCplusplus, SiJavascript, SiHtml5, SiReact, 
+  SiDjango, SiTailwindcss, SiBootstrap, SiMysql, SiGit, 
+  SiDocker, SiFigma, SiAdobephotoshop, SiAdobeillustrator,
+  SiTypescript, SiNextdotjs, SiNodedotjs, SiMongodb,
+   SiPostman, SiLinux, SiVercel
 } from 'react-icons/si';
-import { FaJava, FaTerminal, FaAws } from 'react-icons/fa';
-import { AiOutlineSetting } from 'react-icons/ai';
-import { FiSettings } from 'react-icons/fi';
-import { BiUserVoice } from 'react-icons/bi';
+import { FaJava, FaAws, FaDownload, FaEnvelope, FaTerminal } from 'react-icons/fa';
+import { Briefcase, GraduationCap, Award, Terminal } from 'lucide-react';
 
 interface LeetCodeStats {
-  status: string;
-  message: string;
   totalSolved: number;
   totalQuestions: number;
   easySolved: number;
@@ -36,72 +23,31 @@ interface LeetCodeStats {
   ranking: number;
   contributionPoints: number;
   reputation: number;
-  submissionCalendar: Record<string, number>;
 }
 
-const Stack: React.FC = () => {
+const Stack = () => {
   const [leetcodeStats, setLeetcodeStats] = useState<LeetCodeStats | null>(null);
-  const [loadingLeetCode, setLoadingLeetCode] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchLeetCodeStats = async () => {
-      try {
-        const response = await fetch('https://leetcode-stats-api.herokuapp.com/rohzzn');
-        const data = await response.json();
-        setLeetcodeStats(data);
-      } catch (error) {
-        console.error('Error fetching LeetCode stats:', error);
-      } finally {
-        setLoadingLeetCode(false);
-      }
-    };
-
-    fetchLeetCodeStats();
+    fetch('https://leetcode-stats-api.herokuapp.com/rohzzn')
+      .then(res => res.json())
+      .then(data => setLeetcodeStats(data))
+      .catch(error => console.error('Error fetching LeetCode stats:', error));
   }, []);
 
-  const certifications = [
+  const experience: { company: string; role: string; duration: string; }[] = [
     {
-      name: "Azure Fundamentals",
-      url: "https://drive.google.com/file/d/1P_dInABO8tc5guuF4CxCmgsxnLe7Ya4A/view?usp=sharing",
-      issuer: "Microsoft",
-    },
-    {
-      name: "Solving Using Computational Thinking",
-      url: "https://drive.google.com/file/d/1ZOZvdUZ_YluoHKgfZsxIajcsamvx4c_q/view?usp=share_link",
-      issuer: "University of Michigan",
-    },
-    {
-      name: "Introduction to Machine Learning",
-      url: "https://drive.google.com/file/d/1ohRxzCXpePCbCC6Zc7tZ9hb0oaQOo2s9/view?usp=share_link",
-      issuer: "Duke University",
-    },
-    {
-      name: "Inclusive Leadership",
-      url: "https://drive.google.com/file/d/1_z7XbC6OogTpci0yXp9uNW8Vle3NQRfX/view?usp=share_link",
-      issuer: "University of Colorado",
-    },
-    {
-      name: "Algorithms and Data Structures",
-      url: "https://drive.google.com/file/d/1QU_5TBix_pCsqJdTRWoLUOHYZDBNNSmv/view",
-      issuer: "FreeCodeCamp",
-    },
-    {
-      name: "Python Bootcamp",
-      url: "https://drive.google.com/file/d/194Yz3p7RwjeKg37BifCNiqCc63y_kfbj/view?usp=share_link",
-      issuer: "London App Brewery",
-    },
-    {
-      name: "Django Fundamentals",
-      url: "https://drive.google.com/file/d/1ipvg-jlWsyByW3xbfnvtEwjw5SgCsdN-/view?usp=share_link",
-      issuer: "Udemy",
-    },
+      company: 'Abhibus (Ixigo)',
+      role: 'Software Development Engineer',
+      duration: 'June 2023 - September 2023',
+    }
   ];
 
   const education = [
     {
-      degree: "Master of Engineering - Computer Science",
-      institution: "University of Cincinnati",
-      duration: "August 2024 - April 2026",
+      school: 'University of Cincinnati',
+      degree: 'Master of Engineering - Computer Science',
+      duration: 'August 2024 - April 2026',
       coursework: [
         "Distributed Operating Systems",
         "Advanced Algorithms I",
@@ -114,9 +60,9 @@ const Stack: React.FC = () => {
       ],
     },
     {
-      degree: "Bachelor of Technology - Computer Science",
-      institution: "Malla Reddy Engineering College",
-      duration: "August 2020 - June 2024",
+      school: 'Malla Reddy Engineering College',
+      degree: 'Bachelor of Technology - Computer Science',
+      duration: 'August 2020 - June 2024',
       coursework: [
         "Data Structures and Algorithms",
         "Operating Systems",
@@ -125,98 +71,123 @@ const Stack: React.FC = () => {
         "Computer Networks",
         "Analysis and Design of Algorithms",
       ],
-    },
+    }
   ];
 
-  const experience = [
+  const certifications = [
     {
-      company: "Abhibus (Ixigo)",
-      role: "Software Development Engineer",
-      type: "Internship",
-      duration: "June 2023 - September 2023",
+      name: "Azure Fundamentals",
+      issuer: "Microsoft",
+      url: "https://drive.google.com/file/d/1P_dInABO8tc5guuF4CxCmgsxnLe7Ya4A/view",
     },
+    {
+      name: "Solving Using Computational Thinking",
+      issuer: "University of Michigan",
+      url: "https://drive.google.com/file/d/1ZOZvdUZ_YluoHKgfZsxIajcsamvx4c_q/view",
+    },
+    {
+      name: "Introduction to Machine Learning",
+      issuer: "Duke University",
+      url: "https://drive.google.com/file/d/1ohRxzCXpePCbCC6Zc7tZ9hb0oaQOo2s9/view",
+    },
+    {
+      name: "Inclusive Leadership",
+      issuer: "University of Colorado",
+      url: "https://drive.google.com/file/d/1_z7XbC6OogTpci0yXp9uNW8Vle3NQRfX/view",
+    },
+    {
+      name: "Algorithms and Data Structures",
+      issuer: "FreeCodeCamp",
+      url: "https://drive.google.com/file/d/1QU_5TBix_pCsqJdTRWoLUOHYZDBNNSmv/view",
+    },
+    {
+      name: "Python Bootcamp",
+      issuer: "London App Brewery",
+      url: "https://drive.google.com/file/d/194Yz3p7RwjeKg37BifCNiqCc63y_kfbj/view",
+    },
+    {
+      name: "Django Fundamentals",
+      issuer: "Udemy",
+      url: "https://drive.google.com/file/d/1ipvg-jlWsyByW3xbfnvtEwjw5SgCsdN-/view",
+    }
   ];
 
-  const skills = [
-    {
-      category: "Languages",
-      items: [
-        { name: 'Python', icon: SiPython },
-        { name: 'Java', icon: FaJava },
-        { name: 'C', icon: SiCplusplus },
-        { name: 'JavaScript', icon: SiJavascript },
-        { name: 'HTML/CSS', icon: SiHtml5 },
-      ],
-    },
-    {
-      category: "Frameworks",
-      items: [
-        { name: 'React', icon: SiReact },
-        { name: 'Django', icon: SiDjango },
-        { name: 'Tailwind', icon: SiTailwindcss },
-        { name: 'Bootstrap', icon: SiBootstrap },
-      ],
-    },
-    {
-      category: "Technologies",
-      items: [
-        { name: 'MySQL', icon: SiMysql },
-        { name: 'Git', icon: SiGit },
-        { name: 'Bash', icon: FaTerminal },
-        { name: 'Docker', icon: SiDocker },
-        { name: 'PM2', icon: FiSettings },
-        { name: 'AWS', icon: FaAws },
-      ],
-    },
-    {
-      category: "Design",
-      items: [
-        { name: 'Wireframing', icon: AiOutlineSetting },
-        { name: 'UI/UX', icon: BiUserVoice },
-        { name: 'Figma', icon: SiFigma },
-        { name: 'Photoshop', icon: SiAdobephotoshop },
-        { name: 'Illustrator', icon: SiAdobeillustrator },
-      ],
-    },
-  ];
+  const skills = {
+    languages: [
+      { name: 'Python', icon: SiPython },
+      { name: 'JavaScript', icon: SiJavascript },
+      { name: 'TypeScript', icon: SiTypescript },
+      { name: 'Java', icon: FaJava },
+      { name: 'C++', icon: SiCplusplus },
+      { name: 'HTML/CSS', icon: SiHtml5 }
+    ],
+    frameworks: [
+      { name: 'React', icon: SiReact },
+      { name: 'Next.js', icon: SiNextdotjs },
+      { name: 'Node.js', icon: SiNodedotjs },
+      { name: 'Django', icon: SiDjango },
+      { name: 'TailwindCSS', icon: SiTailwindcss },
+      { name: 'Bootstrap', icon: SiBootstrap }
+    ],
+    technologies: [
+      { name: 'MySQL', icon: SiMysql },
+      { name: 'MongoDB', icon: SiMongodb },
+      { name: 'Git', icon: SiGit },
+      { name: 'Docker', icon: SiDocker },
+      { name: 'AWS', icon: FaAws },
+      { name: 'Linux', icon: SiLinux }
+    ],
+    tools: [
+      { name: 'Postman', icon: SiPostman },
+      { name: 'Terminal', icon: FaTerminal },
+      { name: 'Vercel', icon: SiVercel },
+      { name: 'Figma', icon: SiFigma },
+      { name: 'Photoshop', icon: SiAdobephotoshop },
+      { name: 'Illustrator', icon: SiAdobeillustrator }
+    ]
+  };
 
   return (
-    <div className="max-w-4xl p-4">
-      {/* Title */}
+    <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Resume</h2>
 
       {/* Experience Section */}
       <section className="mb-12">
-        <h3 className="text-base font-semibold mb-6 dark:text-white">Experience</h3>
-        <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          {experience.map((exp, index) => (
-            <div key={index} className="mb-6 flex items-start justify-between">
-              {/* Left side: text */}
-              <div>
-                <h4 className="text-xl font-medium dark:text-white">{exp.company}</h4>
-                <p className="text-gray-700 dark:text-gray-300">{exp.role}</p>
-                <p className="text-gray-700 dark:text-gray-300">{exp.duration}</p>
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center gap-2 mb-6">
+          <Briefcase className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          <h3 className="text-xl font-semibold dark:text-white">Experience</h3>
         </div>
+        
+        {experience.map((exp, index) => (
+          <div key={index} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+            <h4 className="text-lg font-medium dark:text-white">{exp.company}</h4>
+            <p className="text-zinc-600 dark:text-zinc-400">{exp.role}</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-500">{exp.duration}</p>
+          </div>
+        ))}
       </section>
 
       {/* Education Section */}
       <section className="mb-12">
-        <h3 className="text-base font-semibold mb-6 dark:text-white">Education</h3>
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex items-center gap-2 mb-6">
+          <GraduationCap className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          <h3 className="text-xl font-semibold dark:text-white">Education</h3>
+        </div>
+
+        <div className="space-y-6">
           {education.map((edu, index) => (
-            <div key={index} className="flex-1 bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <h4 className="text-xl font-medium mb-2 dark:text-white">{edu.institution}</h4>
-              <p className="text-gray-700 dark:text-gray-300">{edu.degree}</p>
-              <p className="text-gray-700 dark:text-gray-300">{edu.duration}</p>
-              <br />
-              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
-                {edu.coursework.map((course, idx) => (
-                  <li key={idx}>{course}</li>
+            <div key={index} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+              <h4 className="text-lg font-medium dark:text-white">{edu.school}</h4>
+              <p className="text-zinc-600 dark:text-zinc-400">{edu.degree}</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-500 mb-4">{edu.duration}</p>
+              <h5 className="font-medium text-zinc-700 dark:text-zinc-300 mb-2">Coursework</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {edu.coursework.map((course, i) => (
+                  <span key={i} className="text-sm text-zinc-600 dark:text-zinc-400">
+                    • {course}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
         </div>
@@ -224,80 +195,95 @@ const Stack: React.FC = () => {
 
       {/* Skills Section */}
       <section className="mb-12">
-        <h3 className="text-base font-semibold mb-6 dark:text-white">Skills</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {skills.map((skillCategory, index) => (
-            <div key={index} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
-              <h4 className="text-xl font-medium mb-4 dark:text-white">{skillCategory.category}</h4>
-              <ul className="space-y-2">
-                {skillCategory.items.map((skill, i) => (
-                  <li key={i} className="flex items-center">
-                    <skill.icon className="text-lg text-black dark:text-white mr-2" />
-                    <span className="text-gray-700 dark:text-gray-300">{skill.name}</span>
-                  </li>
+        <div className="flex items-center gap-2 mb-6">
+          <Terminal className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          <h3 className="text-xl font-semibold dark:text-white">Skills</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {Object.entries(skills).map(([category, items]) => (
+            <div key={category} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+              <h4 className="text-base font-medium mb-4 dark:text-white capitalize">{category}</h4>
+              <div className="grid grid-cols-2 gap-4">
+                {items.map((skill, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <skill.icon className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+                    <span className="text-sm text-zinc-600 dark:text-zinc-400">{skill.name}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* LeetCode Stats Section */}
-      <section className="mb-12">
-        <h3 className="text-base font-semibold mb-6 dark:text-white">LeetCode Stats</h3>
-        <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          {loadingLeetCode && <p className="text-gray-700 dark:text-gray-300">Loading...</p>}
-          {!loadingLeetCode && leetcodeStats && leetcodeStats.status === 'success' ? (
-            <div className="space-y-2 text-gray-700 dark:text-gray-300">
-              <p>Total Solved: {leetcodeStats.totalSolved} / {leetcodeStats.totalQuestions}</p>
-              <p>Easy: {leetcodeStats.easySolved} / {leetcodeStats.totalEasy}</p>
-              <p>Medium: {leetcodeStats.mediumSolved} / {leetcodeStats.totalMedium}</p>
-              <p>Hard: {leetcodeStats.hardSolved} / {leetcodeStats.totalHard}</p>
-              <p>Acceptance Rate: {leetcodeStats.acceptanceRate}%</p>
-              <p>Ranking: {leetcodeStats.ranking}</p>
-            </div>
-          ) : null}
         </div>
       </section>
 
       {/* Certifications Section */}
       <section className="mb-12">
-        <h3 className="text-base font-semibold mb-6 dark:text-white">Certifications</h3>
+        <div className="flex items-center gap-2 mb-6">
+          <Award className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          <h3 className="text-xl font-semibold dark:text-white">Certifications</h3>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {certifications.map((cert, index) => (
-            <div key={index} className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <a
-                href={cert.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-lg"
-              >
-                {cert.name}
-              </a>
-              <p className="text-gray-700 dark:text-gray-300">{cert.issuer}</p>
-            </div>
+            <a
+              key={index}
+              href={cert.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+            >
+              <h4 className="text-lg font-medium dark:text-white">{cert.name}</h4>
+              <p className="text-zinc-600 dark:text-zinc-400">{cert.issuer}</p>
+            </a>
           ))}
         </div>
       </section>
 
-      {/* Buttons Container */}
-      <div className="mt-12 flex space-x-6">
-        {/* Download Resume Button */}
+      {/* LeetCode Stats */}
+      {leetcodeStats && (
+        <section className="mb-12">
+          <h3 className="text-xl font-semibold mb-6 dark:text-white">LeetCode Stats</h3>
+          <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <p className="text-2xl font-semibold dark:text-white">{leetcodeStats.totalSolved}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Problems Solved</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-semibold text-green-500">{leetcodeStats.easySolved}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Easy</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-semibold text-yellow-500">{leetcodeStats.mediumSolved}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Medium</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-semibold text-red-500">{leetcodeStats.hardSolved}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Hard</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex gap-4">
         <a
-          href="https://drive.google.com/file/d/15ldUNRR5SeBCkw_C7RXmrvWYisoDX-GD/view?usp=share_link"
+          href="https://drive.google.com/file/d/15ldUNRR5SeBCkw_C7RXmrvWYisoDX-GD/view"
           target="_blank"
           rel="noopener noreferrer"
-          className="px-6 py-3 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-100 transition-colors flex items-center justify-center w-40 text-sm"
+          className="flex items-center gap-2 px-6 py-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
         >
-          Download
+          <FaDownload className="w-4 h-4" />
+          <span>Download Resume</span>
         </a>
-
-        {/* Contact Me Button */}
         <a
           href="mailto:pothurrs@mail.uc.edu"
-          className="px-6 py-3 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-100 transition-colors flex items-center justify-center w-40 text-sm"
+          className="flex items-center gap-2 px-6 py-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
         >
-          Hire Me
+          <FaEnvelope className="w-4 h-4" />
+          <span>Contact Me</span>
         </a>
       </div>
     </div>
