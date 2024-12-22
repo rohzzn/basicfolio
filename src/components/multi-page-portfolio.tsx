@@ -1,10 +1,10 @@
 // src/components/multi-page-portfolio.tsx
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import IPadCursor from './IPadCursor';
 
 interface NavLinkProps {
   href: string;
@@ -30,19 +30,18 @@ const NavLink: React.FC<NavLinkProps> = ({ href, children }) => {
   );
 };
 
-// Helper Function for Discord Status
 const getStatusColor = (status: string): string => {
   switch (status) {
     case "online":
-      return "#22C55E"; // green-500
+      return "#22C55E";
     case "idle":
-      return "#F59E0B"; // yellow-500
+      return "#F59E0B";
     case "dnd":
-      return "#EF4444"; // red-500
+      return "#EF4444";
     case "offline":
-      return "#6B7280"; // gray-500
+      return "#6B7280";
     default:
-      return "#6B7280"; // default to gray-500
+      return "#6B7280";
   }
 };
 
@@ -56,7 +55,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
     discord_status: string;
     activities?: { name: string; state: string; details?: string }[];
   } | null>(null);
-  const discordId = "407922731645009932"; // Your Discord ID
+  const discordId = "407922731645009932";
 
   useEffect(() => {
     const fetchLanyardData = async () => {
@@ -65,8 +64,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         const data = await response.json();
         if (data.success) {
           setLanyardData(data.data);
-        } else {
-          console.error("Failed to fetch Lanyard data:", data);
         }
       } catch (error) {
         console.error("Error fetching Lanyard data:", error);
@@ -74,15 +71,12 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
     };
 
     fetchLanyardData();
-
-    const interval = setInterval(fetchLanyardData, 60000); // Refresh every 60 seconds
-
+    const interval = setInterval(fetchLanyardData, 60000);
     return () => clearInterval(interval);
   }, [discordId]);
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
-      {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="lg:hidden fixed top-4 right-4 z-50 p-2 text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 rounded-md shadow-md"
@@ -91,7 +85,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Sidebar */}
       <div
         className={`
           fixed lg:static inset-0 w-64 bg-zinc-50 dark:bg-zinc-900 
@@ -102,15 +95,12 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           z-40
         `}
       >
-        {/* Top Section: Header and Navigation */}
         <div className="flex-1 overflow-y-auto p-8">
-          {/* Header */}
           <div className="mb-12">
             <h1 className="text-2xl font-bold dark:text-white">Rohan</h1>
             <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">Software Engineer</p>
           </div>
 
-          {/* Navigation Links */}
           <nav className="space-y-1">
             {[
               { path: "/", label: "About" },
@@ -125,10 +115,8 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           </nav>
         </div>
 
-        {/* Bottom Section: Social Text Links & Discord Status */}
         <div className="sticky bottom-0 p-8 bg-zinc-50 dark:bg-zinc-900">
           <div className="mb-4 flex items-center gap-4 justify-start">
-            {/* Instagram */}
             <a
               href="https://instagram.com/rohzzn"
               target="_blank"
@@ -138,8 +126,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             >
               IG.
             </a>
-
-            {/* Twitter */}
             <a
               href="https://twitter.com/rohzzn"
               target="_blank"
@@ -149,8 +135,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             >
               TW.
             </a>
-
-            {/* LinkedIn */}
             <a
               href="https://linkedin.com/in/rohzzn"
               target="_blank"
@@ -160,8 +144,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             >
               IN.
             </a>
-
-            {/* GitHub */}
             <a
               href="https://github.com/rohzzn"
               target="_blank"
@@ -173,13 +155,10 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             </a>
           </div>
 
-          {/* Discord Status */}
           {lanyardData && (
             <div className="py-4 border-t border-zinc-200 dark:border-zinc-800">
               <div className="flex flex-col items-start gap-1">
-                {/* Status Indicator and Text on the Same Line */}
                 <div className="flex items-center gap-2">
-                  {/* Filled Circle with Glow */}
                   <div
                     className="w-2 h-2 rounded-full"
                     style={{
@@ -192,7 +171,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                   </span>
                 </div>
 
-                {/* Activity Details on Separate Lines */}
                 {lanyardData.activities && lanyardData.activities.length > 0 && (
                   <div className="mt-1 space-y-0.5">
                     <div className="text-xs text-zinc-600 dark:text-zinc-400">
@@ -216,8 +194,11 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6 lg:p-12 overflow-y-auto">{children}</div>
+      <div className="flex-1 p-6 lg:p-12 overflow-y-auto">
+        {children}
+      </div>
+      
+      <IPadCursor />
     </div>
   );
 };
