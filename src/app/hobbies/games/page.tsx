@@ -1,163 +1,139 @@
-// src/app/hobbies/games/page.tsx
-
+"use client";
 import React from 'react';
-import Profile from './Profile';
-import RecentlyPlayedGames from './RecentlyPlayedGames';
-import CSGOStatsComponent from './CSGOStats';
+import Link from 'next/link';
 
-interface SteamProfile {
-  personaname: string;
-  steamid: string;
-  avatar: string;
-  avatarmedium: string;
-  avatarfull: string;
-  profileurl: string;
-  // Add other fields as needed
-}
-
-interface CSGOStats {
-  playerstats: {
-    steamID: string;
-    gameName: string;
-    stats: Array<{
-      name: string;
-      value: number;
-    }>;
-    achievements: Array<{
-      name: string;
-      achieved: number;
-    }>;
-  };
-}
-
-interface RecentlyPlayedGame {
-  appid: number;
+interface Game {
   name: string;
-  playtime_2weeks: number; // in minutes
-  playtime_forever: number; // in minutes
-  img_icon_url: string;
-  img_logo_url: string;
+  achievements: string[];
+  date: string;
 }
 
-interface RecentlyPlayedGamesResponse {
-  response: {
-    total_count: number;
-    games: RecentlyPlayedGame[];
-  };
-}
+const tournaments: Game[] = [
+  
+];
 
-const Games: React.FC = async () => {
-  const CSGO_USER_ID = '76561198239653194'; // Updated Steam User ID
-
-  const apiKey = process.env.STEAM_API_KEY;
-
-  if (!apiKey) {
-    console.error('Steam API Key is not set in environment variables.');
-    // Render an error message if API Key is missing
-    return (
-      <div className="max-w-7xl mx-auto p-6">
-        <p className="text-red-500">Internal Server Error: Steam API Key not configured.</p>
-      </div>
-    );
+const stats = {
+  csgo: {
+    rank: "Distinguished Master Guardian",
+    hours: "3000+",
+    achievements: [
+      "Map Knowledge Expert",
+      "Clutch Specialist",
+      "Entry Fragger",
+    ]
+  },
+  valorant: {
+    rank: "Immortal",
+    achievements: [
+      "Team Captain",
+      "Tournament Experience",
+      "Strategic Caller"
+    ]
   }
+};
 
-  try {
-    // Fetch Player Summaries
-    const profileResponse = await fetch(
-      `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${CSGO_USER_ID}`
-    );
-    if (!profileResponse.ok) {
-      throw new Error('Failed to fetch player summaries.');
-    }
-    const profileData = await profileResponse.json();
-    const profile: SteamProfile = profileData.response.players[0];
+const customization = {
+  csgo: [
+    "Improved Radio Mod",
+    "Vibrance GUI",
+    "Text Color Mod",
+    "Simple Radar",
+    "Custom Font - superstar_memesbruh03"
+  ]
+};
 
-    // Fetch Recently Played Games
-    const recentGamesResponse = await fetch(
-      `https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=${apiKey}&steamid=${CSGO_USER_ID}&count=10`
-    );
-    if (!recentGamesResponse.ok) {
-      throw new Error('Failed to fetch recently played games.');
-    }
-    const recentGamesData: RecentlyPlayedGamesResponse = await recentGamesResponse.json();
-    const recentGames = recentGamesData.response.games;
-
-    // Fetch CS:GO Player Stats
-    const statsResponse = await fetch(
-      `https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=${apiKey}&steamid=${CSGO_USER_ID}&appid=730`
-    );
-    if (!statsResponse.ok) {
-      throw new Error('Failed to fetch CS:GO stats.');
-    }
-    const statsData: CSGOStats = await statsResponse.json();
-
-    return (
-      <div className="max-w-7xl mx-auto p-6 space-y-12">
-        {/* Page Title */}
-        <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming</h2>
-
-        {/* Steam Profile Section */}
-        <section>
-          <Profile profile={profile} />
-        </section>
-
-        {/* Recently Played Games Section */}
-        <section>
-          <RecentlyPlayedGames games={recentGames} />
-        </section>
-
-        {/* CS:GO Statistics Section */}
-        <section>
-          <h3 className="text-2xl font-bold mb-6 dark:text-white">CS Statistics</h3>
-
-          {/* CS:GO Stats and Tweaks in a Flex Container */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* CS:GO Stats Box */}
-            <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg shadow-md">
-              <h4 className="text-xl font-semibold mb-4 dark:text-white">Statistics</h4>
-              <CSGOStatsComponent stats={statsData} />
-            </div>
-
-            {/* Tweaks Box */}
-            <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg shadow-md">
-              <h4 className="text-xl font-semibold mb-4 dark:text-white">Tweaks</h4>
-              <ul className="list-disc list-inside space-y-1 text-zinc-600 dark:text-zinc-400">
-                <li>Improved Radio Mod</li>
-                <li>Vibrance GUI</li>
-                <li>Text Color Mod</li>
-                <li>Simple Radar</li>
-                <li>Custom Font - <em>superstar_memesbruh03</em></li>
+const Games: React.FC = () => {
+  return (
+    <div className="max-w-7xl">
+      <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming</h2>
+      
+      {/* Tournament History */}
+      <section className="mb-12">
+        <div className="space-y-6">
+          {tournaments.map((tournament, index) => (
+            <div key={index} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="text-lg font-medium dark:text-white">{tournament.name}</h4>
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">{tournament.date}</span>
+              </div>
+              <ul className="list-disc list-inside space-y-1">
+                {tournament.achievements.map((achievement, i) => (
+                  <li key={i} className="text-zinc-600 dark:text-zinc-400">
+                    {achievement}
+                  </li>
+                ))}
               </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Game Stats */}
+      <section className="mb-12">
+        <h3 className="text-base font-medium mb-6 dark:text-white">Game Statistics</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* CS:GO Stats */}
+          <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+            <h4 className="text-lg font-medium dark:text-white mb-4">CS:GO</h4>
+            <div className="space-y-4">
+              <div>
+                <p className="text-zinc-600 dark:text-zinc-400">Rank: {stats.csgo.rank}</p>
+                <p className="text-zinc-600 dark:text-zinc-400">Hours: {stats.csgo.hours}</p>
+              </div>
+              <div>
+                <p className="font-medium dark:text-white mb-2">Achievements:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {stats.csgo.achievements.map((achievement, i) => (
+                    <li key={i} className="text-zinc-600 dark:text-zinc-400">{achievement}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
 
-          {/* Config URL */}
+          {/* Valorant Stats */}
+          <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+            <h4 className="text-lg font-medium dark:text-white mb-4">Valorant</h4>
+            <div className="space-y-4">
+              <div>
+                <p className="text-zinc-600 dark:text-zinc-400">Rank: {stats.valorant.rank}</p>
+              </div>
+              <div>
+                <p className="font-medium dark:text-white mb-2">Achievements:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {stats.valorant.achievements.map((achievement, i) => (
+                    <li key={i} className="text-zinc-600 dark:text-zinc-400">{achievement}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Customization */}
+      <section className="mb-12">
+        <h3 className="text-base font-medium mb-6 dark:text-white">CS:GO Customization</h3>
+        <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+          <ul className="list-disc list-inside space-y-2">
+            {customization.csgo.map((item, index) => (
+              <li key={index} className="text-zinc-600 dark:text-zinc-400">{item}</li>
+            ))}
+          </ul>
           <div className="mt-6">
-            <a
+            <Link
               href="https://settings.gg/player/279387466"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-zinc-200 dark:bg-zinc-700 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors text-sm"
             >
               View Config
-            </a>
+            </Link>
           </div>
-        </section>
-      </div>
-    );
-  } catch (error: unknown) {
-    // Properly handle errors without using 'any'
-    if (error instanceof Error) {
-      console.error('Error fetching data:', error.message);
-    } else {
-      console.error('Error fetching data:', error);
-    }
-    return (
-      <div className="max-w-7xl mx-auto p-6">
-        <p className="text-red-500">Failed to fetch data.</p>
-      </div>
-    );
-  }
+        </div>
+      </section>
+    </div>
+  );
 };
 
 export default Games;

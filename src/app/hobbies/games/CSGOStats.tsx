@@ -29,18 +29,45 @@ const CSGOStatsComponent: React.FC<CSGOStatsProps> = ({ stats }) => {
     statMap[stat.name] = stat.value;
   });
 
-  // Example stats extraction (adjust based on available stats)
-  const totalKills = statMap['total_kills'] || 'N/A';
-  const totalWins = statMap['total_wins'] || 'N/A';
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat().format(num);
+  };
+
+  const totalKills = statMap['total_kills'] || 0;
+  const totalDeaths = statMap['total_deaths'] || 0;
+  const totalWins = statMap['total_wins'] || 0;
+  const totalRounds = statMap['total_rounds_played'] || 0;
+  const headshots = statMap['total_kills_headshot'] || 0;
+  const mvps = statMap['total_mvps'] || 0;
+
+  const kd = totalDeaths > 0 ? (totalKills / totalDeaths).toFixed(2) : 'N/A';
+  const winRate = totalRounds > 0 ? ((totalWins / totalRounds) * 100).toFixed(1) : 'N/A';
+  const hsPercentage = totalKills > 0 ? ((headshots / totalKills) * 100).toFixed(1) : 'N/A';
 
   return (
-    <div className="space-y-2">
-      <p><strong>Rank:</strong> Distinguished Master Guardian</p>
-      <p><strong>Kills:</strong> {totalKills}</p>
-      <p><strong>Wins:</strong> {totalWins}</p>
-      
-
-      {/* Add more stats as needed */}
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          <span className="font-medium">Kills:</span> {formatNumber(totalKills)}
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          <span className="font-medium">K/D Ratio:</span> {kd}
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          <span className="font-medium">Win Rate:</span> {winRate}%
+        </p>
+      </div>
+      <div>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          <span className="font-medium">MVPs:</span> {formatNumber(mvps)}
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          <span className="font-medium">Headshots:</span> {formatNumber(headshots)}
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          <span className="font-medium">HS Rate:</span> {hsPercentage}%
+        </p>
+      </div>
     </div>
   );
 };
