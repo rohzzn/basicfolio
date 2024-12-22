@@ -1,92 +1,148 @@
 // src/app/hobbies/art/page.tsx
-
 "use client";
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ExternalLink } from 'lucide-react';
 
 interface ArtProject {
   title: string;
+  description: string;
   platform: 'Behance' | 'Dribbble';
-  imageSrc: string; // Path to the image in public/images/art/
-  projectUrl: string; // URL to the project on Behance or Dribbble
+  imageUrl: string;
+  projectUrl: string;
+  tags: string[];
 }
 
 const artProjects: ArtProject[] = [
   {
-    title: 'Modern UI Design',
+    title: 'Windows 95 Portfolio',
+    description: 'A nostalgic tribute to the classic Windows 95 interface.',
     platform: 'Behance',
-    imageSrc: '/images/art/behance-project1.jpg',
-    projectUrl: 'https://www.behance.net/gallery/your-behance-project1',
+    imageUrl: '/images/design/windows95.jpg',
+    projectUrl: 'https://rohzzn.github.io/windows95',
+    tags: ['UI/UX', 'Retro', 'Web Design']
   },
   {
-    title: 'Creative Illustration',
-    platform: 'Dribbble',
-    imageSrc: '/images/art/dribbble-project1.jpg',
-    projectUrl: 'https://dribbble.com/shots/your-dribbble-project1',
-  },
-  {
-    title: 'Responsive Web Design',
+    title: 'Minimalist Portfolio',
+    description: 'Clean and modern portfolio design with focus on typography.',
     platform: 'Behance',
-    imageSrc: '/images/art/behance-project2.jpg',
-    projectUrl: 'https://www.behance.net/gallery/your-behance-project2',
+    imageUrl: '/images/design/portfolio.jpg',
+    projectUrl: 'https://rohzzn.github.io/portfolio_v3',
+    tags: ['Minimalist', 'Typography', 'Web Design']
   },
   {
-    title: 'Icon Set Collection',
+    title: 'Tanoshi Theme',
+    description: 'Dark theme for VS Code focusing on readability and eye comfort.',
     platform: 'Dribbble',
-    imageSrc: '/images/art/dribbble-project2.jpg',
-    projectUrl: 'https://dribbble.com/shots/your-dribbble-project2',
-  },
-  // Add more projects as needed
+    imageUrl: '/images/design/tanoshi.jpg',
+    projectUrl: 'https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi',
+    tags: ['Theme', 'Dark Mode', 'VS Code']
+  }
 ];
 
-const Art: React.FC = () => (
-  <div className="max-w-7xl mx-auto p-6">
-    <h2 className="text-3xl font-bold mb-6 dark:text-white">Design</h2>
-    <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-      Welcome to my Design page! Here you will find my designs showcased on Behance and Dribbble.
-    </p>
-    
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {artProjects.map((project, index) => (
-        <div key={index} className="bg-paper dark:bg-zinc-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-          <Link href={project.projectUrl} target="_blank" rel="noopener noreferrer">
-            <div className="relative w-full h-48">
-              <Image
-                src={project.imageSrc}
-                alt={project.title}
-                layout="fill"
-                objectFit="cover"
-                className="transform hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="text-xl font-semibold dark:text-white">{project.title}</h3>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{project.platform}</p>
-            </div>
-          </Link>
-        </div>
-      ))}
-    </div>
+const ArtPage = () => {
+  return (
+    <div className="max-w-7xl">
+      <h2 className="text-lg font-medium mb-6 dark:text-white">Design</h2>
+      
+      {/* Description */}
+      <p className="text-zinc-600 dark:text-zinc-400 mb-8">
+        A collection of my design projects and experiments. I focus on creating clean, 
+        user-friendly interfaces with attention to typography and visual hierarchy.
+      </p>
 
-    {/* Links to Behance and Dribbble Profiles */}
-    <div className="mt-12 flex justify-center space-x-6">
-      <Link href="https://www.behance.net/rohzzn" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 hover:underline">
-        {/* Behance Icon */}
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm6.929 17.071a8.004 8.004 0 01-5.657 2.343 8.004 8.004 0 01-5.657-2.343 8.004 8.004 0 010-11.314 8.004 8.004 0 015.657-2.343 8.004 8.004 0 015.657 2.343 8.004 8.004 0 010 11.314zm-5.657-2.343a2 2 0 10-2.828-2.828 2 2 0 002.828 2.828z" />
-        </svg>
-        <span>View on Behance</span>
-      </Link>
-      <Link href="https://dribbble.com/rohzzn" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-pink-600 dark:text-pink-400 hover:underline">
-        {/* Dribbble Icon */}
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 0C5.373 0 0 5.373 0 12c0 6.626 5.373 12 12 12s12-5.374 12-12c0-6.627-5.373-12-12-12zm5.165 7.998a.996.996 0 00-.706.293 7.916 7.916 0 00-1.907 2.387 7.916 7.916 0 00-1.907-2.387.996.996 0 00-1.414 1.414 5.925 5.925 0 012.714 3.388 5.925 5.925 0 012.714-3.388.996.996 0 00-.706-1.707zm-10.33 0a.996.996 0 00-.706.293A7.916 7.916 0 004.96 10.38a7.916 7.916 0 001.907-2.387.996.996 0 00-1.414-1.414 5.925 5.925 0 012.714 3.388 5.925 5.925 0 01-2.714-3.388.996.996 0 00-.706-1.707zm10.33 8.004a.996.996 0 00-.706-.293 7.916 7.916 0 00-1.907 2.387 7.916 7.916 0 00-1.907-2.387.996.996 0 00-1.414 1.414 5.925 5.925 0 012.714 3.388 5.925 5.925 0 012.714-3.388.996.996 0 00-.706-1.707zm-10.33 0a.996.996 0 00-.706-.293 7.916 7.916 0 00-1.907 2.387 7.916 7.916 0 001.907-2.387.996.996 0 00-1.414-1.414 5.925 5.925 0 012.714 3.388 5.925 5.925 0 01-2.714-3.388.996.996 0 00-.706-1.707z" />
-        </svg>
-        <span>View on Dribbble</span>
-      </Link>
-    </div>
-  </div>
-);
+      {/* Projects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {artProjects.map((project, index) => (
+          <div 
+            key={index}
+            className="group bg-white dark:bg-zinc-800 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
+          >
+            {/* Project Image */}
+            <div className="relative h-48 w-full overflow-hidden">
+              <div className="relative w-full h-full">
+                <Image
+                  src={project.imageUrl}
+                  alt={project.title}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                {/* Fallback for missing images */}
+                <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center">
+                  <span className="text-zinc-500 dark:text-zinc-400">Image not found</span>
+                </div>
+              </div>
+            </div>
 
-export default Art;
+            {/* Project Info */}
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-medium dark:text-white">{project.title}</h3>
+                <Link 
+                  href={project.projectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                >
+                  <ExternalLink size={16} />
+                </Link>
+              </div>
+              
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+                {project.description}
+              </p>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2">
+                {project.tags.map((tag, tagIndex) => (
+                  <span 
+                    key={tagIndex}
+                    className="text-xs px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Platform Badge */}
+              <div className="mt-4 flex items-center gap-2">
+                <span className={`text-xs px-2 py-1 rounded ${
+                  project.platform === 'Behance' 
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400'
+                }`}>
+                  {project.platform}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Profile Links */}
+      <div className="mt-12 flex justify-center space-x-6">
+        <Link
+          href="https://www.behance.net/rohzzn"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+        >
+          View Behance Profile
+          <ExternalLink size={16} />
+        </Link>
+        <Link
+          href="https://dribbble.com/rohzzn"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+        >
+          View Dribbble Profile
+          <ExternalLink size={16} />
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+export default ArtPage;

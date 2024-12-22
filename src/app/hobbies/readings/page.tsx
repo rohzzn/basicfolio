@@ -1,18 +1,16 @@
 "use client";
-
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 interface Book {
   title: string;
   review: string;
-  score: number; // out of 5
+  score: number;
 }
 
 const books: Book[] = [
- 
   { title: "The Subtle Art of Not Giving a F*ck", review: "Refreshing honesty about priorities.", score: 4 },
-  { title: "Shoe Dog", review: "A raw look into Nike’s origin.", score: 5 },
+  { title: "Shoe Dog", review: "A raw look into Nike's origin.", score: 5 },
   { title: "Make Time by Jake Knapp", review: "Tactical tips for focusing on what matters.", score: 4 },
   { title: "Show Your Work", review: "Encourages sharing your process openly.", score: 4 },
   { title: "The Song of Achilles", review: "A beautiful retelling of myth with depth.", score: 5 },
@@ -33,9 +31,9 @@ const books: Book[] = [
   { title: "The Book of Five Rings", review: "Strategies and philosophy from a legendary samurai.", score: 4 },
   { title: "Flowers for Algernon", review: "A touching, tragic look at intelligence and empathy.", score: 5 },
   { title: "Atomic Habits", review: "Practical steps to build better habits.", score: 5 },
-  { title: "Why We Sleep", review: "Eye-opening insights into sleep’s crucial role.", score: 5 },
+  { title: "Why We Sleep", review: "Eye-opening insights into sleep's crucial role.", score: 5 },
   { title: "The 4-Hour Workweek", review: "Rethinking productivity and lifestyle design.", score: 4 },
-  { title: "Sapiens: A Brief History of Humankind", review: "A sweeping overview of our species’ journey.", score: 5 },
+  { title: "Sapiens: A Brief History of Humankind", review: "A sweeping overview of our species' journey.", score: 5 }
 ];
 
 const Readings: React.FC = () => {
@@ -53,17 +51,11 @@ const Readings: React.FC = () => {
           if (data.items && data.items.length > 0) {
             const volume = data.items[0].volumeInfo;
             if (volume.imageLinks && volume.imageLinks.thumbnail) {
-              // Usually imageLinks.thumbnail is something like `http://books.google.com/...`
               newCovers[book.title] = volume.imageLinks.thumbnail;
-            } else {
-              newCovers[book.title] = "";
             }
-          } else {
-            newCovers[book.title] = "";
           }
         } catch (error) {
           console.error("Error fetching book cover:", error);
-          newCovers[book.title] = "";
         }
       }
 
@@ -74,46 +66,54 @@ const Readings: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Readings</h2>
-      <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-        A quick snapshot of books I’ve read, each with a one-liner and a score out of 5.
+      <p className="text-zinc-600 dark:text-zinc-400 mb-8">
+        Books I have read, along with brief thoughts and ratings out of 5.
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {books.map((book, index) => {
-          const coverUrl = covers[book.title];
 
-          return (
-            <div key={index} className="flex flex-col items-center space-y-2">
-              <div
-                className="relative w-32 h-48 bg-zinc-100 dark:bg-zinc-800 rounded shadow-lg overflow-hidden"
-                style={{
-                  borderLeft: "8px solid #aaa",
-                  transform: "perspective(600px) rotateY(-5deg)",
-                }}
-              >
-                {coverUrl ? (
-                  <Image
-                    src={coverUrl}
-                    alt={book.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {books.map((book, index) => (
+          <div key={index} className="flex flex-col items-center space-y-3">
+            <div
+              className="relative w-32 h-48 bg-zinc-100 dark:bg-zinc-800 rounded shadow-lg overflow-hidden"
+              style={{
+                borderLeft: "8px solid #aaa",
+                transform: "perspective(600px) rotateY(-5deg)",
+              }}
+            >
+              {covers[book.title] ? (
+                <Image
+                  src={covers[book.title]}
+                  alt={book.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center p-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  {book.title}
+                </div>
+              )}
+            </div>
+            <div className="text-center max-w-[200px]">
+              <h3 className="text-sm font-medium dark:text-white line-clamp-2">{book.title}</h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 line-clamp-2">{book.review}</p>
+              <div className="flex items-center justify-center gap-1 mt-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      i < book.score
+                        ? "bg-zinc-800 dark:bg-zinc-200"
+                        : "bg-zinc-200 dark:bg-zinc-700"
+                    }`}
                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center p-2 text-sm text-zinc-700 dark:text-zinc-300">
-                    {book.title}
-                  </div>
-                )}
-              </div>
-              <div className="text-center">
-                <p className="text-zinc-800 dark:text-zinc-200 font-medium">{book.title}</p>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm">{book.review}</p>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">Score: {book.score}/5</p>
+                ))}
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

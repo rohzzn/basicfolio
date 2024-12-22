@@ -1,5 +1,3 @@
-// src/app/projects/page.tsx
-
 "use client";
 import React from "react";
 import { Github, ExternalLink } from "lucide-react";
@@ -22,6 +20,29 @@ interface Category {
 }
 
 const categories: Category[] = [
+  {
+    name: "Featured",
+    projects: [
+      {
+        title: "CodeChef MREC",
+        description: "Central hub for the CodeChef MREC chapter, facilitating coding competitions and community engagement.",
+        tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+        links: [
+          { label: "GitHub", url: "https://github.com/mreccodechef/Website" },
+          { label: "Chapter", url: "https://github.com/mreccodechef" },
+        ],
+      },
+      {
+        title: "Pages",
+        description: "Figma plugin for rapid page creation and layout management.",
+        tech: ["Figma API", "TypeScript", "React"],
+        links: [
+          { label: "GitHub", url: "https://github.com/rohzzn/pages" },
+          { label: "Plugin", url: "https://www.figma.com/community/plugin/1106104074775818911/pages" },
+        ],
+      },
+    ]
+  },
   {
     name: "Games",
     projects: [
@@ -196,47 +217,6 @@ const categories: Category[] = [
         links: [
           { label: "GitHub", url: "https://github.com/rohzzn/smart_agriculture" },
           { label: "Paper", url: "https://github.com/rohzzn/smart_agriculture/blob/main/Smart.pdf" },
-        ],
-      },
-    ],
-  },
-  {
-    name: "Portfolios",
-    projects: [
-      {
-        title: "Portfolio V4",
-        description: "Portfolio website with a nostalgic Windows 95 style.",
-        tech: ["HTML5", "CSS3", "JavaScript"],
-        links: [
-          { label: "GitHub", url: "https://github.com/rohzzn/windows95" },
-          { label: "Live Demo", url: "https://rohzzn.github.io/windows95/" },
-        ],
-      },
-      {
-        title: "Portfolio V3",
-        description: "Minimalist design portfolio website.",
-        tech: ["Next.js", "Tailwind CSS", "React"],
-        links: [
-          { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v3" },
-          { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v3/" },
-        ],
-      },
-      {
-        title: "Portfolio V2",
-        description: "Professional design portfolio website.",
-        tech: ["Next.js", "Tailwind CSS", "React"],
-        links: [
-          { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v2" },
-          { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v2/" },
-        ],
-      },
-      {
-        title: "Portfolio V1",
-        description: "Anime-themed portfolio with a clean layout.",
-        tech: ["HTML5", "CSS3", "JavaScript"],
-        links: [
-          { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v1" },
-          { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v1/" },
         ],
       },
     ],
