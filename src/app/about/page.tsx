@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
+import { FaArrowRight, FaEnvelope } from 'react-icons/fa';
 
 const Home: React.FC = () => (
   <div className="max-w-7xl">
@@ -10,25 +11,38 @@ const Home: React.FC = () => (
         I&#39;m currently pursuing my master&#39;s in Computer Science at the University of Cincinnati. Previously, I worked as a Software Development Engineer at Ixigo.
       </p>
       <p className="text-zinc-600 dark:text-zinc-400">
-        I&#39;ve spent the past few years doing things on the internet — building side projects, doing independent research, and trying to understand how things work. You get the idea.
+        Over the past few years, I&#39;ve immersed myself in the digital world—building side projects, conducting independent research, and delving deep into understanding how things work. This journey has fueled my passion for technology and innovation.
       </p>
       <p className="text-zinc-600 dark:text-zinc-400">
-        Occasionally, I create and share designs on <a href="https://www.behance.net/rohzzn" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">Behance</a> and <a href="https://dribbble.com/rohzzn" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">Dribbble</a>. Beyond the canvas, I challenge myself with coding competitions on <a href="https://www.codechef.com/users/rohzzzn" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">CodeChef</a> and <a href="https://leetcode.com/u/rohzzn/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">LeetCode</a>.
+        Beyond coding, I enjoy exploring new technologies, reading about the latest trends in software development, and collaborating with like-minded individuals to bring ideas to life. I&#39;m dedicated to creating solutions that make a meaningful impact and continuously strive to grow both personally and professionally in the ever-evolving tech landscape.
       </p>
       <p className="text-zinc-600 dark:text-zinc-400">
-        Work things aside, I&#39;m a big fan of first-person shooters – I&#39;ve been playing <a href="https://steamcommunity.com/id/rohzzn/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">Counter-Strike</a> for as long as I can remember and later picked up Valorant. Sometimes, I like editing videos and <a href="https://youtube.com/@rohzzn" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">create content</a>.
+        In my free time, I love experimenting with different programming languages and frameworks, which allows me to stay versatile and adaptable. Whether it&#39;s contributing to open-source projects or developing my own applications, I find immense satisfaction in problem-solving and overcoming challenges.
       </p>
+      <p className="text-zinc-600 dark:text-zinc-400">
+        I&#39;m also passionate about mentoring and sharing knowledge. Guiding aspiring developers and helping them navigate their careers brings me joy and reinforces my own understanding of complex concepts. Building a strong community is essential, and I believe in the power of collective growth and learning.
+      </p>
+      <p className="text-zinc-600 dark:text-zinc-400">
+        My fascination with artificial general intelligence (AGI) lies in its potential to create systems that can understand and interact with the world in ways similar to human cognition. Engaging with AGI challenges me to explore the depths of machine learning and cognitive computing, fostering a deeper appreciation for the complexities of intelligence.
+      </p>
+      <br />
     </div>
 
-    <div className="mt-6">
+    <div className="mt-6 flex space-x-4">
       <Link
         href="/stack"
-        className="block bg-paper dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors w-[150px]"
+        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
       >
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Resume
-        </p>
+        Resume
+        <FaArrowRight className="ml-2" />
       </Link>
+      <a
+        href="mailto:pothurrs@mail.uc.edu"
+        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
+      >
+        Contact
+        <FaEnvelope className="ml-2" />
+      </a>
     </div>
   </div>
 );
