@@ -8,6 +8,9 @@ import NoiseOverlay from '../components/NoiseOverlay'; // Import the component
 export const metadata: Metadata = {
   title: "Rohan",
   description: "Everything about Rohan",
+  icons: {
+    icon: "/favicon.ico", // Correct: Absolute path
+  },
 };
 
 export default function RootLayout({
