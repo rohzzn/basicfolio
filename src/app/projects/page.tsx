@@ -1,6 +1,14 @@
 "use client";
 import React from "react";
-import { Github, ExternalLink } from "lucide-react";
+import { Github, ExternalLink, Users, Eye, Download, Star, Code } from "lucide-react";
+
+interface ProjectMetrics {
+  visits?: number;
+  users?: number;
+  downloads?: number;
+  preAI?: boolean;
+  githubStars?: number;
+}
 
 interface ProjectLink {
   label: string;
@@ -12,6 +20,7 @@ interface Project {
   description: string;
   tech: string[];
   links: ProjectLink[];
+  metrics?: ProjectMetrics;
 }
 
 interface Category {
@@ -31,14 +40,12 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/mreccodechef/Website" },
           { label: "Chapter", url: "https://github.com/mreccodechef" },
         ],
+        metrics: {
+          users: 500,
+          visits: 1200,
+          preAI: true
+        }
       },
-      
-    ]
-  },
-  
-  {
-    name: "Applications",
-    projects: [
       {
         title: "Pages",
         description: "Figma plugin for rapid page creation and layout management.",
@@ -47,7 +54,17 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/pages" },
           { label: "Plugin", url: "https://www.figma.com/community/plugin/1106104074775818911/pages" },
         ],
-      },
+        metrics: {
+          downloads: 1200,
+          preAI: true,
+          githubStars: 12
+        }
+      }
+    ]
+  },
+  {
+    name: "Applications",
+    projects: [
       {
         title: "Meet",
         description: "Video call application with advanced features like screen sharing and recording.",
@@ -56,6 +73,11 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/meet" },
           { label: "Live Demo", url: "https://ckvyqugj7184663idk0i811d0su-8rbb2fvau-calatop.vercel.app/authenticate" },
         ],
+        metrics: {
+          users: 300,
+          visits: 800,
+          preAI: true
+        }
       },
       {
         title: "Scrapetron",
@@ -65,6 +87,11 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/scrapetron" },
           { label: "Live Demo", url: "https://pypi.org/project/scrapetron/" },
         ],
+        metrics: {
+          downloads: 500,
+          preAI: true,
+          githubStars: 8
+        }
       },
       {
         title: "Todo iOS App",
@@ -74,6 +101,10 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/todoapp" },
           { label: "Live Demo", url: "https://github.com/rohzzn/todoapp" },
         ],
+        metrics: {
+          users: 100,
+          preAI: true
+        }
       },
       {
         title: "Zenitsu Bot",
@@ -83,6 +114,11 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/Zenitsu-bot" },
           { label: "Invite", url: "https://discord.com/oauth2/authorize?client_id=766218598913146901&permissions=8&scope=bot" },
         ],
+        metrics: {
+          users: 2000,
+          preAI: true,
+          githubStars: 15
+        }
       },
       {
         title: "Tanoshi",
@@ -92,6 +128,11 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/tanoshi" },
           { label: "Marketplace", url: "https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi" },
         ],
+        metrics: {
+          downloads: 3000,
+          preAI: true,
+          githubStars: 25
+        }
       },
       {
         title: "Hexr",
@@ -99,23 +140,19 @@ const categories: Category[] = [
         tech: ["JavaScript", "Chrome Extensions", "CSS"],
         links: [
           { label: "GitHub", url: "https://github.com/rohzzn/hexpicker" },
-          { label: "Marketplace", url: "https://chrome.google.com/webstore/detail/hex-picker/jmnkgndafoldkblpnmmollbgkdfemmfc/related?hl=en-GB&authuser=3" },
+          { label: "Marketplace", url: "https://chrome.google.com/webstore/detail/hex-picker/jmnkgndafoldkblpnmmollbgkdfemmfc/related" },
         ],
+        metrics: {
+          downloads: 1500,
+          preAI: true,
+          githubStars: 10
+        }
       },
     ],
   },
   {
     name: "Websites",
     projects: [
-      {
-        title: "CodeChef MREC",
-        description: "Central hub for the CodeChef MREC chapter, facilitating coding competitions and community engagement.",
-        tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
-        links: [
-          { label: "GitHub", url: "https://github.com/mreccodechef/Website" },
-          { label: "Chapter", url: "https://github.com/mreccodechef" },
-        ],
-      },
       {
         title: "Dekho Car",
         description: "User-friendly car rental website with real-time booking.",
@@ -124,6 +161,10 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/dekhocar" },
           { label: "Live Demo", url: "https://dekhocar.vercel.app/" },
         ],
+        metrics: {
+          visits: 2000,
+          preAI: true
+        }
       },
       {
         title: "QR Generator",
@@ -133,6 +174,10 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/qr" },
           { label: "Live Demo", url: "https://rohzzn.github.io/qr/" },
         ],
+        metrics: {
+          visits: 3500,
+          preAI: true
+        }
       },
       {
         title: "Pokedex",
@@ -142,15 +187,11 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/pokemon" },
           { label: "Live Demo", url: "https://rohzzn.github.io/pokedex/" },
         ],
-      },
-      {
-        title: "Thumbnailer",
-        description: "YouTube video thumbnail downloader and editor.",
-        tech: ["React", "Node.js", "FFmpeg"],
-        links: [
-          { label: "GitHub", url: "https://github.com/rohzzn/thumbnails" },
-          { label: "Live Demo", url: "https://rohzzn.github.io/thumbnails/" },
-        ],
+        metrics: {
+          visits: 1800,
+          preAI: true,
+          githubStars: 8
+        }
       },
       {
         title: "College Resume",
@@ -160,16 +201,12 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/mrec-resume" },
           { label: "Live Demo", url: "https://mrec-resume.vercel.app" },
         ],
-      },
-      {
-        title: "MCU Timeline",
-        description: "Marvel Cinematic Universe Timeline showcasing movie releases.",
-        tech: ["React", "D3.js", "CSS3"],
-        links: [
-          { label: "GitHub", url: "https://github.com/rohzzn/mcu_timeline" },
-          { label: "Live Demo", url: "https://rohzzn.github.io/mcu_timeline/" },
-        ],
-      },
+        metrics: {
+          users: 400,
+          visits: 1200,
+          preAI: true
+        }
+      }
     ],
   },
   {
@@ -183,6 +220,10 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/KlepticGames/KruegersTreasue" },
           { label: "Live Demo", url: "https://github.com/KlepticGames/" },
         ],
+        metrics: {
+          preAI: true,
+          users: 50
+        }
       },
       {
         title: "Pokemon",
@@ -192,6 +233,11 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/pokemon" },
           { label: "Live Demo", url: "https://rohzzn.github.io/pokemon/" },
         ],
+        metrics: {
+          visits: 5000,
+          preAI: true,
+          githubStars: 12
+        }
       },
     ],
   },
@@ -206,6 +252,9 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/automobile" },
           { label: "Notes", url: "https://github.com/rohzzn/automobile/blob/main/colab.ipynb" },
         ],
+        metrics: {
+          preAI: true
+        }
       },
       {
         title: "Smart Agriculture",
@@ -215,10 +264,12 @@ const categories: Category[] = [
           { label: "GitHub", url: "https://github.com/rohzzn/smart_agriculture" },
           { label: "Paper", url: "https://github.com/rohzzn/smart_agriculture/blob/main/Smart.pdf" },
         ],
+        metrics: {
+          preAI: true
+        }
       },
     ],
   },
-  
 ];
 
 const Projects: React.FC = () => (
@@ -233,8 +284,49 @@ const Projects: React.FC = () => (
               key={projIndex}
               className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 shadow-sm dark:shadow-gray-700"
             >
-              <h4 className="text-sm font-medium dark:text-white">{project.title}</h4>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 mb-4">{project.description}</p>
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="text-sm font-medium dark:text-white">{project.title}</h4>
+                {project.metrics?.preAI && (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800">
+                    <Code className="w-3 h-3 mr-1 text-zinc-600 dark:text-zinc-400" />
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400">Pre-AI</span>
+                  </span>
+                )}
+              </div>
+              
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">{project.description}</p>
+
+              {/* Metrics Section */}
+              {project.metrics && (
+                <div className="flex flex-wrap gap-3 mb-4">
+                  {project.metrics.users && (
+                    <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
+                      <Users className="w-3 h-3 mr-1" />
+                      {project.metrics.users.toLocaleString()}+ users
+                    </div>
+                  )}
+                  {project.metrics.visits && (
+                    <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
+                      <Eye className="w-3 h-3 mr-1" />
+                      {project.metrics.visits.toLocaleString()} visits
+                    </div>
+                  )}
+                  {project.metrics.downloads && (
+                    <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
+                      <Download className="w-3 h-3 mr-1" />
+                      {project.metrics.downloads.toLocaleString()}+ downloads
+                    </div>
+                  )}
+                  {project.metrics.githubStars && (
+                    <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
+                      <Star className="w-3 h-3 mr-1" />
+                      {project.metrics.githubStars} stars
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tech Stack */}
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex flex-wrap gap-2">
                   {project.tech.map((tech, techIndex) => (
@@ -246,6 +338,8 @@ const Projects: React.FC = () => (
                     </span>
                   ))}
                 </div>
+
+                {/* Links */}
                 <div className="flex gap-3 ml-auto">
                   {project.links.map((link, linkIndex) => (
                     <a

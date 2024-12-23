@@ -1,139 +1,208 @@
-// src/app/timeline/page.tsx
-
 "use client";
-import React from "react";
+import React, { useState } from "react";
+import { Calendar, Gamepad, Code, Briefcase, GraduationCap, Youtube, Laptop } from 'lucide-react';
 
 interface TimelineEvent {
-  date: string; // Month and Year
-  description: string[]; // List of descriptions
+  date: string;
+  description: string[];
+  category: 'education' | 'gaming' | 'work' | 'tech' | 'content' | 'achievement';
 }
 
 const events: TimelineEvent[] = [
   {
     date: "2024",
-    description: [],
-  },
-  {
-    date: "December",
     description: [
-      "Achieved 3rd place in the AMD Gameon x The Arena 2024 gaming tournament.",
-      "Attended the Travis Scott concert.",
+      "Started Spring Semester at University of Cincinnati"
     ],
+    category: "education"
   },
   {
-    date: "November",
+    date: "December 2023",
     description: [
-      "Secured 2nd position in a 48-hour hackathon.",
-      "Earned Generative AI and Large Language Models certifications from Google.",
+      "Achieved 3rd place in the AMD Gameon x The Arena 2024 gaming tournament",
+      "Attended the Travis Scott concert"
     ],
+    category: "gaming"
   },
   {
-    date: "October",
-    description: [],
-  },
-  {
-    date: "September",
-    description: [],
-  },
-  {
-    date: "August",
+    date: "November 2023",
     description: [
-      "Started my Master's in Engineering at the University of Cincinnati.",
-      "Joined as a part-time student worker at the Bearcats Package Center.",
+      "Secured 2nd position in a 48-hour hackathon",
+      "Earned Generative AI and Large Language Models certifications from Google"
     ],
+    category: "achievement"
   },
   {
-    date: "July",
-    description: [],
-  },
-  {
-    date: "June",
-    description: [],
-  },
-  {
-    date: "2023",
-    description: [],
-  },
-  {
-    date: "September",
+    date: "August 2023",
     description: [
-      "Completed a Software Development Engineer internship at AbhiBus.",
+      "Started Master's in Engineering at the University of Cincinnati",
+      "Joined as a part-time student worker at the Bearcats Package Center"
     ],
+    category: "education"
   },
   {
-    date: "June",
+    date: "June - September 2023",
     description: [
-      "Began a Software Development Engineer internship at AbhiBus.",
+      "Software Development Engineer internship at AbhiBus",
+      "Worked on multiple projects and improved system performance"
     ],
+    category: "work"
   },
   {
-    date: "2022",
-    description: [],
-  },
-  {
-    date: "September",
+    date: "September 2022",
     description: [
-      "Became President of the CodeChef Chapter at Malla Reddy Engineering College.",
+      "Became President of the CodeChef Chapter at Malla Reddy Engineering College"
     ],
+    category: "achievement"
+  },
+  {
+    date: "2020 - 2024",
+    description: [
+      "Bachelor of Technology in Computer Science at Malla Reddy Engineering College",
+      "Focused on Data Structures, Algorithms, and System Design"
+    ],
+    category: "education"
   },
   {
     date: "2017",
     description: [
-      "My first AMD Game ON Tournament counter-strike tournament.",
-      "My second tournament was also in this year by Nvidia Gamer's Connect.",
-      "Met Carry Minati, Venom (Redbull Ambassador) and many more creators.",
-      "Spent over $1000 on Counter-Strike: Global Offensive Gambling.",
+      "First AMD Game ON Tournament Counter-Strike tournament",
+      "Second tournament at Nvidia Gamer's Connect",
+      "Met Carry Minati, Venom (Redbull Ambassador) and many creators",
+      "Invested heavily in CS:GO skins and trading"
     ],
+    category: "gaming"
   },
   {
     date: "2016",
     description: [
-      "Got my first paycheck from YouTube and bought a blue snowball.",
-      "200k views on my YouTube Channel.",
-      "My graphic pack got 42k downloads.",
+      "Received first YouTube monetization payment",
+      "Achieved 200k views milestone on YouTube channel",
+      "Released graphic pack with 42k downloads"
     ],
+    category: "content"
   },
   {
     date: "2014",
     description: [
-     "Created a YouTube Channel and started uploading videos.",
-     "Got a new computer and started playing Counter-Strike: Global Offensive.",
-    
+      "Created YouTube Channel and started content creation",
+      "Started playing Counter-Strike: Global Offensive"
     ],
+    category: "content"
   },
   {
     date: "2006",
     description: [
-      "Got my first computer and the love for technology began.",
-      "Started playing Counter-Strike 1.6, TOD, Claw, Road Rash, IGI, and Freedom fighters. ",
+      "Got first computer - beginning of tech journey",
+      "Started gaming with CS 1.6, TOD, Claw, Road Rash, IGI, Freedom Fighters"
     ],
+    category: "tech"
   },
   {
     date: "2001",
     description: [
-      "A npc nerd is spawned on earth.",
+      "Born in Hyderabad, India"
     ],
-  },
+    category: "achievement"
+  }
 ];
 
 const Timeline: React.FC = () => {
+  const [filter, setFilter] = useState<TimelineEvent['category'] | 'all'>('all');
+
+  const getCategoryIcon = (category: TimelineEvent['category']) => {
+    switch (category) {
+      case 'education':
+        return <GraduationCap className="w-4 h-4" />;
+      case 'gaming':
+        return <Gamepad className="w-4 h-4" />;
+      case 'work':
+        return <Briefcase className="w-4 h-4" />;
+      case 'tech':
+        return <Laptop className="w-4 h-4" />;
+      case 'content':
+        return <Youtube className="w-4 h-4" />;
+      case 'achievement':
+        return <Calendar className="w-4 h-4" />;
+      default:
+        return <Code className="w-4 h-4" />;
+    }
+  };
+
+  const getCategoryColor = (category: TimelineEvent['category']) => {
+    switch (category) {
+      case 'education':
+        return 'bg-blue-500 dark:bg-blue-400';
+      case 'gaming':
+        return 'bg-purple-500 dark:bg-purple-400';
+      case 'work':
+        return 'bg-green-500 dark:bg-green-400';
+      case 'tech':
+        return 'bg-yellow-500 dark:bg-yellow-400';
+      case 'content':
+        return 'bg-red-500 dark:bg-red-400';
+      case 'achievement':
+        return 'bg-indigo-500 dark:bg-indigo-400';
+      default:
+        return 'bg-zinc-500 dark:bg-zinc-400';
+    }
+  };
+
+  const filteredEvents = events.filter(
+    event => filter === 'all' || event.category === filter
+  );
+
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-3xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Timeline</h2>
+
+      {/* Category Filters */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        <button
+          onClick={() => setFilter('all')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors
+            ${filter === 'all' 
+              ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200' 
+              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
+        >
+          All
+        </button>
+        {(['education', 'gaming', 'work', 'tech', 'content', 'achievement'] as const).map((category) => (
+          <button
+            key={category}
+            onClick={() => setFilter(category)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors
+              ${filter === category 
+                ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200' 
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
+          >
+            {getCategoryIcon(category)}
+            <span>{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Timeline */}
       <div className="relative border-l border-zinc-300 dark:border-zinc-700 pl-4">
-        {events.map((event, index) => (
+        {filteredEvents.map((event, index) => (
           <div key={index} className="mb-10">
-            <span className="absolute -left-2 flex items-center justify-center w-4 h-4 bg-zinc-600 dark:bg-zinc-400 rounded-full" />
-            <p className="mb-1 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-              {event.date}
-            </p>
-            {event.description.length > 0 && (
-              <ul className="mt-2 list-disc ml-4 text-sm text-zinc-600 dark:text-zinc-400">
-                {event.description.map((point, i) => (
-                  <li key={i}>{point}</li>
-                ))}
-              </ul>
-            )}
+            <span className={`absolute -left-2 flex items-center justify-center w-4 h-4 ${getCategoryColor(event.category)} rounded-full`}>
+              {getCategoryIcon(event.category)}
+            </span>
+            <div className="flex flex-col bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4">
+              <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
+                {event.date}
+              </p>
+              {event.description.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {event.description.map((point, i) => (
+                    <li key={i} className="text-sm text-zinc-600 dark:text-zinc-400">
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         ))}
       </div>
