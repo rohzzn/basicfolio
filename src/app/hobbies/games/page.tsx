@@ -52,29 +52,54 @@ interface Achievement {
   year: string;
   result: string;
 }
-
 const achievements: Achievement[] = [
   {
-    tournament: "Comic-Con × AMD GameOn",
+    tournament: "Comic Con x The Arena",
     year: "2024",
-    result: "Valorant Runners Up"
+    result: "3rd Place"
   },
   {
-    tournament: "NIIT College Fest",
-    year: "2021",
-    result: "2nd Place"
-  },
-  {
-    tournament: "TAGVALO",
+    tournament: "Trinity Gaming TAGVALO - Valorant",
     year: "2020",
     result: "1st Place"
   },
   {
-    tournament: "AMD GameOn",
+    tournament: "ACT X CSGO 1v1 Tournament",
+    year: "2020",
+    result: "1st Place"
+  },
+  {
+    tournament: "AMD Gameon x Playmax - Fortnite",
+    year: "2019",
+    result: "3rd Place"
+  },
+  {
+    tournament: "AMD Gameon x Playmax - PUBG",
+    year: "2019",
+    result: "3rd Place"
+  },
+  {
+    tournament: "AMD Gameon x Playmax",
+    year: "2019",
+    result: "2nd Place"
+  },
+  {
+    tournament: "Comic-Con Hyderabad",
+    year: "2018",
+    result: "2nd Place"
+  },
+  {
+    tournament: "Gamer's Connect Hyderabad",
+    year: "2017",
+    result: "3rd Place"
+  },
+  {
+    tournament: "AMD Gameon Hyderabad",
     year: "2017",
     result: "3rd Place"
   }
 ];
+
 
 const Games = async () => {
   const CSGO_USER_ID = '76561198239653194';
@@ -189,7 +214,7 @@ const Games = async () => {
 
         {/* CS:GO Section */}
         <section className="mb-8">
-          <h3 className="text-base font-medium mb-6 dark:text-white">CS:GO Statistics</h3>
+          <h3 className="text-base font-medium mb-6 dark:text-white">CS Information</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Stats Box */}
