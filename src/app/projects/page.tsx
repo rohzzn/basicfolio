@@ -32,6 +32,13 @@ const categories: Category[] = [
           { label: "Chapter", url: "https://github.com/mreccodechef" },
         ],
       },
+      
+    ]
+  },
+  
+  {
+    name: "Applications",
+    projects: [
       {
         title: "Pages",
         description: "Figma plugin for rapid page creation and layout management.",
@@ -41,34 +48,6 @@ const categories: Category[] = [
           { label: "Plugin", url: "https://www.figma.com/community/plugin/1106104074775818911/pages" },
         ],
       },
-    ]
-  },
-  {
-    name: "Games",
-    projects: [
-      {
-        title: "Krueger's Treasure",
-        description: "VR horror game with challenging puzzles and dark secrets.",
-        tech: ["Unity", "C#", "VR"],
-        links: [
-          { label: "GitHub", url: "https://github.com/KlepticGames/KruegersTreasue" },
-          { label: "Live Demo", url: "https://github.com/KlepticGames/" },
-        ],
-      },
-      {
-        title: "Pokemon",
-        description: "2D platformer featuring beloved Pokémon characters.",
-        tech: ["JavaScript", "HTML5", "CSS3"],
-        links: [
-          { label: "GitHub", url: "https://github.com/rohzzn/pokemon" },
-          { label: "Live Demo", url: "https://rohzzn.github.io/pokemon/" },
-        ],
-      },
-    ],
-  },
-  {
-    name: "Applications",
-    projects: [
       {
         title: "Meet",
         description: "Video call application with advanced features like screen sharing and recording.",
@@ -129,12 +108,12 @@ const categories: Category[] = [
     name: "Websites",
     projects: [
       {
-        title: "Everything Minimal",
-        description: "Minimalistic e-commerce clothing store with a clean design.",
-        tech: ["Next.js", "Tailwind CSS", "Stripe"],
+        title: "CodeChef MREC",
+        description: "Central hub for the CodeChef MREC chapter, facilitating coding competitions and community engagement.",
+        tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
         links: [
-          { label: "GitHub", url: "https://github.com/EverythingMinimal" },
-          { label: "Live Demo", url: "https://github.com/EverythingMinimal" },
+          { label: "GitHub", url: "https://github.com/mreccodechef/Website" },
+          { label: "Chapter", url: "https://github.com/mreccodechef" },
         ],
       },
       {
@@ -194,7 +173,30 @@ const categories: Category[] = [
     ],
   },
   {
-    name: "Machine Learning and Data Analysis",
+    name: "Games",
+    projects: [
+      {
+        title: "Krueger's Treasure",
+        description: "VR horror game with challenging puzzles and dark secrets.",
+        tech: ["Unity", "C#", "VR"],
+        links: [
+          { label: "GitHub", url: "https://github.com/KlepticGames/KruegersTreasue" },
+          { label: "Live Demo", url: "https://github.com/KlepticGames/" },
+        ],
+      },
+      {
+        title: "Pokemon",
+        description: "2D platformer featuring beloved Pokémon characters.",
+        tech: ["JavaScript", "HTML5", "CSS3"],
+        links: [
+          { label: "GitHub", url: "https://github.com/rohzzn/pokemon" },
+          { label: "Live Demo", url: "https://rohzzn.github.io/pokemon/" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Other",
     projects: [
       {
         title: "Automobile Analytics",
@@ -205,11 +207,6 @@ const categories: Category[] = [
           { label: "Notes", url: "https://github.com/rohzzn/automobile/blob/main/colab.ipynb" },
         ],
       },
-    ],
-  },
-  {
-    name: "IOT",
-    projects: [
       {
         title: "Smart Agriculture",
         description: "Agriculture using automation for optimal growth and reduced labor costs.",
@@ -221,6 +218,7 @@ const categories: Category[] = [
       },
     ],
   },
+  
 ];
 
 const Projects: React.FC = () => (

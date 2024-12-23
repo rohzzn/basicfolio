@@ -49,9 +49,9 @@ const Stack = () => {
       degree: 'Master of Engineering - Computer Science',
       duration: 'August 2024 - April 2026',
       coursework: [
-        "Distributed Operating Systems",
         "Advanced Algorithms I",
         "Advanced Algorithms II",
+        "Distributed Operating Systems",
         "Cloud Computing",
         "Innovation Design Thinking",
         "Large Scale Software Engineering",
