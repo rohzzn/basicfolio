@@ -265,13 +265,22 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                             {activity.state}
                           </p>
                         )}
+                        {activity.details && (
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                            {activity.details}
+                          </p>
+                        )}
                         {activity.timestamps?.start && (
                           <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
                             {formatTime(Date.now() - activity.timestamps.start)}
                           </p>
                         )}
+                        
                       </div>
                     ))}
+
+
+
                   </div>
                 )}
               </div>
