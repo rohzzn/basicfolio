@@ -12,4 +12,3 @@ A modern, multi-page personal portfolio built with **Next.js**, **React**, **Tai
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).  
-Feel free to use, modify, and distribute this code as permitted under the license.
