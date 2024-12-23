@@ -1,12 +1,24 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const CustomCursor = () => {
   const [position, setPosition] = useState({ x: -100, y: -100 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const clickSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    // Initialize click sound
+    clickSoundRef.current = new Audio('/click.wav');
+    clickSoundRef.current.volume = 0.2;
+
+    const playClickSound = () => {
+      if (clickSoundRef.current) {
+        clickSoundRef.current.currentTime = 0;
+        clickSoundRef.current.play().catch(err => console.debug('Click sound error:', err));
+      }
+    };
+
     const updatePosition = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
       setIsVisible(true);
@@ -17,17 +29,26 @@ const CustomCursor = () => {
       setIsHovering(!!target.closest('a, button, [role="button"], input, select, textarea'));
     };
 
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('a, button, [role="button"], input, select, textarea')) {
+        playClickSound();
+      }
+    };
+
     const style = document.createElement('style');
     style.textContent = `* { cursor: none !important; }`;
     document.head.appendChild(style);
 
     document.addEventListener('mousemove', updatePosition, { passive: true });
     document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('click', handleClick);
 
     return () => {
       document.head.removeChild(style);
       document.removeEventListener('mousemove', updatePosition);
       document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('click', handleClick);
     };
   }, []);
 

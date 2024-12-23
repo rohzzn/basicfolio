@@ -47,9 +47,13 @@ const CSGOStatsComponent: React.FC<CSGOStatsProps> = ({ stats }) => {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
+      <p className="text-zinc-600 dark:text-zinc-400">
+          <span className="font-medium">Rank:</span> DMG
+        </p>
         <p className="text-zinc-600 dark:text-zinc-400">
           <span className="font-medium">Kills:</span> {formatNumber(totalKills)}
         </p>
+        
         <p className="text-zinc-600 dark:text-zinc-400">
           <span className="font-medium">K/D Ratio:</span> {kd}
         </p>
@@ -58,6 +62,9 @@ const CSGOStatsComponent: React.FC<CSGOStatsProps> = ({ stats }) => {
         </p>
       </div>
       <div>
+      <p className="text-zinc-600 dark:text-zinc-400">
+          <span className="font-medium">Wingman Rank:</span> MGE
+        </p>
         <p className="text-zinc-600 dark:text-zinc-400">
           <span className="font-medium">MVPs:</span> {formatNumber(mvps)}
         </p>
