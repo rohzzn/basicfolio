@@ -1,41 +1,15 @@
-# Portfolio Site
+# Basicfolio: Personal Portfolio
 
-A personal portfolio built with [Next.js](https://nextjs.org), [React](https://react.dev), and [Tailwind CSS](https://tailwindcss.com). This site showcases my background, projects, stack, hobbies, and writings, with interactive elements like Discord status and anime cover previews.
+A modern, multi-page personal portfolio built with **Next.js**, **React**, **Tailwind CSS**, and **TypeScript**. Showcasing projects, hobbies, writing, and more with a focus on minimalistic design and enhanced interactivity.
 
-## Features
-
-- **About:** Personal intro, experience, and interests.
-- **Projects:** Categorized showcases with descriptions, tech stacks, and links.
-- **Stack:** Overview of the technologies I use.
-- **Hobbies:**
-  - **Anime List:** Sortable table with hover previews (Jikan API).
-  - **Art:** Behance/Dribbble previews.
-  - **Games:** Highlights, links, and embedded videos.
-  - **Readings:** Placeholder for favorite books/articles.
-- **Writing:** Articles and blog posts.
-- **Timeline:** Key personal milestones and achievements.
-
-## Tech Stack
-
-- **Frontend:** Next.js, React, Tailwind CSS
-- **API Integration:** Jikan (Anime), Lanyard (Discord)
-- **TypeScript & ESLint:** For type safety and consistent code quality.
-
-## Getting Started
-
-```bash
-git clone https://github.com/rohzzn/basicfolio.git
-cd basicfolio
-npm install
-npm run dev
-```
-
-Visit [http://localhost:3000](http://localhost:3000).
-
-## Deploy
-
-Easily deploy on [Vercel](https://vercel.com). See [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying).
+## APIs Used
+- **Jikan API**: Anime list and hover previews.  
+- **Steam API**: Gaming stats and library.  
+- **Lanyard API**: Discord status integration.  
+- **Google Books API**: Book covers and reviews.  
+- **Strava API**: Running stats and lifetime achievements.  
 
 ## License
 
-[MIT](./LICENSE)
+This project is licensed under the [MIT License](./LICENSE).  
+Feel free to use, modify, and distribute this code as permitted under the license.
