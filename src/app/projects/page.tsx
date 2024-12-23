@@ -34,18 +34,22 @@ const categories: Category[] = [
     projects: [
       {
         title: "CodeChef MREC",
-        description: "Central hub for the CodeChef MREC chapter, facilitating coding competitions and community engagement.",
+        description: "Central hub for facilitating coding competitions and community engagement.",
         tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
         links: [
           { label: "GitHub", url: "https://github.com/mreccodechef/Website" },
           { label: "Chapter", url: "https://github.com/mreccodechef" },
         ],
         metrics: {
-          users: 500,
           visits: 1200,
           preAI: true
         }
-      },
+      }
+    ]
+  },
+  {
+    name: "Applications",
+    projects: [
       {
         title: "Pages",
         description: "Figma plugin for rapid page creation and layout management.",
@@ -55,16 +59,11 @@ const categories: Category[] = [
           { label: "Plugin", url: "https://www.figma.com/community/plugin/1106104074775818911/pages" },
         ],
         metrics: {
-          downloads: 1200,
+          users: 800,
           preAI: true,
-          githubStars: 12
         }
-      }
-    ]
-  },
-  {
-    name: "Applications",
-    projects: [
+      },
+      
       {
         title: "Meet",
         description: "Video call application with advanced features like screen sharing and recording.",
@@ -74,7 +73,6 @@ const categories: Category[] = [
           { label: "Live Demo", url: "https://ckvyqugj7184663idk0i811d0su-8rbb2fvau-calatop.vercel.app/authenticate" },
         ],
         metrics: {
-          users: 300,
           visits: 800,
           preAI: true
         }
@@ -88,9 +86,7 @@ const categories: Category[] = [
           { label: "Live Demo", url: "https://pypi.org/project/scrapetron/" },
         ],
         metrics: {
-          downloads: 500,
-          preAI: true,
-          githubStars: 8
+          users: 20,
         }
       },
       {
@@ -102,7 +98,6 @@ const categories: Category[] = [
           { label: "Live Demo", url: "https://github.com/rohzzn/todoapp" },
         ],
         metrics: {
-          users: 100,
           preAI: true
         }
       },
@@ -115,9 +110,8 @@ const categories: Category[] = [
           { label: "Invite", url: "https://discord.com/oauth2/authorize?client_id=766218598913146901&permissions=8&scope=bot" },
         ],
         metrics: {
-          users: 2000,
+          users: 200,
           preAI: true,
-          githubStars: 15
         }
       },
       {
@@ -129,9 +123,9 @@ const categories: Category[] = [
           { label: "Marketplace", url: "https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi" },
         ],
         metrics: {
-          downloads: 3000,
+          downloads: 1700,
           preAI: true,
-          githubStars: 25
+          githubStars: 14
         }
       },
       {
@@ -143,9 +137,8 @@ const categories: Category[] = [
           { label: "Marketplace", url: "https://chrome.google.com/webstore/detail/hex-picker/jmnkgndafoldkblpnmmollbgkdfemmfc/related" },
         ],
         metrics: {
-          downloads: 1500,
+          users: 80,
           preAI: true,
-          githubStars: 10
         }
       },
     ],
@@ -180,6 +173,19 @@ const categories: Category[] = [
         }
       },
       {
+        title: "CodeChef MREC",
+        description: "Central hub for facilitating coding competitions and community engagement.",
+        tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+        links: [
+          { label: "GitHub", url: "https://github.com/mreccodechef/Website" },
+          { label: "Chapter", url: "https://github.com/mreccodechef" },
+        ],
+        metrics: {
+          visits: 1200,
+          preAI: true
+        }
+      },
+      {
         title: "Pokedex",
         description: "Interactive Pokémon catching game with dynamic data.",
         tech: ["React", "PokéAPI", "Redux"],
@@ -190,7 +196,6 @@ const categories: Category[] = [
         metrics: {
           visits: 1800,
           preAI: true,
-          githubStars: 8
         }
       },
       {
@@ -236,7 +241,6 @@ const categories: Category[] = [
         metrics: {
           visits: 5000,
           preAI: true,
-          githubStars: 12
         }
       },
     ],
@@ -308,7 +312,7 @@ const Projects: React.FC = () => (
                   {project.metrics.visits && (
                     <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
                       <Eye className="w-3 h-3 mr-1" />
-                      {project.metrics.visits.toLocaleString()} visits
+                      {project.metrics.visits.toLocaleString()}+ visits
                     </div>
                   )}
                   {project.metrics.downloads && (
