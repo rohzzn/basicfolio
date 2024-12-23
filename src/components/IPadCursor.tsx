@@ -1,120 +1,70 @@
-// src/components/IPadCursor.tsx
+"use client";
+import React, { useEffect, useState } from 'react';
 
-import React, { useEffect, useState, useCallback } from 'react';
-
-const IPadCursor = () => {
-  const [position, setPosition] = useState({ x: -100, y: -100 }); // Start offscreen
+const CustomCursor = () => {
+  const [position, setPosition] = useState({ x: -100, y: -100 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [clickSound] = useState(() => typeof Audio !== 'undefined' ? new Audio('/click.wav') : null);
-
-  // Configure click sound
-  useEffect(() => {
-    if (clickSound) {
-      clickSound.volume = 0.2; // Adjust volume to 20%
-      // Preload the sound for better performance
-      clickSound.load();
-    }
-  }, [clickSound]);
-
-  // Handle click sound playback
-  const playClickSound = useCallback(() => {
-    if (clickSound) {
-      // Reset the audio to start if it's already playing
-      clickSound.currentTime = 0;
-      // Play the sound
-      clickSound.play().catch(error => {
-        // Handle any autoplay restrictions or errors silently
-        console.debug('Click sound playback error:', error);
-      });
-    }
-  }, [clickSound]);
 
   useEffect(() => {
-    // Only show cursor after initial position is set
-    const showCursor = () => setIsVisible(true);
-    window.addEventListener('mousemove', showCursor);
-
-    const updateCursorPosition = (e: MouseEvent) => {
+    const updatePosition = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
+      setIsVisible(true);
     };
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.closest('a, button, [role="button"], input, select, textarea')) {
-        setIsHovering(true);
-      }
+      setIsHovering(!!target.closest('a, button, [role="button"], input, select, textarea'));
     };
 
-    const handleMouseOut = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest('a, button, [role="button"], input, select, textarea')) {
-        setIsHovering(false);
-      }
-    };
-
-    // Click handler - only play sound on interactive elements
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      // Check if the clicked element is interactive
-      if (target.closest('a, button, [role="button"], input, select, textarea, [tabindex="0"]')) {
-        playClickSound();
-      }
-    };
-
-    // Add global styles to hide cursor
     const style = document.createElement('style');
-    style.textContent = `
-      * {
-        cursor: none !important;
-      }
-      a, button, [role="button"], input, select, textarea {
-        cursor: none !important;
-      }
-    `;
+    style.textContent = `* { cursor: none !important; }`;
     document.head.appendChild(style);
 
-    // Add event listeners
-    document.addEventListener('mousemove', updateCursorPosition, { passive: true });
+    document.addEventListener('mousemove', updatePosition, { passive: true });
     document.addEventListener('mouseover', handleMouseOver);
-    document.addEventListener('mouseout', handleMouseOut);
-    document.addEventListener('click', handleClick);
 
-    // Clean up
     return () => {
       document.head.removeChild(style);
-      document.removeEventListener('mousemove', updateCursorPosition);
+      document.removeEventListener('mousemove', updatePosition);
       document.removeEventListener('mouseover', handleMouseOver);
-      document.removeEventListener('mouseout', handleMouseOut);
-      document.removeEventListener('click', handleClick);
-      window.removeEventListener('mousemove', showCursor);
     };
-  }, [playClickSound]);
+  }, []);
 
   if (!isVisible) return null;
 
   return (
-    <div
-      aria-hidden="true"
-      className="fixed pointer-events-none z-[9999]"
-      style={{
-        position: 'fixed',
-        left: position.x,
-        top: position.y,
-        transform: 'translate(-50%, -50%)',
-        transition: 'width 0.2s ease, height 0.2s ease',
-      }}
-    >
+    <>
+      {/* Main cursor */}
       <div
-        className="rounded-full bg-black/50 dark:bg-white/50"
+        className="fixed pointer-events-none z-[9999] mix-blend-difference"
         style={{
-          width: isHovering ? '40px' : '20px',
-          height: isHovering ? '40px' : '20px',
-          transition: 'all 0.2s ease',
+          transform: `translate(${position.x}px, ${position.y}px)`,
         }}
-      />
-    </div>
+      >
+        <div
+          className={`relative -ml-1 -mt-1 rounded-full bg-white transition-all duration-200 ease-out ${
+            isHovering ? 'w-5 h-5 -ml-2.5 -mt-2.5' : 'w-2 h-2'
+          }`}
+        />
+      </div>
+      
+      {/* Trail effect */}
+      <div
+        className="fixed pointer-events-none z-[9998] mix-blend-difference"
+        style={{
+          transform: `translate(${position.x}px, ${position.y}px)`,
+          transition: 'transform 0.15s ease-out',
+        }}
+      >
+        <div
+          className={`relative rounded-full bg-white opacity-25 transition-all duration-200 ease-out ${
+            isHovering ? 'w-7 h-7 -ml-3.5 -mt-3.5' : 'w-4 h-4 -ml-2 -mt-2'
+          }`}
+        />
+      </div>
+    </>
   );
 };
 
-export default IPadCursor;
+export default CustomCursor;
