@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
+import { SortAsc, SortDesc, Star, List, AlertCircle } from 'lucide-react';
 
 interface Anime {
   id: number;
@@ -114,7 +115,7 @@ const animeList: Anime[] = [
   { id: 103, title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 2nd Season", score: 7 },
   { id: 104, title: "Yuru Camp△", score: 8 },
   { id: 105, title: "Chainsaw Man", score: 8 },
-  { id: 106, title: "&#39;Oshi no Ko&#39;", score: 8 },
+  { id: 106, title: "Oshi no Ko;", score: 8 },
   { id: 107, title: "Baki", score: 5 },
   { id: 108, title: "Black Clover", score: 5 },
   { id: 109, title: "Boku no Hero Academia 5th Season", score: 7 },
@@ -154,15 +155,30 @@ const animeList: Anime[] = [
   { id: 143, title: "Zom 100: Zombie ni Naru made ni Shitai 100 no Koto", score: null },
 ];
 
+
 const MyAnimeList: React.FC = () => {
   const [sortConfig, setSortConfig] = useState<{ key: keyof Anime; direction: "ascending" | "descending" } | null>({
     key: "score",
     direction: "descending",
   });
-
   const [imageCache, setImageCache] = useState<{ [key: number]: string }>({});
   const [hoveredAnime, setHoveredAnime] = useState<Anime | null>(null);
   const [cursorPosition, setCursorPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  // Calculate statistics
+  const stats = useMemo(() => {
+    const watched = animeList.filter(anime => anime.score !== null).length;
+    const planToWatch = animeList.filter(anime => anime.score === null).length;
+    const avgScore = animeList.reduce((acc, curr) => curr.score ? acc + curr.score : acc, 0) / watched;
+    const maxScore = Math.max(...animeList.filter(anime => anime.score !== null).map(anime => anime.score || 0));
+    
+    return {
+      watched,
+      planToWatch,
+      avgScore: avgScore.toFixed(1),
+      maxScore
+    };
+  }, []);
 
   const sortedAnime = useMemo(() => {
     const sortableAnime = [...animeList];
@@ -179,12 +195,8 @@ const MyAnimeList: React.FC = () => {
         if (aKey === null) return 1;
         if (bKey === null) return -1;
 
-        if (aKey < bKey) {
-          return sortConfig.direction === "ascending" ? -1 : 1;
-        }
-        if (aKey > bKey) {
-          return sortConfig.direction === "ascending" ? 1 : -1;
-        }
+        if (aKey < bKey) return sortConfig.direction === "ascending" ? -1 : 1;
+        if (aKey > bKey) return sortConfig.direction === "ascending" ? 1 : -1;
         return 0;
       });
     }
@@ -199,15 +211,8 @@ const MyAnimeList: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
-  const getClassNamesFor = (key: keyof Anime) => {
-    if (!sortConfig) {
-      return;
-    }
-    return sortConfig.key === key ? (sortConfig.direction === "ascending" ? "▲" : "▼") : undefined;
-  };
-
   const fetchImage = async (title: string, id: number) => {
-    if (imageCache[id]) return; // Image already cached
+    if (imageCache[id]) return;
 
     try {
       const response = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`);
@@ -215,12 +220,9 @@ const MyAnimeList: React.FC = () => {
       if (data.data && data.data.length > 0) {
         const imageUrl = data.data[0].images.jpg.image_url;
         setImageCache((prev) => ({ ...prev, [id]: imageUrl }));
-      } else {
-        setImageCache((prev) => ({ ...prev, [id]: "" })); // No image found
       }
     } catch (error) {
       console.error("Error fetching image:", error);
-      setImageCache((prev) => ({ ...prev, [id]: "" }));
     }
   };
 
@@ -229,60 +231,108 @@ const MyAnimeList: React.FC = () => {
     fetchImage(anime.title, anime.id);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLTableCellElement, MouseEvent>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setCursorPosition({ x: e.clientX, y: e.clientY });
   };
 
-  const handleMouseLeave = () => {
-    setHoveredAnime(null);
-  };
-
   return (
-    <div className="p-6">
+    <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Anime List</h2>
-      <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-        Here is my anime list! You can track and explore my anime collection below.
-      </p>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-paper dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
-          <thead>
-            <tr>
-              <th
-                className="py-2 px-4 border-b border-zinc-200 dark:border-zinc-700 text-left text-sm font-semibold text-zinc-600 dark:text-zinc-300 cursor-pointer"
-                onClick={() => requestSort("title")}
-              >
-                Anime Title {getClassNamesFor("title")}
-              </th>
-              <th
-                className="py-2 px-4 border-b border-zinc-200 dark:border-zinc-700 text-left text-sm font-semibold text-zinc-600 dark:text-zinc-300 cursor-pointer"
-                onClick={() => requestSort("score")}
-              >
-                Score {getClassNamesFor("score")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedAnime.map((anime) => (
-              <tr key={anime.id} className="hover:bg-zinc-100 dark:hover:bg-zinc-700">
-                <td
-                  className="py-2 px-4 border-b border-zinc-200 dark:border-zinc-700 text-sm text-zinc-600 dark:text-zinc-300 cursor-pointer relative"
-                  onMouseEnter={() => handleMouseEnter(anime)}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  {anime.title}
-                </td>
-                <td className="py-2 px-4 border-b border-zinc-200 dark:border-zinc-700 text-sm text-zinc-600 dark:text-zinc-400">
-                  {anime.score !== null ? anime.score : "Dropped"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      {/* Stats Section */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-1">
+            <List className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <h3 className="text-sm font-medium dark:text-white">Total Watched</h3>
+          </div>
+          <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.watched}</p>
+        </div>
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-1">
+            <AlertCircle className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <h3 className="text-sm font-medium dark:text-white">Plan to Watch</h3>
+          </div>
+          <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.planToWatch}</p>
+        </div>
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-1">
+            <Star className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <h3 className="text-sm font-medium dark:text-white">Average Score</h3>
+          </div>
+          <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.avgScore}</p>
+        </div>
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-1">
+            <Star className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <h3 className="text-sm font-medium dark:text-white">Highest Score</h3>
+          </div>
+          <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.maxScore}</p>
+        </div>
       </div>
 
-      {/* Tooltip for Anime Cover */}
-      {hoveredAnime && imageCache[hoveredAnime.id] && imageCache[hoveredAnime.id] !== "" && (
+      {/* Sort Controls */}
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={() => requestSort("title")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+            sortConfig?.key === "title"
+              ? "bg-zinc-200 dark:bg-zinc-700"
+              : "bg-zinc-100 dark:bg-zinc-800"
+          }`}
+        >
+          <span className="text-sm text-zinc-700 dark:text-zinc-300">Title</span>
+          {sortConfig?.key === "title" && (
+            sortConfig.direction === "ascending" ? 
+              <SortAsc className="w-4 h-4" /> : 
+              <SortDesc className="w-4 h-4" />
+          )}
+        </button>
+        <button
+          onClick={() => requestSort("score")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+            sortConfig?.key === "score"
+              ? "bg-zinc-200 dark:bg-zinc-700"
+              : "bg-zinc-100 dark:bg-zinc-800"
+          }`}
+        >
+          <span className="text-sm text-zinc-700 dark:text-zinc-300">Score</span>
+          {sortConfig?.key === "score" && (
+            sortConfig.direction === "ascending" ? 
+              <SortAsc className="w-4 h-4" /> : 
+              <SortDesc className="w-4 h-4" />
+          )}
+        </button>
+      </div>
+
+      {/* Anime List */}
+      <div className="grid grid-cols-1 gap-2">
+        {sortedAnime.map((anime) => (
+          <div
+            key={anime.id}
+            className="group bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex justify-between items-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+            onMouseEnter={() => handleMouseEnter(anime)}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setHoveredAnime(null)}
+          >
+            <span className="text-sm text-zinc-700 dark:text-zinc-300">{anime.title}</span>
+            <div className="flex items-center gap-2">
+              {anime.score !== null ? (
+                <span className="px-2 py-1 text-xs rounded-md bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
+                  {anime.score}/10
+                </span>
+              ) : (
+                <span className="px-2 py-1 text-xs rounded-md bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
+                  PTW
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Hover Preview */}
+      {hoveredAnime && imageCache[hoveredAnime.id] && (
         <div
           className="fixed z-50 pointer-events-none"
           style={{ top: cursorPosition.y + 20, left: cursorPosition.x + 20 }}
