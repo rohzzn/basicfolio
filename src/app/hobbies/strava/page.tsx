@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { Activity, Timer, Map, TrendingUp, Loader2 } from 'lucide-react';
+import { Activity, Timer, Map, TrendingUp, Calendar, Watch, ArrowUp, Gauge, Trophy, BarChart2 } from 'lucide-react';
 
 interface StravaActivity {
   id: number;
@@ -13,6 +13,9 @@ interface StravaActivity {
   start_date: string;
   average_speed: number;
   max_speed: number;
+  average_heartrate?: number;
+  max_heartrate?: number;
+  suffer_score?: number;
 }
 
 interface StravaStats {
@@ -100,7 +103,9 @@ const StravaPage = () => {
 
   const formatDistance = (meters: number): string => {
     const km = meters / 1000;
-    return `${km.toFixed(1)}km`;
+    return km >= 10 
+      ? `${km.toFixed(1)}km`
+      : `${km.toFixed(2)}km`;
   };
 
   const formatPace = (metersPerSecond: number): string => {
@@ -113,22 +118,39 @@ const StravaPage = () => {
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    const secs = Math.floor(seconds % 60);
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+    }
+    return `${minutes}m ${secs.toString().padStart(2, '0')}s`;
   };
 
   const formatDate = (dateStr: string): string => {
     return new Date(dateStr).toLocaleDateString('en-US', {
+      weekday: 'short',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
     });
+  };
+
+  const calculatePaceZone = (pace: number): string => {
+    const minutesPerKm = (1000 / pace) / 60;
+    if (minutesPerKm < 4.5) return 'Race Pace';
+    if (minutesPerKm < 5) return 'Tempo';
+    if (minutesPerKm < 5.5) return 'Steady';
+    if (minutesPerKm < 6) return 'Easy';
+    return 'Recovery';
   };
 
   if (loading) {
     return (
       <div className="max-w-7xl">
-        <h2 className="text-lg font-medium mb-6 dark:text-white">Running</h2>
+        <h2 className="text-xl font-semibold mb-6 dark:text-white">Running Statistics</h2>
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-zinc-600 dark:text-zinc-400" />
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-400" />
         </div>
       </div>
     );
@@ -137,98 +159,172 @@ const StravaPage = () => {
   if (error) {
     return (
       <div className="max-w-7xl">
-        <h2 className="text-lg font-medium mb-6 dark:text-white">Running</h2>
-        <p className="text-red-500">{error}</p>
+        <h2 className="text-xl font-semibold mb-6 dark:text-white">Running Statistics</h2>
+        <div className="bg-red-100 dark:bg-red-900 p-4 rounded-lg">
+          <p className="text-red-700 dark:text-red-200">{error}</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Running</h2>
+      <h2 className="text-xl font-semibold mb-6 dark:text-white">Running Statistics</h2>
 
-      {/* Stats Overview */}
+      {/* Enhanced Stats Overview */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <Activity className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+            <div className="flex items-center gap-2 mb-2">
+              <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-sm font-medium dark:text-white">Total Runs</h3>
             </div>
-            <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">
-              {stats.all_run_totals.count}
+            <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
+              {stats.all_run_totals.count.toLocaleString()}
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              {stats.ytd_run_totals.count} runs this year
             </p>
           </div>
-          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <Map className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+
+          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+            <div className="flex items-center gap-2 mb-2">
+              <Map className="w-5 h-5 text-green-600 dark:text-green-400" />
               <h3 className="text-sm font-medium dark:text-white">Total Distance</h3>
             </div>
-            <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">
+            <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
               {formatDistance(stats.all_run_totals.distance)}
             </p>
-          </div>
-          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <Timer className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-              <h3 className="text-sm font-medium dark:text-white">Moving Time</h3>
-            </div>
-            <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">
-              {formatTime(stats.all_run_totals.moving_time)}
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              {formatDistance(stats.ytd_run_totals.distance)} this year
             </p>
           </div>
-          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+
+          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+            <div className="flex items-center gap-2 mb-2">
+              <Timer className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              <h3 className="text-sm font-medium dark:text-white">Moving Time</h3>
+            </div>
+            <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
+              {formatTime(stats.all_run_totals.moving_time)}
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              {formatTime(stats.ytd_run_totals.moving_time)} this year
+            </p>
+          </div>
+
+          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               <h3 className="text-sm font-medium dark:text-white">Elevation Gain</h3>
             </div>
-            <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">
-              {stats.all_run_totals.elevation_gain.toFixed(0)}m
+            <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
+              {stats.all_run_totals.elevation_gain.toLocaleString()}m
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              Avg {(stats.all_run_totals.elevation_gain / stats.all_run_totals.count).toFixed(0)}m per run
             </p>
           </div>
         </div>
       )}
 
-      {/* Recent Activities */}
-      <h3 className="text-base font-medium mb-4 dark:text-white">Recent Runs</h3>
+      {/* Enhanced Recent Activities */}
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold dark:text-white">Recent Runs</h3>
+        <div className="text-sm text-zinc-500 dark:text-zinc-400">
+          Showing last {activities.length} activities
+        </div>
+      </div>
+
       <div className="space-y-4">
         {activities.map((activity) => (
           <div 
             key={activity.id}
-            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4"
+            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
           >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start mb-4">
               <div>
-                <h4 className="text-sm font-medium dark:text-white">{activity.name}</h4>
-                <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
-                  {formatDate(activity.start_date)}
-                </p>
+                <h4 className="text-base font-semibold dark:text-white">{activity.name}</h4>
+                <div className="flex items-center gap-2 mt-1">
+                  <Calendar className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    {formatDate(activity.start_date)}
+                  </p>
+                </div>
               </div>
-              <span className="text-xs px-2 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-600 dark:text-zinc-400">
-                {formatDistance(activity.distance)}
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-sm px-3 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-700 dark:text-zinc-300 font-medium">
+                  {formatDistance(activity.distance)}
+                </span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                  {calculatePaceZone(activity.average_speed)}
+                </span>
+              </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-500">Time</p>
+                <div className="flex items-center gap-1 mb-1">
+                  <Watch className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                  <p className="text-xs text-zinc-500 dark:text-zinc-500">Time</p>
+                </div>
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   {formatTime(activity.moving_time)}
                 </p>
               </div>
+              
               <div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-500">Pace</p>
+                <div className="flex items-center gap-1 mb-1">
+                  <Gauge className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                  <p className="text-xs text-zinc-500 dark:text-zinc-500">Pace</p>
+                </div>
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   {formatPace(activity.average_speed)}
                 </p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Max: {formatPace(activity.max_speed)}
+                </p>
               </div>
+
               <div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-500">Elevation</p>
+                <div className="flex items-center gap-1 mb-1">
+                  <ArrowUp className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                  <p className="text-xs text-zinc-500 dark:text-zinc-500">Elevation</p>
+                </div>
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   {activity.total_elevation_gain.toFixed(0)}m
                 </p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {(activity.total_elevation_gain / (activity.distance / 1000)).toFixed(1)}m/km
+                </p>
               </div>
+
+              {activity.average_heartrate && (
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <BarChart2 className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                    <p className="text-xs text-zinc-500 dark:text-zinc-500">Heart Rate</p>
+                  </div>
+                  <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    {Math.round(activity.average_heartrate)} bpm
+                  </p>
+                  {activity.max_heartrate && (
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Max: {Math.round(activity.max_heartrate)} bpm
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
+
+            {activity.suffer_score && (
+              <div className="mt-4 flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-yellow-500" />
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                  Relative Effort: {activity.suffer_score}
+                </span>
+              </div>
+            )}
           </div>
         ))}
       </div>
