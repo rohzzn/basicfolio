@@ -59,9 +59,7 @@ const RecentlyPlayedGames: React.FC<RecentlyPlayedGamesProps> = ({ games }) => {
                   Recent: {formatPlaytime(game.playtime_2weeks)}
                 </p>
               )}
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                Total: {formatPlaytime(game.playtime_forever)}
-              </p>
+
               <Link 
                 href={`https://store.steampowered.com/app/${game.appid}`}
                 target="_blank"
