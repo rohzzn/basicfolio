@@ -46,16 +46,7 @@ const hobbyCards: HobbyCard[] = [
 const Hobbies: React.FC = () => (
   <div className="max-w-7xl">
     <h2 className="text-lg font-medium mb-6 dark:text-white">Hobbies</h2>
-    <div className="space-y-4 text-zinc-600 dark:text-zinc-400 mb-8">
-      <p>
-        When I am not coding, you can find me exploring mechanical keyboards,
-        contributing to open-source projects, and learning about system design.
-      </p>
-      <p>
-        I also enjoy reading technical writings, participating in hackathons,
-        and experimenting with new programming languages.
-      </p>
-    </div>
+
 
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {hobbyCards.map((card) => (

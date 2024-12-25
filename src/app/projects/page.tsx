@@ -30,7 +30,7 @@ interface Category {
 
 const categories: Category[] = [
   {
-    name: "Featured",
+    name: "",
     projects: [
       {
         title: "CodeChef MREC",

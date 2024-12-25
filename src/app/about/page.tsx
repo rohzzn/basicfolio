@@ -19,7 +19,8 @@ const Home: React.FC = () => (
       <br />
     </div>
 
-    <div className="mt-6 flex space-x-4">
+    {/* The only change: added 'flex-wrap gap-4' to keep original positioning but enable responsiveness */}
+    <div className="mt-6 flex flex-wrap gap-4">
       {/* Twitter */}
       <a
         href="https://twitter.com/rohzzn"
@@ -32,7 +33,7 @@ const Home: React.FC = () => (
       </a>
       {/* LinkedIn */}
       <a
-        href="https://linkedin.com/in/rohzzn  "
+        href="https://linkedin.com/in/rohzzn"
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
