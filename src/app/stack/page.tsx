@@ -276,14 +276,14 @@ const Stack = () => {
           className="flex items-center gap-2 px-6 py-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
         >
           <FaDownload className="w-4 h-4" />
-          <span>Download Resume</span>
+          <span>Download</span>
         </a>
         <a
           href="mailto:pothurrs@mail.uc.edu"
           className="flex items-center gap-2 px-6 py-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
         >
           <FaEnvelope className="w-4 h-4" />
-          <span>Contact Me</span>
+          <span>Contact</span>
         </a>
       </div>
     </div>
