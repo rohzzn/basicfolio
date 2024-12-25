@@ -36,10 +36,11 @@ const hobbyCards: HobbyCard[] = [
     icon: Gamepad2
   },
   {
-    title: "Running",
-    description: "Track my running journey, statistics and achievements from Strava.",
-    href: "/hobbies/strava",
-    icon: Activity // from Lucide icons
+  
+      title: "Activities",
+      description: "Tracking workouts and daily activities with personal stats and routes.",
+      href: "/hobbies/strava",
+       icon: Activity // from Lucide icons
   }
 ];
 
