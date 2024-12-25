@@ -1,15 +1,14 @@
 // src/app/layout.tsx
-
 import type { Metadata } from "next";
 import "./globals.css";
 import MultiPagePortfolio from '../components/multi-page-portfolio';
-import NoiseOverlay from '../components/NoiseOverlay'; // Import the component
+import SunRaysOverlay from '../components/SunRaysOverlay'; // Import the new component
 
 export const metadata: Metadata = {
   title: "Rohan",
   description: "Everything about Rohan",
   icons: {
-    icon: "/favicon.ico", // Correct: Absolute path
+    icon: "/favicon.ico",
   },
 };
 
@@ -24,7 +23,7 @@ export default function RootLayout({
         <MultiPagePortfolio>
           {children}
         </MultiPagePortfolio>
-        <NoiseOverlay /> {/* Add the NoiseOverlay here */}
+        <SunRaysOverlay /> {/* Replace NoiseOverlay with SunRaysOverlay */}
       </body>
     </html>
   );
