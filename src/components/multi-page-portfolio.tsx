@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import IPadCursor from './IPadCursor';
 import BackgroundMusic from './BackgroundMusic';
 
-// [Previous interfaces remain exactly the same]
 interface NavLinkProps {
   href: string;
   children: React.ReactNode;
@@ -53,6 +52,10 @@ interface LanyardData {
   };
 }
 
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
 const NavLink: React.FC<NavLinkProps> = ({ href, children }) => {
   const pathname = usePathname();
   const isActive = pathname === href;
@@ -96,18 +99,14 @@ const formatTime = (timestamp: number): string => {
 
 const getActivityIcon = (type: number) => {
   switch (type) {
-    case 0: // Playing
+    case 0:
       return <Gamepad className="w-3 h-3" />;
-    case 2: // Listening
+    case 2:
       return <Music className="w-3 h-3" />;
     default:
       return <Clock className="w-3 h-3" />;
   }
 };
-
-interface LayoutProps {
-  children: React.ReactNode;
-}
 
 const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -115,6 +114,39 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const discordId = "407922731645009932";
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (isMenuOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'unset';
+      }
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const sidebar = document.getElementById('sidebar');
+      const menuButton = document.getElementById('menu-button');
+      if (isMenuOpen && sidebar && menuButton && 
+          !sidebar.contains(event.target as Node) && 
+          !menuButton.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const fetchLanyardData = async () => {
@@ -142,20 +174,29 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
+      {isMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
+
       <button
+        id="menu-button"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-2 text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 rounded-md shadow-md"
+        className="lg:hidden fixed top-4 right-4 z-50 p-2 text-zinc-600 dark:text-zinc-400 bg-zinc-50/90 dark:bg-zinc-800/90 rounded-md shadow-md backdrop-blur-sm"
         aria-label="Toggle Menu"
       >
         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
       <div
+        id="sidebar"
         className={`
-          fixed top-0 bottom-0 w-64 bg-zinc-50 dark:bg-zinc-900 
+          fixed lg:fixed top-0 bottom-0 w-[280px] sm:w-64 bg-zinc-50/95 dark:bg-zinc-900/95
           border-r border-zinc-200 dark:border-zinc-800 
-          flex flex-col h-screen overflow-hidden
-          transform lg:transform-none transition-transform duration-200 ease-in-out
+          flex flex-col h-screen backdrop-blur-sm
+          transform transition-transform duration-300 ease-in-out
           ${isMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           z-40
         `}
@@ -181,75 +222,73 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </nav>
 
-          <div className="p-8 bg-zinc-50 dark:bg-zinc-900">
-            <div className="pt-4">
-              {isLoading ? (
-                <div className="flex items-center justify-center py-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
+          <div className="p-8 bg-zinc-50/95 dark:bg-zinc-900/95 backdrop-blur-sm">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-2">
+                <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
+              </div>
+            ) : error ? (
+              <div className="text-xs text-zinc-400 text-center py-2">
+                Unable to load status
+              </div>
+            ) : lanyardData && (
+              <div className="flex flex-col items-start gap-2">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{
+                      backgroundColor: getStatusColor(lanyardData.discord_status),
+                      boxShadow: `0 0 8px ${getStatusColor(lanyardData.discord_status)}`,
+                    }}
+                  />
+                  <span className="text-xs text-zinc-600 dark:text-zinc-400 capitalize">
+                    {lanyardData.discord_status}
+                  </span>
                 </div>
-              ) : error ? (
-                <div className="text-xs text-zinc-400 text-center py-2">
-                  Unable to load status
-                </div>
-              ) : lanyardData && (
-                <div className="flex flex-col items-start gap-2">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{
-                        backgroundColor: getStatusColor(lanyardData.discord_status),
-                        boxShadow: `0 0 8px ${getStatusColor(lanyardData.discord_status)}`,
-                      }}
-                    />
-                    <span className="text-xs text-zinc-600 dark:text-zinc-400 capitalize">
-                      {lanyardData.discord_status}
-                    </span>
-                  </div>
 
-                  {lanyardData.activities?.length > 0 && (
-                    <div className="space-y-2 w-full">
-                      {lanyardData.activities.map((activity, index) => (
-                        <div
-                          key={index}
-                          className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            {getActivityIcon(activity.type)}
-                            <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                              {activity.name}
-                            </span>
-                          </div>
-                          {activity.state && (
-                            <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                              {activity.state}
-                            </p>
-                          )}
-                          {activity.details && (
-                            <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                              {activity.details}
-                            </p>
-                          )}
-                          {activity.timestamps?.start && (
-                            <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
-                              {formatTime(Date.now() - activity.timestamps.start)}
-                            </p>
-                          )}
+                {lanyardData.activities?.length > 0 && (
+                  <div className="space-y-2 w-full">
+                    {lanyardData.activities.map((activity, index) => (
+                      <div
+                        key={index}
+                        className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {getActivityIcon(activity.type)}
+                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                            {activity.name}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                        {activity.state && (
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                            {activity.state}
+                          </p>
+                        )}
+                        {activity.details && (
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                            {activity.details}
+                          </p>
+                        )}
+                        {activity.timestamps?.start && (
+                          <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
+                            {formatTime(Date.now() - activity.timestamps.start)}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="flex-1 lg:pl-64">
-        <div className="p-6 lg:p-12">
+      <main className="flex-1 lg:pl-64">
+        <div className="p-4 sm:p-6 lg:p-8">
           {children}
         </div>
-      </div>
+      </main>
       
       <IPadCursor />
       <BackgroundMusic />
