@@ -1,46 +1,47 @@
 "use client";
 import React from "react";
 
-const LightBeamsOverlay = () => {
+const DiagonalShadowOverlay = () => {
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999]">
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Beam 1 */}
-        <div className="absolute inset-0 animate-beam1">
-          <div className="h-[250%] w-[250%] bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-[20deg] translate-x-[-50%] translate-y-[-50%] mix-blend-screen" />
-        </div>
-        {/* Beam 2 */}
-        <div className="absolute inset-0 animate-beam2">
-          <div className="h-[250%] w-[250%] bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-[20deg] translate-x-[-50%] translate-y-[-50%] mix-blend-screen" />
-        </div>
-      </div>
-
+      <div className="h-full w-full bg-diagonalStripes" />
       <style jsx>{`
-        @keyframes beam1 {
+        .bg-diagonalStripes {
+          background: repeating-linear-gradient(
+            330deg,
+            rgba(0, 0, 0, 0.4) 0,
+            rgba(0, 0, 0, 0.4) 200px,
+            transparent 200px,
+            transparent 400px
+          );
+          filter: blur(30px);
+          opacity: 0.6;
+          width: 100%;
+          height: 100%;
+          background-size: 400% 400%;
+          animation: diagonalShift 240s ease-in-out infinite;
+        }
+
+        @keyframes diagonalShift {
           0% {
-            transform: translateX(-100%) translateY(-50%) skewX(-20deg);
+            background-position: 0% 0%;
+          }
+          25% {
+            background-position: 50% 10%;
+          }
+          50% {
+            background-position: 100% 0%;
+          }
+          75% {
+            background-position: 50% -10%;
           }
           100% {
-            transform: translateX(100%) translateY(-50%) skewX(-20deg);
+            background-position: 0% 0%;
           }
-        }
-        @keyframes beam2 {
-          0% {
-            transform: translateX(-150%) translateY(-50%) skewX(-20deg);
-          }
-          100% {
-            transform: translateX(50%) translateY(-50%) skewX(-20deg);
-          }
-        }
-        .animate-beam1 {
-          animation: beam1 15s linear infinite;
-        }
-        .animate-beam2 {
-          animation: beam2 20s linear infinite;
         }
       `}</style>
     </div>
   );
 };
 
-export default LightBeamsOverlay;
+export default DiagonalShadowOverlay;
