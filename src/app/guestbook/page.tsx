@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 
 type Comment = {
   id: number;
@@ -129,18 +128,10 @@ export default function GuestbookPage() {
           ) : (
             comments.map((comment) => (
               <div key={comment.id} className="flex gap-4">
-                <Image
-                  src={comment.user.avatar_url}
-                  alt={comment.user.login}
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                />
+
                 <div>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-sm font-medium dark:text-white">
-                      {comment.user.login}
-                    </span>
+
                     <span className="text-xs text-zinc-500">
                       {formatDate(comment.created_at)}
                     </span>
