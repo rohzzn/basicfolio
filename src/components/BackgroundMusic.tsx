@@ -36,7 +36,7 @@ const BackgroundMusic = () => {
 
       // Configure audio
       audio.loop = true;
-      audio.volume = 0.1;
+      audio.volume = 0.10;
       audio.preload = 'auto';
 
       audioRef.current = audio;
