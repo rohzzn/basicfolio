@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { FaArrowRight, FaEnvelope, FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa';
+import { FaArrowRight, FaEnvelope, FaLink } from 'react-icons/fa';
 
 const Home: React.FC = () => (
   <div className="max-w-7xl">
@@ -19,38 +19,15 @@ const Home: React.FC = () => (
       <br />
     </div>
 
-    {/* The only change: added 'flex-wrap gap-4' to keep original positioning but enable responsiveness */}
     <div className="mt-6 flex flex-wrap gap-4">
-      {/* Twitter */}
-      <a
-        href="https://twitter.com/rohzzn"
-        target="_blank"
-        rel="noopener noreferrer"
+      {/* Links */}
+      <Link
+        href="/links"
         className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
       >
-        Twitter
-        <FaTwitter className="ml-2" />
-      </a>
-      {/* LinkedIn */}
-      <a
-        href="https://linkedin.com/in/rohzzn"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
-      >
-        LinkedIn
-        <FaLinkedin className="ml-2" />
-      </a>
-      {/* GitHub */}
-      <a
-        href="https://github.com/rohzzn"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
-      >
-        GitHub
-        <FaGithub className="ml-2" />
-      </a>
+        On the Internet
+        <FaLink className="ml-2" />
+      </Link>
       {/* Resume */}
       <Link
         href="/stack"
