@@ -11,7 +11,8 @@ const nextConfig = {
       "books.google.com", // Add this domain
       "avatars.steamstatic.com",
       'media.steampowered.com',
-      'steamuserimages-a.akamaihd.net'
+      'steamuserimages-a.akamaihd.net',
+      'avatars.githubusercontent.com'
     ],
   },
   // ... other configurations

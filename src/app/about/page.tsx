@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { FaArrowRight, FaEnvelope, FaLink } from 'react-icons/fa';
+import { FaArrowRight, FaEnvelope, FaLink, FaBook } from 'react-icons/fa';
 
 const Home: React.FC = () => (
   <div className="max-w-7xl">
@@ -27,6 +27,14 @@ const Home: React.FC = () => (
       >
         On the Internet
         <FaLink className="ml-2" />
+      </Link>
+      {/* Guestbook */}
+      <Link
+        href="/guestbook"
+        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
+      >
+        Guest Book
+        <FaBook className="ml-2" />
       </Link>
       {/* Resume */}
       <Link
