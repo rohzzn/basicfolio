@@ -10,36 +10,34 @@ const LinksPage = () => {
         { title: "Instagram", description: "Touching grass", url: "https://instagram.com/rohzzn" },
         { title: "Discord", description: "Second home", url: "https://discord.gg/your-server" },
         { title: "LinkedIn", description: "Hire me!", url: "https://linkedin.com/in/rohzzn" },
-        { title: "Spotify", description: "Playlists", url: "https://open.spotify.com/user/your-profile" },
-        { title: "MyAnimeList", description: "Weeb list", url: "https://myanimelist.net/your-profile" },
-        { title: "Apple Podcasts", description: "Unheard Perspective", url: "https://podcasts.apple.com/your-podcast" }
+        { title: "Spotify", description: "Playlists", url: "https://open.spotify.com/user/yrohansanjeev" },
+        { title: "MyAnimeList", description: "Weeb list", url: "https://myanimelist.net/profile/rohzzn" },
       ]
     },
     coding: {
       title: "Development",
       links: [
         { title: "GitHub", description: "Commits", url: "https://github.com/rohzzn" },
-        { title: "Kaggle", description: "Notebooks", url: "https://kaggle.com/your-profile" },
-        { title: "CodeChef", description: "Bad cook", url: "https://codechef.com/users/your-profile" },
-        { title: "Codeforces", description: "Nightmares", url: "https://codeforces.com/profile/your-profile" },
-        { title: "LeetCode", description: "Never gonna be a knight", url: "https://leetcode.com/your-profile" }
+        { title: "Kaggle", description: "Notebooks", url: "https://kaggle.com/rohzzn" },
+        { title: "CodeChef", description: "Bad cook", url: "https://codechef.com/users/rohzzzn" },
+        { title: "Codeforces", description: "Nightmares", url: "https://codeforces.com/profile/rohzzn" },
+        { title: "LeetCode", description: "Never gonna be a knight", url: "https://leetcode.com/rohzzn" }
       ]
     },
     design: {
       title: "Creative",
       links: [
         { title: "Dribbble", description: "Illustrations & more", url: "https://dribbble.com/rohzzn" },
-        { title: "Figma", description: "Basically a Jamboard", url: "https://figma.com/@your-profile" },
-        { title: "Behance", description: "Branding & more", url: "https://behance.net/your-profile" }
+        { title: "Figma", description: "Basically a Jamboard", url: "https://figma.com/@rohzzn" },
+        { title: "Behance", description: "Branding & more", url: "https://behance.net/rohzzn" }
       ]
     },
     gaming: {
       title: "Gaming",
       links: [
-        { title: "Steam", description: "Level 100 degen", url: "https://steamcommunity.com/id/your-profile" },
-        { title: "CS Settings", description: "CS config", url: "https://settings.gg/player/your-id" },
-        { title: "Game Stats", description: "Happy Hours", url: "https://your-stats-page" },
-        { title: "FACEIT", description: "Peak Level 8", url: "https://faceit.com/en/players/your-profile" }
+        { title: "Steam", description: "Level 100 degen", url: "https://steamcommunity.com/id/rohzzn" },
+        { title: "CS Settings", description: "CS config", url: "https://settings.gg/player/rohzzn" },
+        { title: "FACEIT", description: "Peak Level 8", url: "https://www.faceit.com/en/players/Calatop" }
       ]
     }
   };
