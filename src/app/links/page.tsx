@@ -8,7 +8,7 @@ const LinksPage = () => {
       links: [
         { title: "Twitter", description: "Tweets", url: "https://twitter.com/rohzzn" },
         { title: "Instagram", description: "Touching grass", url: "https://instagram.com/rohzzn" },
-        { title: "Discord", description: "Second home", url: "https://discord.gg/your-server" },
+        { title: "Discord", description: "Second home", url: "https://discord.gg/86H5fscts9" },
         { title: "LinkedIn", description: "Hire me!", url: "https://linkedin.com/in/rohzzn" },
         { title: "Spotify", description: "Playlists", url: "https://open.spotify.com/user/yrohansanjeev" },
         { title: "MyAnimeList", description: "Weeb list", url: "https://myanimelist.net/profile/rohzzn" },

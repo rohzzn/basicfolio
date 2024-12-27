@@ -37,9 +37,9 @@ const setup: Setup[] = [
     category: "Editor Setup",
     icon: <Terminal className="w-4 h-4" />,
     items: [
-      { name: "Theme", description: "GitHub Dark Default" },
-      { name: "Font", description: "JetBrains Mono" },
-      { name: "Terminal", description: "Oh My Zsh with Starship prompt" },
+      { name: "Theme", description: "Gruvbox Hard Theme" },
+      { name: "Font", description: "Default" },
+      { name: "Terminal", description: "Warp" },
       { name: "File Icons", description: "Material Icon Theme" }
     ]
   },
@@ -58,7 +58,7 @@ const setup: Setup[] = [
     category: "Mobile Setup",
     icon: <Smartphone className="w-4 h-4" />,
     items: [
-      { name: "iPhone 15 Pro", description: "Daily Driver" },
+      { name: "iPhone 16 Pro", description: "Daily Driver" },
       { name: "Apollo", description: "Reddit Client" },
       { name: "Things", description: "Task Management" },
       { name: "Halide", description: "Camera App" }

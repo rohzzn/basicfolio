@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Github, ExternalLink, Users, Eye, Download, Star, Code, Globe, Gamepad, Cpu, Blocks } from "lucide-react";
+import { Github, ExternalLink, Users, Eye, Download, Star, Globe, Gamepad, Cpu, Blocks } from "lucide-react";
 import Link from "next/link";
 
 interface Project {
@@ -33,48 +33,42 @@ const CategoryIcon = ({ category }: { category: Project['category'] }) => {
 
 const ProjectCard = ({ project }: { project: Project }) => (
   <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
-    <div className="flex items-center gap-2 mb-3">
-      <CategoryIcon category={project.category} />
-      <h3 className="text-sm font-medium dark:text-white">{project.title}</h3>
-      {project.metrics?.preAI && (
-        <span className="ml-auto inline-flex items-center px-2 py-1 rounded-full text-xs bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400">
-          <Code className="w-3 h-3 mr-1" />
-          Pre-AI
-        </span>
+    <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center gap-2">
+        <CategoryIcon category={project.category} />
+        <h3 className="text-sm font-medium dark:text-white">{project.title}</h3>
+      </div>
+      {project.metrics && (
+        <div className="flex items-center gap-2">
+          {project.metrics.users && (
+            <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+              <Users className="w-3 h-3 mr-1" />
+              {project.metrics.users}
+            </div>
+          )}
+          {project.metrics.visits && (
+            <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+              <Eye className="w-3 h-3 mr-1" />
+              {project.metrics.visits}
+            </div>
+          )}
+          {project.metrics.downloads && (
+            <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+              <Download className="w-3 h-3 mr-1" />
+              {project.metrics.downloads}
+            </div>
+          )}
+          {project.metrics.githubStars && (
+            <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+              <Star className="w-3 h-3 mr-1" />
+              {project.metrics.githubStars}
+            </div>
+          )}
+        </div>
       )}
     </div>
     
     <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">{project.description}</p>
-    
-    {/* Metrics */}
-    {project.metrics && (
-      <div className="flex flex-wrap gap-3 mb-4">
-        {project.metrics.users && (
-          <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
-            <Users className="w-3 h-3 mr-1" />
-            {project.metrics.users.toLocaleString()}+ users
-          </div>
-        )}
-        {project.metrics.visits && (
-          <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
-            <Eye className="w-3 h-3 mr-1" />
-            {project.metrics.visits.toLocaleString()}+ visits
-          </div>
-        )}
-        {project.metrics.downloads && (
-          <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
-            <Download className="w-3 h-3 mr-1" />
-            {project.metrics.downloads.toLocaleString()}+ downloads
-          </div>
-        )}
-        {project.metrics.githubStars && (
-          <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
-            <Star className="w-3 h-3 mr-1" />
-            {project.metrics.githubStars} stars
-          </div>
-        )}
-      </div>
-    )}
 
     {/* Tech Stack and Links */}
     <div className="flex items-center justify-between">
@@ -109,7 +103,6 @@ const ProjectCard = ({ project }: { project: Project }) => (
     </div>
   </div>
 );
-
 const Projects = () => {
   const projects: Project[] = [
     {
