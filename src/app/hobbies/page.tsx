@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { Activity, Gamepad2, BookOpen, PenTool, Film } from 'lucide-react';
+import { Activity, Gamepad2, BookOpen, PenTool, Film, Cpu, Laptop } from 'lucide-react';
 
 interface HobbyCard {
   title: string;
@@ -36,11 +36,22 @@ const hobbyCards: HobbyCard[] = [
     icon: Gamepad2
   },
   {
-  
-      title: "Activities",
-      description: "Tracking workouts and daily activities with personal stats and routes.",
-      href: "/hobbies/strava",
-       icon: Activity // from Lucide icons
+    title: "Activities",
+    description: "Tracking workouts and daily activities with personal stats and routes.",
+    href: "/hobbies/strava",
+    icon: Activity
+  },
+  {
+    title: "Laboratory",
+    description: "A collection of experiments, prototypes, and research projects.",
+    href: "/hobbies/lab",
+    icon: Cpu
+  },
+  {
+    title: "Setup",
+    description: "My workstation, development environment, and daily tools.",
+    href: "/hobbies/uses",
+    icon: Laptop
   }
 ];
 
@@ -48,8 +59,7 @@ const Hobbies: React.FC = () => (
   <div className="max-w-7xl">
     <h2 className="text-lg font-medium mb-6 dark:text-white">Hobbies</h2>
 
-
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {hobbyCards.map((card) => (
         <Link
           key={card.href}
