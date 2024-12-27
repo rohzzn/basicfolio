@@ -15,7 +15,7 @@ type Comment = {
 const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
 const REPO_OWNER = 'rohzzn';
 const REPO_NAME = 'basicfolio';
-const ISSUE_NUMBER = 1;
+const ISSUE_NUMBER = 2;
 
 export default function GuestbookPage() {
   const [name, setName] = useState<string>(''); // State for the user's name
