@@ -396,9 +396,9 @@ const Projects = () => {
   ];
   const categories = {
     applications: projects.filter(p => p.category === 'application'),
-    websites: projects.filter(p => p.category === 'web'),
     games: projects.filter(p => p.category === 'game'),
-    research: projects.filter(p => p.category === 'other')
+    research: projects.filter(p => p.category === 'other'),
+    websites: projects.filter(p => p.category === 'web')
   };
 
   return (
