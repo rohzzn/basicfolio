@@ -327,6 +327,72 @@ const Projects = () => {
         preAI: true
       }
     },
+    // Add these to your projects array
+{
+  title: "Portfolio V5",
+  description: "Current iteration of my portfolio with dark mode and modern UI.",
+  tech: ["Next.js", "TypeScript", "Tailwind CSS"],
+  category: 'web',
+  links: [
+    { label: "GitHub", url: "https://github.com/rohzzn/portfolio" },
+    { label: "Live Demo", url: "https://portfolio-calatops-projects.vercel.app/" },
+  ],
+  metrics: {
+    visits: 2300
+  }
+},
+{
+  title: "Portfolio V4",
+  description: "Windows 95 style portfolio with retro aesthetics.",
+  tech: ["React", "Styled Components", "95.css"],
+  category: 'web',
+  links: [
+    { label: "GitHub", url: "https://github.com/rohzzn/windows95" },
+    { label: "Live Demo", url: "https://rohzzn.github.io/windows95/" },
+  ],
+  metrics: {
+    visits: 1200
+  }
+},
+{
+  title: "Portfolio V3",
+  description: "Minimalist design portfolio focused on clean aesthetics.",
+  tech: ["React", "CSS3", "JavaScript"],
+  category: 'web',
+  links: [
+    { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v3" },
+    { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v3/" },
+  ],
+  metrics: {
+    visits: 1300
+  }
+},
+{
+  title: "Portfolio V2",
+  description: "Professional design portfolio with modern animations.",
+  tech: ["React", "GSAP", "Sass"],
+  category: 'web',
+  links: [
+    { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v2" },
+    { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v2/" },
+  ],
+  metrics: {
+    visits: 7000
+  }
+},
+{
+  title: "Portfolio V1",
+  description: "Anime-themed portfolio with unique visual style.",
+  tech: ["HTML5", "CSS3", "JavaScript"],
+  category: 'web',
+  links: [
+    { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v1" },
+    { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v1/" },
+  ],
+  metrics: {
+    visits: 500
+  }
+}
   ];
   const categories = {
     applications: projects.filter(p => p.category === 'application'),
