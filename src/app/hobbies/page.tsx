@@ -37,7 +37,7 @@ const hobbyCards: HobbyCard[] = [
   },
   {
     title: "Activities",
-    description: "Tracking workouts and daily activities with personal stats and routes.",
+    description: "Tracking workouts and daily activities with personal stats.",
     href: "/hobbies/strava",
     icon: Activity
   },
