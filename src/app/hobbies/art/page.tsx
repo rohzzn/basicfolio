@@ -15,34 +15,154 @@ interface Project {
 }
 
 const projects: Project[] = [
+  // Behance Projects
   {
     id: 1,
-    title: 'Windows 95 Portfolio',
-    description: 'A nostalgic tribute to the classic Windows 95 interface, reimagined as a modern portfolio.',
+    title: 'Sarojini Gastro',
+    description: 'Branding design for Hospital.',
     platform: 'Behance',
-    imageUrl: '/images/design/windows95.jpg',
-    projectUrl: 'https://rohzzn.github.io/windows95',
-    tags: ['UI/UX', 'Retro', 'Web Design']
+    imageUrl: '/images/design/sarojini.png',
+    projectUrl: 'https://www.behance.net/gallery/127106007/Sarojini-Gastro-BRANDING',
+    tags: ['Branding', 'Logo Design', 'Hospital']
   },
   {
     id: 2,
-    title: 'Minimalist Portfolio',
-    description: 'Clean and modern portfolio design with focus on typography and whitespace.',
+    title: 'Kōhī',
+    description: 'Brand identity design for a Japanese-inspired coffee beans.',
     platform: 'Behance',
-    imageUrl: '/images/design/portfolio.jpg',
-    projectUrl: 'https://rohzzn.github.io/portfolio_v3',
-    tags: ['Minimalist', 'Typography', 'Web Design']
+    imageUrl: '/images/design/kohi.png',
+    projectUrl: 'https://www.behance.net/gallery/109291517/Kohi-BRANDING',
+    tags: ['Branding', 'Japanese', 'Coffee']
   },
   {
     id: 3,
-    title: 'Tanoshi Theme',
-    description: 'A dark theme for VS Code focusing on readability and reduced eye strain.',
-    platform: 'Dribbble',
-    imageUrl: '/images/design/tanoshi.jpg',
-    projectUrl: 'https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi',
-    tags: ['Theme', 'Dark Mode', 'VS Code']
+    title: 'Merch Design',
+    description: 'Collection of merchandise designs featuring unique illustrations and patterns.',
+    platform: 'Behance',
+    imageUrl: '/images/design/merch.png',
+    projectUrl: 'https://www.behance.net/gallery/109299665/Merch-Design',
+    tags: ['Merchandise', 'Illustration', 'Fashion']
   },
-  // Add more projects here...
+  {
+    id: 4,
+    title: 'Mascots Folio',
+    description: 'A collection of character mascots designed for various brands and projects.',
+    platform: 'Behance',
+    imageUrl: '/images/design/mascots.png',
+    projectUrl: 'https://www.behance.net/gallery/97663207/Mascots-01',
+    tags: ['Character Design', 'Mascots', 'Illustration']
+  },
+  {
+    id: 5,
+    title: 'Game Backgrounds',
+    description: 'Environmental designs and background artwork for gaming projects.',
+    platform: 'Behance',
+    imageUrl: '/images/design/gamebg.png',
+    projectUrl: 'https://www.behance.net/gallery/107259111/Game-Backgrounds',
+    tags: ['Game Art', 'Environment Design', 'Digital Art']
+  },
+  {
+    id: 6,
+    title: 'Logofolio 01',
+    description: 'Collection of logo designs and brand marks for various clients.',
+    platform: 'Behance',
+    imageUrl: '/images/design/logofolio.png',
+    projectUrl: 'https://www.behance.net/gallery/96981231/Logofolio-01',
+    tags: ['Logo Design', 'Branding', 'Identity']
+  },
+  {
+    id: 7,
+    title: 'Pirate King',
+    description: 'Illustration of Pirate King YouTuber.',
+    platform: 'Behance',
+    imageUrl: '/images/design/pirateking.png',
+    projectUrl: 'https://www.behance.net/gallery/134277689/Pirate-King-BANNER',
+    tags: ['Cover Art', 'Branding', 'Identity']
+  },
+
+  // Dribbble Projects
+  {
+    id: 8,
+    title: 'Zenitsu',
+    description: 'Character illustration inspired by Demon Slayer.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/zenitsu.jpg',
+    projectUrl: 'https://dribbble.com/shots/14276575-Zenitsu-x-Calatop',
+    tags: ['Illustration', 'Anime', 'Character Design']
+  },
+  {
+    id: 9,
+    title: 'Sushi',
+    description: 'Food illustration and packaging design concept.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/sushi.jpg',
+    projectUrl: 'https://dribbble.com/shots/14520503-Sushi',
+    tags: ['Food', 'Illustration', 'Packaging']
+  },
+  {
+    id: 10,
+    title: 'Taj Mahal',
+    description: 'Architectural illustration of the iconic monument.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/tajmahal.jpg',
+    projectUrl: 'https://dribbble.com/shots/14520610-Taj-Mahal',
+    tags: ['Architecture', 'Illustration', 'Landmarks']
+  },
+  {
+    id: 11,
+    title: 'Cat Illustration',
+    description: 'Playful cat character design and illustration.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/cat.jpg',
+    projectUrl: 'https://dribbble.com/shots/14520857-Cat',
+    tags: ['Character Design', 'Animals', 'Illustration']
+  },
+ 
+  {
+    id: 12,
+    title: 'Dog Illustration',
+    description: 'Playful dog Illustration design.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/dog.jpg',
+    projectUrl: 'https://dribbble.com/shots/14537048-Dog',
+    tags: ['Mascot', 'Character Design', 'Branding']
+  },
+  {
+    id: 13,
+    title: 'Wallpaper Engine UI',
+    description: 'User interface design for a wallpaper customization app.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/wallpaperengine.jpg',
+    projectUrl: 'https://dribbble.com/shots/14535866-UI-Concept-Wallpaper-Engine',
+    tags: ['UI Design', 'Desktop', 'Application']
+  },
+  {
+    id: 14,
+    title: 'Delivery App UI',
+    description: 'Modern interface design for a food delivery application.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/packageui.jpg',
+    projectUrl: 'https://dribbble.com/shots/22380216-Delivery-Tracking',
+    tags: ['UI Design', 'Mobile', 'Food Delivery']
+  },
+  {
+    id: 15,
+    title: 'Finance App UI',
+    description: 'Clean and modern finance application interface.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/cash.jpg',
+    projectUrl: 'https://dribbble.com/shots/21392007-Finance',
+    tags: ['UI Design', 'Finance', 'Mobile']
+  },
+  {
+    id: 16,
+    title: 'Rohan Mascot',
+    description: 'Personal brand mascot design.',
+    platform: 'Dribbble',
+    imageUrl: '/images/design/mascot.jpg',
+    projectUrl: 'https://dribbble.com/shots/14977365-Calatop',
+    tags: ['Mascot', 'Personal Brand', 'Character Design']
+  }
 ];
 
 const ArtPage = () => {
@@ -58,8 +178,7 @@ const ArtPage = () => {
       
       {/* Description */}
       <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-        A collection of my design work and experiments. I focus on creating clean, 
-        user-friendly interfaces with attention to typography and visual hierarchy.
+        A collection of my design work and experiments. This page still WIP 🪴.
       </p>
 
       {/* Filter Buttons */}
@@ -141,27 +260,7 @@ const ArtPage = () => {
         ))}
       </div>
 
-      {/* Profile Links */}
-      <div className="mt-12 flex justify-center space-x-6">
-        <Link
-          href="https://www.behance.net/rohzzn"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
-        >
-          View Behance Profile
-          <ExternalLink size={16} />
-        </Link>
-        <Link
-          href="https://dribbble.com/rohzzn"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
-        >
-          View Dribbble Profile
-          <ExternalLink size={16} />
-        </Link>
-      </div>
+     
     </div>
   );
 };
