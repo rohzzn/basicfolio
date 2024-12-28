@@ -1,11 +1,11 @@
-// src/app/hobbies/art/page.tsx
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 
-interface ArtProject {
+interface Project {
+  id: number;
   title: string;
   description: string;
   platform: 'Behance' | 'Dribbble';
@@ -14,65 +14,86 @@ interface ArtProject {
   tags: string[];
 }
 
-const artProjects: ArtProject[] = [
+const projects: Project[] = [
   {
+    id: 1,
     title: 'Windows 95 Portfolio',
-    description: 'A nostalgic tribute to the classic Windows 95 interface.',
+    description: 'A nostalgic tribute to the classic Windows 95 interface, reimagined as a modern portfolio.',
     platform: 'Behance',
     imageUrl: '/images/design/windows95.jpg',
     projectUrl: 'https://rohzzn.github.io/windows95',
     tags: ['UI/UX', 'Retro', 'Web Design']
   },
   {
+    id: 2,
     title: 'Minimalist Portfolio',
-    description: 'Clean and modern portfolio design with focus on typography.',
+    description: 'Clean and modern portfolio design with focus on typography and whitespace.',
     platform: 'Behance',
     imageUrl: '/images/design/portfolio.jpg',
     projectUrl: 'https://rohzzn.github.io/portfolio_v3',
     tags: ['Minimalist', 'Typography', 'Web Design']
   },
   {
+    id: 3,
     title: 'Tanoshi Theme',
-    description: 'Dark theme for VS Code focusing on readability and eye comfort.',
+    description: 'A dark theme for VS Code focusing on readability and reduced eye strain.',
     platform: 'Dribbble',
     imageUrl: '/images/design/tanoshi.jpg',
     projectUrl: 'https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi',
     tags: ['Theme', 'Dark Mode', 'VS Code']
-  }
+  },
+  // Add more projects here...
 ];
 
 const ArtPage = () => {
+  const [activeFilter, setActiveFilter] = useState<'all' | 'Behance' | 'Dribbble'>('all');
+
+  const filteredProjects = projects.filter(
+    project => activeFilter === 'all' || project.platform === activeFilter
+  );
+
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Design</h2>
       
       {/* Description */}
       <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-        A collection of my design projects and experiments. I focus on creating clean, 
+        A collection of my design work and experiments. I focus on creating clean, 
         user-friendly interfaces with attention to typography and visual hierarchy.
       </p>
 
+      {/* Filter Buttons */}
+      <div className="flex gap-4 mb-8">
+        {(['all', 'Behance', 'Dribbble'] as const).map((filter) => (
+          <button
+            key={filter}
+            onClick={() => setActiveFilter(filter)}
+            className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+              activeFilter === filter
+                ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+            }`}
+          >
+            {filter === 'all' ? 'All Projects' : filter}
+          </button>
+        ))}
+      </div>
+
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {artProjects.map((project, index) => (
+        {filteredProjects.map((project) => (
           <div 
-            key={index}
-            className="group bg-white dark:bg-zinc-800 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
+            key={project.id}
+            className="group bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden"
           >
             {/* Project Image */}
             <div className="relative h-48 w-full overflow-hidden">
-              <div className="relative w-full h-full">
-                <Image
-                  src={project.imageUrl}
-                  alt={project.title}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                {/* Fallback for missing images */}
-                <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center">
-                  <span className="text-zinc-500 dark:text-zinc-400">Image not found</span>
-                </div>
-              </div>
+              <Image
+                src={project.imageUrl}
+                alt={project.title}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
             </div>
 
             {/* Project Info */}
@@ -94,11 +115,11 @@ const ArtPage = () => {
               </p>
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {project.tags.map((tag, tagIndex) => (
                   <span 
                     key={tagIndex}
-                    className="text-xs px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded"
+                    className="text-xs px-2 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded"
                   >
                     {tag}
                   </span>
@@ -106,7 +127,7 @@ const ArtPage = () => {
               </div>
 
               {/* Platform Badge */}
-              <div className="mt-4 flex items-center gap-2">
+              <div className="mt-4">
                 <span className={`text-xs px-2 py-1 rounded ${
                   project.platform === 'Behance' 
                     ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
