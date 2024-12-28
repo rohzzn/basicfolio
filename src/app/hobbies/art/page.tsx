@@ -30,7 +30,7 @@ const projects: Project[] = [
     title: 'Kōhī',
     description: 'Brand identity design for a Japanese-inspired coffee beans.',
     platform: 'Behance',
-    imageUrl: '/images/design/kohi.png',
+    imageUrl: '/images/design/kohi2.png',
     projectUrl: 'https://www.behance.net/gallery/109291517/Kohi-BRANDING',
     tags: ['Branding', 'Japanese', 'Coffee']
   },
