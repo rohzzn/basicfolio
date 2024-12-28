@@ -178,7 +178,7 @@ const ArtPage = () => {
       
       {/* Description */}
       <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-        A collection of my design work and experiments. This page still WIP 🪴.
+        A collection of my design work and experiments. This page is still in WIP 🪴.
       </p>
 
       {/* Filter Buttons */}
