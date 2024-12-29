@@ -11,7 +11,8 @@ const LinksPage = () => {
         { title: "Discord", description: "Second home", url: "https://discord.gg/86H5fscts9" },
         { title: "LinkedIn", description: "Hire me!", url: "https://linkedin.com/in/rohzzn" },
         { title: "Spotify", description: "Playlists", url: "https://open.spotify.com/user/rohansanjeev" },
-        { title: "MyAnimeList", description: "Weeb list", url: "https://myanimelist.net/profile/rohzzn" },
+        { title: "YouTube", description: "Content", url: "https://youtube.com/rohzzn" },
+
       ]
     },
     coding: {
@@ -19,11 +20,12 @@ const LinksPage = () => {
       links: [
         { title: "GitHub", description: "Commits", url: "https://github.com/rohzzn" },
         { title: "Kaggle", description: "Notebooks", url: "https://kaggle.com/rohzzn" },
-        { title: "CodeChef", description: "Bad cook", url: "https://codechef.com/users/rohzzzn" },
+        { title: "CodeChef", description: "3 Stars", url: "https://codechef.com/users/rohzzzn" },
         { title: "Codeforces", description: "Nightmares", url: "https://codeforces.com/profile/rohzzn" },
-        { title: "LeetCode", description: "Never gonna be a knight", url: "https://leetcode.com/rohzzn" }
+        { title: "LeetCode", description: "Never gonna be a knight", url: "https://leetcode.com/rohzzn" },
       ]
     },
+  
     design: {
       title: "Creative",
       links: [
@@ -35,11 +37,23 @@ const LinksPage = () => {
     gaming: {
       title: "Gaming",
       links: [
-        { title: "Steam", description: "Level 100 degen", url: "https://steamcommunity.com/id/rohzzn" },
+        { title: "Steam", description: "Level 100", url: "https://steamcommunity.com/id/rohzzn" },
         { title: "CS Settings", description: "CS config", url: "https://settings.gg/player/rohzzn" },
         { title: "FACEIT", description: "Peak Level 8", url: "https://www.faceit.com/en/players/Calatop" }
       ]
-    }
+    },
+    other: {
+      title: "Other",
+      links: [
+        { title: "Peerlist", description: "Linked but better", url: "https://peerlist.io/rohzzn" },
+        { title: "Polywork", description: "Professional life", url: "https://polywork.com/rohzzn" },
+        { title: "Buy me a coffee", description: "Support", url: "https://buymeacoffee.com/rohzzn" },
+        { title: "Twitch", description: "Stream", url: "https://twitch.tv/rohzzn" },
+        { title: "Product Hunt", description: "Hunts", url: "https://www.producthunt.com/@rohzzn" },
+        { title: "Gumroad", description: "Products", url: "https://gumroad.com/rohzzn" },
+        
+      ]
+    },
   };
 
   return (
