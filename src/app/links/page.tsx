@@ -51,6 +51,10 @@ const LinksPage = () => {
         { title: "Twitch", description: "Stream", url: "https://twitch.tv/rohzzn" },
         { title: "Product Hunt", description: "Hunts", url: "https://www.producthunt.com/@rohzzn" },
         { title: "Gumroad", description: "Products", url: "https://gumroad.com/rohzzn" },
+        { title: "DevPost", description: "Hackathons", url: "https://devpost.com/rohzzn" },
+        { title: "Devfolio", description: "More Hackathons", url: "https://devfolio.co/@rohzzn" },
+        { title: "Monkeytype", description: "Typing Speed", url: "https://monkeytype.com/profile/Rohzzn" },
+        
         
       ]
     },
