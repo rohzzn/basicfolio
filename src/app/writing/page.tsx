@@ -6,17 +6,65 @@ import IxigoExperience from './ixigo-experience';
 import BeginnersGuideDesign from './beginners-guide-design';
 import BeginnersGuideProgramming from './beginners-guide-programming';
 import EsportsJourney from './esports-journey';
+import VariablesExposure from './variables-exposure';
+import SecurityArticle from './security-article';
+import BoringPerformance from './boring-performance';
+import ModernTechStacks from './modern-tech-stacks';
+import ChatGPTInterface from './chatgpt-interface';
+import DiscordArticle from './discord-article';
 
 const WritingPage = () => {
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
 
   const posts = useMemo(() => [
     {
+      slug: 'variables-exposure',
+      title: 'Why Environment Variables Dont Truly Hide Sensitive Data',
+      date: '2024-12-29',
+      displayDate: 'December 29, 2024',
+      description: 'A detailed exploration of how storing tokens or keys in environment variables does not effectively hide them from end users, demonstrated through the use of Burp Suite.'
+    },
+    {
+      slug: 'modern-tech-stacks',
+      title: 'Modern Tech Stacks Are Killing Your Startup — Heres What We Learned Building With PHP in 2024',
+      date: '2024-06-10',
+      displayDate: 'June 10, 2024',
+      description: 'A controversial take on why choosing boring technology and monolithic architecture might be the best decision for your startup, backed by real-world data and cost analysis.'
+    },
+    {
+      slug: 'security-article',
+      title: 'Your 2FA Is Broken: Inside the New Wave of Time-Based Token Attacks',
+      date: '2024-05-15',
+      displayDate: 'May 15, 2024',
+      description: 'An investigation into critical vulnerabilities in common 2FA implementations, with practical solutions and security testing tools for protecting your authentication systems.'
+    },
+    {
+      slug: 'boring-performance',
+      title: 'The Boring Company Guide to 10x Frontend Performance',
+      date: '2024-04-15',
+      displayDate: 'April 15, 2024',
+      description: 'A deep dive into how The Boring Companys frontend team achieved dramatic performance improvements through systematic testing and unconventional optimization techniques.'
+    },
+    {
+      slug: 'discord-article',
+      title: 'The Untold Story of How Discords API Survived 2024s Biggest Gaming Launch',
+      date: '2024-03-20',
+      displayDate: 'March 20, 2024',
+      description: 'A deep dive into Discords infrastructure transformation, including their switch to Rust and innovative Redis implementations for handling 12 million concurrent users.'
+    },
+    {
       slug: 'esports-journey',
       title: 'My Time in Esports',
       date: '2024-03-08',
       displayDate: 'March 8, 2024',
       description: 'A personal journey through competitive gaming, from Counter-Strike tournaments to Valorant achievements.'
+    },
+    {
+      slug: 'chatgpt-interface',
+      title: 'I Built My Own ChatGPT UI and Learned Why UI/UX Engineers Still Have Jobs',
+      date: '2024-01-20',
+      displayDate: 'January 20, 2024',
+      description: 'A three-month journey of building a ChatGPT-style interface from scratch, revealing the complex UX patterns and trust-building features that make AI interfaces effective.'
     },
     {
       slug: 'ixigo-experience',
@@ -51,6 +99,18 @@ const WritingPage = () => {
         return <BeginnersGuideDesign onBack={() => setSelectedPost(null)} />;
       case 'esports-journey':
         return <EsportsJourney onBack={() => setSelectedPost(null)} />;
+      case 'variables-exposure':
+        return <VariablesExposure onBack={() => setSelectedPost(null)} />;
+      case 'security-article':
+        return <SecurityArticle onBack={() => setSelectedPost(null)} />;
+      case 'boring-performance':
+        return <BoringPerformance onBack={() => setSelectedPost(null)} />;
+      case 'modern-tech-stacks':
+        return <ModernTechStacks onBack={() => setSelectedPost(null)} />;
+      case 'chatgpt-interface':
+        return <ChatGPTInterface onBack={() => setSelectedPost(null)} />;
+      case 'discord-article':
+        return <DiscordArticle onBack={() => setSelectedPost(null)} />;
       default:
         return null;
     }
