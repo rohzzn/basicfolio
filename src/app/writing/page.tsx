@@ -12,11 +12,19 @@ import BoringPerformance from './boring-performance';
 import ModernTechStacks from './modern-tech-stacks';
 import ChatGPTInterface from './chatgpt-interface';
 import DiscordArticle from './discord-article';
+import UCExperience from './uc-experience';
 
 const WritingPage = () => {
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
 
   const posts = useMemo(() => [
+    {
+      slug: 'uc-experience',
+      title: 'My First Semester at UC',
+      date: '2024-12-31',
+      displayDate: 'December 31, 2024',
+      description: 'A Deep Dive into MENG CS and Campus Life'
+    },
     {
       slug: 'variables-exposure',
       title: 'Why Environment Variables Dont Truly Hide Sensitive Data',
@@ -111,6 +119,8 @@ const WritingPage = () => {
         return <ChatGPTInterface onBack={() => setSelectedPost(null)} />;
       case 'discord-article':
         return <DiscordArticle onBack={() => setSelectedPost(null)} />;
+      case 'uc-experience':
+        return <UCExperience onBack={() => setSelectedPost(null)} />;
       default:
         return null;
     }
