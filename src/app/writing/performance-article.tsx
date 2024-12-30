@@ -144,7 +144,6 @@ export default async function Dashboard({
             <li><strong>Server Components Deep Dive:</strong> next.js/docs/app/building-your-application/rendering/server-components</li>
             <li><strong>Edge Runtime Configuration:</strong> vercel.com/docs/functions/edge-functions/edge-runtime</li>
             <li><strong>Performance Monitoring:</strong> vercel.com/docs/speed-insights</li>
-            <li><strong>Example Repo:</strong> github.com/user/nextjs-perf-example</li>
           </ul>
         </div>
 

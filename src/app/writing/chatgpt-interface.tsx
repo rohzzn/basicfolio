@@ -257,15 +257,6 @@ const userMetrics = {
           </pre>
         </div>
 
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">Key Resources</h3>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
-            <li><strong>Streaming Message Component:</strong> github.com/user/streaming-message</li>
-            <li><strong>AI Error Boundary:</strong> github.com/user/ai-error-boundary</li>
-            <li><strong>Full Source Code:</strong> github.com/user/chatgpt-clone</li>
-            <li><strong>UX Research Data:</strong> github.com/user/ai-ux-patterns</li>
-          </ul>
-        </div>
 
         <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Future Work</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
