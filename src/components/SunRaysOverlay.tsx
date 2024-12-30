@@ -1,47 +1,23 @@
 "use client";
 import React from "react";
 
-const DiagonalShadowOverlay = () => {
+const SoftNoiseOverlay = () => {
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999]">
-      <div className="h-full w-full bg-diagonalStripes" />
+      <div className="h-full w-full bg-noisePattern" />
       <style jsx>{`
-        .bg-diagonalStripes {
-          background: repeating-linear-gradient(
-            330deg,
-            rgba(0, 0, 0, 0.4) 0,
-            rgba(0, 0, 0, 0.4) 200px,
-            transparent 200px,
-            transparent 400px
-          );
-          filter: blur(30px);
-          opacity: 0.0;
-          width: 100%;
-          height: 100%;
-          background-size: 400% 400%;
-          animation: diagonalShift 240s ease-in-out infinite;
-        }
-
-        @keyframes diagonalShift {
-          0% {
-            background-position: 0% 0%;
-          }
-          25% {
-            background-position: 50% 10%;
-          }
-          50% {
-            background-position: 100% 0%;
-          }
-          75% {
-            background-position: 50% -10%;
-          }
-          100% {
-            background-position: 0% 0%;
-          }
+        .bg-noisePattern {
+          /* Base color overlay */
+          background-color: rgba(0, 0, 0, 0.05);
+          /* Noise texture repeated */
+          background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' version='1.1' xmlns='http://www.w3.org/2000/svg'%3E%3Crect fill='%23ffffff' width='1' height='1' x='13' y='13'/%3E%3C/svg%3E");
+          background-repeat: repeat;
+          background-size: 200px 200px;
+          mix-blend-mode: overlay;
         }
       `}</style>
     </div>
   );
 };
 
-export default DiagonalShadowOverlay;
+export default SoftNoiseOverlay;
