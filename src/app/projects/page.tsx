@@ -120,6 +120,20 @@ const Projects = () => {
       }
     },
     {
+      title: "Git Time Machine",
+      description: "Interactive CLI tool for visualizing git repository history with real-time analysis and beautiful formatting.",
+      tech: ["Node.js", "Commander.js", "Inquirer", "Chalk"],
+      category: 'application',
+      links: [
+        { label: "GitHub", url: "https://github.com/rohzzn/git-time-machine" },
+        { label: "Package", url: "https://www.npmjs.com/package/git-time-machine" },
+      ],
+      metrics: {
+        downloads: 4, 
+
+      }
+    },
+    {
       title: "Pages",
       description: "Figma plugin for rapid page creation and layout management.",
       tech: ["Figma API", "TypeScript", "React"],
