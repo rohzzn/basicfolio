@@ -129,7 +129,7 @@ const Projects = () => {
         { label: "Package", url: "https://www.npmjs.com/package/git-time-machine" },
       ],
       metrics: {
-        downloads: 4, 
+        downloads: 152, 
 
       }
     },
