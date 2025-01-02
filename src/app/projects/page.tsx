@@ -111,7 +111,7 @@ const Projects = () => {
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
       links: [
-        { label: "GitHub", url: "https://github.com/dsa" },
+        { label: "GitHub", url: "https://github.com/rohzzn/dsa" },
         { label: "Live", url: "https://dsa.gay" },
       ],
       metrics: {
