@@ -106,6 +106,20 @@ const ProjectCard = ({ project }: { project: Project }) => (
 const Projects = () => {
   const projects: Project[] = [
     {
+      title: "DSA GAY",
+      description: "Learn Data Structures and Algorithms.",
+      tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+      category: 'web',
+      links: [
+        { label: "GitHub", url: "https://github.com/dsa" },
+        { label: "Live", url: "https://dsa.gay" },
+      ],
+      metrics: {
+        visits: 30000,
+        preAI: true
+      }
+    },
+    {
       title: "CodeChef MREC",
       description: "Central hub for facilitating coding competitions and community engagement.",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
@@ -129,7 +143,7 @@ const Projects = () => {
         { label: "Package", url: "https://www.npmjs.com/package/git-time-machine" },
       ],
       metrics: {
-        downloads: 152, 
+        downloads: 225, 
 
       }
     },
