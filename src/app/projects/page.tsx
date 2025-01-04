@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Github, ExternalLink, Users, Eye, Download, Star, Globe, Gamepad, Cpu, Blocks } from "lucide-react";
 import Link from "next/link";
 
@@ -18,79 +18,72 @@ interface Project {
   category: 'application' | 'web' | 'game' | 'other';
 }
 
-const CategoryIcon = ({ category }: { category: Project['category'] }) => {
-  switch (category) {
-    case 'application':
-      return <Blocks className="w-4 h-4" />;
-    case 'web':
-      return <Globe className="w-4 h-4" />;
-    case 'game':
-      return <Gamepad className="w-4 h-4" />;
-    default:
-      return <Cpu className="w-4 h-4" />;
-  }
-};
-
 const ProjectCard = ({ project }: { project: Project }) => (
-  <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
-    <div className="flex items-center justify-between mb-3">
-      <div className="flex items-center gap-2">
-        <CategoryIcon category={project.category} />
-        <h3 className="text-sm font-medium dark:text-white">{project.title}</h3>
-      </div>
+  <div className="bg-white dark:bg-zinc-800 rounded-xl p-5 shadow-sm hover:shadow-md dark:shadow-zinc-900/30 transition-all border border-zinc-100 dark:border-zinc-700">
+    {/* Title */}
+    <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3">
+      {project.title}
+    </h3>
+    
+    {/* Description */}
+    <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">{project.description}</p>
+
+    {/* Tech stack */}
+    <div className="flex flex-wrap gap-2 mb-4">
+      {project.tech.map((tech, index) => (
+        <span
+          key={index}
+          className="text-xs font-medium px-2.5 py-1 bg-zinc-100 dark:bg-zinc-700/50 text-zinc-700 dark:text-zinc-300 rounded-full"
+        >
+          {tech}
+        </span>
+      ))}
+    </div>
+
+    {/* Divider */}
+    <div className="border-t border-zinc-200 dark:border-zinc-700 my-4"></div>
+
+    {/* Footer with metrics and links */}
+    <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center">
+      {/* Metrics */}
       {project.metrics && (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap gap-2">
           {project.metrics.users && (
-            <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
               <Users className="w-3 h-3 mr-1" />
               {project.metrics.users}
             </div>
           )}
           {project.metrics.visits && (
-            <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
               <Eye className="w-3 h-3 mr-1" />
               {project.metrics.visits}
             </div>
           )}
           {project.metrics.downloads && (
-            <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
               <Download className="w-3 h-3 mr-1" />
               {project.metrics.downloads}
             </div>
           )}
           {project.metrics.githubStars && (
-            <div className="inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
               <Star className="w-3 h-3 mr-1" />
               {project.metrics.githubStars}
             </div>
           )}
         </div>
       )}
-    </div>
-    
-    <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">{project.description}</p>
 
-    {/* Tech Stack and Links */}
-    <div className="flex items-center justify-between">
-      <div className="flex flex-wrap gap-2">
-        {project.tech.map((tech, index) => (
-          <span
-            key={index}
-            className="text-xs px-2 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded-full"
-          >
-            {tech}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex gap-3">
+      {/* Links */}
+      <div className="flex items-center gap-3">
         {project.links.map((link, index) => (
           <Link
             key={index}
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1"
+            className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1.5"
           >
             {link.label === "GitHub" ? (
               <>GitHub <Github className="w-3 h-3" /></>
@@ -103,10 +96,12 @@ const ProjectCard = ({ project }: { project: Project }) => (
     </div>
   </div>
 );
+
 const Projects = () => {
+  const [activeTab, setActiveTab] = useState<'application' | 'web' | 'game' | 'other'>('application');
   const projects: Project[] = [
     {
-      title: "DSA GAY",
+      title: "DSA Roadmap",
       description: "Learn Data Structures and Algorithms.",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
@@ -121,7 +116,7 @@ const Projects = () => {
     },
     {
       title: "CodeChef MREC",
-      description: "Central hub for facilitating coding competitions and community engagement.",
+      description: "Central hub for facilitating coding competitions and engagement.",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
       links: [
@@ -135,7 +130,7 @@ const Projects = () => {
     },
     {
       title: "Git Time Machine",
-      description: "Interactive CLI tool for visualizing git repository history with real-time analysis and beautiful formatting.",
+      description: "Interactive CLI tool for visualizing git history with real-time analysis.",
       tech: ["Node.js", "Commander.js", "Inquirer", "Chalk"],
       category: 'application',
       links: [
@@ -164,7 +159,7 @@ const Projects = () => {
     
     {
       title: "Meet",
-      description: "Video call application with advanced features like screen sharing and recording.",
+      description: "Video call application with features like screen sharing and recording.",
       tech: ["React", "Node.js", "Socket.io"],
       category: 'application',
       links: [
@@ -344,7 +339,7 @@ const Projects = () => {
     },
     {
       title: "Smart Agriculture",
-      description: "Agriculture using automation for optimal growth and reduced labor costs.",
+      description: "Agriculture using automation for optimal growth and reduced costs.",
       tech: ["Arduino", "C++", "Sensors"],
       category: 'other',
       links: [
@@ -421,33 +416,60 @@ const Projects = () => {
     visits: 500
   }
 }
-  ];
-  const categories = {
-    applications: projects.filter(p => p.category === 'application'),
-    games: projects.filter(p => p.category === 'game'),
-    research: projects.filter(p => p.category === 'other'),
-    websites: projects.filter(p => p.category === 'web')
+];
+
+  const categories: Record<typeof activeTab, Project[]> = {
+    'application': projects.filter(p => p.category === 'application'),
+    'web': projects.filter(p => p.category === 'web'),
+    'game': projects.filter(p => p.category === 'game'),
+    'other': projects.filter(p => p.category === 'other')
   };
 
+  const displayCategories = [
+    { id: 'application' as const, label: 'Applications', icon: <Blocks className="w-4 h-4" /> },
+    { id: 'web' as const, label: 'Websites', icon: <Globe className="w-4 h-4" /> },
+    { id: 'game' as const, label: 'Games', icon: <Gamepad className="w-4 h-4" /> },
+    { id: 'other' as const, label: 'Research', icon: <Cpu className="w-4 h-4" /> }
+  ];
+
   return (
-    <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Projects</h2>
+    <div className="max-w-5xl">
+      <div className="mb-8">
+        <h2 className="text-lg font-medium mb-4 dark:text-white">Projects</h2>
 
+      </div>
 
-      {Object.entries(categories).map(([category, items]) => 
-        items.length > 0 && (
-          <div key={category} className="mb-12">
-            <h3 className="text-base font-medium mb-6 dark:text-white capitalize">
-              {category}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {items.map((project, index) => (
-                <ProjectCard key={index} project={project} />
-              ))}
-            </div>
-          </div>
-        )
-      )}
+      {/* Category Tabs - Scrollable container */}
+      <div className="mb-8 -mx-4 sm:mx-0 overflow-x-auto">
+        <div className="flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg min-w-fit">
+          {displayCategories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setActiveTab(category.id)}
+              className={`
+                flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap
+                ${activeTab === category.id
+                  ? 'bg-white dark:bg-zinc-700 text-black dark:text-white'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
+                }
+              `}
+            >
+              {category.icon}
+              {category.label}
+              <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                {categories[category.id].length}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Project Grid - Full width on mobile */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 sm:px-0">
+        {categories[activeTab].map((project, index) => (
+          <ProjectCard key={index} project={project} />
+        ))}
+      </div>
     </div>
   );
 };
