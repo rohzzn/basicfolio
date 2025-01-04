@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { RefreshCcw, Timer } from 'lucide-react';
-
 
 // Expanded word list including 5 and 6 letter words
 const commonWords = [
@@ -42,6 +41,7 @@ const commonWords = [
   'finish', 'fiscal', 'flight', 'flying', 'follow', 'forced', 'forest', 'forget', 'formal', 'format',
   'former', 'foster', 'fought', 'fourth', 'friend', 'future', 'garden', 'gather', 'gender', 'gentle'
 ];
+
 const keyboardLayout = [
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
   ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
@@ -64,10 +64,39 @@ const TypingTest = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [currentChar, setCurrentChar] = useState('');
-  const [results, setResults] = useState<{ wpm: number; raw: number; accuracy: number; diffFromRohan: number; } | null>(null);
+  const [results, setResults] = useState<{
+    wpm: number;
+    raw: number;
+    accuracy: number;
+    diffFromRohan: number;
+  } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<number | null>(null);
+
+  // Wrap calculateResults in useCallback, since it's used inside endTest
+  const calculateResults = useCallback(() => {
+    const words = input.trim().split(' ');
+    const targetWords = text.split(' ').slice(0, words.length);
+    const correctWords = words.filter((word, i) => word === targetWords[i]).length;
+    const totalChars = input.length;
+    const wpm = Math.round((totalChars / 5) * (60 / 15));
+    const accuracy = Math.round((correctWords / words.length) * 100) || 0;
+
+    return {
+      wpm,
+      raw: wpm,
+      accuracy,
+      diffFromRohan: wpm - 115
+    };
+  }, [input, text]);
+
+  // Wrap endTest in useCallback so it remains stable, 
+  // and include calculateResults in the dependency array
+  const endTest = useCallback(() => {
+    setIsRunning(false);
+    setResults(calculateResults());
+  }, [calculateResults]);
 
   useEffect(() => {
     resetTest();
@@ -76,13 +105,16 @@ const TypingTest = () => {
         window.clearInterval(intervalRef.current);
       }
     };
+    // We call resetTest() only once on mount/unmount, so no dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Add endTest to the dependency array
   useEffect(() => {
     if (timer === 0 && isRunning) {
       endTest();
     }
-  }, [timer, isRunning]);
+  }, [timer, isRunning, endTest]);
 
   const resetTest = () => {
     const newText = generateWords(100);
@@ -93,7 +125,7 @@ const TypingTest = () => {
     setHasStarted(false);
     setResults(null);
     setCurrentChar('');
-    
+
     if (intervalRef.current !== null) {
       window.clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -122,49 +154,29 @@ const TypingTest = () => {
     }
   };
 
-  const calculateResults = () => {
-    const words = input.trim().split(' ');
-    const targetWords = text.split(' ').slice(0, words.length);
-    const correctWords = words.filter((word, i) => word === targetWords[i]).length;
-    const totalChars = input.length;
-    const wpm = Math.round((totalChars / 5) * (60 / 15));
-    const accuracy = Math.round((correctWords / words.length) * 100) || 0;
-
-    return {
-      wpm,
-      raw: wpm,
-      accuracy,
-      diffFromRohan: wpm - 115
-    };
-  };
-
-  const endTest = () => {
-    setIsRunning(false);
-    setResults(calculateResults());
-  };
-
   const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Tab') {
       e.preventDefault();
       return;
     }
 
+    // If the user hasn't started yet and presses a character key, start the timer
     if (!isRunning && !hasStarted && e.key.length === 1) {
       startTimer();
     }
 
     if (e.key.length === 1) {
       setCurrentChar(e.key);
-      setInput(prev => prev + e.key);
+      setInput((prev) => prev + e.key);
     } else if (e.key === 'Backspace') {
-      setInput(prev => prev.slice(0, -1));
+      setInput((prev) => prev.slice(0, -1));
     }
   };
 
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Typing Speed</h2>
-      
+
       <p className="text-zinc-600 dark:text-zinc-400 mb-8">
         Match my speed! Start typing below and see how you compare to my best: 115 WPM with 100% accuracy 
         in 15 seconds. The test will start automatically when you begin typing.
@@ -184,7 +196,8 @@ const TypingTest = () => {
         </button>
       </div>
 
-      <div 
+      {/* Typing Area */}
+      <div
         ref={containerRef}
         tabIndex={0}
         onKeyDown={handleKeyPress}
@@ -192,22 +205,29 @@ const TypingTest = () => {
       >
         <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 sm:p-6 mb-4 relative min-h-[150px] sm:min-h-[200px]">
           <div className="font-mono text-base sm:text-lg whitespace-pre-wrap">
-            {text.split('').map((char, index) => (
-              <span
-                key={index}
-                className={`
-                  ${input[index] === undefined ? 'text-zinc-400 dark:text-zinc-500' : 
-                    input[index] === char ? 'text-green-500 dark:text-green-400' : 
-                    'text-red-500 dark:text-red-400'}
-                  ${index === input.length ? 'border-b-2 border-blue-500' : ''}
-                `}
-              >
-                {char}
-              </span>
-            ))}
+            {text.split('').map((char, index) => {
+              const typedChar = input[index];
+              let colorClass = 'text-zinc-400 dark:text-zinc-500';
+              if (typedChar !== undefined) {
+                colorClass =
+                  typedChar === char
+                    ? 'text-green-500 dark:text-green-400'
+                    : 'text-red-500 dark:text-red-400';
+              }
+
+              const highlightClass =
+                index === input.length ? 'border-b-2 border-blue-500' : '';
+
+              return (
+                <span key={index} className={`${colorClass} ${highlightClass}`}>
+                  {char}
+                </span>
+              );
+            })}
           </div>
         </div>
 
+        {/* Virtual Keyboard */}
         <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-2 sm:p-4 lg:p-6 overflow-x-auto">
           <div className="flex flex-col items-center gap-1 sm:gap-2 min-w-[320px]">
             {keyboardLayout.map((row, rowIndex) => (
@@ -224,9 +244,11 @@ const TypingTest = () => {
                       rounded 
                       font-mono 
                       text-xs sm:text-sm
-                      ${currentChar === key ? 
-                        'bg-blue-500 text-white' : 
-                        'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300'}
+                      ${
+                        currentChar === key
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300'
+                      }
                       transition-colors
                       duration-150
                       shrink-0
@@ -241,6 +263,7 @@ const TypingTest = () => {
         </div>
       </div>
 
+      {/* Results */}
       {results && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
@@ -253,14 +276,19 @@ const TypingTest = () => {
           </div>
           <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
             <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Accuracy</div>
-            <div className="text-2xl font-semibold dark:text-white">{results.accuracy}%</div>
+            <div className="text-2xl font-semibold dark:text-white">
+              {results.accuracy}%
+            </div>
           </div>
           <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
             <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">vs Rohan</div>
-            <div className={`text-2xl font-semibold ${
-              results.diffFromRohan > 0 ? 'text-green-500' : 'text-red-500'
-            }`}>
-              {results.diffFromRohan > 0 ? '+' : ''}{results.diffFromRohan}
+            <div
+              className={`text-2xl font-semibold ${
+                results.diffFromRohan > 0 ? 'text-green-500' : 'text-red-500'
+              }`}
+            >
+              {results.diffFromRohan > 0 ? '+' : ''}
+              {results.diffFromRohan}
             </div>
           </div>
         </div>
