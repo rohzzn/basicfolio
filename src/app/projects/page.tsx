@@ -7,7 +7,7 @@ interface Project {
   title: string;
   description: string;
   tech: string[];
-  links: { label: string; url: string; }[];
+  links: { label: string; url: string }[];
   metrics?: {
     visits?: number;
     users?: number;
@@ -15,7 +15,7 @@ interface Project {
     preAI?: boolean;
     githubStars?: number;
   };
-  category: 'application' | 'web' | 'game' | 'other';
+  category: "application" | "web" | "game" | "other";
 }
 
 const ProjectCard = ({ project }: { project: Project }) => (
@@ -24,9 +24,11 @@ const ProjectCard = ({ project }: { project: Project }) => (
     <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3">
       {project.title}
     </h3>
-    
+
     {/* Description */}
-    <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">{project.description}</p>
+    <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+      {project.description}
+    </p>
 
     {/* Tech stack */}
     <div className="flex flex-wrap gap-2 mb-4">
@@ -86,9 +88,13 @@ const ProjectCard = ({ project }: { project: Project }) => (
             className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1.5"
           >
             {link.label === "GitHub" ? (
-              <>GitHub <Github className="w-3 h-3" /></>
+              <>
+                GitHub <Github className="w-3 h-3" />
+              </>
             ) : (
-              <>{link.label} <ExternalLink className="w-3 h-3" /></>
+              <>
+                {link.label} <ExternalLink className="w-3 h-3" />
+              </>
             )}
           </Link>
         ))}
@@ -98,10 +104,12 @@ const ProjectCard = ({ project }: { project: Project }) => (
 );
 
 const Projects = () => {
-  const [activeTab, setActiveTab] = useState<'application' | 'web' | 'game' | 'other'>('application');
+  // Tracks the active category
+  const [activeTab, setActiveTab] = useState<"application" | "web" | "game" | "other">("application");
+
   const projects: Project[] = [
     {
-      title: "DSA Roadmap",
+      title: "DSA GAY",
       description: "Learn Data Structures and Algorithms.",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
@@ -116,7 +124,7 @@ const Projects = () => {
     },
     {
       title: "CodeChef MREC",
-      description: "Central hub for facilitating coding competitions and engagement.",
+      description: "Central hub for facilitating coding competitions and community engagement.",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
       links: [
@@ -130,7 +138,7 @@ const Projects = () => {
     },
     {
       title: "Git Time Machine",
-      description: "Interactive CLI tool for visualizing git history with real-time analysis.",
+      description: "Interactive CLI tool for visualizing git repository history with real-time analysis and beautiful formatting.",
       tech: ["Node.js", "Commander.js", "Inquirer", "Chalk"],
       category: 'application',
       links: [
@@ -159,7 +167,7 @@ const Projects = () => {
     
     {
       title: "Meet",
-      description: "Video call application with features like screen sharing and recording.",
+      description: "Video call application with advanced features like screen sharing and recording.",
       tech: ["React", "Node.js", "Socket.io"],
       category: 'application',
       links: [
@@ -339,7 +347,7 @@ const Projects = () => {
     },
     {
       title: "Smart Agriculture",
-      description: "Agriculture using automation for optimal growth and reduced costs.",
+      description: "Agriculture using automation for optimal growth and reduced labor costs.",
       tech: ["Arduino", "C++", "Sensors"],
       category: 'other',
       links: [
@@ -418,39 +426,40 @@ const Projects = () => {
 }
 ];
 
+  // Group projects by category
   const categories: Record<typeof activeTab, Project[]> = {
-    'application': projects.filter(p => p.category === 'application'),
-    'web': projects.filter(p => p.category === 'web'),
-    'game': projects.filter(p => p.category === 'game'),
-    'other': projects.filter(p => p.category === 'other')
+    application: projects.filter((p) => p.category === "application"),
+    web: projects.filter((p) => p.category === "web"),
+    game: projects.filter((p) => p.category === "game"),
+    other: projects.filter((p) => p.category === "other"),
   };
 
+  // Setup for category tabs
   const displayCategories = [
-    { id: 'application' as const, label: 'Applications', icon: <Blocks className="w-4 h-4" /> },
-    { id: 'web' as const, label: 'Websites', icon: <Globe className="w-4 h-4" /> },
-    { id: 'game' as const, label: 'Games', icon: <Gamepad className="w-4 h-4" /> },
-    { id: 'other' as const, label: 'Research', icon: <Cpu className="w-4 h-4" /> }
+    { id: "application" as const, label: "Applications", icon: <Blocks className="w-4 h-4" /> },
+    { id: "web" as const, label: "Websites", icon: <Globe className="w-4 h-4" /> },
+    { id: "game" as const, label: "Games", icon: <Gamepad className="w-4 h-4" /> },
+    { id: "other" as const, label: "Research", icon: <Cpu className="w-4 h-4" /> },
   ];
 
   return (
-    <div className="max-w-5xl">
+    <div className="max-w-7xl">
       <div className="mb-8">
         <h2 className="text-lg font-medium mb-4 dark:text-white">Projects</h2>
-
       </div>
 
-      {/* Category Tabs - Scrollable container */}
-      <div className="mb-8 -mx-4 sm:mx-0 overflow-x-auto">
-        <div className="flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg min-w-fit">
+      {/* Scrollable category tabs */}
+      <div className="mb-8 -mx-4 sm:mx-0 overflow-x-auto whitespace-nowrap min-w-fit">
+        <div className="inline-flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg gap-2">
           {displayCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveTab(category.id)}
               className={`
-                flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap
+                flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors
                 ${activeTab === category.id
-                  ? 'bg-white dark:bg-zinc-700 text-black dark:text-white'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
+                  ? "bg-white dark:bg-zinc-700 text-black dark:text-white"
+                  : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                 }
               `}
             >
@@ -464,7 +473,7 @@ const Projects = () => {
         </div>
       </div>
 
-      {/* Project Grid - Full width on mobile */}
+      {/* Project grid: 1 column on mobile, 2 columns on md+ */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 sm:px-0">
         {categories[activeTab].map((project, index) => (
           <ProjectCard key={index} project={project} />
