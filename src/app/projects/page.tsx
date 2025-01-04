@@ -147,8 +147,8 @@ const Projects = () => {
 
 const projects: Project[] = [
   {
-    title: "DSA GAY",
-    description: "Interactive platform for learning Data Structures and Algorithms with visualizations and practice problems.",
+    title: "DSA Roadmap",
+    description: "Path for learning Data Structures and Algorithms with resources and contest updates.",
     tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
     category: 'web',
     links: [
@@ -156,7 +156,7 @@ const projects: Project[] = [
       { label: "Live", url: "https://dsa.gay" },
     ],
     metrics: {
-      visits: 30000,
+      visits: 12305,
       preAI: true
     },
     image: "/projects/dsa.png"
