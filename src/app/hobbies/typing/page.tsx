@@ -1,0 +1,324 @@
+"use client";
+
+import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
+import { RefreshCcw, Timer } from 'lucide-react';
+
+// Types
+type CharacterState = 'pending' | 'correct' | 'incorrect';
+
+interface TestResults {
+  wpm: number;
+  raw: number;
+  accuracy: number;
+  diffFromRohan: number;
+}
+
+interface StatsDisplay {
+  wpm: number;
+  raw: number;
+  accuracy: number;
+}
+
+// Constants
+const rohansStats: StatsDisplay = {
+  wpm: 115,
+  raw: 115,
+  accuracy: 100
+};
+
+
+// Expanded word list including 5 and 6 letter words
+const commonWords = [
+    // Common 2-4 letter words
+    'the', 'be', 'to', 'of', 'and', 'in', 'it', 'for', 'not', 'on', 'with', 'as', 'you', 'do', 'at',
+    
+    // 5 letter words
+    'about', 'above', 'after', 'again', 'alone', 'along', 'apple', 'beach', 'begin', 'black', 'bring',
+    'carry', 'cease', 'chain', 'chair', 'clean', 'clear', 'climb', 'close', 'cloud', 'color', 'dream',
+    'drink', 'drive', 'early', 'earth', 'email', 'empty', 'enter', 'equal', 'every', 'focus', 'force',
+    'frame', 'fresh', 'front', 'grass', 'great', 'green', 'group', 'guard', 'guest', 'happy', 'heart',
+    'horse', 'house', 'image', 'index', 'input', 'knife', 'large', 'learn', 'level', 'light', 'limit',
+    'local', 'logic', 'magic', 'metro', 'money', 'mouse', 'music', 'night', 'noise', 'north', 'novel',
+    'ocean', 'order', 'other', 'paper', 'party', 'peace', 'phone', 'pilot', 'place', 'plane', 'plant',
+    'plate', 'point', 'power', 'press', 'price', 'prize', 'quiet', 'quick', 'radio', 'range', 'ratio',
+    'reply', 'river', 'route', 'scope', 'score', 'shape', 'share', 'sharp', 'sheep', 'shelf', 'shell',
+    'shine', 'shirt', 'shock', 'shoot', 'sleep', 'smile', 'smoke', 'solid', 'sound', 'south', 'space',
+    'speak', 'speed', 'sport', 'squad', 'staff', 'stage', 'stake', 'stand', 'start', 'state', 'steam',
+    'steel', 'stick', 'still', 'stock', 'stone', 'store', 'storm', 'story', 'style', 'sugar', 'table',
+    'taste', 'theme', 'thing', 'thumb', 'tiger', 'title', 'total', 'touch', 'tower', 'track', 'trade',
+    
+    // 6 letter words
+    'action', 'agenda', 'almost', 'always', 'animal', 'answer', 'anyone', 'appear', 'around', 'arrive',
+    'artist', 'aspect', 'assess', 'assign', 'assist', 'assume', 'attack', 'attend', 'author', 'backed',
+    'backup', 'battle', 'beauty', 'became', 'become', 'before', 'behind', 'better', 'beyond', 'binary',
+    'breath', 'bridge', 'bright', 'broken', 'budget', 'button', 'camera', 'cancer', 'cannot', 'carbon',
+    'career', 'castle', 'casual', 'caught', 'center', 'chance', 'change', 'charge', 'choice', 'choose',
+    'chosen', 'church', 'circle', 'client', 'closed', 'closer', 'coffee', 'column', 'combat', 'coming',
+    'common', 'cookie', 'copper', 'corner', 'costly', 'county', 'couple', 'course', 'covers', 'create',
+    'credit', 'crisis', 'custom', 'damage', 'danger', 'dealer', 'debate', 'decade', 'decide', 'defeat',
+    'defend', 'define', 'degree', 'delete', 'demand', 'depend', 'design', 'desire', 'detail', 'detect',
+    'device', 'differ', 'dinner', 'direct', 'doctor', 'dollar', 'domain', 'double', 'driven', 'driver',
+    'during', 'easily', 'eating', 'editor', 'effect', 'effort', 'either', 'energy', 'engage', 'engine',
+    'enough', 'ensure', 'entire', 'entity', 'equity', 'escape', 'estate', 'ethnic', 'exceed', 'except',
+    'excess', 'expand', 'expect', 'expert', 'export', 'extend', 'extent', 'fabric', 'facing', 'factor',
+    'failed', 'fairly', 'family', 'famous', 'father', 'fellow', 'female', 'figure', 'filing', 'finger',
+    'finish', 'fiscal', 'flight', 'flying', 'follow', 'forced', 'forest', 'forget', 'formal', 'format',
+    'former', 'foster', 'fought', 'fourth', 'friend', 'future', 'garden', 'gather', 'gender', 'gentle'
+  ];
+const keyboardLayout: string[][] = [
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+  ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+  [' ']
+];
+
+const generateWords = (count: number): string => {
+  const words: string[] = [];
+  for (let i = 0; i < count; i++) {
+    words.push(commonWords[Math.floor(Math.random() * commonWords.length)]);
+  }
+  return words.join(' ');
+};
+
+const TypingPage: React.FC = () => {
+  const [text, setText] = useState<string>('');
+  const [input, setInput] = useState<string>('');
+  const [timer, setTimer] = useState<number>(15);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const [results, setResults] = useState<TestResults | null>(null);
+  const [currentChar, setCurrentChar] = useState<string>('');
+  const [characterStates, setCharacterStates] = useState<CharacterState[]>([]);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<NodeJS.Timer | null>(null);
+
+  useEffect(() => {
+    resetTest();
+  }, []);
+
+  useEffect(() => {
+    if (timer === 0 && isRunning) {
+      endTest();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timer]);
+
+  useEffect(() => {
+    if (text) {
+      setCharacterStates(text.split('').map(() => 'pending'));
+    }
+  }, [text]);
+
+  useEffect(() => {
+    // Cleanup interval on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  const resetTest = (): void => {
+    const newText = generateWords(100);
+    setText(newText);
+    setInput('');
+    setTimer(15);
+    setIsRunning(false);
+    setHasStarted(false);
+    setResults(null);
+    setCurrentChar('');
+    setCharacterStates(newText.split('').map(() => 'pending'));
+    
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    if (containerRef.current) {
+      containerRef.current.focus();
+    }
+  };
+
+  const startTimer = (): void => {
+    if (!hasStarted) {
+      setHasStarted(true);
+      setIsRunning(true);
+      intervalRef.current = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 1) {
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+  };
+
+  const calculateResults = (): TestResults => {
+    const words = input.trim().split(' ');
+    const targetWords = text.split(' ').slice(0, words.length);
+    
+    const correctWords = words.filter((word, i) => word === targetWords[i]).length;
+    const totalChars = input.length;
+    const wpm = Math.round((totalChars / 5) * (60 / 15));
+    const accuracy = Math.round((correctWords / words.length) * 100);
+
+    return {
+      wpm,
+      raw: wpm,
+      accuracy,
+      diffFromRohan: wpm - rohansStats.wpm
+    };
+  };
+
+  const endTest = (): void => {
+    setIsRunning(false);
+    setResults(calculateResults());
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
+    if (!isRunning && !hasStarted && e.key.length === 1) {
+      startTimer();
+    }
+
+    if (e.key.length === 1) {
+      setCurrentChar(e.key);
+      const newStates = [...characterStates];
+      const currentIndex = input.length;
+      
+      if (currentIndex < text.length) {
+        newStates[currentIndex] = e.key === text[currentIndex] ? 'correct' : 'incorrect';
+        setCharacterStates(newStates);
+      }
+
+      setInput((prev) => prev + e.key);
+    } else if (e.key === 'Backspace') {
+      setInput((prev) => prev.slice(0, -1));
+      const newStates = [...characterStates];
+      if (input.length > 0) {
+        newStates[input.length - 1] = 'pending';
+        setCharacterStates(newStates);
+      }
+    }
+  };
+
+  const renderResults = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+        <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">WPM</div>
+        <div className="text-2xl font-semibold dark:text-white">{results?.wpm}</div>
+      </div>
+      <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+        <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Raw</div>
+        <div className="text-2xl font-semibold dark:text-white">{results?.raw}</div>
+      </div>
+      <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+        <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Accuracy</div>
+        <div className="text-2xl font-semibold dark:text-white">{results?.accuracy}%</div>
+      </div>
+      <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+        <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">vs Rohan</div>
+        <div className={`text-2xl font-semibold ${
+          (results?.diffFromRohan ?? 0) > 0 ? 'text-green-500' : 'text-red-500'
+        }`}>
+          {(results?.diffFromRohan ?? 0) > 0 ? '+' : ''}{results?.diffFromRohan}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="max-w-7xl">
+      <h2 className="text-lg font-medium mb-6 dark:text-white">Typing Speed</h2>
+      
+      <p className="text-zinc-600 dark:text-zinc-400 mb-8">
+        Match my speed! Type the text below and see how you compare to my best: 115 WPM with 100% accuracy 
+        in 15 seconds. The test will start automatically when you begin typing.
+      </p>
+
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+          <Timer className="w-4 h-4" />
+          <span>{timer}s</span>
+        </div>
+        <button
+          onClick={resetTest}
+          className="flex items-center gap-2 px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+        >
+          <RefreshCcw className="w-4 h-4" />
+          Reset
+        </button>
+      </div>
+
+      <div 
+        ref={containerRef}
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        className="mb-8 outline-none"
+      >
+        <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 sm:p-6 mb-4 relative min-h-[150px] sm:min-h-[200px]">
+          <div className="font-mono text-base sm:text-lg whitespace-pre-wrap">
+            {text.split('').map((char, index) => {
+              let className = 'text-zinc-400 dark:text-zinc-500';
+              if (characterStates[index] === 'correct') {
+                className = 'text-green-500 dark:text-green-400';
+              } else if (characterStates[index] === 'incorrect') {
+                className = 'text-red-500 dark:text-red-400';
+              }
+              return (
+                <span
+                  key={index}
+                  className={`${className} ${index === input.length ? 'border-b-2 border-blue-500' : ''}`}
+                >
+                  {char}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Keyboard Display */}
+        <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-2 sm:p-4 lg:p-6 overflow-x-auto">
+          <div className="flex flex-col items-center gap-1 sm:gap-2 min-w-[320px]">
+            {keyboardLayout.map((row, rowIndex) => (
+              <div key={rowIndex} className="flex gap-1 sm:gap-2 justify-center w-full">
+                {row.map((key) => (
+                  <div
+                    key={key}
+                    className={`
+                      ${key === ' ' ? 'w-24 sm:w-32' : 'w-8 sm:w-10'} 
+                      h-8 sm:h-10
+                      flex 
+                      items-center 
+                      justify-center 
+                      rounded 
+                      font-mono 
+                      text-xs sm:text-sm
+                      ${currentChar === key ? 
+                        'bg-blue-500 text-white' : 
+                        'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300'}
+                      transition-colors
+                      duration-150
+                      shrink-0
+                    `}
+                  >
+                    {key === ' ' ? 'space' : key}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {results && renderResults()}
+
+
+    </div>
+  );
+};
+
+export default TypingPage;
