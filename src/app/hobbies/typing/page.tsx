@@ -91,13 +91,14 @@ const TypingTest = () => {
     };
   }, [input, text]);
 
-  // Wrap endTest in useCallback so it remains stable, 
+  // Wrap endTest in useCallback so it remains stable,
   // and include calculateResults in the dependency array
   const endTest = useCallback(() => {
     setIsRunning(false);
     setResults(calculateResults());
   }, [calculateResults]);
 
+  // Run resetTest once on mount
   useEffect(() => {
     resetTest();
     return () => {
@@ -105,11 +106,9 @@ const TypingTest = () => {
         window.clearInterval(intervalRef.current);
       }
     };
-    // We call resetTest() only once on mount/unmount, so no dependencies
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Add endTest to the dependency array
+  // Check if timer has hit zero, and end test if so
   useEffect(() => {
     if (timer === 0 && isRunning) {
       endTest();
@@ -236,13 +235,13 @@ const TypingTest = () => {
                   <div
                     key={key}
                     className={`
-                      ${key === ' ' ? 'w-24 sm:w-32' : 'w-8 sm:w-10'} 
+                      ${key === ' ' ? 'w-24 sm:w-32' : 'w-8 sm:w-10'}
                       h-8 sm:h-10
-                      flex 
-                      items-center 
-                      justify-center 
-                      rounded 
-                      font-mono 
+                      flex
+                      items-center
+                      justify-center
+                      rounded
+                      font-mono
                       text-xs sm:text-sm
                       ${
                         currentChar === key
