@@ -212,7 +212,7 @@ const projects: Project[] = [
     category: 'application',
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/meet" },
-      { label: "Live Demo", url: "https://meet.rohzzn.tech" },
+      { label: "Live Demo", url: "https://ckvyqugj7184663idk0i811d0su-8rbb2fvau-calatop.vercel.app/authenticate" },
     ],
     metrics: {
       visits: 800,
@@ -397,6 +397,126 @@ const projects: Project[] = [
       preAI: true
     },
     image: "/projects/agriculture.png"
+  },
+  {
+    title: "Block-Steam-Invites",
+    description: "Script to block Steam invites with options for filtering users by private profiles, VAC bans, or trading bans.",
+    tech: ["JavaScript", "Tampermonkey/Greasemonkey"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/block-steam-invites" },
+      { label: "YouTube Tutorial", url: "https://www.youtube.com/watch?v=KhLYxv3iry0" }
+    ],
+    metrics: {
+      preAI: true
+    },
+    image: "/projects/block_steam_invites.png"
+  },
+  
+  {
+    title: "OverTheWire Challenges",
+    description: "I solved OTW challenges and wrote down solutions for Bandit (Level 23-24) and Natas (up to Level 5).",
+    tech: ["Command-line scripting"], 
+    category: "other",
+    links: [
+      { label: "OverTheWire", url: "https://overthewire.org/wargames/" },
+      { label: "GitHub", url: "https://github.com/rohzzn/overthewire" }
+    ],
+    metrics: {
+      preAI: true
+    },
+    image: "/projects/overthewire.png"
+  },
+  
+  {
+    title: "Discord Mirror",
+    description: "Mirror messages from any server to any channel in Discord.",
+    tech: ["Node.js"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/discordmirror" }
+    ],
+    metrics: {
+      preAI: true
+    },
+    image: "/projects/discord_mirror.png"
+  },
+  
+  {
+    title: "GitHub Repo Any Year Any Day",
+    description: "Script to create GitHub repositories with backdated commits.",
+    tech: ["Shell Script"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/2001-script" },
+      { label: "Script File", url: "https://github.com/rohzzn/2001-script/blob/main/index.sh" }
+    ],
+    metrics: {
+      preAI: true
+    },
+    image: "/projects/commitanyyear.png"
+  },
+  
+  {
+    title: "YouTube Thumbnail Downloader",
+    description: "Web app to fetch and download YouTube video thumbnails in various resolutions.",
+    tech: ["JavaScript", "HTML", "CSS"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/thumbnails" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/thumbnails/" }
+    ],
+    metrics: {
+      visits: 2200,
+
+
+    },
+    image: "/projects/thumbnail_downloader.png"
+  },
+  
+  {
+    title: "Marvel Cinematic Universe Timeline",
+    description: "Interactive Marvel Cinematic Universe timeline with CSS animations and responsive design.",
+    tech: ["HTML", "CSS", "JavaScript"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/mcu_timeline" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/mcu_timeline/" }
+    ],
+    metrics: {
+      visits: 4000,
+
+    },
+    image: "/projects/mcutimeline.png"
+  },
+  
+  {
+    title: "Customer Management App",
+    description: "React and Node.js-based customer management app with PostgreSQL backend.",
+    tech: ["React", "Node.js", "Express", "PostgreSQL"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/CustomerManagement" },
+    ],
+    metrics: {
+      preAI: true
+    },
+    image: "/projects/customer_management.png"
+  },
+  
+  {
+    title: "Anomaly Detection in Wireless Networks",
+    description: "Proposed AS-CNN model using ADASYN and Split-Convolution CNN for enhanced anomaly detection.",
+    tech: ["Python", "Machine Learning", "TensorFlow"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/nids" }
+    ],
+    metrics: {
+      preAI: true
+
+    },
+    image: "/projects/nids.png"
   },
   {
     title: "Portfolio V5",
