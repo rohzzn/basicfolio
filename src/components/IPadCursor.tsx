@@ -8,6 +8,12 @@ const CustomCursor = () => {
   const clickSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    // Check if it's a mobile device
+    if (typeof window !== 'undefined' && 
+        ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+      return; // Don't initialize on mobile
+    }
+
     // Initialize click sound
     clickSoundRef.current = new Audio('/click.wav');
     clickSoundRef.current.volume = 0.2;
@@ -55,36 +61,30 @@ const CustomCursor = () => {
   if (!isVisible) return null;
 
   return (
-    <>
-      {/* Main cursor */}
-      <div
-        className="fixed pointer-events-none z-[9999] mix-blend-difference"
-        style={{
-          transform: `translate(${position.x}px, ${position.y}px)`,
-        }}
+    <div
+      className="fixed pointer-events-none z-[9999] hidden md:block"
+      style={{
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        transition: 'transform 0.1s ease-out'
+      }}
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        className={`transform transition-transform duration-200 ${
+          isHovering ? 'scale-110' : 'scale-100'
+        }`}
       >
-        <div
-          className={`relative -ml-1 -mt-1 rounded-full bg-white transition-all duration-200 ease-out ${
-            isHovering ? 'w-5 h-5 -ml-2.5 -mt-2.5' : 'w-2 h-2'
-          }`}
+        <path
+          d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19841L11.3233 12.0217L7.48781 12.0217L7.29681 12.0525L7.14778 12.1822L5.65376 12.3673Z"
+          fill={isHovering ? '#2563eb' : 'white'}
+          stroke={isHovering ? '#2563eb' : 'black'}
+          strokeWidth="1"
         />
-      </div>
-      
-      {/* Trail effect */}
-      <div
-        className="fixed pointer-events-none z-[9998] mix-blend-difference"
-        style={{
-          transform: `translate(${position.x}px, ${position.y}px)`,
-          transition: 'transform 0.15s ease-out',
-        }}
-      >
-        <div
-          className={`relative rounded-full bg-white opacity-25 transition-all duration-200 ease-out ${
-            isHovering ? 'w-7 h-7 -ml-3.5 -mt-3.5' : 'w-4 h-4 -ml-2 -mt-2'
-          }`}
-        />
-      </div>
-    </>
+      </svg>
+    </div>
   );
 };
 
