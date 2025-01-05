@@ -339,12 +339,27 @@ const projects: Project[] = [
     image: "/projects/qr.png"
   },
   {
-    title: "Pokedex",
-    description: "Interactive Pokémon catalog with game mechanics, stats tracking, and collection features.",
-    tech: ["React", "PokéAPI", "Redux"],
+    title: "Pokemon 2d Platformer",
+    description: "Explore a vibrant and interactive world filled with detailed maps and smooth gameplay.",
+    tech: ["JavaScript", "Tiled"],
     category: 'game',
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/pokemon" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/pokemon/" },
+    ],
+    metrics: {
+      visits: 6800,
+      preAI: true,
+    },
+    image: "/projects/pokemon.png"
+  },
+  {
+    title: "Pokedex",
+    description: "Interactive Pokémon catalog with game mechanics, stats tracking, and collection features.",
+    tech: ["JavaScript", "PokéAPI"],
+    category: 'game',
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/pokedex" },
       { label: "Live Demo", url: "https://rohzzn.github.io/pokedex/" },
     ],
     metrics: {
