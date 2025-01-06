@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     title: 'Rohan',
     description: 'Software Engineer, Designer, and CS student. Building digital experiences and exploring the future of technology through code and creativity.',
     creator: '@rohzzn',
-    images: ['/og.jpg'], // Use the same optimized image
+    images: ['/og.png'], // Use the same optimized image
   },
   alternates: {
     canonical: 'https://rohan.run'

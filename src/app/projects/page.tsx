@@ -147,6 +147,21 @@ const Projects = () => {
 
 const projects: Project[] = [
   {
+    title: "API Clinic",
+    description: "A powerful API testing tool with real-time response validation and environment management.",
+    tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+    category: 'web',
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/api-clinic" },
+      { label: "Live", url: "https://apiclinic.vercel.app/" },
+    ],
+    metrics: {
+
+      preAI: true
+    },
+    image: "/projects/api.png"
+  },
+  {
     title: "DSA Roadmap",
     description: "Path for learning Data Structures and Algorithms with resources and contest updates.",
     tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
