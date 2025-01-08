@@ -21,7 +21,7 @@ interface StravaActivity {
   };
 }
 
-const ActivityPolyline = ({ polyline }: { polyline: string }) => {
+const ActivityPolyline: React.FC<{ polyline: string }> = ({ polyline }) => {
   const points = decode(polyline);
   const minLat = Math.min(...points.map(p => p[0]));
   const maxLat = Math.max(...points.map(p => p[0]));
@@ -55,15 +55,13 @@ const ActivityPolyline = ({ polyline }: { polyline: string }) => {
   );
 };
 
-const StravaPage = () => {
+const StravaPage: React.FC = () => {
   const [activities, setActivities] = useState<StravaActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState<number>(1);
-  const [hasMore, setHasMore] = useState(true);
   const [timeRange, setTimeRange] = useState(30);
 
-  const fetchStravaData = async (pageNum: number, daysAgo: number) => {
+  const fetchStravaData = async (daysAgo: number) => {
     try {
       const tokenResponse = await fetch('https://www.strava.com/oauth/token', {
         method: 'POST',
@@ -84,8 +82,9 @@ const StravaPage = () => {
       }
 
       const timestamp = Math.floor((Date.now() - daysAgo * 24 * 60 * 60 * 1000) / 1000);
+      // Fetch a larger number of activities to ensure we get the latest ones
       const activitiesRes = await fetch(
-        `https://www.strava.com/api/v3/athlete/activities?per_page=50&page=${pageNum}&after=${timestamp}`,
+        `https://www.strava.com/api/v3/athlete/activities?per_page=100&after=${timestamp}`,
         {
           headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
         }
@@ -93,16 +92,14 @@ const StravaPage = () => {
 
       const activitiesData = await activitiesRes.json();
       
-      if (activitiesData.length < 50) {
-        setHasMore(false);
-      }
-
-      setActivities(prev => {
-        const newActivities = [...prev, ...activitiesData];
-        return newActivities.sort((a, b) => 
+      // Sort all activities by date (newest first) and take only the 30 most recent ones
+      const sortedActivities = activitiesData
+        .sort((a: StravaActivity, b: StravaActivity) => 
           new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-        );
-      });
+        )
+        .slice(0, 30);
+      
+      setActivities(sortedActivities);
     } catch (error) {
       console.error('Error:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch Strava data');
@@ -112,23 +109,12 @@ const StravaPage = () => {
   };
 
   React.useEffect(() => {
-    setActivities([]); // Clear activities when timeRange changes
-    setPage(1);
-    setHasMore(true);
+    setActivities([]);
     setLoading(true);
-    fetchStravaData(1, timeRange);
+    fetchStravaData(timeRange);
   }, [timeRange]);
 
-  const loadMore = () => {
-    if (!hasMore || loading) return;
-    setPage(prev => {
-      const nextPage = prev + 1;
-      fetchStravaData(nextPage, timeRange);
-      return nextPage;
-    });
-  };
-
-  const monthlyStats = React.useMemo(() => {
+  const stats = React.useMemo(() => {
     return {
       totalActivities: activities.length,
       totalDistance: activities.reduce((sum, activity) => sum + activity.distance, 0),
@@ -196,7 +182,7 @@ const StravaPage = () => {
         </select>
       </div>
 
-      {/* Monthly Stats Overview */}
+      {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
           <div className="flex items-center gap-2 mb-2">
@@ -204,7 +190,7 @@ const StravaPage = () => {
             <h3 className="text-sm font-medium dark:text-white">Activities</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
-            {monthlyStats.totalActivities}
+            {stats.totalActivities}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             Last {timeRange} Days
@@ -217,7 +203,7 @@ const StravaPage = () => {
             <h3 className="text-sm font-medium dark:text-white">Distance</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
-            {formatDistance(monthlyStats.totalDistance)}
+            {formatDistance(stats.totalDistance)}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             Last {timeRange} Days
@@ -230,7 +216,7 @@ const StravaPage = () => {
             <h3 className="text-sm font-medium dark:text-white">Active Time</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
-            {formatTime(monthlyStats.totalTime)}
+            {formatTime(stats.totalTime)}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             Last {timeRange} Days
@@ -243,7 +229,7 @@ const StravaPage = () => {
             <h3 className="text-sm font-medium dark:text-white">Types</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
-            {monthlyStats.activityTypes}
+            {stats.activityTypes}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             Activity Types
@@ -335,15 +321,6 @@ const StravaPage = () => {
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-400" />
             </div>
-          )}
-          
-          {!loading && hasMore && (
-            <button
-              onClick={loadMore}
-              className="w-full py-3 bg-zinc-200 dark:bg-zinc-700 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
-            >
-              Load More Activities
-            </button>
           )}
         </div>
       </div>
