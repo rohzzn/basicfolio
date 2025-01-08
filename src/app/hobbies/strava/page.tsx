@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { Activity, Timer, Map, TrendingUp, Calendar, Watch, ArrowUp, Gauge, Heart } from 'lucide-react';
 import { decode } from '@mapbox/polyline';
 
@@ -56,55 +56,77 @@ const ActivityPolyline = ({ polyline }: { polyline: string }) => {
 };
 
 const StravaPage = () => {
-  const [activities, setActivities] = React.useState<StravaActivity[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  const [activities, setActivities] = useState<StravaActivity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [timeRange, setTimeRange] = useState(30);
 
-  React.useEffect(() => {
-    const fetchStravaData = async () => {
-      try {
-        const tokenResponse = await fetch('https://www.strava.com/oauth/token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            client_id: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID,
-            client_secret: process.env.NEXT_PUBLIC_STRAVA_CLIENT_SECRET,
-            refresh_token: process.env.NEXT_PUBLIC_STRAVA_REFRESH_TOKEN,
-            grant_type: 'refresh_token',
-          }),
-        });
+  const fetchStravaData = async (pageNum: number, daysAgo: number) => {
+    try {
+      const tokenResponse = await fetch('https://www.strava.com/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          client_id: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID,
+          client_secret: process.env.NEXT_PUBLIC_STRAVA_CLIENT_SECRET,
+          refresh_token: process.env.NEXT_PUBLIC_STRAVA_REFRESH_TOKEN,
+          grant_type: 'refresh_token',
+        }),
+      });
 
-        const tokenData = await tokenResponse.json();
-        if (!tokenData.access_token) {
-          throw new Error('Failed to get access token');
+      const tokenData = await tokenResponse.json();
+      if (!tokenData.access_token) {
+        throw new Error('Failed to get access token');
+      }
+
+      const timestamp = Math.floor((Date.now() - daysAgo * 24 * 60 * 60 * 1000) / 1000);
+      const activitiesRes = await fetch(
+        `https://www.strava.com/api/v3/athlete/activities?per_page=50&page=${pageNum}&after=${timestamp}`,
+        {
+          headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
         }
+      );
 
-        const monthAgo = Math.floor((Date.now() - 30 * 24 * 60 * 60 * 1000) / 1000);
-        const activitiesRes = await fetch(
-          `https://www.strava.com/api/v3/athlete/activities?per_page=30&after=${monthAgo}`,
-          {
-            headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
-          }
-        );
+      const activitiesData = await activitiesRes.json();
+      
+      if (activitiesData.length < 50) {
+        setHasMore(false);
+      }
 
-        const activitiesData = await activitiesRes.json();
-        // Sort activities by date (most recent first)
-        const sortedActivities = activitiesData.sort((a: StravaActivity, b: StravaActivity) => 
+      setActivities(prev => {
+        const newActivities = [...prev, ...activitiesData];
+        return newActivities.sort((a, b) => 
           new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
         );
-        setActivities(sortedActivities);
-      } catch (error) {
-        console.error('Error:', error);
-        setError(error instanceof Error ? error.message : 'Failed to fetch Strava data');
-      } finally {
-        setLoading(false);
-      }
-    };
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch Strava data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchStravaData();
-  }, []);
+  React.useEffect(() => {
+    setActivities([]); // Clear activities when timeRange changes
+    setPage(1);
+    setHasMore(true);
+    setLoading(true);
+    fetchStravaData(1, timeRange);
+  }, [timeRange]);
+
+  const loadMore = () => {
+    if (!hasMore || loading) return;
+    setPage(prev => {
+      const nextPage = prev + 1;
+      fetchStravaData(nextPage, timeRange);
+      return nextPage;
+    });
+  };
 
   const monthlyStats = React.useMemo(() => {
     return {
@@ -146,17 +168,6 @@ const StravaPage = () => {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="max-w-7xl">
-        <h2 className="text-lg font-medium mb-6 dark:text-white">Activity Statistics</h2>
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-400" />
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="max-w-7xl">
@@ -170,7 +181,20 @@ const StravaPage = () => {
 
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Activity Statistics</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-lg font-medium dark:text-white">Activity Statistics</h2>
+        <select
+          value={timeRange}
+          onChange={(e) => setTimeRange(Number(e.target.value))}
+          className="bg-zinc-100 dark:bg-zinc-800 p-2 rounded-lg border border-zinc-200 dark:border-zinc-700"
+        >
+          <option value={30}>Last 30 Days</option>
+          <option value={60}>Last 60 Days</option>
+          <option value={90}>Last 90 Days</option>
+          <option value={180}>Last 6 Months</option>
+          <option value={365}>Last Year</option>
+        </select>
+      </div>
 
       {/* Monthly Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -183,7 +207,7 @@ const StravaPage = () => {
             {monthlyStats.totalActivities}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Last 30 Days
+            Last {timeRange} Days
           </p>
         </div>
 
@@ -196,7 +220,7 @@ const StravaPage = () => {
             {formatDistance(monthlyStats.totalDistance)}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Last 30 Days
+            Last {timeRange} Days
           </p>
         </div>
 
@@ -209,7 +233,7 @@ const StravaPage = () => {
             {formatTime(monthlyStats.totalTime)}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Last 30 Days
+            Last {timeRange} Days
           </p>
         </div>
 
@@ -240,7 +264,6 @@ const StravaPage = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <h4 className="text-base font-medium dark:text-white">{activity.name}</h4>
-                   
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <Calendar className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
@@ -307,14 +330,29 @@ const StravaPage = () => {
               </div>
             </div>
           ))}
+
+          {loading && (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-400" />
+            </div>
+          )}
+          
+          {!loading && hasMore && (
+            <button
+              onClick={loadMore}
+              className="w-full py-3 bg-zinc-200 dark:bg-zinc-700 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
+            >
+              Load More Activities
+            </button>
+          )}
         </div>
       </div>
 
-{/* No Activities Message */}
-{activities.length === 0 && (
+      {/* No Activities Message */}
+      {!loading && activities.length === 0 && (
         <div className="text-center py-12 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
           <Activity className="w-12 h-12 text-zinc-400 dark:text-zinc-500 mx-auto mb-4" />
-          <p className="text-zinc-600 dark:text-zinc-400">No activities in the last 30 days</p>
+          <p className="text-zinc-600 dark:text-zinc-400">No activities found in the selected time range</p>
         </div>
       )}
     </div>
