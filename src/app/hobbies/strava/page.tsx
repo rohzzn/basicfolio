@@ -82,9 +82,10 @@ const StravaPage: React.FC = () => {
       }
 
       const timestamp = Math.floor((Date.now() - daysAgo * 24 * 60 * 60 * 1000) / 1000);
-      // Fetch a larger number of activities to ensure we get the latest ones
+      // Calculate how many activities to show based on time range
+      // Use a fixed large number for per_page to get all activities
       const activitiesRes = await fetch(
-        `https://www.strava.com/api/v3/athlete/activities?per_page=100&after=${timestamp}`,
+        `https://www.strava.com/api/v3/athlete/activities?per_page=200&after=${timestamp}`,
         {
           headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
         }
@@ -92,12 +93,15 @@ const StravaPage: React.FC = () => {
 
       const activitiesData = await activitiesRes.json();
       
-      // Sort all activities by date (newest first) and take only the 30 most recent ones
-      const sortedActivities = activitiesData
-        .sort((a: StravaActivity, b: StravaActivity) => 
-          new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-        )
-        .slice(0, 30);
+      // Check if activitiesData is an array
+      if (!Array.isArray(activitiesData)) {
+        throw new Error('Invalid response from Strava API');
+      }
+      
+      // Sort all activities by date (newest first)
+      const sortedActivities = [...activitiesData].sort((a: StravaActivity, b: StravaActivity) => 
+        new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+      );
       
       setActivities(sortedActivities);
     } catch (error) {
