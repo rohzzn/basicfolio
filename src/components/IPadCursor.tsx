@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 
 interface LocationData {
   city: string;
@@ -40,14 +40,14 @@ const CustomCursor = () => {
     lon: -84.5150
   };
 
-  const getTimeBasedGreeting = (): string => {
+  const getTimeBasedGreeting = useCallback((): string => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
     if (hour < 17) return "Good afternoon";
     return "Good evening";
-  };
+  }, []);
 
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): Distance => {
+  const calculateDistance = useCallback((lat1: number, lon1: number, lat2: number, lon2: number): Distance => {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -63,9 +63,9 @@ const CustomCursor = () => {
       km: Math.round(kmDistance),
       miles: Math.round(milesDistance)
     };
-  };
+  }, []);
 
-  const getRandomGreeting = (data: LocationData): string => {
+  const getRandomGreeting = useCallback((data: LocationData): string => {
     const distance = calculateDistance(
       data.latitude,
       data.longitude,
@@ -84,7 +84,6 @@ const CustomCursor = () => {
       return firstWord || 'unknown';
     };
 
-    // Create different types of greetings
     const distanceGreetings: GreetingArray = [
       `${distance.miles} miles away 🎯`,
       `${distance.km} kilometers away 🌎`,
@@ -112,7 +111,6 @@ const CustomCursor = () => {
       data.org ? `connected via ${data.org.split(' ')[0]}! 🔌` : null
     ];
 
-    // Combine all greeting types
     const greetingTypes: GreetingArray[] = [
       distanceGreetings,
       ispGreetings,
@@ -121,18 +119,15 @@ const CustomCursor = () => {
       networkGreetings
     ];
 
-    // Randomly select a greeting type and filter out null values
     const selectedType = greetingTypes[Math.floor(Math.random() * greetingTypes.length)]
       .filter((greeting): greeting is string => greeting !== null);
 
-    // If the selected type has no valid greetings, try another type
     if (selectedType.length === 0) {
       return getRandomGreeting(data);
     }
 
-    // Select a random greeting from the chosen type
     return selectedType[Math.floor(Math.random() * selectedType.length)];
-  };
+  }, [calculateDistance, UC_COORDS.lat, UC_COORDS.lon]);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 
@@ -151,14 +146,11 @@ const CustomCursor = () => {
         const timeGreeting = getTimeBasedGreeting();
         const customGreeting = getRandomGreeting(data);
         
-        // Ensure we show both greetings in sequence
         const showGreetingSequence = () => {
-          // First greeting
           setGreeting(`${timeGreeting}! 👋`);
           setShowGreeting(true);
           setGreetingPhase(0);
 
-          // Second greeting after delay
           setTimeout(() => {
             setShowGreeting(false);
             setTimeout(() => {
@@ -219,7 +211,7 @@ const CustomCursor = () => {
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('click', handleClick);
     };
-  }, [UC_COORDS.lat, UC_COORDS.lon]); // Including coordinates as they're used in the effect via getRandomGreeting
+  }, [getTimeBasedGreeting, getRandomGreeting]);
 
   if (!isVisible) return null;
 
