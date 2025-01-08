@@ -85,8 +85,8 @@ const CustomCursor = () => {
     };
 
     const distanceGreetings: GreetingArray = [
-      `${distance.miles} miles away 🎯`,
-      `${distance.km} kilometers away 🌎`,
+      `${distance.miles} miles away from Rohan📍`,
+      `${distance.km} kilometers away from Rohan📍`,
       distance.miles < 5 ? `you're only ${distance.miles} miles away neighbor! 👋` : null
     ];
 
