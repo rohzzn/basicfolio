@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import MultiPagePortfolio from '../components/multi-page-portfolio';
-import SunRaysOverlay from '../components/SunRaysOverlay'; // Import the new component
 export const metadata: Metadata = {
   title: "Rohan",
   description: 'Software Engineer, Designer, and CS student. Building digital experiences and exploring the future of technology through code and creativity.',
@@ -62,7 +61,6 @@ export default function RootLayout({
         <MultiPagePortfolio>
           {children}
         </MultiPagePortfolio>
-        <SunRaysOverlay /> {/* Replace NoiseOverlay with SunRaysOverlay */}
       </body>
     </html>
   );
