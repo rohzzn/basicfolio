@@ -37,10 +37,15 @@ const Stack = () => {
 
   const experience: { company: string; role: string; duration: string; }[] = [
     {
+      company: 'Cincinnati Childrens Hospital Medical Center',
+      role: 'Software Development Engineer',
+      duration: 'January 2025 - Present',
+    },
+    {
       company: 'Abhibus (Ixigo)',
       role: 'Software Development Engineer',
       duration: 'June 2023 - September 2023',
-    }
+    },
   ];
 
   const education = [
