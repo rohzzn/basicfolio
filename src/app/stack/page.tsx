@@ -35,12 +35,13 @@ const Stack = () => {
       .catch(error => console.error('Error fetching LeetCode stats:', error));
   }, []);
 
-  const experience: { company: string; role: string; duration: string; }[] = [
+  const experience = [
     {
       company: 'Cincinnati Childrens Hospital Medical Center',
       role: 'Software Development Engineer',
       duration: 'January 2025 - Present',
     },
+
     {
       company: 'Abhibus (Ixigo)',
       role: 'Software Development Engineer',
