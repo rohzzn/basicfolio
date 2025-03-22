@@ -290,7 +290,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </main>
       
-      <ModernCursor trailEffect={true} size={6} ringSize={30} />
+      <ModernCursor trailEffect={true} size={10} ringSize={40} />
       <BackgroundMusic />
     </div>
   );
