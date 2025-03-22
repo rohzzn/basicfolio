@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Menu, X, Gamepad, Music, Clock, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import IPadCursor from './IPadCursor';
+import ModernCursor from './ModernCursor';
 import BackgroundMusic from './BackgroundMusic';
 
 interface NavLinkProps {
@@ -290,7 +290,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </main>
       
-      <IPadCursor />
+      <ModernCursor trailEffect={true} size={6} ringSize={30} />
       <BackgroundMusic />
     </div>
   );
