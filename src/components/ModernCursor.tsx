@@ -10,10 +10,8 @@ interface CursorProps {
 }
 
 const ModernCursor: React.FC<CursorProps> = ({
-  color = "rgba(0, 0, 0, 0.85)",
   size = 8,
   ringSize = 36,
-  ringColor = "rgba(0, 0, 0, 0.2)",
   trailEffect = true,
 }) => {
   // Use appropriate colors based on dark mode
@@ -156,6 +154,7 @@ const ModernCursor: React.FC<CursorProps> = ({
         cancelAnimationFrame(rAF.current);
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetPosition, trailEffect]);
 
   // Event listeners
