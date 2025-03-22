@@ -239,8 +239,8 @@ const ModernCursor: React.FC<CursorProps> = ({
           width: isPointer ? ringSize * 0.5 : isClicking ? ringSize * 0.8 : ringSize,
           height: isPointer ? ringSize * 0.5 : isClicking ? ringSize * 0.8 : ringSize,
           borderRadius: "50%",
-          border: `2px solid ${isDarkMode ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.5)"}`, // Thicker and more opaque
-          backgroundColor: isPointer ? (isDarkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)") : "transparent", // More opaque
+          border: `2px solid ${isDarkMode ? "#6B7280" : "#4B5563"}`, // Darker border for better visibility
+          backgroundColor: isPointer ? (isDarkMode ? "rgba(107, 114, 128, 0.3)" : "rgba(75, 85, 99, 0.3)") : "transparent", // Dark hover background
           transition: "width 0.3s, height 0.3s, background-color 0.3s",
           zIndex: 9998
         }}
@@ -256,7 +256,7 @@ const ModernCursor: React.FC<CursorProps> = ({
           transform: `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`,
           width: isClicking ? size * 1.5 : size,
           height: isClicking ? size * 1.5 : size,
-          backgroundColor: isDarkMode ? "rgba(255, 255, 255, 1)" : "rgba(0, 0, 0, 1)", // Made more opaque
+          backgroundColor: isDarkMode ? "#9CA3AF" : "#1F2937", // Dark gray in light mode, lighter gray in dark mode
           borderRadius: "50%",
           transition: "width 0.2s, height 0.2s",
           zIndex: 9999
