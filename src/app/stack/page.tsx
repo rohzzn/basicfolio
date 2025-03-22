@@ -157,21 +157,23 @@ const Stack = () => {
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Resume</h2>
 
-      {/* Experience Section */}
-      <section className="mb-12">
-        <div className="flex items-center gap-2 mb-6">
-          <Briefcase className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-          <h3 className="text-xl font-semibold dark:text-white">Experience</h3>
-        </div>
-        
-        {experience.map((exp, index) => (
-          <div key={index} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
-            <h4 className="text-lg font-medium dark:text-white">{exp.company}</h4>
-            <p className="text-zinc-600 dark:text-zinc-400">{exp.role}</p>
-            <p className="text-sm text-zinc-500 dark:text-zinc-500">{exp.duration}</p>
-          </div>
-        ))}
-      </section>
+{/* Experience Section */}
+<section className="mb-12">
+  <div className="flex items-center gap-2 mb-6">
+    <Briefcase className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+    <h3 className="text-xl font-semibold dark:text-white">Experience</h3>
+  </div>
+  
+  <div className="space-y-6">
+    {experience.map((exp, index) => (
+      <div key={index} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+        <h4 className="text-lg font-medium dark:text-white">{exp.company}</h4>
+        <p className="text-zinc-600 dark:text-zinc-400">{exp.role}</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-500">{exp.duration}</p>
+      </div>
+    ))}
+  </div>
+</section>
 
       {/* Education Section */}
       <section className="mb-12">
