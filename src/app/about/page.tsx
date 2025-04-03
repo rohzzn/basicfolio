@@ -8,14 +8,19 @@ const Home: React.FC = () => (
     <h2 className="text-lg font-medium mb-6 dark:text-white">Hey, I&#39;m Rohan Pothuru</h2>
     <div className="space-y-4">
       <p className="text-zinc-600 dark:text-zinc-400">
-        I&#39;m currently pursuing my master&#39;s in Computer Science at the University of Cincinnati. Previously, I worked as a Software Development Engineer at Ixigo.
+        This is my lil corner of the internet.
+        Feel free to click around — you might accidentally learn too much about me.
       </p>
       <p className="text-zinc-600 dark:text-zinc-400">
-        Over the years, I&#39;ve immersed myself in software engineering—building side projects, doing independent research, and exploring how things work under the hood. This passion for technology and innovation motivates me to create solutions that make a difference.
+        Quick lowdown:
       </p>
-      <p className="text-zinc-600 dark:text-zinc-400">
-        I&#39;m also passionate about mentoring fellow developers and contributing to open-source communities. My curiosity about artificial general intelligence (AGI) continuously shapes my thinking about the future of cognitive computing.
-      </p>
+      <ul className="list-disc pl-5 text-zinc-600 dark:text-zinc-400 space-y-2">
+        <li>Grad CS student at UC, hanging on to that 4.0 GPA</li>
+        <li>Part-time dev at Cincinnati Children&apos;s — typing, debugging, surviving</li>
+        <li>Previously at ixigo, mostly vibing and learning the ropes</li>
+        <li>Always tinkering with side projects — for fun, learning, and maybe clout</li>
+        <li>Turning 24 this year — holy moly, where did the time go?</li>
+      </ul>
       <br />
     </div>
 

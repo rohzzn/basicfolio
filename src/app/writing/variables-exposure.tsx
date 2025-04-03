@@ -9,7 +9,7 @@ interface VariablesExposureProps {
 
 const VariablesExposure: React.FC<VariablesExposureProps> = ({ onBack }) => {
   return (
-    <article className="max-w-2xl mx-auto py-8">
+    <article className="max-w-7xl py-8 px-4 sm:px-0">
       <button 
         onClick={onBack}
         className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors"
@@ -18,8 +18,8 @@ const VariablesExposure: React.FC<VariablesExposureProps> = ({ onBack }) => {
         <span>Back to writing</span>
       </button>
 
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 dark:text-white">
+      <header className="mb-8 max-w-3xl">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
           Your Environment Variables Are Lying to You
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
@@ -27,7 +27,7 @@ const VariablesExposure: React.FC<VariablesExposureProps> = ({ onBack }) => {
         </div>
       </header>
 
-      <div className="prose dark:prose-invert prose-zinc max-w-none">
+      <div className="prose dark:prose-invert prose-zinc max-w-3xl">
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-lg font-medium">
           That super-secret API key you&#39;ve just tucked away in a Vercel environment variable? Yeah, it might not be as hidden as you think. I spent a weekend playing security researcher with Burp Suite, and what I found should make every web developer a little nervous.
         </p>

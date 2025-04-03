@@ -63,10 +63,10 @@ const NavLink: React.FC<NavLinkProps> = ({ href, children }) => {
   return (
     <Link
       href={href}
-      className={`block px-2 py-1.5 text-sm transition-colors capitalize w-full text-left
+      className={`block px-3 py-2.5 text-sm font-medium rounded-md transition-colors capitalize w-full text-left
         ${isActive
-          ? "text-black dark:text-white"
-          : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+          ? "bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white"
+          : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
         }`}
     >
       {children}
@@ -187,27 +187,27 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         className="lg:hidden fixed top-4 right-4 z-50 p-2 text-zinc-600 dark:text-zinc-400 bg-zinc-50/90 dark:bg-zinc-800/90 rounded-md shadow-md backdrop-blur-sm"
         aria-label="Toggle Menu"
       >
-        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       <div
         id="sidebar"
         className={`
-          fixed lg:fixed top-0 bottom-0 w-[280px] sm:w-64 bg-zinc-50/95 dark:bg-zinc-900/95
+          fixed lg:fixed top-0 bottom-0 w-[260px] sm:w-64 bg-zinc-50/95 dark:bg-zinc-900/95
           border-r border-zinc-200 dark:border-zinc-800 
           flex flex-col h-screen backdrop-blur-sm
           transform transition-transform duration-300 ease-in-out
           ${isMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-          z-40
+          z-40 overflow-y-auto
         `}
       >
         <div className="flex flex-col h-full">
-          <div className="p-8">
-            <h1 className="text-2xl font-bold dark:text-white">Rohan</h1>
+          <div className="p-6 sm:p-8">
+            <h1 className="text-xl sm:text-2xl font-bold dark:text-white">Rohan</h1>
             <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">Software Engineer</p>
           </div>
 
-          <nav className="flex-1 px-8 overflow-y-auto">
+          <nav className="flex-1 px-6 sm:px-8 overflow-y-auto pb-4">
             <div className="space-y-1">
               {[
                 { path: "/", label: "About" },
@@ -222,7 +222,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </nav>
 
-          <div className="p-8 bg-zinc-50/95 dark:bg-zinc-900/95 backdrop-blur-sm">
+          <div className="p-6 sm:p-8 bg-zinc-50/95 dark:bg-zinc-900/95 backdrop-blur-sm">
             {isLoading ? (
               <div className="flex items-center justify-center py-2">
                 <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
@@ -232,7 +232,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                 Unable to load status
               </div>
             ) : lanyardData && (
-              <div className="flex flex-col items-start gap-2">
+              <div className="flex flex-col items-start gap-2 w-full">
                 <div className="flex items-center gap-2">
                   <div
                     className="w-2 h-2 rounded-full"
@@ -247,25 +247,25 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                 </div>
 
                 {lanyardData.activities?.length > 0 && (
-                  <div className="space-y-2 w-full">
-                    {lanyardData.activities.map((activity, index) => (
+                  <div className="space-y-2 w-full mt-1">
+                    {lanyardData.activities.slice(0, 2).map((activity, index) => (
                       <div
                         key={index}
-                        className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
+                        className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2.5 w-full"
                       >
                         <div className="flex items-center gap-2 mb-1">
                           {getActivityIcon(activity.type)}
-                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
                             {activity.name}
                           </span>
                         </div>
                         {activity.state && (
-                          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
                             {activity.state}
                           </p>
                         )}
                         {activity.details && (
-                          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
                             {activity.details}
                           </p>
                         )}
@@ -285,7 +285,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       <main className="flex-1 lg:pl-64">
-        <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-full p-0 sm:p-1 md:p-4 lg:p-8">
           {children}
         </div>
       </main>

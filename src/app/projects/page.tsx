@@ -21,49 +21,31 @@ interface Project {
 }
 
 const ProjectCard = ({ project }: { project: Project }) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    setMousePosition({
-      x: e.clientX,
-      y: e.clientY
-    });
-  };
-
   return (
     <div 
-      className="relative bg-white dark:bg-zinc-800 rounded-xl p-5  transition-all border border-zinc-100 dark:border-zinc-700"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      onMouseMove={handleMouseMove}
+      className="relative bg-white dark:bg-zinc-800 rounded-xl p-4 sm:p-6 transition-all border border-zinc-100 dark:border-zinc-700 hover:shadow-md hover:border-zinc-200 dark:hover:border-zinc-600 h-full flex flex-col"
     >
-      {/* Cursor following image */}
-      {isHovering && (
-        <div 
-          className="fixed pointer-events-none z-50 w-[300px]"
-          style={{
-            left: mousePosition.x + 'px',
-            top: mousePosition.y + 'px',
-            transform: 'translate(-50%, -120%)'
-          }}
-        >
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-2">
-            <Image
-              src={project.image}
-              alt={project.title}
-              width={300}
-              height={158}
-              className="rounded"
-              priority
-            />
-          </div>
-        </div>
-      )}
-      {/* Title */}
-      <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3">
-        {project.title}
-      </h3>
+      {/* Project image */}
+      <div className="mb-4">
+        <Image
+          src={project.image}
+          alt={project.title}
+          width={600}
+          height={315}
+          className="rounded-lg w-full h-auto object-cover"
+          priority
+        />
+      </div>
+
+      {/* Title and indicators */}
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+          {project.title}
+        </h3>
+        {project.metrics?.preAI && (
+          <span className="text-xs font-medium px-2 py-0.5 bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 rounded-full">Pre-AI</span>
+        )}
+      </div>
       
       {/* Description */}
       <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
@@ -71,11 +53,11 @@ const ProjectCard = ({ project }: { project: Project }) => {
       </p>
 
       {/* Tech stack */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-auto">
         {project.tech.map((tech, index) => (
           <span
             key={index}
-            className="text-xs font-medium px-2.5 py-1 bg-zinc-100 dark:bg-zinc-700/50 text-zinc-700 dark:text-zinc-300 rounded-full"
+            className="text-xs font-medium px-2 py-0.5 sm:px-2.5 sm:py-1 bg-zinc-100 dark:bg-zinc-700/50 text-zinc-700 dark:text-zinc-300 rounded-full"
           >
             {tech}
           </span>
@@ -86,46 +68,46 @@ const ProjectCard = ({ project }: { project: Project }) => {
       <div className="border-t border-zinc-200 dark:border-zinc-700 my-4"></div>
 
       {/* Footer with metrics and links */}
-      <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center">
+      <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mt-auto">
         {/* Metrics */}
         {project.metrics && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             {project.metrics.users && (
-              <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
-                <Users className="w-3 h-3 mr-1" />
-                {project.metrics.users}
+              <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/70 px-2 py-1 rounded">
+                <Users className="w-3 h-3 mr-1.5" />
+                {new Intl.NumberFormat().format(project.metrics.users)}
               </div>
             )}
             {project.metrics.visits && (
-              <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
-                <Eye className="w-3 h-3 mr-1" />
-                {project.metrics.visits}
+              <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/70 px-2 py-1 rounded">
+                <Eye className="w-3 h-3 mr-1.5" />
+                {new Intl.NumberFormat().format(project.metrics.visits)}
               </div>
             )}
             {project.metrics.downloads && (
-              <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
-                <Download className="w-3 h-3 mr-1" />
-                {project.metrics.downloads}
+              <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/70 px-2 py-1 rounded">
+                <Download className="w-3 h-3 mr-1.5" />
+                {new Intl.NumberFormat().format(project.metrics.downloads)}
               </div>
             )}
             {project.metrics.githubStars && (
-              <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400">
-                <Star className="w-3 h-3 mr-1" />
-                {project.metrics.githubStars}
+              <div className="inline-flex items-center text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/70 px-2 py-1 rounded">
+                <Star className="w-3 h-3 mr-1.5" />
+                {new Intl.NumberFormat().format(project.metrics.githubStars)}
               </div>
             )}
           </div>
         )}
 
         {/* Links */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {project.links.map((link, index) => (
             <Link
               key={index}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1.5"
+              className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1.5 bg-zinc-50 dark:bg-zinc-800/70 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700/70 transition-colors"
             >
               {link.label === "GitHub" ? (
                 <>GitHub <Github className="w-3 h-3" /></>
@@ -622,32 +604,38 @@ const projects: Project[] = [
   ];
 
   return (
-    <div className="max-w-5xl">
-      <div className="mb-8">
-        <h2 className="text-lg font-medium mb-4 dark:text-white">Projects</h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          A curated collection of my work, experiments, and open-source projects.
+    <div className="max-w-7xl">
+      <div className="mb-8 sm:mb-10 px-4 sm:px-0">
+        <h2 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4 dark:text-white">Projects</h2>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl">
+          A curated collection of my work, experiments, and open-source projects across various domains and technologies.
         </p>
       </div>
 
       {/* Category Tabs */}
       <div className="mb-8 -mx-4 sm:mx-0 overflow-x-auto">
-        <div className="flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg min-w-fit">
+        <div className="flex p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-xl min-w-fit shadow-sm">
           {displayCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveTab(category.id)}
               className={`
-                flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap
+                flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap
                 ${activeTab === category.id
-                  ? "bg-white dark:bg-zinc-700 text-black dark:text-white"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+                  ? "bg-white dark:bg-zinc-700 text-black dark:text-white shadow-sm transform scale-[1.02]"
+                  : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-750"
                 }
               `}
             >
               {category.icon}
-              {category.label}
-              <span className="text-xs text-zinc-400 dark:text-zinc-500">
+              <span>{category.label}</span>
+              <span className={`
+                text-xs px-1.5 py-0.5 rounded-full text-center min-w-[20px]
+                ${activeTab === category.id
+                  ? "bg-zinc-100 dark:bg-zinc-600 text-zinc-800 dark:text-zinc-200"
+                  : "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
+                }
+              `}>
                 {categories[category.id].length}
               </span>
             </button>
@@ -656,10 +644,16 @@ const projects: Project[] = [
       </div>
 
       {/* Project Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 sm:px-0">
-        {categories[activeTab].map((project, index) => (
-          <ProjectCard key={index} project={project} />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6 md:gap-x-6 md:gap-y-8 mb-6 sm:mb-10 px-4 sm:px-0">
+        {categories[activeTab].length > 0 ? (
+          categories[activeTab].map((project, index) => (
+            <ProjectCard key={index} project={project} />
+          ))
+        ) : (
+          <div className="col-span-full py-20 text-center">
+            <p className="text-zinc-500 dark:text-zinc-400">No projects found in this category.</p>
+          </div>
+        )}
       </div>
     </div>
   );

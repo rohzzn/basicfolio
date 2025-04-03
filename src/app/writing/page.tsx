@@ -132,17 +132,17 @@ const WritingPage = () => {
 
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Writing</h2>
-      <div className="grid gap-6">
+      <h2 className="text-lg font-medium mb-6 dark:text-white px-4 sm:px-0">Writing</h2>
+      <div className="grid gap-4 sm:gap-6 px-4 sm:px-0">
         {posts.map((post) => (
           <article 
             key={post.slug}
             onClick={() => setSelectedPost(post.slug)}
-            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 sm:p-6 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
           >
-            <div className="flex items-start justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-2">
               <h3 className="text-base font-medium dark:text-white">{post.title}</h3>
-              <div className="flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+              <div className="flex items-center text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
                 <Calendar className="w-3 h-3 mr-1" />
                 <time dateTime={post.date}>{post.displayDate}</time>
               </div>

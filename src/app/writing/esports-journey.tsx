@@ -10,7 +10,7 @@ interface EsportsJourneyProps {
 
 const EsportsJourney: React.FC<EsportsJourneyProps> = ({ onBack }) => {
   return (
-    <article className="max-w-2xl mx-auto py-8">
+    <article className="max-w-7xl py-8 px-4 sm:px-0">
       {/* Back Button */}
       <button 
         onClick={onBack}
@@ -21,8 +21,8 @@ const EsportsJourney: React.FC<EsportsJourneyProps> = ({ onBack }) => {
       </button>
 
       {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 dark:text-white">
+      <header className="mb-8 max-w-3xl">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
           My Time in Esports
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
@@ -31,7 +31,7 @@ const EsportsJourney: React.FC<EsportsJourneyProps> = ({ onBack }) => {
         </div>
       </header>
 
-      <div className="prose dark:prose-invert prose-zinc max-w-none">
+      <div className="prose dark:prose-invert prose-zinc max-w-3xl">
         <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">The Beginning: Falling in Love with Counter-Strike</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
           It all started in 2014 when I first encountered Counter-Strike. From the moment I witnessed its raw and beautiful gameplay, 

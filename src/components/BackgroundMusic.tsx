@@ -92,24 +92,24 @@ const BackgroundMusic = () => {
   if (!showControls) return null;
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <div className="fixed bottom-4 sm:bottom-8 right-4 sm:right-8 z-50">
       {error && (
-        <div className="mb-2 text-xs text-red-500 bg-white dark:bg-zinc-800 p-2 rounded">
+        <div className="mb-2 text-xs text-red-500 bg-white dark:bg-zinc-800 p-2 rounded shadow-sm">
           {error}
         </div>
       )}
       <button
         onClick={togglePlay}
         disabled={!isLoaded}
-        className={`p-3 bg-zinc-100 dark:bg-zinc-800 rounded-full shadow-lg 
+        className={`p-2.5 sm:p-3 bg-zinc-100 dark:bg-zinc-800 rounded-full shadow-lg 
           hover:scale-105 transition-transform duration-200 ease-in-out
           ${!isLoaded ? 'opacity-50 cursor-not-allowed' : ''}`}
         aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
       >
         {isPlaying ? (
-          <Volume2 className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-600 dark:text-zinc-400" />
         ) : (
-          <VolumeX className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-600 dark:text-zinc-400" />
         )}
       </button>
     </div>
