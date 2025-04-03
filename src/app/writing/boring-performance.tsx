@@ -9,7 +9,7 @@ interface ArticleProps {
 
 const BoringPerformance: React.FC<ArticleProps> = ({ onBack }) => {
   return (
-    <article className="max-w-2xl mx-auto py-8">
+    <article className="max-w-7xl py-8 px-4 sm:px-0">
       <button 
         onClick={onBack}
         className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors"
@@ -18,16 +18,16 @@ const BoringPerformance: React.FC<ArticleProps> = ({ onBack }) => {
         <span>Back to writing</span>
       </button>
 
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 dark:text-white">
-          The Boring Company Guide to 10x Frontend Performance
+      <header className="mb-8 max-w-3xl">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
+          Boring Performance: The Forgotten Art of Optimization
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
-          <time dateTime="2024-04-15">April 15, 2024</time>
+          <time dateTime="2023-11-15">November 15, 2023</time>
         </div>
       </header>
 
-      <div className="prose dark:prose-invert prose-zinc max-w-none">
+      <div className="prose dark:prose-invert prose-zinc max-w-3xl">
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h2 className="text-lg font-semibold mb-4 dark:text-white">TLDR:</h2>
           <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">

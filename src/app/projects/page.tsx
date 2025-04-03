@@ -42,9 +42,6 @@ const ProjectCard = ({ project }: { project: Project }) => {
         <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
           {project.title}
         </h3>
-        {project.metrics?.preAI && (
-          <span className="text-xs font-medium px-2 py-0.5 bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 rounded-full">Pre-AI</span>
-        )}
       </div>
       
       {/* Description */}

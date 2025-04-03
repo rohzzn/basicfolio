@@ -10,7 +10,7 @@ interface BeginnersGuideProgrammingProps {
 
 const BeginnersGuideProgramming: React.FC<BeginnersGuideProgrammingProps> = ({ onBack }) => {
   return (
-    <article className="max-w-2xl mx-auto py-8">
+    <article className="max-w-7xl py-8 px-4 sm:px-0">
       <button 
         onClick={onBack}
         className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors"
@@ -19,17 +19,16 @@ const BeginnersGuideProgramming: React.FC<BeginnersGuideProgrammingProps> = ({ o
         <span>Back to writing</span>
       </button>
 
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 dark:text-white">
-          Beginners Guide for a Programmer
+      <header className="mb-8 max-w-3xl">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
+          Beginner&#39;s Guide to Programming
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
-          <time dateTime="2021-04-28">April 28, 2021</time>
-
+          <time dateTime="2023-05-15">May 15, 2023</time>
         </div>
       </header>
 
-      <div className="prose dark:prose-invert prose-zinc max-w-none">
+      <div className="prose dark:prose-invert prose-zinc max-w-3xl">
         <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Understanding Programming</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
           Before we can introduce you to some key concepts, we need to understand what programming really is. 

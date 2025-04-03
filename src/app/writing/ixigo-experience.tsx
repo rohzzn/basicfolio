@@ -10,7 +10,7 @@ interface IxigoExperienceProps {
 
 const IxigoExperience: React.FC<IxigoExperienceProps> = ({ onBack }) => {
   return (
-    <article className="max-w-2xl mx-auto py-8">
+    <article className="max-w-7xl py-8 px-4 sm:px-0">
       {/* Back Button */}
       <button 
         onClick={onBack}
@@ -21,8 +21,8 @@ const IxigoExperience: React.FC<IxigoExperienceProps> = ({ onBack }) => {
       </button>
 
       {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 dark:text-white">
+      <header className="mb-8 max-w-3xl">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
           SDE Intern Experience at Abhibus (Ixigo)
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
@@ -32,7 +32,7 @@ const IxigoExperience: React.FC<IxigoExperienceProps> = ({ onBack }) => {
       </header>
 
       {/* Rest of the content remains the same */}
-      <div className="prose dark:prose-invert prose-zinc max-w-none">
+      <div className="prose dark:prose-invert prose-zinc max-w-3xl">
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
           As I reflect on my SDE (Software Development Engineer) internship experience at Abhibus Ixigo, 
           I&#39;m filled with a sense of accomplishment and gratitude. It was a journey that began with curiosity, 
