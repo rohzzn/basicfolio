@@ -165,7 +165,7 @@ const Stack = () => {
         </div>
         
         {experience.map((exp, index) => (
-          <div key={index} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
+          <div key={index} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 mb-4">
             <h4 className="text-lg font-medium dark:text-white">{exp.company}</h4>
             <p className="text-zinc-600 dark:text-zinc-400">{exp.role}</p>
             <p className="text-sm text-zinc-500 dark:text-zinc-500">{exp.duration}</p>
