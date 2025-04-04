@@ -35,6 +35,7 @@ const FocusPage: React.FC = () => {
   const [showSessionHistory, setShowSessionHistory] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<string>('');
   
   // Study music states
   const [isStudyMusicPlaying, setIsStudyMusicPlaying] = useState<boolean>(false);
@@ -259,6 +260,24 @@ const FocusPage: React.FC = () => {
     }
   }, []);
   
+  // Update current time every second
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      }));
+    };
+    
+    // Update immediately, then every second
+    updateTime();
+    const timeInterval = setInterval(updateTime, 1000);
+    
+    return () => clearInterval(timeInterval);
+  }, []);
+  
   // Save data to localStorage when they change
   useEffect(() => {
     localStorage.setItem('focusTodos', JSON.stringify(todos));
@@ -303,53 +322,63 @@ const FocusPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Timer Section */}
         <div className="lg:col-span-7 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg p-6 relative">
-          {/* Session counter */}
-          <div className="absolute top-4 right-4 flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
-            <Zap size={16} className="text-amber-500" />
-            <span>{sessionsCompleted} session{sessionsCompleted !== 1 ? 's' : ''}</span>
-          </div>
-          
-          {/* Timer mode tabs */}
-          <div className="mb-6 flex gap-2">
-            <button 
-              onClick={() => handleTimerModeChange('short')}
-              className={`px-4 py-2 rounded-md transition-colors text-sm ${
-                timerMode === 'short' 
-                  ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
-                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
-              }`}
-            >
+          {/* Timer mode tabs and info bar */}
+          <div className="mb-6 flex justify-between items-center">
+            <div className="flex gap-2">
+              <button 
+                onClick={() => handleTimerModeChange('short')}
+                className={`px-4 py-2 rounded-md transition-colors text-sm ${
+                  timerMode === 'short' 
+                    ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Clock size={16} />
+                  <span>25 min</span>
+                </div>
+              </button>
+              <button 
+                onClick={() => handleTimerModeChange('long')}
+                className={`px-4 py-2 rounded-md transition-colors text-sm ${
+                  timerMode === 'long' 
+                    ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Clock size={16} />
+                  <span>50 min</span>
+                </div>
+              </button>
+              <button 
+                onClick={() => handleTimerModeChange('break')}
+                className={`px-4 py-2 rounded-md transition-colors text-sm ${
+                  timerMode === 'break' 
+                    ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <ZapOff size={16} />
+                  <span>Break</span>
+                </div>
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
               <div className="flex items-center gap-1.5">
-                <Clock size={16} />
-                <span>25 min</span>
+                <Zap size={16} className="text-amber-500" />
+                <span>{sessionsCompleted} session{sessionsCompleted !== 1 ? 's' : ''}</span>
               </div>
-            </button>
-            <button 
-              onClick={() => handleTimerModeChange('long')}
-              className={`px-4 py-2 rounded-md transition-colors text-sm ${
-                timerMode === 'long' 
-                  ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
-                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
-              }`}
-            >
+              
+              <div className="h-3.5 border-l border-zinc-300 dark:border-zinc-600"></div>
+              
               <div className="flex items-center gap-1.5">
-                <Clock size={16} />
-                <span>50 min</span>
+                <Clock size={16} className="text-zinc-500" />
+                <span className="font-medium tabular-nums">{currentTime}</span>
               </div>
-            </button>
-            <button 
-              onClick={() => handleTimerModeChange('break')}
-              className={`px-4 py-2 rounded-md transition-colors text-sm ${
-                timerMode === 'break' 
-                  ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
-                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
-              }`}
-            >
-              <div className="flex items-center gap-1.5">
-                <ZapOff size={16} />
-                <span>Break</span>
-              </div>
-            </button>
+            </div>
           </div>
           
           <div className="mb-8 relative w-full h-2 bg-zinc-100 dark:bg-zinc-700/50 rounded-full overflow-hidden">
