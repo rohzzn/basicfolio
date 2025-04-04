@@ -71,6 +71,21 @@ const formatDuration = (ms: number): string => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
+// Define more specific types for API responses
+interface RecentTracksResponse {
+  items: Array<{ track: SpotifyTrack }>;
+}
+
+interface TopItemsResponse<T> {
+  items: T[];
+}
+
+interface CurrentlyPlayingResponse {
+  is_playing: boolean;
+  item: SpotifyTrack;
+  progress_ms: number;
+}
+
 const MusicPage: React.FC = () => {
   // Tab state
   const [activeTab, setActiveTab] = useState<MusicTab>('artists');
@@ -159,7 +174,7 @@ const MusicPage: React.FC = () => {
         }
         
         // Safe API fetch helper with improved error handling
-        const safeFetch = async (endpoint: string, params: Record<string, string> = {}): Promise<Record<string, unknown> | null> => {
+        const safeFetch = async <T>(endpoint: string, params: Record<string, string> = {}): Promise<T | null> => {
           try {
             const queryParams = new URLSearchParams(params).toString();
             const url = `https://api.spotify.com/v1${endpoint}${queryParams ? `?${queryParams}` : ''}`;
@@ -205,7 +220,7 @@ const MusicPage: React.FC = () => {
             }
             
             try {
-              return JSON.parse(text);
+              return JSON.parse(text) as T;
             } catch (jsonError) {
               console.error(`Failed to parse JSON from ${endpoint}:`, jsonError);
               return null;
@@ -218,9 +233,9 @@ const MusicPage: React.FC = () => {
         
         // Try to fetch recently played tracks
         try {
-          const recentData = await safeFetch('/me/player/recently-played', { limit: '10' });
+          const recentData = await safeFetch<RecentTracksResponse>('/me/player/recently-played', { limit: '10' });
           if (recentData && recentData.items && isMounted) {
-            setRecentTracks(recentData.items.map((item: { track: SpotifyTrack }) => item.track).filter(Boolean));
+            setRecentTracks(recentData.items.map(item => item.track).filter(Boolean));
             setLoadedSections(prev => ({ ...prev, recentTracks: true }));
           }
         } catch {
@@ -229,7 +244,7 @@ const MusicPage: React.FC = () => {
         
         // Try to fetch top tracks
         try {
-          const tracksData = await safeFetch('/me/top/tracks', { 
+          const tracksData = await safeFetch<TopItemsResponse<SpotifyTrack>>('/me/top/tracks', { 
             limit: '20', 
             time_range: timeRange 
           });
@@ -243,7 +258,7 @@ const MusicPage: React.FC = () => {
         
         // Try to fetch top artists
         try {
-          const artistsData = await safeFetch('/me/top/artists', { 
+          const artistsData = await safeFetch<TopItemsResponse<SpotifyArtist>>('/me/top/artists', { 
             limit: '20', 
             time_range: timeRange 
           });
@@ -257,7 +272,7 @@ const MusicPage: React.FC = () => {
         
         // Try to fetch playlists
         try {
-          const playlistsData = await safeFetch('/me/playlists', { limit: '20' });
+          const playlistsData = await safeFetch<TopItemsResponse<SpotifyPlaylist>>('/me/playlists', { limit: '20' });
           if (playlistsData && playlistsData.items && isMounted) {
             setPlaylists(playlistsData.items);
             setLoadedSections(prev => ({ ...prev, playlists: true }));
@@ -268,7 +283,7 @@ const MusicPage: React.FC = () => {
         
         // Try to fetch currently playing
         try {
-          const nowPlaying = await safeFetch('/me/player/currently-playing');
+          const nowPlaying = await safeFetch<CurrentlyPlayingResponse>('/me/player/currently-playing');
           if (nowPlaying && nowPlaying.item && isMounted) {
             setCurrentlyPlaying({
               isPlaying: nowPlaying.is_playing,
