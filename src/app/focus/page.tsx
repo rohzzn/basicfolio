@@ -264,48 +264,6 @@ const FocusPage: React.FC = () => {
     });
   };
   
-  // Add new todo
-  const addTodo = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newTodo.trim() !== '') {
-      const newItem: TodoItem = {
-        id: Date.now().toString(),
-        text: newTodo.trim(),
-        completed: false
-      };
-      setTodos([...todos, newItem]);
-      setNewTodo('');
-    }
-  };
-  
-  // Toggle todo completion status
-  const toggleTodo = (id: string) => {
-    setTodos(todos.map(todo => {
-      if (todo.id === id) {
-        const newStatus = !todo.completed;
-        // Update completed tasks count
-        setCompletedTasks(prev => newStatus ? prev + 1 : prev - 1);
-        return { ...todo, completed: newStatus };
-      }
-      return todo;
-    }));
-  };
-  
-  // Delete todo
-  const deleteTodo = (id: string) => {
-    const todoToDelete = todos.find(todo => todo.id === id);
-    if (todoToDelete && todoToDelete.completed) {
-      setCompletedTasks(prev => prev - 1);
-    }
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
-  
-  // Clear all completed todos
-  const clearCompletedTodos = () => {
-    setTodos(todos.filter(todo => !todo.completed));
-    setCompletedTasks(0);
-  };
-  
   // Toggle sound
   const toggleSound = () => {
     setSoundEnabled(!soundEnabled);
@@ -340,114 +298,270 @@ const FocusPage: React.FC = () => {
     }
   };
   
-  // Load data from localStorage on first render
-  useEffect(() => {
-    const savedTodos = localStorage.getItem('focusTodos');
-    const savedSessionHistory = localStorage.getItem('focusSessionHistory');
-    const savedSessionsCompleted = localStorage.getItem('focusSessionsCompleted');
-    const savedSoundEnabled = localStorage.getItem('focusSoundEnabled');
-    const savedStudyMusicPlaying = localStorage.getItem('focusStudyMusicPlaying');
-    
-    // Timer persistence
-    const savedTimerActive = localStorage.getItem('focusTimerActive');
-    const savedTimerRemaining = localStorage.getItem('focusTimerRemaining');
-    const savedTimerMode = localStorage.getItem('focusTimerMode');
-    const savedTimerStartTime = localStorage.getItem('focusTimerStartTime');
-    
-    const savedModeTimeRemaining = localStorage.getItem('focusModeTimeRemaining');
-    
-    if (savedTodos) {
-      const parsedTodos = JSON.parse(savedTodos);
-      setTodos(parsedTodos);
-      setCompletedTasks(parsedTodos.filter((todo: TodoItem) => todo.completed).length);
-    }
-    
-    if (savedSessionHistory) {
-      setSessionHistory(JSON.parse(savedSessionHistory));
-    }
-    
-    if (savedSessionsCompleted) {
-      setSessionsCompleted(parseInt(savedSessionsCompleted));
-    }
-    
-    if (savedSoundEnabled) {
-      setSoundEnabled(JSON.parse(savedSoundEnabled));
-    }
-    
-    if (savedStudyMusicPlaying) {
-      const isPlaying = JSON.parse(savedStudyMusicPlaying);
-      setIsStudyMusicPlaying(isPlaying);
-      if (isPlaying && studyMusicRef.current) {
-        studyMusicRef.current.play().catch(() => {
-          // Auto-play might be blocked, we'll reset the state
-          setIsStudyMusicPlaying(false);
-        });
+  // Add new todo - with immediate localStorage update
+  const addTodo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newTodo.trim() !== '') {
+      const newItem: TodoItem = {
+        id: Date.now().toString(),
+        text: newTodo.trim(),
+        completed: false
+      };
+      const updatedTodos = [...todos, newItem];
+      setTodos(updatedTodos);
+      setNewTodo('');
+      
+      // Immediately save to localStorage
+      try {
+        localStorage.setItem('focusTodos', JSON.stringify(updatedTodos));
+      } catch (error) {
+        console.error('Error saving new todo to localStorage:', error);
       }
     }
+  };
+  
+  // Toggle todo completion status - with immediate localStorage update
+  const toggleTodo = (id: string) => {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id === id) {
+        const newStatus = !todo.completed;
+        // Update completed tasks count
+        setCompletedTasks(prev => newStatus ? prev + 1 : prev - 1);
+        return { ...todo, completed: newStatus };
+      }
+      return todo;
+    });
     
-    // Restore timer state
-    if (savedTimerMode && (savedTimerMode === 'short' || savedTimerMode === 'long' || savedTimerMode === 'break')) {
-      setTimerMode(savedTimerMode as 'short' | 'long' | 'break');
+    setTodos(updatedTodos);
+    
+    // Immediately save to localStorage
+    try {
+      localStorage.setItem('focusTodos', JSON.stringify(updatedTodos));
+    } catch (error) {
+      console.error('Error saving toggled todo to localStorage:', error);
+    }
+  };
+  
+  // Delete todo - with immediate localStorage update
+  const deleteTodo = (id: string) => {
+    const todoToDelete = todos.find(todo => todo.id === id);
+    if (todoToDelete && todoToDelete.completed) {
+      setCompletedTasks(prev => prev - 1);
     }
     
-    if (savedTimerRemaining) {
-      let remaining = parseInt(savedTimerRemaining);
+    const updatedTodos = todos.filter(todo => todo.id !== id);
+    setTodos(updatedTodos);
+    
+    // Immediately save to localStorage
+    try {
+      localStorage.setItem('focusTodos', JSON.stringify(updatedTodos));
+    } catch (error) {
+      console.error('Error saving after deleting todo:', error);
+    }
+  };
+  
+  // Clear all completed todos - with immediate localStorage update
+  const clearCompletedTodos = () => {
+    const updatedTodos = todos.filter(todo => !todo.completed);
+    setTodos(updatedTodos);
+    setCompletedTasks(0);
+    
+    // Immediately save to localStorage
+    try {
+      localStorage.setItem('focusTodos', JSON.stringify(updatedTodos));
+    } catch (error) {
+      console.error('Error saving after clearing completed todos:', error);
+    }
+  };
+  
+  // Load data from localStorage on first render - with more robust error handling
+  useEffect(() => {
+    try {
+      console.log("Loading data from localStorage...");
+      const savedTodos = localStorage.getItem('focusTodos');
+      console.log("Saved todos from localStorage:", savedTodos);
       
-      // If timer was active, calculate elapsed time since it was started
-      if (savedTimerActive === 'true' && savedTimerStartTime) {
-        const startTime = parseInt(savedTimerStartTime);
-        const now = Date.now();
-        const elapsedSeconds = Math.floor((now - startTime) / 1000);
-        
-        // Adjust remaining time
-        remaining = Math.max(0, remaining - elapsedSeconds);
-        
-        // If timer should have completed while away
-        if (remaining <= 0) {
-          // Reset to beginning of next phase
-          if (savedTimerMode === 'break') {
-            setTimerMode('short');
-            remaining = TIMER_DURATIONS.short * 60;
-            localStorage.setItem('focusTimerMode', 'short');
-          } else {
-            // After work session, go to break
-            setTimerMode('break');
-            remaining = TIMER_DURATIONS.break * 60;
-            localStorage.setItem('focusTimerMode', 'break');
-            
-            // Count completed session
-            if (savedTimerMode !== 'break') {
-              setSessionsCompleted(prev => prev + 1);
-              // Add to session history
-              const newSession: FocusSession = {
-                id: Date.now().toString(),
-                date: new Date().toISOString(),
-                duration: TIMER_DURATIONS[savedTimerMode as 'short' | 'long'],
-                completed: true
-              };
-              setSessionHistory(prev => [newSession, ...prev]);
-            }
-          }
+      const savedSessionHistory = localStorage.getItem('focusSessionHistory');
+      const savedSessionsCompleted = localStorage.getItem('focusSessionsCompleted');
+      const savedSoundEnabled = localStorage.getItem('focusSoundEnabled');
+      const savedStudyMusicPlaying = localStorage.getItem('focusStudyMusicPlaying');
+      
+      // Timer persistence
+      const savedTimerActive = localStorage.getItem('focusTimerActive');
+      const savedTimerRemaining = localStorage.getItem('focusTimerRemaining');
+      const savedTimerMode = localStorage.getItem('focusTimerMode');
+      const savedTimerStartTime = localStorage.getItem('focusTimerStartTime');
+      
+      const savedModeTimeRemaining = localStorage.getItem('focusModeTimeRemaining');
+      
+      if (savedTodos) {
+        try {
+          const parsedTodos = JSON.parse(savedTodos);
+          console.log("Parsed todos:", parsedTodos);
           
-          // Timer completed, so it's no longer active
-          setIsActive(false);
-          localStorage.setItem('focusTimerActive', 'false');
-          localStorage.removeItem('focusTimerStartTime');
-        } else {
-          // Timer still has time, resume it
-          setIsActive(true);
+          if (Array.isArray(parsedTodos)) {
+            setTodos(parsedTodos);
+            const completedCount = parsedTodos.filter((todo: TodoItem) => todo.completed).length;
+            setCompletedTasks(completedCount);
+            console.log(`Successfully loaded ${parsedTodos.length} todos (${completedCount} completed) from localStorage`);
+            
+            // Test write to localStorage immediately to ensure it works
+            const testWrite = JSON.stringify(parsedTodos);
+            localStorage.setItem('focusTodosTest', testWrite);
+            const readBack = localStorage.getItem('focusTodosTest');
+            if (readBack !== testWrite) {
+              console.error("localStorage write/read verification failed!");
+            } else {
+              console.log("localStorage write/read verification successful");
+            }
+          } else {
+            console.warn('Saved todos not in expected format (not an array), resetting');
+            setTodos([]);
+            setCompletedTasks(0);
+          }
+        } catch (parseError) {
+          console.error('Error parsing saved todos:', parseError);
+          setTodos([]);
+          setCompletedTasks(0);
         }
       } else {
-        setIsActive(false);
+        console.log("No saved todos found in localStorage");
       }
       
-      // Set the remaining time
-      setTimeRemaining(remaining);
-      localStorage.setItem('focusTimerRemaining', remaining.toString());
+      if (savedSessionHistory) {
+        setSessionHistory(JSON.parse(savedSessionHistory));
+      }
+      
+      if (savedSessionsCompleted) {
+        setSessionsCompleted(parseInt(savedSessionsCompleted));
+      }
+      
+      if (savedSoundEnabled) {
+        setSoundEnabled(JSON.parse(savedSoundEnabled));
+      }
+      
+      if (savedStudyMusicPlaying) {
+        const isPlaying = JSON.parse(savedStudyMusicPlaying);
+        setIsStudyMusicPlaying(isPlaying);
+        if (isPlaying && studyMusicRef.current) {
+          studyMusicRef.current.play().catch(() => {
+            // Auto-play might be blocked, we'll reset the state
+            setIsStudyMusicPlaying(false);
+          });
+        }
+      }
+      
+      // Restore timer state
+      if (savedTimerMode && (savedTimerMode === 'short' || savedTimerMode === 'long' || savedTimerMode === 'break')) {
+        setTimerMode(savedTimerMode as 'short' | 'long' | 'break');
+      }
+      
+      if (savedTimerRemaining) {
+        let remaining = parseInt(savedTimerRemaining);
+        
+        // If timer was active, calculate elapsed time since it was started
+        if (savedTimerActive === 'true' && savedTimerStartTime) {
+          const startTime = parseInt(savedTimerStartTime);
+          const now = Date.now();
+          const elapsedSeconds = Math.floor((now - startTime) / 1000);
+          
+          // Adjust remaining time
+          remaining = Math.max(0, remaining - elapsedSeconds);
+          
+          // If timer should have completed while away
+          if (remaining <= 0) {
+            // Reset to beginning of next phase
+            if (savedTimerMode === 'break') {
+              setTimerMode('short');
+              remaining = TIMER_DURATIONS.short * 60;
+              localStorage.setItem('focusTimerMode', 'short');
+            } else {
+              // After work session, go to break
+              setTimerMode('break');
+              remaining = TIMER_DURATIONS.break * 60;
+              localStorage.setItem('focusTimerMode', 'break');
+              
+              // Count completed session
+              if (savedTimerMode !== 'break') {
+                setSessionsCompleted(prev => prev + 1);
+                // Add to session history
+                const newSession: FocusSession = {
+                  id: Date.now().toString(),
+                  date: new Date().toISOString(),
+                  duration: TIMER_DURATIONS[savedTimerMode as 'short' | 'long'],
+                  completed: true
+                };
+                setSessionHistory(prev => [newSession, ...prev]);
+              }
+            }
+            
+            // Timer completed, so it's no longer active
+            setIsActive(false);
+            localStorage.setItem('focusTimerActive', 'false');
+            localStorage.removeItem('focusTimerStartTime');
+          } else {
+            // Timer still has time, resume it
+            setIsActive(true);
+          }
+        } else {
+          setIsActive(false);
+        }
+        
+        // Set the remaining time
+        setTimeRemaining(remaining);
+        localStorage.setItem('focusTimerRemaining', remaining.toString());
+      }
+      
+      if (savedModeTimeRemaining) {
+        setModeTimeRemaining(JSON.parse(savedModeTimeRemaining));
+      }
+    } catch (error) {
+      console.error('Error loading from localStorage:', error);
     }
-    
-    if (savedModeTimeRemaining) {
-      setModeTimeRemaining(JSON.parse(savedModeTimeRemaining));
+  }, []);
+  
+  // Save data to localStorage when they change - with more robust implementation
+  useEffect(() => {
+    try {
+      console.log(`Saving ${todos.length} todos to localStorage`);
+      
+      // Save todos with error handling
+      const todosJson = JSON.stringify(todos);
+      localStorage.setItem('focusTodos', todosJson);
+      
+      // Verify the save by reading back
+      const savedBack = localStorage.getItem('focusTodos');
+      if (savedBack !== todosJson) {
+        console.error("Todos may not have saved correctly - verification failed");
+      }
+      
+      // Save other data
+      localStorage.setItem('focusSessionHistory', JSON.stringify(sessionHistory));
+      localStorage.setItem('focusSessionsCompleted', sessionsCompleted.toString());
+      localStorage.setItem('focusSoundEnabled', JSON.stringify(soundEnabled));
+      localStorage.setItem('focusStudyMusicPlaying', JSON.stringify(isStudyMusicPlaying));
+      
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  }, [todos, sessionHistory, sessionsCompleted, soundEnabled, isStudyMusicPlaying]);
+  
+  // Check localStorage availability on mount
+  useEffect(() => {
+    try {
+      // Test if localStorage is working properly
+      const testKey = 'focusLocalStorageTest';
+      localStorage.setItem(testKey, 'test');
+      if (localStorage.getItem(testKey) !== 'test') {
+        console.error('localStorage is not working properly');
+        alert('Warning: Your browser storage seems to be disabled or not working properly. Your tasks may not be saved between sessions.');
+      } else {
+        localStorage.removeItem(testKey);
+        console.log('localStorage is working properly');
+      }
+    } catch (error) {
+      console.error('localStorage not available:', error);
+      alert('Warning: Your browser has localStorage disabled. Tasks will not be saved between sessions.');
     }
   }, []);
   
@@ -468,15 +582,6 @@ const FocusPage: React.FC = () => {
     
     return () => clearInterval(timeInterval);
   }, []);
-  
-  // Save data to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem('focusTodos', JSON.stringify(todos));
-    localStorage.setItem('focusSessionHistory', JSON.stringify(sessionHistory));
-    localStorage.setItem('focusSessionsCompleted', sessionsCompleted.toString());
-    localStorage.setItem('focusSoundEnabled', JSON.stringify(soundEnabled));
-    localStorage.setItem('focusStudyMusicPlaying', JSON.stringify(isStudyMusicPlaying));
-  }, [todos, sessionHistory, sessionsCompleted, soundEnabled, isStudyMusicPlaying]);
   
   return (
     <div className="max-w-7xl">
