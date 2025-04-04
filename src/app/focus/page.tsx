@@ -36,6 +36,17 @@ const FocusPage: React.FC = () => {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<string>('');
+  const [timerStartTime, setTimerStartTime] = useState<number | null>(null);
+  // Store remaining time for each timer mode
+  const [modeTimeRemaining, setModeTimeRemaining] = useState<{
+    short: number;
+    long: number;
+    break: number;
+  }>({
+    short: TIMER_DURATIONS.short * 60,
+    long: TIMER_DURATIONS.long * 60,
+    break: TIMER_DURATIONS.break * 60
+  });
   
   // Study music states
   const [isStudyMusicPlaying, setIsStudyMusicPlaying] = useState<boolean>(false);
@@ -61,10 +72,21 @@ const FocusPage: React.FC = () => {
   useEffect(() => {
     if (isActive && timeRemaining > 0) {
       timerRef.current = setInterval(() => {
-        setTimeRemaining(prevTime => prevTime - 1);
+        setTimeRemaining(prevTime => {
+          const newTime = prevTime - 1;
+          // Also update the mode-specific time remaining
+          setModeTimeRemaining(prev => ({
+            ...prev,
+            [timerMode]: newTime
+          }));
+          return newTime;
+        });
       }, 1000);
     } else if (timeRemaining === 0) {
       setIsActive(false);
+      setTimerStartTime(null);
+      localStorage.setItem('focusTimerActive', 'false');
+      localStorage.removeItem('focusTimerStartTime');
       
       // Handle session completion
       if (timerMode !== 'break') {
@@ -88,11 +110,41 @@ const FocusPage: React.FC = () => {
         
         // Automatically switch to break mode
         setTimerMode('break');
-        setTimeRemaining(TIMER_DURATIONS.break * 60);
+        const breakDuration = TIMER_DURATIONS.break * 60;
+        setTimeRemaining(breakDuration);
+        
+        // Reset the break mode time
+        setModeTimeRemaining(prev => ({
+          ...prev,
+          break: breakDuration
+        }));
+        
+        // Update localStorage
+        localStorage.setItem('focusTimerMode', 'break');
+        localStorage.setItem('focusTimerRemaining', breakDuration.toString());
+        localStorage.setItem('focusModeTimeRemaining', JSON.stringify({
+          ...modeTimeRemaining,
+          break: breakDuration
+        }));
       } else {
         // After break is over
         setTimerMode('short');
-        setTimeRemaining(TIMER_DURATIONS.short * 60);
+        const shortDuration = TIMER_DURATIONS.short * 60;
+        setTimeRemaining(shortDuration);
+        
+        // Reset the short mode time
+        setModeTimeRemaining(prev => ({
+          ...prev,
+          short: shortDuration
+        }));
+        
+        // Update localStorage
+        localStorage.setItem('focusTimerMode', 'short');
+        localStorage.setItem('focusTimerRemaining', shortDuration.toString());
+        localStorage.setItem('focusModeTimeRemaining', JSON.stringify({
+          ...modeTimeRemaining,
+          short: shortDuration
+        }));
         
         // Play different sound for break end
         if (soundEnabled) {
@@ -108,24 +160,97 @@ const FocusPage: React.FC = () => {
         clearInterval(timerRef.current);
       }
     };
-  }, [isActive, timeRemaining, timerMode, soundEnabled]);
+  }, [isActive, timeRemaining, timerMode, soundEnabled, modeTimeRemaining]);
   
   // Change timer mode
   const handleTimerModeChange = (mode: 'short' | 'long' | 'break') => {
+    // Don't change if it's the same mode
+    if (mode === timerMode) return;
+    
+    // Keep current active state instead of always stopping
+    const currentlyActive = isActive;
+    
+    // Save current timer state for the current mode
+    setModeTimeRemaining(prev => ({
+      ...prev,
+      [timerMode]: timeRemaining
+    }));
+    
+    // Get the saved time for the new mode
+    const savedTimeForNewMode = modeTimeRemaining[mode];
+    
     setTimerMode(mode);
-    setTimeRemaining(TIMER_DURATIONS[mode] * 60);
-    setIsActive(false);
+    setTimeRemaining(savedTimeForNewMode);
+    
+    // If timer was active, keep it active with the new mode
+    if (currentlyActive) {
+      // Record new start time
+      const now = Date.now();
+      setTimerStartTime(now);
+      
+      // Update localStorage with new mode but maintain active state
+      localStorage.setItem('focusTimerActive', 'true');
+      localStorage.setItem('focusTimerStartTime', now.toString());
+      localStorage.setItem('focusTimerMode', mode);
+      localStorage.setItem('focusTimerRemaining', savedTimeForNewMode.toString());
+      // Also save the mode-specific time remaining
+      localStorage.setItem('focusModeTimeRemaining', JSON.stringify(modeTimeRemaining));
+    } else {
+      // If it wasn't active, clear timer state
+      setTimerStartTime(null);
+      localStorage.setItem('focusTimerActive', 'false');
+      localStorage.setItem('focusTimerMode', mode);
+      localStorage.setItem('focusTimerRemaining', savedTimeForNewMode.toString());
+      localStorage.removeItem('focusTimerStartTime');
+      // Also save the mode-specific time remaining
+      localStorage.setItem('focusModeTimeRemaining', JSON.stringify(modeTimeRemaining));
+    }
   };
   
   // Toggle timer
   const toggleTimer = () => {
-    setIsActive(!isActive);
+    const newIsActive = !isActive;
+    setIsActive(newIsActive);
+    
+    if (newIsActive) {
+      // Record the start time when activating the timer
+      const now = Date.now();
+      setTimerStartTime(now);
+      // Save timer state to localStorage
+      localStorage.setItem('focusTimerStartTime', now.toString());
+      localStorage.setItem('focusTimerActive', 'true');
+      localStorage.setItem('focusTimerRemaining', timeRemaining.toString());
+      localStorage.setItem('focusTimerMode', timerMode);
+    } else {
+      // Clear timer start time when pausing
+      setTimerStartTime(null);
+      localStorage.setItem('focusTimerActive', 'false');
+      localStorage.setItem('focusTimerRemaining', timeRemaining.toString());
+    }
   };
   
   // Reset timer
   const resetTimer = () => {
-    setTimeRemaining(TIMER_DURATIONS[timerMode] * 60);
+    const newDuration = TIMER_DURATIONS[timerMode] * 60;
+    setTimeRemaining(newDuration);
     setIsActive(false);
+    setTimerStartTime(null);
+    
+    // Reset the current mode's time remaining
+    setModeTimeRemaining(prev => ({
+      ...prev,
+      [timerMode]: newDuration
+    }));
+    
+    // Update localStorage
+    localStorage.setItem('focusTimerActive', 'false');
+    localStorage.setItem('focusTimerRemaining', newDuration.toString());
+    localStorage.removeItem('focusTimerStartTime');
+    // Update mode-specific time remaining in localStorage
+    localStorage.setItem('focusModeTimeRemaining', JSON.stringify({
+      ...modeTimeRemaining,
+      [timerMode]: newDuration
+    }));
   };
   
   // Format time as mm:ss
@@ -230,6 +355,14 @@ const FocusPage: React.FC = () => {
     const savedSoundEnabled = localStorage.getItem('focusSoundEnabled');
     const savedStudyMusicPlaying = localStorage.getItem('focusStudyMusicPlaying');
     
+    // Timer persistence
+    const savedTimerActive = localStorage.getItem('focusTimerActive');
+    const savedTimerRemaining = localStorage.getItem('focusTimerRemaining');
+    const savedTimerMode = localStorage.getItem('focusTimerMode');
+    const savedTimerStartTime = localStorage.getItem('focusTimerStartTime');
+    
+    const savedModeTimeRemaining = localStorage.getItem('focusModeTimeRemaining');
+    
     if (savedTodos) {
       const parsedTodos = JSON.parse(savedTodos);
       setTodos(parsedTodos);
@@ -257,6 +390,72 @@ const FocusPage: React.FC = () => {
           setIsStudyMusicPlaying(false);
         });
       }
+    }
+    
+    // Restore timer state
+    if (savedTimerMode && (savedTimerMode === 'short' || savedTimerMode === 'long' || savedTimerMode === 'break')) {
+      setTimerMode(savedTimerMode as 'short' | 'long' | 'break');
+    }
+    
+    if (savedTimerRemaining) {
+      let remaining = parseInt(savedTimerRemaining);
+      
+      // If timer was active, calculate elapsed time since it was started
+      if (savedTimerActive === 'true' && savedTimerStartTime) {
+        const startTime = parseInt(savedTimerStartTime);
+        const now = Date.now();
+        const elapsedSeconds = Math.floor((now - startTime) / 1000);
+        
+        // Adjust remaining time
+        remaining = Math.max(0, remaining - elapsedSeconds);
+        
+        // If timer should have completed while away
+        if (remaining <= 0) {
+          // Reset to beginning of next phase
+          if (savedTimerMode === 'break') {
+            setTimerMode('short');
+            remaining = TIMER_DURATIONS.short * 60;
+            localStorage.setItem('focusTimerMode', 'short');
+          } else {
+            // After work session, go to break
+            setTimerMode('break');
+            remaining = TIMER_DURATIONS.break * 60;
+            localStorage.setItem('focusTimerMode', 'break');
+            
+            // Count completed session
+            if (savedTimerMode !== 'break') {
+              setSessionsCompleted(prev => prev + 1);
+              // Add to session history
+              const newSession: FocusSession = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                duration: TIMER_DURATIONS[savedTimerMode as 'short' | 'long'],
+                completed: true
+              };
+              setSessionHistory(prev => [newSession, ...prev]);
+            }
+          }
+          
+          // Timer completed, so it's no longer active
+          setIsActive(false);
+          localStorage.setItem('focusTimerActive', 'false');
+          localStorage.removeItem('focusTimerStartTime');
+        } else {
+          // Timer still has time, resume it
+          setIsActive(true);
+          setTimerStartTime(startTime);
+        }
+      } else {
+        setIsActive(false);
+      }
+      
+      // Set the remaining time
+      setTimeRemaining(remaining);
+      localStorage.setItem('focusTimerRemaining', remaining.toString());
+    }
+    
+    if (savedModeTimeRemaining) {
+      setModeTimeRemaining(JSON.parse(savedModeTimeRemaining));
     }
   }, []);
   
