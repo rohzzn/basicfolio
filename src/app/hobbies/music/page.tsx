@@ -174,7 +174,7 @@ const MusicPage: React.FC = () => {
         }
         
         // Safe API fetch helper with improved error handling
-        const safeFetch = async <T>(endpoint: string, params: Record<string, string> = {}): Promise<T | null> => {
+        const safeFetch = async <T,>(endpoint: string, params: Record<string, string> = {}): Promise<T | null> => {
           try {
             const queryParams = new URLSearchParams(params).toString();
             const url = `https://api.spotify.com/v1${endpoint}${queryParams ? `?${queryParams}` : ''}`;
