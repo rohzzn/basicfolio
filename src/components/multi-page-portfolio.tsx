@@ -456,7 +456,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       </main>
       
       {/* Combined Time, Weather, and Audio Widget */}
-      <div className="fixed bottom-4 right-4 z-40 flex flex-row items-center space-x-2 bg-zinc-100/90 dark:bg-zinc-800/90 backdrop-blur-sm rounded-md p-2">
+      <div className="fixed bottom-4 right-4 z-40 flex flex-row items-center space-x-3">
         <div className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300">
           <Clock className="w-3.5 h-3.5" />
           <span className="text-xs font-medium">{currentTime || 'Loading...'}</span>
