@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle2, Circle, ArrowLeft, Play, Pause, RotateCcw, Bell, Clock, ZapOff, Zap, ListChecks, BellOff } from 'lucide-react';
-import Link from 'next/link';
+import { CheckCircle2, Circle, Play, Pause, RotateCcw, Bell, Clock, ZapOff, Zap, ListChecks, BellOff } from 'lucide-react';
 
 // Type for todo items
 interface TodoItem {
@@ -225,11 +224,8 @@ const FocusPage: React.FC = () => {
   
   return (
     <div className="max-w-7xl">
-      {/* Header with back button */}
+      {/* Header */}
       <div className="mb-6 flex items-center">
-        <Link href="/" className="mr-4 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
-          <ArrowLeft size={20} />
-        </Link>
         <h1 className="text-lg sm:text-xl font-medium dark:text-white">Focus Mode</h1>
         <div className="ml-auto flex items-center gap-3">
           <button
