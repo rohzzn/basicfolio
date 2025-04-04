@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle2, Circle, Play, Pause, RotateCcw, Bell, Clock, ZapOff, Zap, ListChecks, BellOff } from 'lucide-react';
+import { CheckCircle2, Circle, Play, Pause, RotateCcw, Bell, Clock, ZapOff, Zap, ListChecks, BellOff, Music, VolumeX } from 'lucide-react';
 
 // Type for todo items
 interface TodoItem {
@@ -35,6 +35,10 @@ const FocusPage: React.FC = () => {
   const [showSessionHistory, setShowSessionHistory] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
+  
+  // Study music states
+  const [isStudyMusicPlaying, setIsStudyMusicPlaying] = useState<boolean>(false);
+  const studyMusicRef = useRef<HTMLAudioElement | null>(null);
   
   // Todo states
   const [todos, setTodos] = useState<TodoItem[]>([]);
@@ -188,12 +192,42 @@ const FocusPage: React.FC = () => {
     setSoundEnabled(!soundEnabled);
   };
   
+  // Initialize and control study music
+  useEffect(() => {
+    const audio = new Audio('/lofi-background.mp3');
+    audio.loop = true;
+    audio.volume = 0.2;
+    studyMusicRef.current = audio;
+    
+    return () => {
+      if (studyMusicRef.current) {
+        studyMusicRef.current.pause();
+        studyMusicRef.current = null;
+      }
+    };
+  }, []);
+  
+  // Toggle study music
+  const toggleStudyMusic = () => {
+    if (studyMusicRef.current) {
+      if (isStudyMusicPlaying) {
+        studyMusicRef.current.pause();
+      } else {
+        studyMusicRef.current.play().catch(err => 
+          console.error('Failed to play study music:', err)
+        );
+      }
+      setIsStudyMusicPlaying(!isStudyMusicPlaying);
+    }
+  };
+  
   // Load data from localStorage on first render
   useEffect(() => {
     const savedTodos = localStorage.getItem('focusTodos');
     const savedSessionHistory = localStorage.getItem('focusSessionHistory');
     const savedSessionsCompleted = localStorage.getItem('focusSessionsCompleted');
     const savedSoundEnabled = localStorage.getItem('focusSoundEnabled');
+    const savedStudyMusicPlaying = localStorage.getItem('focusStudyMusicPlaying');
     
     if (savedTodos) {
       const parsedTodos = JSON.parse(savedTodos);
@@ -212,6 +246,17 @@ const FocusPage: React.FC = () => {
     if (savedSoundEnabled) {
       setSoundEnabled(JSON.parse(savedSoundEnabled));
     }
+    
+    if (savedStudyMusicPlaying) {
+      const isPlaying = JSON.parse(savedStudyMusicPlaying);
+      setIsStudyMusicPlaying(isPlaying);
+      if (isPlaying && studyMusicRef.current) {
+        studyMusicRef.current.play().catch(() => {
+          // Auto-play might be blocked, we'll reset the state
+          setIsStudyMusicPlaying(false);
+        });
+      }
+    }
   }, []);
   
   // Save data to localStorage when they change
@@ -220,7 +265,8 @@ const FocusPage: React.FC = () => {
     localStorage.setItem('focusSessionHistory', JSON.stringify(sessionHistory));
     localStorage.setItem('focusSessionsCompleted', sessionsCompleted.toString());
     localStorage.setItem('focusSoundEnabled', JSON.stringify(soundEnabled));
-  }, [todos, sessionHistory, sessionsCompleted, soundEnabled]);
+    localStorage.setItem('focusStudyMusicPlaying', JSON.stringify(isStudyMusicPlaying));
+  }, [todos, sessionHistory, sessionsCompleted, soundEnabled, isStudyMusicPlaying]);
   
   return (
     <div className="max-w-7xl">
@@ -234,6 +280,15 @@ const FocusPage: React.FC = () => {
             aria-label={soundEnabled ? "Disable sound" : "Enable sound"}
           >
             {soundEnabled ? <Bell size={18} /> : <BellOff size={18} />}
+          </button>
+          <button
+            onClick={toggleStudyMusic}
+            className={`text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 ${
+              isStudyMusicPlaying ? 'text-amber-500 dark:text-amber-400' : ''
+            }`}
+            aria-label={isStudyMusicPlaying ? "Pause study music" : "Play study music"}
+          >
+            {isStudyMusicPlaying ? <Music size={18} /> : <VolumeX size={18} />}
           </button>
           <button
             onClick={() => setShowSessionHistory(!showSessionHistory)}
