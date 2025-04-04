@@ -76,7 +76,7 @@ const MusicPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<MusicTab>('artists');
   
   // Data states
-  const [recentTracks, setRecentTracks] = useState<SpotifyTrack[]>([]);
+  const [, setRecentTracks] = useState<SpotifyTrack[]>([]);
   const [topTracks, setTopTracks] = useState<SpotifyTrack[]>([]);
   const [topArtists, setTopArtists] = useState<SpotifyArtist[]>([]);
   const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
@@ -159,7 +159,7 @@ const MusicPage: React.FC = () => {
         }
         
         // Safe API fetch helper with improved error handling
-        const safeFetch = async (endpoint: string, params: Record<string, string> = {}): Promise<Record<string, any> | null> => {
+        const safeFetch = async (endpoint: string, params: Record<string, string> = {}): Promise<Record<string, unknown> | null> => {
           try {
             const queryParams = new URLSearchParams(params).toString();
             const url = `https://api.spotify.com/v1${endpoint}${queryParams ? `?${queryParams}` : ''}`;
@@ -705,16 +705,16 @@ const MusicPage: React.FC = () => {
               </p>
               <ul className="list-disc pl-5 text-sm space-y-1">
                 {authIssues.currentlyPlaying && (
-                  <li>Need <code className="bg-amber-100 dark:bg-amber-800/30 px-1 rounded">user-read-currently-playing</code> for "Now Playing"</li>
+                  <li>Need <code className="bg-amber-100 dark:bg-amber-800/30 px-1 rounded">user-read-currently-playing</code> for &quot;Now Playing&quot;</li>
                 )}
                 {authIssues.recentTracks && (
-                  <li>Need <code className="bg-amber-100 dark:bg-amber-800/30 px-1 rounded">user-read-recently-played</code> for "Recently Played"</li>
+                  <li>Need <code className="bg-amber-100 dark:bg-amber-800/30 px-1 rounded">user-read-recently-played</code> for &quot;Recently Played&quot;</li>
                 )}
                 {authIssues.topArtists && (
-                  <li>Need <code className="bg-amber-100 dark:bg-amber-800/30 px-1 rounded">user-top-read</code> for "Top Artists"</li>
+                  <li>Need <code className="bg-amber-100 dark:bg-amber-800/30 px-1 rounded">user-top-read</code> for &quot;Top Artists&quot;</li>
                 )}
                 {authIssues.topTracks && (
-                  <li>Need <code className="bg-amber-100 dark:bg-amber-800/30 px-1 rounded">user-top-read</code> for "Top Tracks"</li>
+                  <li>Need <code className="bg-amber-100 dark:bg-amber-800/30 px-1 rounded">user-top-read</code> for &quot;Top Tracks&quot;</li>
                 )}
               </ul>
             </div>
