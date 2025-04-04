@@ -36,7 +36,6 @@ const FocusPage: React.FC = () => {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<string>('');
-  const [timerStartTime, setTimerStartTime] = useState<number | null>(null);
   // Store remaining time for each timer mode
   const [modeTimeRemaining, setModeTimeRemaining] = useState<{
     short: number;
@@ -84,7 +83,6 @@ const FocusPage: React.FC = () => {
       }, 1000);
     } else if (timeRemaining === 0) {
       setIsActive(false);
-      setTimerStartTime(null);
       localStorage.setItem('focusTimerActive', 'false');
       localStorage.removeItem('focusTimerStartTime');
       
@@ -186,7 +184,6 @@ const FocusPage: React.FC = () => {
     if (currentlyActive) {
       // Record new start time
       const now = Date.now();
-      setTimerStartTime(now);
       
       // Update localStorage with new mode but maintain active state
       localStorage.setItem('focusTimerActive', 'true');
@@ -197,7 +194,6 @@ const FocusPage: React.FC = () => {
       localStorage.setItem('focusModeTimeRemaining', JSON.stringify(modeTimeRemaining));
     } else {
       // If it wasn't active, clear timer state
-      setTimerStartTime(null);
       localStorage.setItem('focusTimerActive', 'false');
       localStorage.setItem('focusTimerMode', mode);
       localStorage.setItem('focusTimerRemaining', savedTimeForNewMode.toString());
@@ -215,7 +211,6 @@ const FocusPage: React.FC = () => {
     if (newIsActive) {
       // Record the start time when activating the timer
       const now = Date.now();
-      setTimerStartTime(now);
       // Save timer state to localStorage
       localStorage.setItem('focusTimerStartTime', now.toString());
       localStorage.setItem('focusTimerActive', 'true');
@@ -223,7 +218,6 @@ const FocusPage: React.FC = () => {
       localStorage.setItem('focusTimerMode', timerMode);
     } else {
       // Clear timer start time when pausing
-      setTimerStartTime(null);
       localStorage.setItem('focusTimerActive', 'false');
       localStorage.setItem('focusTimerRemaining', timeRemaining.toString());
     }
@@ -234,7 +228,6 @@ const FocusPage: React.FC = () => {
     const newDuration = TIMER_DURATIONS[timerMode] * 60;
     setTimeRemaining(newDuration);
     setIsActive(false);
-    setTimerStartTime(null);
     
     // Reset the current mode's time remaining
     setModeTimeRemaining(prev => ({
@@ -443,7 +436,6 @@ const FocusPage: React.FC = () => {
         } else {
           // Timer still has time, resume it
           setIsActive(true);
-          setTimerStartTime(startTime);
         }
       } else {
         setIsActive(false);
