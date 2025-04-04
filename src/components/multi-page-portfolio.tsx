@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, Gamepad, Music, Loader2, Volume2, VolumeX, Focus } from "lucide-react";
+import { Menu, X, Gamepad, Music, Loader2, Volume2, VolumeX, Focus, Clock } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ModernCursor from './ModernCursor';
