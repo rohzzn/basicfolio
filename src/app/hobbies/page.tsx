@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { Activity, Gamepad2, BookOpen, PenTool, Film, Cpu, Laptop, Keyboard, Music } from 'lucide-react';
+import { Activity, Gamepad2, BookOpen, PenTool, Film, Laptop, Keyboard, Music } from 'lucide-react';
 
 interface HobbyCard {
   title: string;
@@ -46,12 +46,6 @@ const hobbyCards: HobbyCard[] = [
     description: "Tracking workouts and daily activities with personal stats.",
     href: "/hobbies/strava",
     icon: Activity
-  },
-  {
-    title: "Laboratory",
-    description: "A collection of experiments, prototypes, and research projects.",
-    href: "/hobbies/lab",
-    icon: Cpu
   },
   {
     title: "Setup",
