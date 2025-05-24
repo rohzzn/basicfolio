@@ -100,6 +100,35 @@ const achievements: Achievement[] = [
   }
 ];
 
+// Helper function to fetch with retry logic
+async function fetchWithRetry(url: string, retries = 3, delay = 1000) {
+  let lastError;
+  
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) return response;
+      
+      lastError = new Error(`HTTP error ${response.status}`);
+      
+      // If we got a rate limit or server error, wait longer
+      if (response.status === 429 || response.status >= 500) {
+        await new Promise(resolve => setTimeout(resolve, delay * (attempt + 1)));
+        continue;
+      }
+      
+      // For other errors like 404, don't retry
+      throw lastError;
+    } catch (error) {
+      lastError = error;
+      
+      // Only retry on network errors or specific HTTP errors
+      await new Promise(resolve => setTimeout(resolve, delay * (attempt + 1)));
+    }
+  }
+  
+  throw lastError;
+}
 
 const Games = async () => {
   const CSGO_USER_ID = '76561198239653194';
@@ -115,21 +144,37 @@ const Games = async () => {
   }
 
   try {
+    // Initialize variables with default values
+    let profile: SteamProfile | null = null;
+    let ownedGames: SteamGame[] = [];
+    let statsData: CSGOStats | null = null;
+    let profileError = false;
+    let ownedGamesError = false;
+    let statsError = false;
+
     // Fetch Player Summaries
-    const profileResponse = await fetch(
-      `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${CSGO_USER_ID}`
-    );
-    if (!profileResponse.ok) throw new Error('Failed to fetch player summaries.');
-    const profileData = await profileResponse.json();
-    const profile: SteamProfile = profileData.response.players[0];
+    try {
+      const profileResponse = await fetchWithRetry(
+        `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${CSGO_USER_ID}`
+      );
+      const profileData = await profileResponse.json();
+      profile = profileData.response.players[0];
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      profileError = true;
+    }
 
     // Fetch all owned games
-    const ownedGamesResponse = await fetch(
-      `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${apiKey}&steamid=${CSGO_USER_ID}&include_appinfo=1&include_played_free_games=1`
-    );
-    if (!ownedGamesResponse.ok) throw new Error('Failed to fetch owned games.');
-    const ownedGamesData: OwnedGamesResponse = await ownedGamesResponse.json();
-    const ownedGames = ownedGamesData.response.games || [];
+    try {
+      const ownedGamesResponse = await fetchWithRetry(
+        `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${apiKey}&steamid=${CSGO_USER_ID}&include_appinfo=1&include_played_free_games=1`
+      );
+      const ownedGamesData: OwnedGamesResponse = await ownedGamesResponse.json();
+      ownedGames = ownedGamesData.response.games || [];
+    } catch (error) {
+      console.error('Error fetching owned games:', error);
+      ownedGamesError = true;
+    }
 
     // Sort games by recent playtime first, then total playtime
     const sortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
@@ -148,11 +193,15 @@ const Games = async () => {
     const allGames = sortedGames.slice(0, 12);
 
     // Fetch CS:GO Stats
-    const statsResponse = await fetch(
-      `https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=${apiKey}&steamid=${CSGO_USER_ID}&appid=730`
-    );
-    if (!statsResponse.ok) throw new Error('Failed to fetch CS:GO stats.');
-    const statsData: CSGOStats = await statsResponse.json();
+    try {
+      const statsResponse = await fetchWithRetry(
+        `https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=${apiKey}&steamid=${CSGO_USER_ID}&appid=730`
+      );
+      statsData = await statsResponse.json();
+    } catch (error) {
+      console.error('Error fetching CS:GO stats:', error);
+      statsError = true;
+    }
 
     return (
       <div className="max-w-7xl">
@@ -160,18 +209,36 @@ const Games = async () => {
 
         {/* Steam Profile */}
         <section className="mb-8">
-          <Profile profile={profile} />
+          {profileError ? (
+            <div className="bg-yellow-50 dark:bg-zinc-800 p-4 rounded-lg">
+              <p className="text-yellow-800 dark:text-yellow-400">Could not load Steam profile. Please try again later.</p>
+            </div>
+          ) : profile && (
+            <Profile profile={profile} />
+          )}
         </section>
 
         {/* Recent Games */}
-        {recentGames.length > 0 && (
+        {ownedGamesError ? (
+          <section className="mb-8">
+            <div className="bg-yellow-50 dark:bg-zinc-800 p-4 rounded-lg">
+              <p className="text-yellow-800 dark:text-yellow-400">Could not load recent games. Please try again later.</p>
+            </div>
+          </section>
+        ) : recentGames.length > 0 && (
           <section className="mb-8">
             <RecentlyPlayedGames games={recentGames} />
           </section>
         )}
 
         {/* All Games */}
-        {allGames.length > 0 && (
+        {ownedGamesError ? (
+          <section className="mb-8">
+            <div className="bg-yellow-50 dark:bg-zinc-800 p-4 rounded-lg">
+              <p className="text-yellow-800 dark:text-yellow-400">Could not load games. Please try again later.</p>
+            </div>
+          </section>
+        ) : allGames.length > 0 && (
           <section className="mb-8">
             <h3 className="text-base font-medium mb-6 dark:text-white">Top Games</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -221,7 +288,11 @@ const Games = async () => {
             <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6">
               <div className="mb-4">
                 <h4 className="text-lg font-medium dark:text-white mb-2">Statistics</h4>
-                <CSGOStatsComponent stats={statsData} />
+                {statsError ? (
+                  <p className="text-yellow-800 dark:text-yellow-400">Could not load CS:GO stats. Please try again later.</p>
+                ) : statsData && (
+                  <CSGOStatsComponent stats={statsData} />
+                )}
               </div>
             </div>
 
@@ -268,7 +339,7 @@ const Games = async () => {
     console.error('Error fetching data:', error);
     return (
       <div className="max-w-7xl">
-        <p className="text-red-500">Failed to fetch data.</p>
+        <p className="text-red-500">Something went wrong. Please try again later.</p>
       </div>
     );
   }
