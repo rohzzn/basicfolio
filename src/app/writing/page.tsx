@@ -13,11 +13,19 @@ import ModernTechStacks from './modern-tech-stacks';
 import ChatGPTInterface from './chatgpt-interface';
 import DiscordArticle from './discord-article';
 import UCExperience from './uc-experience';
+import FirstSpring from './first-spring';
 
 const WritingPage = () => {
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
 
   const posts = useMemo(() => [
+    {
+      slug: 'first-spring',
+      title: 'First Spring: Blossoms, New Beginnings, and Research Adventures',
+      date: '2025-04-28',
+      displayDate: 'April 28, 2025',
+      description: 'A personal journey through Cincinnati\'s spring transformation and starting a new research position at Cincinnati Children\'s Hospital.'
+    },
     {
       slug: 'uc-experience',
       title: 'My First Semester at UC',
@@ -121,6 +129,8 @@ const WritingPage = () => {
         return <DiscordArticle onBack={() => setSelectedPost(null)} />;
       case 'uc-experience':
         return <UCExperience onBack={() => setSelectedPost(null)} />;
+      case 'first-spring':
+        return <FirstSpring onBack={() => setSelectedPost(null)} />;
       default:
         return null;
     }
