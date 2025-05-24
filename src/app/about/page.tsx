@@ -12,7 +12,7 @@ const Home: React.FC = () => (
         Feel free to click around — you might accidentally learn too much about me.
       </p>
       <p className="text-zinc-600 dark:text-zinc-400">
-        Quick lowdown:
+      Notes on Existence:
       </p>
       <ul className="list-disc pl-5 text-zinc-600 dark:text-zinc-400 space-y-2">
         <li>Grad CS student at UC, hanging on to that 4.0 GPA</li>
