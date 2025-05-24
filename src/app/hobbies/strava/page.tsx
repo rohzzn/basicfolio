@@ -1,6 +1,9 @@
 "use client";
 import React, { useState } from 'react';
-import { Activity, Timer, Map, TrendingUp, Calendar, Watch, ArrowUp, Gauge, Heart } from 'lucide-react';
+import { 
+  Activity, Timer, Map, Calendar, Watch, ArrowUp, 
+  Gauge, Heart, Flame, Sun
+} from 'lucide-react';
 import { decode } from '@mapbox/polyline';
 
 interface StravaActivity {
@@ -16,6 +19,11 @@ interface StravaActivity {
   max_speed: number;
   average_heartrate?: number;
   max_heartrate?: number;
+  suffer_score?: number;
+  calories?: number;
+  achievement_count?: number;
+  kudos_count?: number;
+  athlete_count?: number;
   map?: {
     summary_polyline: string;
   };
@@ -53,6 +61,31 @@ const ActivityPolyline: React.FC<{ polyline: string }> = ({ polyline }) => {
       />
     </svg>
   );
+};
+
+// Calculate calories based on activity type, time, and distance if not provided
+const calculateCalories = (activity: StravaActivity): number => {
+  if (activity.calories) return activity.calories;
+  
+  // Rough estimates
+  const hours = activity.moving_time / 3600;
+  
+  switch(activity.type) {
+    case 'Run':
+      return Math.round(hours * 600); // ~600 calories per hour running
+    case 'Ride':
+      return Math.round(hours * 500); // ~500 calories per hour cycling
+    case 'Swim':
+      return Math.round(hours * 550); // ~550 calories per hour swimming
+    case 'Walk':
+      return Math.round(hours * 300); // ~300 calories per hour walking
+    case 'Hike':
+      return Math.round(hours * 400); // ~400 calories per hour hiking
+    case 'Workout':
+      return Math.round(hours * 450); // ~450 calories per hour working out
+    default:
+      return Math.round(hours * 350); // Default estimate
+  }
 };
 
 const StravaPage: React.FC = () => {
@@ -119,12 +152,37 @@ const StravaPage: React.FC = () => {
   }, [timeRange]);
 
   const stats = React.useMemo(() => {
+    // Group activities by type
+    const typeGroups = activities.reduce((acc: {[key: string]: number}, activity) => {
+      acc[activity.type] = (acc[activity.type] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Get activity types sorted by count
+    const sortedTypes = Object.entries(typeGroups)
+      .sort(([, a], [, b]) => b - a)
+      .map(([type]) => type);
+
+    // Weekly stats calculation
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const lastWeekActivities = activities.filter(a => new Date(a.start_date) >= oneWeekAgo);
+    
     return {
       totalActivities: activities.length,
       totalDistance: activities.reduce((sum, activity) => sum + activity.distance, 0),
       totalTime: activities.reduce((sum, activity) => sum + activity.moving_time, 0),
       totalElevation: activities.reduce((sum, activity) => sum + activity.total_elevation_gain, 0),
-      activityTypes: new Set(activities.map(a => a.type)).size
+      activityTypes: new Set(activities.map(a => a.type)).size,
+      topActivityTypes: sortedTypes.slice(0, 3),
+      weeklyActivities: lastWeekActivities.length,
+      weeklyDistance: lastWeekActivities.reduce((sum, activity) => sum + activity.distance, 0),
+      maxHeartRate: Math.max(...activities.filter(a => a.max_heartrate).map(a => a.max_heartrate || 0), 0),
+      avgHeartRate: activities.filter(a => a.average_heartrate).length 
+        ? activities.filter(a => a.average_heartrate).reduce((sum, a) => sum + (a.average_heartrate || 0), 0) / 
+          activities.filter(a => a.average_heartrate).length
+        : 0,
+      totalCalories: activities.reduce((sum, activity) => sum + calculateCalories(activity), 0)
     };
   }, [activities]);
 
@@ -138,6 +196,11 @@ const StravaPage: React.FC = () => {
     const minutes = Math.floor(minutesPerKm);
     const seconds = Math.round((minutesPerKm - minutes) * 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}/km`;
+  };
+
+  const formatSpeed = (metersPerSecond: number): string => {
+    const kmPerHour = metersPerSecond * 3.6;
+    return `${kmPerHour.toFixed(1)} km/h`;
   };
 
   const formatTime = (seconds: number): string => {
@@ -186,7 +249,7 @@ const StravaPage: React.FC = () => {
         </select>
       </div>
 
-      {/* Stats Overview */}
+      {/* Enhanced Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
           <div className="flex items-center gap-2 mb-2">
@@ -197,7 +260,7 @@ const StravaPage: React.FC = () => {
             {stats.totalActivities}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Last {timeRange} Days
+            {stats.weeklyActivities} in the last week
           </p>
         </div>
 
@@ -210,7 +273,7 @@ const StravaPage: React.FC = () => {
             {formatDistance(stats.totalDistance)}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Last {timeRange} Days
+            {formatDistance(stats.weeklyDistance)} in the last week
           </p>
         </div>
 
@@ -223,22 +286,53 @@ const StravaPage: React.FC = () => {
             {formatTime(stats.totalTime)}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Last {timeRange} Days
+            {Math.round(stats.totalTime / 3600)} hours total
           </p>
         </div>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            <h3 className="text-sm font-medium dark:text-white">Types</h3>
+            <Flame className="w-5 h-5 text-red-600 dark:text-red-400" />
+            <h3 className="text-sm font-medium dark:text-white">Calories</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
-            {stats.activityTypes}
+            {stats.totalCalories.toLocaleString()}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Activity Types
+            Estimated calories burned
           </p>
         </div>
+      </div>
+
+      {/* Secondary Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <ArrowUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <h3 className="text-sm font-medium dark:text-white">Elevation</h3>
+          </div>
+          <p className="text-xl font-bold text-zinc-700 dark:text-zinc-300">
+            {stats.totalElevation.toFixed(0)}m
+          </p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            Total gain
+          </p>
+        </div>
+
+        {stats.avgHeartRate > 0 && (
+          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <Heart className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <h3 className="text-sm font-medium dark:text-white">Heart Rate</h3>
+            </div>
+            <p className="text-xl font-bold text-zinc-700 dark:text-zinc-300">
+              {Math.round(stats.avgHeartRate)} bpm
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              Avg / {stats.maxHeartRate} max
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Recent Activities */}
@@ -262,11 +356,13 @@ const StravaPage: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <span className="text-sm px-3 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-700 dark:text-zinc-300 font-medium">
-                  {formatDistance(activity.distance)}
-                </span>
+                {activity.distance > 10 && (
+                  <span className="text-sm px-3 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-700 dark:text-zinc-300 font-medium">
+                    {formatDistance(activity.distance)}
+                  </span>
+                )}
               </div>
-              
+                
               <div className="flex flex-col md:flex-row gap-6">
                 {activity.map?.summary_polyline && (
                   <div className="w-[200px] h-[100px] bg-zinc-200 dark:bg-zinc-700/50 rounded-lg overflow-hidden flex items-center justify-center">
@@ -274,7 +370,7 @@ const StravaPage: React.FC = () => {
                   </div>
                 )}
 
-                <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div>
                     <div className="flex items-center gap-1 mb-1">
                       <Watch className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
@@ -285,23 +381,42 @@ const StravaPage: React.FC = () => {
                     </p>
                   </div>
                   
-                  <div>
-                    <div className="flex items-center gap-1 mb-1">
-                      <Gauge className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                      <p className="text-xs text-zinc-500">Pace</p>
+                  {activity.average_speed > 0 && (
+                    <div>
+                      <div className="flex items-center gap-1 mb-1">
+                        <Gauge className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                        <p className="text-xs text-zinc-500">
+                          {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}
+                        </p>
+                      </div>
+                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        {activity.type === 'Run' || activity.type === 'Walk' 
+                          ? formatPace(activity.average_speed)
+                          : formatSpeed(activity.average_speed)
+                        }
+                      </p>
                     </div>
-                    <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                      {formatPace(activity.average_speed)}
-                    </p>
-                  </div>
+                  )}
+
+                  {activity.total_elevation_gain > 0 && (
+                    <div>
+                      <div className="flex items-center gap-1 mb-1">
+                        <ArrowUp className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                        <p className="text-xs text-zinc-500">Elevation</p>
+                      </div>
+                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        {activity.total_elevation_gain.toFixed(0)}m
+                      </p>
+                    </div>
+                  )}
 
                   <div>
                     <div className="flex items-center gap-1 mb-1">
-                      <ArrowUp className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                      <p className="text-xs text-zinc-500">Elevation</p>
+                      <Flame className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                      <p className="text-xs text-zinc-500">Calories</p>
                     </div>
                     <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                      {activity.total_elevation_gain.toFixed(0)}m
+                      {calculateCalories(activity)} kcal
                     </p>
                   </div>
 
@@ -312,7 +427,30 @@ const StravaPage: React.FC = () => {
                         <p className="text-xs text-zinc-500">Heart Rate</p>
                       </div>
                       <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        {Math.round(activity.average_heartrate)} bpm
+                        {Math.round(activity.average_heartrate)} bpm avg
+                      </p>
+                      {activity.max_heartrate && (
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                          {Math.round(activity.max_heartrate)} bpm max
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {activity.suffer_score && (
+                    <div>
+                      <div className="flex items-center gap-1 mb-1">
+                        <Sun className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                        <p className="text-xs text-zinc-500">Training Load</p>
+                      </div>
+                      <div className="w-full h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full ${activity.suffer_score > 150 ? 'bg-red-500' : activity.suffer_score > 100 ? 'bg-orange-500' : 'bg-green-500'} rounded-full`}
+                          style={{ width: `${Math.min((activity.suffer_score / 250) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                        {activity.suffer_score} / 250
                       </p>
                     </div>
                   )}
