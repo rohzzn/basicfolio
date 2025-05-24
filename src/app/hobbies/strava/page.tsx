@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { 
   Activity, Timer, Map, Calendar, Watch, ArrowUp, 
   Gauge, Heart, Flame, Sun
@@ -413,10 +414,18 @@ const StravaPage: React.FC = () => {
                 {/* Display photos if available (from Hevy) */}
                 {activity.photos?.primary?.urls && (
                   <div className="w-full md:w-auto">
-                    <img 
+                    <Image 
                       src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
                       alt={`Photo from ${activity.name}`}
-                      className="rounded-lg w-full md:w-auto max-h-[300px] object-cover"
+                      className="rounded-lg"
+                      width={600}
+                      height={300}
+                      style={{ 
+                        maxHeight: '300px', 
+                        width: 'auto',
+                        height: 'auto',
+                        objectFit: 'contain' 
+                      }}
                       onError={(e) => console.error('Image failed to load:', e)}
                     />
                   </div>
@@ -432,7 +441,7 @@ const StravaPage: React.FC = () => {
                 {/* If the previous approach doesn't show images, add this fallback approach */}
                 {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
                   <div className="w-full md:w-auto">
-                    <img 
+                    <Image 
                       src={
                         typeof activity.photos.primary === 'object' && 
                         'source' in activity.photos.primary && 
@@ -443,7 +452,15 @@ const StravaPage: React.FC = () => {
                           : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
                       } 
                       alt={`Photo from ${activity.name}`}
-                      className="rounded-lg w-full md:w-auto max-h-[300px] object-cover"
+                      className="rounded-lg"
+                      width={600}
+                      height={300}
+                      style={{ 
+                        maxHeight: '300px', 
+                        width: 'auto',
+                        height: 'auto',
+                        objectFit: 'contain' 
+                      }}
                       onError={(e) => {
                         console.error('Fallback image failed to load:', e);
                         (e.target as HTMLImageElement).style.display = 'none';

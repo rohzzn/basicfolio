@@ -12,7 +12,8 @@ const nextConfig = {
       "avatars.steamstatic.com",
       'media.steampowered.com',
       'steamuserimages-a.akamaihd.net',
-      'avatars.githubusercontent.com'
+      'avatars.githubusercontent.com',
+      'dgtzuqphqg23d.cloudfront.net'
     ],
   },
   // ... other configurations
