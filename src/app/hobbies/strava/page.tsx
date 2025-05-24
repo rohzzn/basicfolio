@@ -27,6 +27,17 @@ interface StravaActivity {
   map?: {
     summary_polyline: string;
   };
+  photos?: {
+    primary?: {
+      urls: {
+        '100': string;
+        '600': string;
+      };
+    };
+    count: number;
+    use_primary_photo?: boolean;
+  };
+  total_photo_count?: number;
 }
 
 const ActivityPolyline: React.FC<{ polyline: string }> = ({ polyline }) => {
@@ -136,7 +147,42 @@ const StravaPage: React.FC = () => {
         new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
       );
       
-      setActivities(sortedActivities);
+      // For each activity, fetch detailed data including photos
+      const activitiesWithPhotos = await Promise.all(
+        sortedActivities.map(async (activity) => {
+          try {
+            const detailedActivityRes = await fetch(
+              `https://www.strava.com/api/v3/activities/${activity.id}?include_all_efforts=false`,
+              {
+                headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
+              }
+            );
+            
+            if (!detailedActivityRes.ok) {
+              console.warn(`Failed to fetch detailed data for activity ${activity.id}`);
+              return activity;
+            }
+            
+            const detailedActivity = await detailedActivityRes.json();
+            
+            // Log photo data for debugging
+            if (detailedActivity.photos && detailedActivity.total_photo_count > 0) {
+              console.log('Activity with photos:', activity.id, detailedActivity.photos);
+            }
+            
+            return {
+              ...activity,
+              photos: detailedActivity.photos,
+              total_photo_count: detailedActivity.total_photo_count
+            };
+          } catch (error) {
+            console.warn(`Error fetching detailed data for activity ${activity.id}:`, error);
+            return activity;
+          }
+        })
+      );
+      
+      setActivities(activitiesWithPhotos);
     } catch (error) {
       console.error('Error:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch Strava data');
@@ -364,9 +410,55 @@ const StravaPage: React.FC = () => {
               </div>
                 
               <div className="flex flex-col md:flex-row gap-6">
-                {activity.map?.summary_polyline && (
+                {/* Display photos if available (from Hevy) */}
+                {activity.photos?.primary?.urls && (
+                  <div className="w-full md:w-auto">
+                    <img 
+                      src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
+                      alt={`Photo from ${activity.name}`}
+                      className="rounded-lg w-full md:w-auto max-h-[300px] object-cover"
+                      onError={(e) => console.error('Image failed to load:', e)}
+                    />
+                  </div>
+                )}
+
+                {/* If no photo but there's a map polyline, show the map */}
+                {!activity.photos?.primary?.urls && activity.map?.summary_polyline && (
                   <div className="w-[200px] h-[100px] bg-zinc-200 dark:bg-zinc-700/50 rounded-lg overflow-hidden flex items-center justify-center">
                     <ActivityPolyline polyline={activity.map.summary_polyline} />
+                  </div>
+                )}
+
+                {/* If the previous approach doesn't show images, add this fallback approach */}
+                {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
+                  <div className="w-full md:w-auto">
+                    <img 
+                      src={
+                        typeof activity.photos.primary === 'object' && 
+                        'source' in activity.photos.primary && 
+                        'unique_id' in activity.photos.primary && 
+                        activity.photos.primary.source === 1 && 
+                        typeof activity.photos.primary.unique_id === 'string'
+                          ? `https://dgtzuqphqg23d.cloudfront.net/${activity.photos.primary.unique_id}-768x576.jpg`
+                          : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
+                      } 
+                      alt={`Photo from ${activity.name}`}
+                      className="rounded-lg w-full md:w-auto max-h-[300px] object-cover"
+                      onError={(e) => {
+                        console.error('Fallback image failed to load:', e);
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Alternative display for photos to debug the structure */}
+                {activity.total_photo_count && activity.total_photo_count > 0 && !activity.photos?.primary?.urls && (
+                  <div className="w-full md:w-auto bg-zinc-200 dark:bg-zinc-700 rounded-lg p-4 text-center">
+                    <p className="text-zinc-700 dark:text-zinc-300">Activity has {activity.total_photo_count} photos</p>
+                    <pre className="text-xs mt-2 text-left overflow-auto max-h-[200px]">
+                      {JSON.stringify(activity.photos, null, 2)}
+                    </pre>
                   </div>
                 )}
 
@@ -451,6 +543,23 @@ const StravaPage: React.FC = () => {
                       </div>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                         {activity.suffer_score} / 250
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Show photo count if there are multiple photos */}
+                  {(activity.total_photo_count && activity.total_photo_count > 1) && (
+                    <div>
+                      <div className="flex items-center gap-1 mb-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-zinc-500 dark:text-zinc-400" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <path d="M20.4 14.5L16 10 4 20" />
+                        </svg>
+                        <p className="text-xs text-zinc-500">Photos</p>
+                      </div>
+                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        {activity.total_photo_count} photos
                       </p>
                     </div>
                   )}
