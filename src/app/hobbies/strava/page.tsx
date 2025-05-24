@@ -403,7 +403,7 @@ const StravaPage: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                {activity.distance > 10 && (
+                {activity.distance > 0 && (
                   <span className="text-sm px-3 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-700 dark:text-zinc-300 font-medium">
                     {formatDistance(activity.distance)}
                   </span>
@@ -469,15 +469,15 @@ const StravaPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* Alternative display for photos to debug the structure */}
-                {activity.total_photo_count && activity.total_photo_count > 0 && !activity.photos?.primary?.urls && (
+                {/* Alternative display for photos to debug the structure - ONLY ENABLE THIS FOR DEBUGGING */}
+                {/* {activity.total_photo_count && activity.total_photo_count > 0 && !activity.photos?.primary?.urls && (
                   <div className="w-full md:w-auto bg-zinc-200 dark:bg-zinc-700 rounded-lg p-4 text-center">
                     <p className="text-zinc-700 dark:text-zinc-300">Activity has {activity.total_photo_count} photos</p>
                     <pre className="text-xs mt-2 text-left overflow-auto max-h-[200px]">
                       {JSON.stringify(activity.photos, null, 2)}
                     </pre>
                   </div>
-                )}
+                )} */}
 
                 <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div>
