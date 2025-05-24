@@ -20,7 +20,7 @@ const UCExperience: React.FC<ArticleProps> = ({ onBack }) => {
 
       <header className="mb-8 max-w-3xl">
         <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
-          My First Semester at UC: A Deep Dive into MENG CS and Campus Life
+          My First Semester at UC: New Beginnings, Technical Challenges, and Campus Exploration
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
           <time dateTime="2024-12-29">December 31, 2024</time>
@@ -31,21 +31,21 @@ const UCExperience: React.FC<ArticleProps> = ({ onBack }) => {
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h2 className="text-lg font-semibold mb-4 dark:text-white">TLDR:</h2>
           <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
-            <li>Completed first semester of MENG CS with intense technical curriculum</li>
-            <li>Regular at UC&#39;s state-of-the-art Innovation Hub and esports lab</li>
-            <li>Balanced academics with part-time work at Bearcats Package Center</li>
-            <li>Experienced UC&#39;s world-class facilities and support systems</li>
-            <li>Built strong connections in Cincinnati&#39;s vibrant campus community</li>
+            <li>Successfully completed first semester of MENG CS with rigorous technical curriculum</li>
+            <li>Discovered UC&apos;s impressive 1819 Innovation Hub and state-of-the-art esports lab</li>
+            <li>Balanced academics with rewarding part-time work at Bearcats Package Center</li>
+            <li>Explored Cincinnati&apos;s campus community and world-class university facilities</li>
+            <li>Built strong foundation for future semesters in the graduate program</li>
           </ul>
         </div>
 
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-lg font-medium">
-          Fall 2024 marked my journey into UC&#39;s Master of Engineering program as an F1 student. Between diving deep into advanced algorithms, unwinding at the esports lab, and working at the package center, these past few months have been an incredible adventure. Here&#39;s my story of life as a Bearcat.
+          Fall 2024 marked the beginning of my UC journey as an F1 student in the Master of Engineering program. From intensive algorithm courses to exploring campus facilities, this semester has been filled with growth and discovery. Balancing academics, work, and campus life has created an incredible introduction to life as a Bearcat.
         </p>
 
         <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Academic Deep Dive: Fall 2024 Curriculum</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          My first semester challenged me with four intensive courses that built a strong foundation in advanced computing:
+          My first semester presented me with a robust set of courses that established a strong foundation in advanced computing and problem-solving methodologies:
         </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
@@ -53,73 +53,73 @@ const UCExperience: React.FC<ArticleProps> = ({ onBack }) => {
           <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400">
             <li>
               <strong>Advanced Algorithms 1:</strong>
-              <p className="mt-1">An intense exploration of algorithmic complexity and optimization techniques. We tackled challenging problem-solving scenarios that pushed our computational thinking to new levels.</p>
+              <p className="mt-1">An intense exploration of algorithmic complexity and optimization techniques. We tackled challenging problem-solving scenarios that pushed our computational thinking to new levels, providing critical foundations for advanced software development.</p>
             </li>
             <li>
               <strong>Distributed Operating Systems:</strong>
-              <p className="mt-1">Deep dive into distributed systems architecture and synchronization. This course opened my eyes to the complexities of modern distributed computing and cloud infrastructure.</p>
+              <p className="mt-1">Deep dive into distributed systems architecture and synchronization. This course opened my eyes to the complexities of modern distributed computing and cloud infrastructure, with practical implementations that reinforced theoretical concepts.</p>
             </li>
             <li>
               <strong>Introduction to Cloud Computing:</strong>
-              <p className="mt-1">Hands-on experience with modern cloud platforms, understanding everything from basic deployments to complex cloud architectures. The practical approach made complex concepts accessible.</p>
+              <p className="mt-1">Hands-on experience with modern cloud platforms, understanding everything from basic deployments to complex cloud architectures. The practical approach made complex concepts accessible while providing valuable skills for today&apos;s tech landscape.</p>
             </li>
             <li>
               <strong>Innovation Design Thinking:</strong>
-              <p className="mt-1">A refreshing take on problem-solving that went beyond pure technology. Learning to approach challenges from multiple angles has already improved how I tackle technical problems.</p>
+              <p className="mt-1">A refreshing take on problem-solving that went beyond pure technology. Learning to approach challenges from multiple angles has already improved how I tackle technical problems and enhanced my perspective on product development.</p>
             </li>
           </ul>
         </div>
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">UC&#39;s Crown Jewel: The 1819 Innovation Hub</h2>
-<p className="text-zinc-600 dark:text-zinc-400 mb-6">
-  Among UC&#39;s many impressive facilities, the 1819 Innovation Hub stands in a league of its own. This architectural masterpiece isn&#39;t just another building on campus - it&#39;s where the future happens. Imagine walking into a space that feels like a blend of a Silicon Valley tech campus and a next-gen gaming arena. The moment you step in, you know you&#39;re somewhere special.
-</p>
-<p className="text-zinc-600 dark:text-zinc-400 mb-6">
-  What makes the Innovation Hub truly unique is its esports arena - my personal sanctuary on campus. Picture professional-grade gaming setups that rival major esports tournaments, a community of passionate gamers, and an atmosphere that perfectly balances competitive spirit with casual fun. Whether I&#39;m unwinding after an intense algorithms class or connecting with fellow tech enthusiasts over a game, this space has become an integral part of my UC experience.
-</p>
-<p className="text-zinc-600 dark:text-zinc-400 mb-6">
-  Beyond the gaming haven, the Innovation Hub exemplifies UC&#39;s commitment to cutting-edge education. Collaborative spaces filled with the latest technology, areas designed for both focused work and creative brainstorming, and an environment that constantly inspires innovation. It&#39;s where theoretical knowledge from our classes meets practical application, and where countless project ideas have sparked into reality.
-</p>
+
+        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Campus Discovery: UC&apos;s Impressive Facilities</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+          My exploration of UC&apos;s campus revealed impressive facilities that enhance both academic and recreational aspects of student life. Among these, the 1819 Innovation Hub stands in a league of its own – an architectural masterpiece that feels like a blend of Silicon Valley tech campus and next-gen gaming arena.
+        </p>
+
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+          The Innovation Hub&apos;s esports arena quickly became my campus sanctuary. With professional-grade gaming setups, a passionate community, and an atmosphere that balances competitive spirit with casual fun, it&apos;s the perfect place to unwind after intensive coursework or connect with fellow tech enthusiasts.
+        </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-        <h3 className="text-lg font-semibold mb-4 dark:text-white">More fun places</h3>
+          <h3 className="text-lg font-semibold mb-4 dark:text-white">Campus Highlights</h3>
+          <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400">
+            <li>
+              <strong>1819 Innovation Hub:</strong>
+              <p className="mt-1">UC&apos;s crown jewel of innovation, offering collaborative spaces, cutting-edge technology, and an environment that transforms theoretical knowledge into practical application.</p>
+            </li>
+            <li>
+              <strong>Langsam Library:</strong>
+              <p className="mt-1">My go-to spot for focused study sessions, offering quiet floors, group study rooms, and an extensive collection of technical resources. Perfect for those deep dives into algorithms and distributed systems.</p>
+            </li>
+            <li>
+              <strong>Campus Recreation Center:</strong>
+              <p className="mt-1">World-class fitness facilities that help maintain a healthy work-life balance, offering everything from swimming pools to rock climbing walls.</p>
+            </li>
+            <li>
+              <strong>Tangeman University Center (TUC):</strong>
+              <p className="mt-1">The heart of campus life, always buzzing with activity and perfect for quick meals, study breaks, and connecting with the diverse UC community.</p>
+            </li>
+          </ul>
+        </div>
 
-  <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400">
-
-    <li>
-      <strong>Langsam Library:</strong>
-      <p className="mt-1">My go-to spot for focused study sessions, offering quiet floors, group study rooms, and an extensive collection of technical resources. Perfect for those deep dives into algorithms and distributed systems.</p>
-    </li>
-    <li>
-      <strong>Campus Recreation Center:</strong>
-      <p className="mt-1">World-class fitness facilities that help maintain a healthy work-life balance.</p>
-    </li>
-    <li>
-      <strong>Tangeman University Center (TUC):</strong>
-      <p className="mt-1">The heart of campus life, always buzzing with activity and perfect for quick meals or study breaks.</p>
-    </li>
-  </ul>
-</div>
-
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Working at Bearcats Package Center</h2>
+        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Professional Development: Bearcats Package Center</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          My part-time position at the Bearcats Package Center has been a highlight of my UC experience. Under Tyler and Terrance&#39;s exceptional leadership, what could have been just a job has become a valuable part of my campus life. Their management style makes every shift engaging and educational, while the flexible scheduling helps balance work with my academic commitments.
+          Balancing academics with practical work experience, my part-time position at the Bearcats Package Center has become a valuable component of my UC journey. Under the exceptional leadership of Tyler and Terrance, what could have been just a job has transformed into an enriching experience that complements my academic pursuits.
         </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-lg font-semibold mb-4 dark:text-white">Work Experience Highlights</h3>
           <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
-            <li>Developed efficient package handling and tracking skills</li>
-            <li>Built strong customer service abilities in a diverse campus environment</li>
-            <li>Learned practical inventory management techniques</li>
-            <li>Collaborated with an amazing team of fellow students</li>
-            <li>Mastered the art of work-study balance</li>
+            <li>Developed efficient package handling and tracking skills with real-world applications</li>
+            <li>Built strong customer service abilities through interactions with the diverse campus community</li>
+            <li>Learned practical inventory management techniques that complement theoretical coursework</li>
+            <li>Collaborated with an amazing team of fellow students from various academic disciplines</li>
+            <li>Mastered the art of work-study balance, a critical skill for graduate success</li>
           </ul>
         </div>
 
-
         <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Looking Forward</h2>
         <p className="text-zinc-600 dark:text-zinc-400">
-          This first semester at UC has been transformative. The blend of rigorous academics, cutting-edge facilities like the Innovation Hub, amazing gaming breaks at the esports lab, and rewarding work at the package center has created an incredible graduate school experience. The foundation built through courses like Advanced Algorithms and Distributed Systems has me excited for what&#39;s next. As I look ahead to future semesters, I&#39;m grateful for this vibrant community and eager to keep exploring everything UC has to offer.
+          This first semester at UC has laid a strong foundation for my graduate journey. The combination of rigorous academics, cutting-edge facilities, and valuable work experience has exceeded my expectations for the MENG program. The knowledge gained through courses like Advanced Algorithms and Distributed Systems has prepared me for more advanced coursework, while connections made in the Innovation Hub and Package Center have enriched my campus experience. As I look toward spring semester, I&apos;m eager to build on this foundation, take on new challenges, and continue exploring everything UC has to offer.
         </p>
       </div>
     </article>

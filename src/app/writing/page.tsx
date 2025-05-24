@@ -21,14 +21,14 @@ const WritingPage = () => {
   const posts = useMemo(() => [
     {
       slug: 'first-spring',
-      title: 'First Spring: Blossoms, New Beginnings, and Research Adventures',
+      title: 'My Second Semester at UC: Challenging Academics, Leadership, and Cincinnati in Bloom',
       date: '2025-04-28',
       displayDate: 'April 28, 2025',
       description: 'A personal journey through Cincinnati\'s spring transformation and starting a new research position at Cincinnati Children\'s Hospital.'
     },
     {
       slug: 'uc-experience',
-      title: 'My First Semester at UC',
+      title: 'My First Semester at UC: New Beginnings, Technical Challenges, and Campus Exploration',
       date: '2024-12-31',
       displayDate: 'December 31, 2024',
       description: 'A Deep Dive into MENG CS and Campus Life'

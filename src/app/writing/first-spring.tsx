@@ -20,7 +20,7 @@ const FirstSpring: React.FC<ArticleProps> = ({ onBack }) => {
 
       <header className="mb-8 max-w-3xl">
         <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
-          First Spring: Blossoms, New Beginnings, and Research Adventures
+          My Second Semester at UC: Challenging Academics, Leadership, and Cincinnati in Bloom
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
           <time dateTime="2025-04-28">April 28, 2025</time>
@@ -31,54 +31,41 @@ const FirstSpring: React.FC<ArticleProps> = ({ onBack }) => {
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h2 className="text-lg font-semibold mb-4 dark:text-white">TLDR:</h2>
           <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
-            <li>Cincinnati transforms into a breathtaking landscape during spring</li>
-            <li>Started a new position as Graduate Research Assistant at CCHMC</li>
-            <li>Completed a challenging spring semester with A+ in all subjects</li>
+            <li>Conquered a challenging spring semester with A+ grades across all courses</li>
             <li>Led a team of 13 students in Large Scale Software Engineering</li>
-            <li>Looking forward to a summer trip to India</li>
+            <li>Secured a Graduate Research Assistant position at Cincinnati Children&apos;s Hospital</li>
+            <li>Witnessed Cincinnati transform into a breathtaking spring landscape</li>
+            <li>Planning a rejuvenating summer trip to India before fall semester</li>
           </ul>
         </div>
 
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-lg font-medium">
-          My first spring in Cincinnati has been nothing short of magical. As nature awakens from winter&apos;s embrace, I&apos;ve found myself embracing new opportunities, particularly my research position at Cincinnati Children&apos;s Hospital Medical Center. The city&apos;s transformation parallels my own journey into new professional territory.
+          Spring 2025 built upon the foundation of my first semester at UC, bringing new challenges, opportunities, and the beautiful awakening of Cincinnati from winter&apos;s grip. Between leading a large software team, tackling demanding coursework, and beginning a research position at CCHMC, this semester has been a remarkable chapter in my graduate journey.
         </p>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Cincinnati in Bloom: A City Transformed</h2>
+        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Academic Deep Dive: Spring 2025 Curriculum</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          There&apos;s something profoundly beautiful about experiencing your first spring in a new city. Cincinnati has revealed itself in entirely new colors these past few weeks, with UC&apos;s campus leading the transformation. The red brick buildings that stood stoic against winter&apos;s gray now serve as perfect backdrops for explosions of color – cherry blossoms lining McMicken Commons, tulips standing at attention around Tangeman Center, and magnolias creating natural canopies near the College of Engineering.
-        </p>
-
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          My daily walks through campus have become photo expeditions. The route from my apartment to classes now takes twice as long as I constantly stop to appreciate how sunlight filters through newly budded trees or how perfectly the morning dew catches light on fresh grass. Even the campus squirrels seem more energetic, darting between blooming flowerbeds with renewed purpose.
-        </p>
-
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          Beyond campus, Cincinnati&apos;s neighborhoods have their own spring personalities. Clifton&apos;s streets are now lined with flowering pear trees, their white blossoms creating natural confetti with each breeze. Over in Eden Park, the cherry blossom grove has become weekend pilgrimage territory, with locals and visitors alike gathering to witness this ephemeral spectacle. Even downtown&apos;s concrete landscape has softened, with planters overflowing with pansies and daffodils lining Fountain Square.
-        </p>
-
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Spring Semester: Academic Challenges</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          This semester proved significantly more challenging than the fall, with a lineup of demanding courses that pushed my technical and leadership abilities to new heights. The academic rigor was intense, but the growth I&apos;ve experienced has been worth every late night.
+          My second semester raised the bar significantly from fall, with a curriculum that pushed both my technical abilities and leadership skills to new heights:
         </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">Course Highlights</h3>
+          <h3 className="text-lg font-semibold mb-4 dark:text-white">Core Courses</h3>
           <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400">
             <li>
-              <strong>Network Security:</strong>
-              <p className="mt-1">The assignments were admittedly annoying at times but ultimately super fun and surprisingly easy to grasp. The practical aspects of implementing security protocols gave me hands-on experience that theory alone couldn&apos;t provide.</p>
+              <strong>Advanced Algorithms 2:</strong>
+              <p className="mt-1">Building on last semester&apos;s foundations, this course delved deeper into complex algorithmic concepts that challenged even the strongest students in the program. The progression from basic algorithm design to advanced optimization techniques gave me powerful tools for tackling real-world computational problems.</p>
             </li>
             <li>
-              <strong>Advanced Algorithms 2:</strong>
-              <p className="mt-1">Building on last semester&apos;s foundations, this course delved deeper into complex algorithmic concepts that challenged even the strongest students in the program.</p>
+              <strong>Network Security:</strong>
+              <p className="mt-1">Though the assignments were occasionally frustrating, they were ultimately both entertaining and accessible. The hands-on approach to implementing security protocols provided practical experience that theoretical knowledge alone couldn&apos;t match, giving me a comprehensive understanding of modern cybersecurity challenges.</p>
             </li>
             <li>
               <strong>Software Testing and Quality Assurance:</strong>
-              <p className="mt-1">A thorough exploration of testing methodologies that changed how I approach software development from the ground up.</p>
+              <p className="mt-1">A thorough exploration of testing methodologies that transformed my approach to software development. Learning systematic techniques for ensuring reliability and quality has become an invaluable part of my programming toolkit.</p>
             </li>
             <li>
               <strong>Large Scale Software Engineering:</strong>
-              <p className="mt-1">Perhaps the most transformative experience of the semester – I served as team lead for a group of 13 students, managing timelines, delegating tasks, and coordinating development efforts throughout the entire project lifecycle. Had a few back-and-forths with Professor Nan Niu along the way, but the challenges only made the successful completion more rewarding.</p>
+              <p className="mt-1">My most transformative course experience – I served as team lead for 13 students, managing timelines, delegating tasks, and coordinating development throughout the project lifecycle. Despite some challenging interactions with Professor Nan Niu, the experience taught me invaluable lessons about technical leadership and project management.</p>
             </li>
           </ul>
         </div>
@@ -87,7 +74,27 @@ const FirstSpring: React.FC<ArticleProps> = ({ onBack }) => {
           The leadership role in Large Scale Software Engineering stretched me in ways I hadn&apos;t anticipated. Balancing technical implementation with team management and stakeholder communication taught me valuable lessons about project ownership and clear communication. Despite the challenges, I&apos;m proud to have secured A+ grades across all my courses this semester – a testament to the late nights and weekend study sessions.
         </p>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">New Growth: My Position at Cincinnati Children&apos;s</h2>
+        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Cincinnati in Bloom: Campus Transformed</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+          While fall introduced me to UC&apos;s architectural beauty, spring revealed an entirely new dimension to campus life. Cincinnati has revealed itself in entirely new colors these past few weeks, with UC&apos;s campus leading the transformation. The red brick buildings that stood stoic against winter&apos;s gray now serve as perfect backdrops for explosions of color – cherry blossoms lining McMicken Commons, tulips standing at attention around Tangeman Center, and magnolias creating natural canopies near the College of Engineering.
+        </p>
+
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+          My daily walks through campus have become photo expeditions. The route from my apartment to classes now takes twice as long as I constantly stop to appreciate how sunlight filters through newly budded trees or how perfectly the morning dew catches light on fresh grass. Even the campus squirrels seem more energetic, darting between blooming flowerbeds with renewed purpose.
+        </p>
+
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
+          <h3 className="text-lg font-semibold mb-4 dark:text-white">Spring Highlights</h3>
+          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
+            <li>Eden Park&apos;s cherry blossom grove becoming a weekend pilgrimage destination</li>
+            <li>Clifton&apos;s streets lined with flowering pear trees creating natural confetti</li>
+            <li>Downtown&apos;s transformation with planters overflowing with pansies and daffodils</li>
+            <li>Campus green spaces becoming perfect study spots on warm afternoons</li>
+            <li>Riverside parks coming alive with joggers, picnics, and outdoor activities</li>
+          </ul>
+        </div>
+
+        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">New Growth: Research at Cincinnati Children&apos;s</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
           As the city blossoms, my professional life has followed suit with an exciting new position as a Graduate Research Assistant at Cincinnati Children&apos;s Hospital Medical Center (CCHMC). The timing couldn&apos;t be more perfect – as nature begins a new cycle, I&apos;ve embarked on my own fresh chapter in research and development working with cutting-edge technologies in the healthcare space.
         </p>
@@ -96,13 +103,8 @@ const FirstSpring: React.FC<ArticleProps> = ({ onBack }) => {
           One of the most exciting parts of this position is having my own dedicated cabinet! It might sound small, but having a personalized space in a research environment feels like a significant milestone. My cabinet has quickly become home to my notebooks, reference materials, and the collection of sticky notes that help me track the myriad of ideas that emerge during our research discussions.
         </p>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Mentorship in Bloom</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
           I&apos;ve been fortunate to work under two exceptional managers at CCHMC who have created an environment where learning and growth feel as natural as the spring unfolding outside. Their contrasting but complementary styles have provided me with a balanced perspective on research and development in healthcare technology.
-        </p>
-
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          Their guidance has been invaluable as I navigate the intersection of advanced AI and healthcare applications. They understand when to provide direction and when to step back and let me explore solutions independently. This balance has accelerated my learning curve dramatically, allowing me to contribute meaningfully to projects despite being relatively new to the team.
         </p>
 
         <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Looking Forward</h2>
