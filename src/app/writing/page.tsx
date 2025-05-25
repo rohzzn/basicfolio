@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Calendar } from 'lucide-react';
+import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 import IxigoExperience from './ixigo-experience';
 import BeginnersGuideDesign from './beginners-guide-design';
 import BeginnersGuideProgramming from './beginners-guide-programming';
@@ -143,6 +144,12 @@ const WritingPage = () => {
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white px-4 sm:px-0">Writing</h2>
+      
+      {/* Newsletter Subscribe */}
+      <div className="px-4 sm:px-0">
+        <NewsletterSubscribe />
+      </div>
+      
       <div className="grid gap-4 sm:gap-6 px-4 sm:px-0">
         {posts.map((post) => (
           <article 

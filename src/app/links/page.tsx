@@ -13,6 +13,7 @@ const LinksPage = () => {
         { title: "Spotify", description: "Playlists", url: "https://open.spotify.com/user/rohansanjeev" },
         { title: "YouTube", description: "Content", url: "https://youtube.com/rohzzn" },
         { title: "Reddit", description: "Posts & comments", url: "https://www.reddit.com/user/rohzzn/" },
+        { title: "Newsletter", description: "Get updates directly", url: "/writing#newsletter" },
       ]
     },
     coding: {
