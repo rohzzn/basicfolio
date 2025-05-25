@@ -143,14 +143,14 @@ const WritingPage = () => {
 
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white px-4 sm:px-0">Writing</h2>
+      <h2 className="text-lg font-medium mb-6 dark:text-white">Writing</h2>
       
       {/* Newsletter Subscribe */}
-      <div className="px-4 sm:px-0">
+      <div>
         <NewsletterSubscribe />
       </div>
       
-      <div className="grid gap-4 sm:gap-6 px-4 sm:px-0">
+      <div className="grid gap-4 sm:gap-6">
         {posts.map((post) => (
           <article 
             key={post.slug}

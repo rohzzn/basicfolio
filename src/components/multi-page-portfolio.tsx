@@ -342,7 +342,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       <main className="flex-1 lg:pl-64">
-        <div className="max-w-full p-0 sm:p-1 md:p-4 lg:p-8">
+        <div className="max-w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8">
           {children}
         </div>
       </main>
