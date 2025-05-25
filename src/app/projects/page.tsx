@@ -604,9 +604,6 @@ const projects: Project[] = [
     <div className="max-w-7xl">
       <div className="mb-8 sm:mb-10 px-4 sm:px-0">
         <h2 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4 dark:text-white">Projects</h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl">
-          A curated collection of my work, experiments, and open-source projects across various domains and technologies.
-        </p>
       </div>
 
       {/* Category Tabs */}
