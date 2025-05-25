@@ -300,7 +300,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                     }}
                   />
                   <span className="text-xs text-zinc-600 dark:text-zinc-400 capitalize">
-                    {lanyardData.discord_status}
+                    {lanyardData.discord_status === "offline" ? "Away from Keyboard" : lanyardData.discord_status}
                   </span>
                 </div>
 
