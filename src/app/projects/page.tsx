@@ -23,18 +23,20 @@ interface Project {
 const ProjectCard = ({ project }: { project: Project }) => {
   return (
     <div 
-      className="relative bg-white dark:bg-zinc-800 rounded-xl p-3 sm:p-6 transition-all border border-zinc-100 dark:border-zinc-700 hover:shadow-md hover:border-zinc-200 dark:hover:border-zinc-600 h-full flex flex-col"
+      className="relative bg-white dark:bg-zinc-800 rounded-xl p-3 sm:p-6 transition-all border border-zinc-100 dark:border-zinc-700 hover:shadow-md hover:border-zinc-200 dark:hover:border-zinc-600 h-full flex flex-col w-full"
     >
       {/* Project image */}
-      <div className="mb-3 sm:mb-4">
-        <Image
-          src={project.image}
-          alt={project.title}
-          width={600}
-          height={315}
-          className="rounded-lg w-full h-auto object-cover"
-          priority
-        />
+      <div className="mb-3 sm:mb-4 w-full">
+        <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg">
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover"
+            priority
+          />
+        </div>
       </div>
 
       {/* Title and indicators */}
@@ -601,7 +603,7 @@ const projects: Project[] = [
   ];
 
   return (
-    <div className="max-w-7xl">
+    <div className="w-full max-w-7xl">
       <div className="mb-8 sm:mb-10">
         <h2 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4 dark:text-white">Projects</h2>
       </div>
@@ -638,7 +640,7 @@ const projects: Project[] = [
       </div>
 
       {/* Project Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6 md:gap-x-6 md:gap-y-8 mb-6 sm:mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-6 sm:mb-10 w-full">
         {categories[activeTab].length > 0 ? (
           categories[activeTab].map((project, index) => (
             <ProjectCard key={index} project={project} />

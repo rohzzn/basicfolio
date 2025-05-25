@@ -250,7 +250,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       <div
         id="sidebar"
         className={`
-          fixed lg:fixed top-0 bottom-0 w-[260px] sm:w-64 bg-zinc-50/95 dark:bg-zinc-900/95
+          fixed lg:fixed top-0 bottom-0 w-[85vw] max-w-[260px] sm:w-64 bg-zinc-50/95 dark:bg-zinc-900/95
           border-r border-zinc-200 dark:border-zinc-800 
           flex flex-col h-screen backdrop-blur-sm
           transform transition-transform duration-300 ease-in-out
@@ -259,12 +259,12 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         `}
       >
         <div className="flex flex-col h-full">
-          <div className="p-6 sm:p-8">
-            <h1 className="text-xl sm:text-2xl font-bold dark:text-white">Rohan</h1>
-            <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">Software Engineer</p>
+          <div className="p-4 sm:p-6 lg:p-8">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold dark:text-white">Rohan</h1>
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1">Software Engineer</p>
           </div>
 
-          <nav className="flex-1 px-6 sm:px-8 overflow-y-auto pb-4">
+          <nav className="flex-1 px-4 sm:px-6 lg:px-8 overflow-y-auto pb-4">
             <div className="space-y-1">
               {[
                 { path: "/", label: "About" },
@@ -279,7 +279,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </nav>
 
-          <div className="p-6 sm:p-8 bg-zinc-50/95 dark:bg-zinc-900/95 backdrop-blur-sm">
+          <div className="p-4 sm:p-6 lg:p-8 border-t border-zinc-200 dark:border-zinc-800">
             {isLoading ? (
               <div className="flex items-center justify-center py-2">
                 <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
@@ -308,26 +308,26 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                     {lanyardData.activities.slice(0, 2).map((activity, index) => (
                       <div
                         key={index}
-                        className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2.5 w-full"
+                        className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
                       >
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-1.5 mb-1">
                           {getActivityIcon(activity.type)}
                           <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
                             {activity.name}
                           </span>
                         </div>
                         {activity.state && (
-                          <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+                          <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
                             {activity.state}
                           </p>
                         )}
                         {activity.details && (
-                          <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+                          <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
                             {activity.details}
                           </p>
                         )}
                         {activity.timestamps?.start && (
-                          <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
+                          <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-500 mt-1">
                             {formatTime(Date.now() - activity.timestamps.start)}
                           </p>
                         )}
@@ -341,8 +341,8 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      <main className="flex-1 lg:pl-64">
-        <div className="max-w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8">
+      <main className="flex-1 lg:pl-64 w-full">
+        <div className="max-w-full w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8">
           {children}
         </div>
       </main>
