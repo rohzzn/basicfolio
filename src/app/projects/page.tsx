@@ -27,16 +27,14 @@ const ProjectCard = ({ project }: { project: Project }) => {
     >
       {/* Project image */}
       <div className="mb-3 sm:mb-4 w-full">
-        <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg">
-          <Image
-            src={project.image}
-            alt={project.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
-            priority
-          />
-        </div>
+        <Image
+          src={project.image}
+          alt={project.title}
+          width={600}
+          height={315}
+          className="rounded-lg w-full h-auto object-cover"
+          priority
+        />
       </div>
 
       {/* Title and indicators */}

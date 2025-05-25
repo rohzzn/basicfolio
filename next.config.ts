@@ -13,7 +13,8 @@ const nextConfig = {
       'media.steampowered.com',
       'steamuserimages-a.akamaihd.net',
       'avatars.githubusercontent.com',
-      'dgtzuqphqg23d.cloudfront.net'
+      'dgtzuqphqg23d.cloudfront.net',
+      'i.scdn.co' // Add Spotify image domain
     ],
   },
   // ... other configurations

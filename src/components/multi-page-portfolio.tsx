@@ -4,6 +4,7 @@ import { Menu, X, Gamepad, Music, Loader2, Volume2, VolumeX, Focus, Clock } from
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ModernCursor from './ModernCursor';
+import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 
 interface NavLinkProps {
   href: string;
@@ -303,36 +304,42 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                   </span>
                 </div>
 
-                {lanyardData.activities?.length > 0 && (
+                <SpotifyCurrentlyPlaying />
+
+                {lanyardData.activities?.length > 0 && 
+                 lanyardData.activities.filter(activity => activity.name !== "Spotify").length > 0 && (
                   <div className="space-y-2 w-full mt-1">
-                    {lanyardData.activities.slice(0, 2).map((activity, index) => (
-                      <div
-                        key={index}
-                        className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
-                      >
-                        <div className="flex items-center gap-1.5 mb-1">
-                          {getActivityIcon(activity.type)}
-                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
-                            {activity.name}
-                          </span>
+                    {lanyardData.activities
+                      .filter(activity => activity.name !== "Spotify")
+                      .slice(0, 2)
+                      .map((activity, index) => (
+                        <div
+                          key={index}
+                          className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
+                        >
+                          <div className="flex items-center gap-1.5 mb-1">
+                            {getActivityIcon(activity.type)}
+                            <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
+                              {activity.name}
+                            </span>
+                          </div>
+                          {activity.state && (
+                            <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+                              {activity.state}
+                            </p>
+                          )}
+                          {activity.details && (
+                            <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+                              {activity.details}
+                            </p>
+                          )}
+                          {activity.timestamps?.start && (
+                            <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-500 mt-1">
+                              {formatTime(Date.now() - activity.timestamps.start)}
+                            </p>
+                          )}
                         </div>
-                        {activity.state && (
-                          <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
-                            {activity.state}
-                          </p>
-                        )}
-                        {activity.details && (
-                          <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
-                            {activity.details}
-                          </p>
-                        )}
-                        {activity.timestamps?.start && (
-                          <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-500 mt-1">
-                            {formatTime(Date.now() - activity.timestamps.start)}
-                          </p>
-                        )}
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
               </div>
