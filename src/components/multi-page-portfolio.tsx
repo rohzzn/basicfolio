@@ -306,11 +306,11 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                       .filter(activity => activity.name !== "Spotify")
                       .slice(0, 2)
                       .map((activity, index) => (
-                        <div
-                          key={index}
+                      <div
+                        key={index}
                           className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
-                        >
-                          <div className="flex items-center gap-2 mb-1">
+                      >
+                        <div className="flex items-center gap-2 mb-1">
                             {activity.assets?.large_image ? (
                               <Image 
                                 src={
@@ -333,23 +333,23 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                               getActivityIcon(activity.type)
                             )}
                             <div>
-                              <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
-                                {activity.name}
-                              </span>
-                              {activity.state && (
+                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
+                            {activity.name}
+                          </span>
+                        {activity.state && (
                                 <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
-                                  {activity.state}
-                                </p>
-                              )}
-                              {activity.details && (
+                            {activity.state}
+                          </p>
+                        )}
+                        {activity.details && (
                                 <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
-                                  {activity.details}
-                                </p>
-                              )}
+                            {activity.details}
+                          </p>
+                        )}
                             </div>
                           </div>
-                        </div>
-                      ))}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

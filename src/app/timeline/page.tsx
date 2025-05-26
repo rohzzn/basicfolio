@@ -10,17 +10,24 @@ interface TimelineEvent {
 
 const events: TimelineEvent[] = [
   {
+    date: "January 2025",
+    description: [
+      "Joined CCHMC as a Graduate Research Assistant"
+    ],
+    category: "work"
+  },
+  {
     date: "2024",
     description: [
-      "Started Spring Semester at University of Cincinnati"
+      "Started Spring Semester at University of Cincinnati",
+      "Comic Con x The Arena - 3rd Place"
     ],
     category: "education"
   },
   {
     date: "December 2023",
     description: [
-      "Achieved 3rd place in the AMD Gameon x The Arena 2024 gaming tournament",
-      "Attended the Travis Scott concert"
+      "Achieved 3rd place in the AMD Gameon x The Arena 2024 gaming tournament"
     ],
     category: "gaming"
   },
@@ -43,8 +50,7 @@ const events: TimelineEvent[] = [
   {
     date: "June - September 2023",
     description: [
-      "Software Development Engineer internship at AbhiBus",
-      "Worked on multiple projects and improved system performance"
+      "Software Development Engineer internship at AbhiBus"
     ],
     category: "work"
   },
@@ -56,6 +62,21 @@ const events: TimelineEvent[] = [
     category: "achievement"
   },
   {
+    date: "2021 - 2023",
+    description: [
+      "Worked as a Level One Graphic Designer on Fiverr"
+    ],
+    category: "work"
+  },
+  {
+    date: "2020",
+    description: [
+      "Trinity Gaming TAGVALO - Valorant - 1st Place",
+      "ACT X CSGO 1v1 Tournament - 1st Place"
+    ],
+    category: "gaming"
+  },
+  {
     date: "2020 - 2024",
     description: [
       "Bachelor of Technology in Computer Science at Malla Reddy Engineering College",
@@ -64,12 +85,30 @@ const events: TimelineEvent[] = [
     category: "education"
   },
   {
+    date: "2019",
+    description: [
+      "Reached Steam account level 100",
+      "AMD Gameon x Playmax - Fortnite - 3rd Place",
+      "AMD Gameon x Playmax - PUBG - 3rd Place",
+      "AMD Gameon x Playmax - 2nd Place"
+    ],
+    category: "gaming"
+  },
+  {
+    date: "2018",
+    description: [
+      "Comic-Con Hyderabad - 2nd Place"
+    ],
+    category: "gaming"
+  },
+  {
     date: "2017",
     description: [
       "First AMD Game ON Tournament Counter-Strike tournament",
-      "Second tournament at Nvidia Gamer's Connect",
       "Met Carry Minati, Venom (Redbull Ambassador) and many creators",
-      "Invested heavily in CS:GO skins and trading"
+      "Invested heavily in CS:GO skins and trading",
+      "Gamer's Connect Hyderabad - 3rd Place",
+      "AMD Gameon Hyderabad - 3rd Place"
     ],
     category: "gaming"
   },
@@ -81,6 +120,13 @@ const events: TimelineEvent[] = [
       "Released graphic pack with 42k downloads"
     ],
     category: "content"
+  },
+  {
+    date: "2015",
+    description: [
+      "Created Steam account"
+    ],
+    category: "gaming"
   },
   {
     date: "2014",
@@ -101,7 +147,7 @@ const events: TimelineEvent[] = [
   {
     date: "2001",
     description: [
-      "Born in Hyderabad, India"
+      "Born in Vijayawada, India"
     ],
     category: "achievement"
   }

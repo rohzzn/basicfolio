@@ -17,7 +17,11 @@ const nextConfig = {
       'i.scdn.co', // Add Spotify image domain
       'cdn.discordapp.com', // Discord CDN for application assets
       'media.discordapp.net', // Discord media CDN
-      'img.icons8.com' // For potential fallback icons
+      'img.icons8.com', // For potential fallback icons
+      'i.ytimg.com', // YouTube image server
+      'yt3.ggpht.com', // YouTube profile images
+      'youtube.com', // YouTube thumbnails
+      'i.imgur.com', // Potential fallback images for YouTube
     ],
   },
   // ... other configurations
