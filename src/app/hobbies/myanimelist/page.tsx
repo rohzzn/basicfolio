@@ -1,162 +1,23 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import { SortAsc, SortDesc, Star, List, AlertCircle } from 'lucide-react';
+import { SortAsc, SortDesc, Star, List, AlertCircle, Clock, Filter, X, Search, RefreshCw } from 'lucide-react';
 
 interface Anime {
   id: number;
   title: string;
   score: number | null;
+  status?: 'watched' | 'watching' | 'plan_to_watch' | 'dropped';
+  genres?: string[];
+  year?: number | null;
+  image?: string | null;
 }
 
-const animeList: Anime[] = [
-  { id: 1, title: "MF Ghost 2nd Season Airing", score: 6 },
-  { id: 2, title: "Mushoku Tensei II: Isekai Ittara Honki Dasu Part 2", score: 7 },
-  { id: 3, title: "Ansatsu Kyoushitsu", score: 7 },
-  { id: 4, title: "Ansatsu Kyoushitsu 2nd Season", score: 8 },
-  { id: 5, title: "Bocchi the Rock!", score: 8 },
-  { id: 6, title: "Boku no Hero Academia", score: 8 },
-  { id: 7, title: "Boku no Hero Academia 2nd Season", score: 8 },
-  { id: 8, title: "Boku no Hero Academia 3rd Season", score: 8 },
-  { id: 9, title: "Boku no Hero Academia 4th Season", score: 9 },
-  { id: 10, title: "Boku no Hero Academia the Movie 1: Futari no Hero Specials", score: 6 },
-  { id: 11, title: "Boku no Hero Academia the Movie 2: Heroes:Rising", score: 9 },
-  { id: 12, title: "Chuukou Ikkan!! Kimetsu Gakuen Monogatari: Valentine-hen", score: 8 },
-  { id: 13, title: "Code Geass: Hangyaku no Lelouch", score: 7 },
-  { id: 14, title: "Cyberpunk: Edgerunners", score: 8 },
-  { id: 15, title: "Darling in the FranXX", score: 7 },
-  { id: 16, title: "Death Note", score: 8 },
-  { id: 17, title: "Dr. Stone", score: 9 },
-  { id: 18, title: "Dr. Stone: Stone Wars", score: 7 },
-  { id: 19, title: "Fairy Tail", score: 7 },
-  { id: 20, title: "Fairy Tail Movie 1: Houou no Miko", score: 5 },
-  { id: 21, title: "Fruits Basket 1st Season", score: 8 },
-  { id: 22, title: "Fullmetal Alchemist", score: 8 },
-  { id: 23, title: "Fullmetal Alchemist: Brotherhood", score: 9 },
-  { id: 24, title: "Golden Boy", score: 7 },
-  { id: 25, title: "Haikyuu!!", score: 9 },
-  { id: 26, title: "Haikyuu!! Karasuno Koukou vs. Shiratorizawa Gakuen Koukou", score: 8 },
-  { id: 27, title: "Haikyuu!! Movie: Gomisuteba no Kessen", score: 8 },
-  { id: 28, title: "Haikyuu!! Second Season", score: 7 },
-  { id: 29, title: "Haikyuu!! To the Top", score: 7 },
-  { id: 30, title: "Hunter x Hunter (2011)", score: 10 },
-  { id: 31, title: "Hunter x Hunter Movie 1: Phantom Rouge", score: 7 },
-  { id: 32, title: "Hunter x Hunter Movie 2: The Last Mission", score: 9 },
-  { id: 33, title: "Isekai wa Smartphone to Tomo ni.", score: 6 },
-  { id: 34, title: "Jujutsu Kaisen", score: 8 },
-  { id: 35, title: "Jujutsu Kaisen 2nd Season", score: 9 },
-  { id: 36, title: "Kaguya-sama wa Kokurasetai: Tensai-tachi no Renai Zunousen", score: 9 },
-  { id: 37, title: "Kaguya-sama wa Kokurasetai? Tensai-tachi no Renai Zunousen", score: 9 },
-  { id: 38, title: "Kaijuu 8-gou", score: 6 },
-  { id: 39, title: "Kakegurui", score: 7 },
-  { id: 40, title: "Kakegurui××", score: 6 },
-  { id: 41, title: "Kimetsu no Yaiba", score: 10 },
-  { id: 42, title: "Kimetsu no Yaiba Movie: Mugen Ressha-hen", score: 10 },
-  { id: 43, title: "Kimetsu no Yaiba: Hashira Geiko-hen", score: 10 },
-  { id: 44, title: "Kimetsu no Yaiba: Katanakaji no Sato-hen", score: 10 },
-  { id: 45, title: "Kimetsu no Yaiba: Mugen Ressha-hen", score: 9 },
-  { id: 46, title: "Kimetsu no Yaiba: Yuukaku-hen", score: 10 },
-  { id: 47, title: "Kimi no Na wa.", score: 9 },
-  { id: 48, title: "Kimi no Suizou wo Tabetai", score: 9 },
-  { id: 49, title: "Kimi to, Nami ni Noretara", score: 5 },
-  { id: 50, title: "Kobayashi-san Chi no Maid Dragon", score: 7 },
-  { id: 51, title: "Koe no Katachi", score: 8 },
-  { id: 52, title: "Kono Subarashii Sekai ni Shukufuku wo!", score: 8 },
-  { id: 53, title: "Kono Subarashii Sekai ni Shukufuku wo! 2", score: 8 },
-  { id: 54, title: "Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu", score: 8 },
-  { id: 55, title: "Mashle", score: 8 },
-  { id: 56, title: "Mashle: Shinkakusha Kouho Senbatsu Shiken-hen", score: 8 },
-  { id: 57, title: "MF Ghost", score: 7 },
-  { id: 58, title: "Mob Psycho 100", score: 8 },
-  { id: 59, title: "Mob Psycho 100 II", score: 8 },
-  { id: 60, title: "Mushoku Tensei II: Isekai Ittara Honki Dasu", score: 9 },
-  { id: 61, title: "Mushoku Tensei II: Isekai Ittara Honki Dasu - Shugo Jutsushi Fitz", score: 8 },
-  { id: 62, title: "Mushoku Tensei: Isekai Ittara Honki Dasu", score: 10 },
-  { id: 63, title: "Mushoku Tensei: Isekai Ittara Honki Dasu - Eris no Goblin Toubatsu", score: 7 },
-  { id: 64, title: "Mushoku Tensei: Isekai Ittara Honki Dasu Part 2", score: 10 },
-  { id: 65, title: "Nakitai Watashi wa Neko wo Kaburu", score: 5 },
-  { id: 66, title: "Nanatsu no Taizai", score: 9 },
-  { id: 67, title: "Nanatsu no Taizai Movie 1: Tenkuu no Torawarebito", score: 9 },
-  { id: 68, title: "Nanatsu no Taizai: Imashime no Fukkatsu", score: 7 },
-  { id: 69, title: "Nanatsu no Taizai: Kamigami no Gekirin", score: 2 },
-  { id: 70, title: "No Game No Life", score: 9 },
-  { id: 71, title: "No Game No Life: Zero", score: 7 },
-  { id: 72, title: "Omoide no Marnie", score: 9 },
-  { id: 73, title: "One Piece Film: Red", score: 8 },
-  { id: 74, title: "One Punch Man", score: 9 },
-  { id: 75, title: "One Punch Man 2nd Season", score: 7 },
-  { id: 76, title: "Re:Zero kara Hajimeru Isekai Seikatsu", score: 7 },
-  { id: 77, title: "Saiki Kusuo no Ψ-nan", score: 7 },
-  { id: 78, title: "Saiki Kusuo no Ψ-nan 2", score: 7 },
-  { id: 79, title: "Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai", score: 8 },
-  { id: 80, title: "Sen to Chihiro no Kamikakushi", score: 5 },
-  { id: 81, title: "Shigatsu wa Kimi no Uso", score: 7 },
-  { id: 82, title: "Shingeki no Kyojin", score: 8 },
-  { id: 83, title: "Shingeki no Kyojin Season 2", score: 7 },
-  { id: 84, title: "Shingeki no Kyojin Season 3", score: 7 },
-  { id: 85, title: "Shingeki no Kyojin Season 3 Part 2", score: 9 },
-  { id: 86, title: "Shokugeki no Souma", score: 7 },
-  { id: 87, title: "Shokugeki no Souma: Gou no Sara", score: 7 },
-  { id: 88, title: "Shokugeki no Souma: Ni no Sara", score: 7 },
-  { id: 89, title: "Shokugeki no Souma: San no Sara", score: 8 },
-  { id: 90, title: "Shokugeki no Souma: San no Sara - Tootsuki Ressha-hen", score: 7 },
-  { id: 91, title: "Shokugeki no Souma: Shin no Sara", score: 8 },
-  { id: 92, title: "Spy x Family", score: 9 },
-  { id: 93, title: "Spy x Family Part 2", score: 8 },
-  { id: 94, title: "Suzume no Tojimari", score: 8 },
-  { id: 95, title: "Sword Art Online", score: 7 },
-  { id: 96, title: "Tenki no Ko", score: 10 },
-  { id: 97, title: "Toradora!", score: 10 },
-  { id: 98, title: "Vinland Saga", score: 8 },
-  { id: 99, title: "Violet Evergarden", score: 8 },
-  { id: 100, title: "Violet Evergarden Movie", score: 9 },
-  { id: 101, title: "Xian Wang de Richang Shenghuo", score: 7 },
-  { id: 102, title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e", score: 9 },
-  { id: 103, title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 2nd Season", score: 7 },
-  { id: 104, title: "Yuru Camp△", score: 8 },
-  { id: 105, title: "Chainsaw Man", score: 8 },
-  { id: 106, title: "Oshi no Ko;", score: 8 },
-  { id: 107, title: "Baki", score: 5 },
-  { id: 108, title: "Black Clover", score: 5 },
-  { id: 109, title: "Boku no Hero Academia 5th Season", score: 7 },
-  { id: 110, title: "Chi. Chikyuu no Undou ni Tsuite Airing", score: 6 },
-  { id: 111, title: "Dr. Stone: New World", score: null },
-  { id: 112, title: "Grand Blue", score: 4 },
-  { id: 113, title: "High School DxD", score: null },
-  { id: 114, title: "Hyouka", score: null },
-  { id: 115, title: "Isekai wa Smartphone to Tomo ni. 2", score: 6 },
-  { id: 116, title: "Jibaku Shounen Hanako-kun", score: null },
-  { id: 117, title: "Mob Psycho 100 III", score: null },
-  { id: 118, title: "Nanatsu no Taizai: Funnu no Shinpan", score: 5 },
-  { id: 119, title: "Sousou no Frieren", score: 4 },
-  { id: 120, title: "Summer Wars", score: 4 },
-  { id: 121, title: "Bakemonogatari", score: null },
-  { id: 122, title: "Barakamon", score: null },
-  { id: 123, title: "Bocchi the Rock! Movie", score: null },
-  { id: 124, title: "Boku dake ga Inai Machi", score: null },
-  { id: 125, title: "Boku no Hero Academia 7th Season", score: null },
-  { id: 126, title: "Clannad: After Story", score: null },
-  { id: 127, title: "Fruits Basket 2nd Season", score: 7 },
-  { id: 128, title: "Fruits Basket: The Final", score: null },
-  { id: 129, title: "Jigokuraku", score: 7 },
-  { id: 130, title: "K-On!!", score: null },
-  { id: 131, title: "Kaguya-sama wa Kokurasetai: Ultra Romantic", score: null },
-  { id: 132, title: "Kimetsu no Yaiba Movie: Mugen Jou-hen Not Yet Aired", score: null },
-  { id: 133, title: "Kono Subarashii Sekai ni Bakuen wo!", score: null },
-  { id: 134, title: "Kono Subarashii Sekai ni Shukufuku wo! 3", score: null },
-  { id: 135, title: "One Outs", score: null },
-  { id: 136, title: "One Punch Man 3 Not Yet Aired", score: null },
-  { id: 137, title: "Redline", score: null },
-  { id: 138, title: "Spy x Family Season 2", score: null },
-  { id: 139, title: "Tomodachi Game", score: null },
-  { id: 140, title: "Vinland Saga Season 2", score: null },
-  { id: 141, title: "Wind Breaker", score: null },
-  { id: 142, title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 3rd Season", score: null },
-  { id: 143, title: "Zom 100: Zombie ni Naru made ni Shitai 100 no Koto", score: null },
-];
-
+// Configuration options
+const MAL_USERNAME = 'rohzzn'; // Your MyAnimeList username
 
 const MyAnimeList: React.FC = () => {
+  const [animeList, setAnimeList] = useState<Anime[]>([]);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Anime; direction: "ascending" | "descending" } | null>({
     key: "score",
     direction: "descending",
@@ -164,24 +25,117 @@ const MyAnimeList: React.FC = () => {
   const [imageCache, setImageCache] = useState<{ [key: number]: string }>({});
   const [hoveredAnime, setHoveredAnime] = useState<Anime | null>(null);
   const [cursorPosition, setCursorPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [loading, setLoading] = useState<{ [key: number]: boolean }>({});
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>(MAL_USERNAME);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fetch anime data from MyAnimeList
+  useEffect(() => {
+    const fetchAnimeList = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Check URL for username parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlUsername = urlParams.get('username');
+        const malUsername = urlUsername || username || MAL_USERNAME;
+        
+        if (!malUsername) {
+          setError('MyAnimeList username is required. Please add it to the URL as ?username=YOUR_USERNAME');
+          setIsLoading(false);
+          return;
+        }
+        
+        setUsername(malUsername);
+        
+        const response = await fetch(`/api/myanimelist?username=${encodeURIComponent(malUsername)}`);
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Failed to fetch anime list: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setAnimeList(data.animeList);
+        
+        // Pre-load images for anime that have image URLs
+        data.animeList.forEach((anime: Anime) => {
+          if (anime.image) {
+            setImageCache(prev => ({ ...prev, [anime.id]: anime.image as string }));
+          }
+        });
+      } catch (err) {
+        console.error('Error fetching anime list:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load anime list');
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    };
+
+    fetchAnimeList();
+  }, [isRefreshing, username]);
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const watched = animeList.filter(anime => anime.score !== null).length;
-    const planToWatch = animeList.filter(anime => anime.score === null).length;
-    const avgScore = animeList.reduce((acc, curr) => curr.score ? acc + curr.score : acc, 0) / watched;
-    const maxScore = Math.max(...animeList.filter(anime => anime.score !== null).map(anime => anime.score || 0));
+    const watched = animeList.filter(anime => anime.status === 'watched').length;
+    const planToWatch = animeList.filter(anime => anime.status === 'plan_to_watch').length;
+    const watching = animeList.filter(anime => anime.status === 'watching').length;
+    const dropped = animeList.filter(anime => anime.status === 'dropped').length;
+    
+    // Calculate average score only from watched anime with scores
+    const scoredAnime = animeList.filter(anime => anime.status === 'watched' && anime.score !== null);
+    const avgScore = scoredAnime.length > 0 
+      ? scoredAnime.reduce((acc, curr) => curr.score ? acc + curr.score : acc, 0) / scoredAnime.length
+      : 0;
     
     return {
       watched,
       planToWatch,
       avgScore: avgScore.toFixed(1),
-      maxScore
+      watching,
+      dropped,
+      total: animeList.length
     };
-  }, []);
+  }, [animeList]);
 
+  // Get all unique genres from the anime list
+  const allGenres = useMemo(() => {
+    return [...new Set(animeList.flatMap(anime => anime.genres || []))].sort();
+  }, [animeList]);
+
+  // Filter anime based on selected filters
+  const filteredAnime = useMemo(() => {
+    return animeList.filter(anime => {
+      // Filter by search term
+      if (searchTerm && !anime.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      
+      // Filter by status
+      if (statusFilter && anime.status !== statusFilter) {
+        return false;
+      }
+      
+      // Filter by genres
+      if (selectedGenres.length > 0 && !selectedGenres.some(genre => anime.genres?.includes(genre))) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [animeList, searchTerm, statusFilter, selectedGenres]);
+
+  // Sort the filtered anime
   const sortedAnime = useMemo(() => {
-    const sortableAnime = [...animeList];
+    const sortableAnime = [...filteredAnime];
     if (sortConfig !== null) {
       sortableAnime.sort((a, b) => {
         let aKey = a[sortConfig.key];
@@ -195,13 +149,18 @@ const MyAnimeList: React.FC = () => {
         if (aKey === null) return 1;
         if (bKey === null) return -1;
 
+        // Handle potentially undefined values
+        if (aKey === undefined && bKey === undefined) return 0;
+        if (aKey === undefined) return 1;
+        if (bKey === undefined) return -1;
+
         if (aKey < bKey) return sortConfig.direction === "ascending" ? -1 : 1;
         if (aKey > bKey) return sortConfig.direction === "ascending" ? 1 : -1;
         return 0;
       });
     }
     return sortableAnime;
-  }, [sortConfig]);
+  }, [filteredAnime, sortConfig]);
 
   const requestSort = (key: keyof Anime) => {
     let direction: "ascending" | "descending" = "ascending";
@@ -213,6 +172,8 @@ const MyAnimeList: React.FC = () => {
 
   const fetchImage = async (title: string, id: number) => {
     if (imageCache[id]) return;
+    
+    setLoading(prev => ({ ...prev, [id]: true }));
 
     try {
       const response = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`);
@@ -223,127 +184,421 @@ const MyAnimeList: React.FC = () => {
       }
     } catch (error) {
       console.error("Error fetching image:", error);
+    } finally {
+      setLoading(prev => ({ ...prev, [id]: false }));
     }
   };
 
   const handleMouseEnter = (anime: Anime) => {
     setHoveredAnime(anime);
-    fetchImage(anime.title, anime.id);
+    if (!imageCache[anime.id]) {
+      fetchImage(anime.title, anime.id);
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setCursorPosition({ x: e.clientX, y: e.clientY });
   };
 
+  const toggleGenre = (genre: string) => {
+    setSelectedGenres(prev => 
+      prev.includes(genre) 
+        ? prev.filter(g => g !== genre) 
+        : [...prev, genre]
+    );
+  };
+
+  const toggleStatusFilter = (status: string | null) => {
+    setStatusFilter(prev => prev === status ? null : status);
+  };
+
+  const resetFilters = () => {
+    setSelectedGenres([]);
+    setStatusFilter(null);
+    setSearchTerm('');
+  };
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+  };
+
+  // Get currently watching anime
+  const currentlyWatching = useMemo(() => {
+    return animeList
+      .filter(anime => anime.status === 'watching')
+      .sort((a, b) => (b.score || 0) - (a.score || 0));
+  }, [animeList]);
+
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Anime List</h2>
-
-      {/* Stats Section */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-          <div className="flex items-center gap-2 mb-1">
-            <List className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-            <h3 className="text-sm font-medium dark:text-white">Total Watched</h3>
-          </div>
-          <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.watched}</p>
-        </div>
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-          <div className="flex items-center gap-2 mb-1">
-            <AlertCircle className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-            <h3 className="text-sm font-medium dark:text-white">Plan to Watch</h3>
-          </div>
-          <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.planToWatch}</p>
-        </div>
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-          <div className="flex items-center gap-2 mb-1">
-            <Star className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-            <h3 className="text-sm font-medium dark:text-white">Average Score</h3>
-          </div>
-          <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.avgScore}</p>
-        </div>
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-          <div className="flex items-center gap-2 mb-1">
-            <Star className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-            <h3 className="text-sm font-medium dark:text-white">Highest Score</h3>
-          </div>
-          <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.maxScore}</p>
-        </div>
-      </div>
-
-      {/* Sort Controls */}
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => requestSort("title")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-            sortConfig?.key === "title"
-              ? "bg-zinc-200 dark:bg-zinc-700"
-              : "bg-zinc-100 dark:bg-zinc-800"
-          }`}
-        >
-          <span className="text-sm text-zinc-700 dark:text-zinc-300">Title</span>
-          {sortConfig?.key === "title" && (
-            sortConfig.direction === "ascending" ? 
-              <SortAsc className="w-4 h-4" /> : 
-              <SortDesc className="w-4 h-4" />
-          )}
-        </button>
-        <button
-          onClick={() => requestSort("score")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-            sortConfig?.key === "score"
-              ? "bg-zinc-200 dark:bg-zinc-700"
-              : "bg-zinc-100 dark:bg-zinc-800"
-          }`}
-        >
-          <span className="text-sm text-zinc-700 dark:text-zinc-300">Score</span>
-          {sortConfig?.key === "score" && (
-            sortConfig.direction === "ascending" ? 
-              <SortAsc className="w-4 h-4" /> : 
-              <SortDesc className="w-4 h-4" />
-          )}
-        </button>
-      </div>
-
-      {/* Anime List */}
-      <div className="grid grid-cols-1 gap-2">
-        {sortedAnime.map((anime) => (
-          <div
-            key={anime.id}
-            className="group bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex justify-between items-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-            onMouseEnter={() => handleMouseEnter(anime)}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={() => setHoveredAnime(null)}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-medium dark:text-white">
+          Anime List
+        </h2>
+        <div className="flex gap-2">
+          <button 
+            onClick={handleRefresh}
+            disabled={isLoading || isRefreshing}
+            className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-50"
           >
-            <span className="text-sm text-zinc-700 dark:text-zinc-300">{anime.title}</span>
-            <div className="flex items-center gap-2">
-              {anime.score !== null ? (
-                <span className="px-2 py-1 text-xs rounded-md bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
-                  {anime.score}/10
-                </span>
-              ) : (
-                <span className="px-2 py-1 text-xs rounded-md bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
-                  PTW
-                </span>
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-zinc-900 dark:border-zinc-100 mb-4"></div>
+          <p className="text-zinc-700 dark:text-zinc-300">Loading anime list...</p>
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-xl mb-6">
+          <h3 className="text-red-600 dark:text-red-400 font-medium mb-2">Error Loading Anime List</h3>
+          <p className="text-red-500 dark:text-red-300 mb-4">{error}</p>
+          
+          <div className="bg-white dark:bg-zinc-800 p-4 rounded-lg mb-4 text-sm">
+            <p className="font-medium mb-2 text-zinc-800 dark:text-zinc-200">How to fix this:</p>
+            <ol className="list-decimal list-inside text-zinc-600 dark:text-zinc-400 space-y-2">
+              <li>Make sure you entered a valid MyAnimeList username</li>
+              <li>Add <code className="bg-zinc-100 dark:bg-zinc-700 px-1 py-0.5 rounded">?username=YOUR_USERNAME</code> to the URL</li>
+              <li>Check if the MyAnimeList service is currently available</li>
+              <li>Try refreshing the page</li>
+            </ol>
+          </div>
+          
+          <button 
+            onClick={handleRefresh}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Try Again
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Stats Section */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <List className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                <h3 className="text-sm font-medium dark:text-white">Watched</h3>
+              </div>
+              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.watched}</p>
+            </div>
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <Clock className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                <h3 className="text-sm font-medium dark:text-white">Watching</h3>
+              </div>
+              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.watching}</p>
+            </div>
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertCircle className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                <h3 className="text-sm font-medium dark:text-white">Plan to Watch</h3>
+              </div>
+              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.planToWatch}</p>
+            </div>
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <X className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                <h3 className="text-sm font-medium dark:text-white">Dropped</h3>
+              </div>
+              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.dropped}</p>
+            </div>
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <Star className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                <h3 className="text-sm font-medium dark:text-white">Average Score</h3>
+              </div>
+              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.avgScore}</p>
+            </div>
+          </div>
+
+          {/* Currently Watching Section */}
+          {currentlyWatching.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-md font-medium mb-4 dark:text-white">Currently Watching</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {currentlyWatching.map(anime => (
+                  <div key={`watching-${anime.id}`} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden flex flex-col">
+                    <div className="relative flex items-center justify-center bg-zinc-200 dark:bg-zinc-700">
+                      {anime.image ? (
+                        <Image 
+                          src={anime.image} 
+                          alt={anime.title}
+                          width={160}
+                          height={240}
+                          className="w-full h-auto"
+                        />
+                      ) : (
+                        <div className="h-[200px] w-full flex items-center justify-center">
+                          <span className="text-zinc-500 dark:text-zinc-400 text-xs">No Image</span>
+                        </div>
+                      )}
+                      {anime.score && anime.score > 0 && (
+                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                          {anime.score}/10
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="text-sm font-medium dark:text-white line-clamp-1">{anime.title}</p>
+                      <div className="flex mt-2">
+                        <span className="px-2 py-0.5 text-xs rounded-full font-medium bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100">
+                          Watching
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex-1">
+              {/* Search and Filters */}
+              <div className="mb-6 space-y-4">
+                <div className="flex flex-wrap gap-4 items-center">
+                  <div className="relative flex-grow max-w-md">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search anime..."
+                      className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:focus:ring-zinc-600"
+                    />
+                    {searchTerm && (
+                      <button 
+                        onClick={() => setSearchTerm('')}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      >
+                        <X className="w-4 h-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200" />
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                  >
+                    <Filter className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300">Filters</span>
+                    {(selectedGenres.length > 0 || statusFilter) && (
+                      <span className="bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                        {selectedGenres.length + (statusFilter ? 1 : 0)}
+                      </span>
+                    )}
+                  </button>
+                  
+                  {(selectedGenres.length > 0 || statusFilter) && (
+                    <button
+                      onClick={resetFilters}
+                      className="flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                    >
+                      <X className="w-3 h-3 text-zinc-600 dark:text-zinc-400" />
+                      <span className="text-xs text-zinc-700 dark:text-zinc-300">Reset</span>
+                    </button>
+                  )}
+
+                  {/* Sort Controls */}
+                  <button
+                    onClick={() => requestSort("title")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+                      sortConfig?.key === "title"
+                        ? "bg-zinc-200 dark:bg-zinc-700"
+                        : "bg-zinc-100 dark:bg-zinc-800"
+                    }`}
+                  >
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300">Title</span>
+                    {sortConfig?.key === "title" && (
+                      sortConfig.direction === "ascending" ? 
+                        <SortAsc className="w-4 h-4" /> : 
+                        <SortDesc className="w-4 h-4" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => requestSort("score")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+                      sortConfig?.key === "score"
+                        ? "bg-zinc-200 dark:bg-zinc-700"
+                        : "bg-zinc-100 dark:bg-zinc-800"
+                    }`}
+                  >
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300">Score</span>
+                    {sortConfig?.key === "score" && (
+                      sortConfig.direction === "ascending" ? 
+                        <SortAsc className="w-4 h-4" /> : 
+                        <SortDesc className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+                
+                {/* Filter Panel */}
+                {showFilters && (
+                  <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+                    <div className="mb-4">
+                      <h3 className="font-medium text-sm mb-2 dark:text-white">Status</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {['watched', 'watching', 'plan_to_watch', 'dropped'].map(status => (
+                          <button
+                            key={status}
+                            onClick={() => toggleStatusFilter(status)}
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              statusFilter === status 
+                                ? 'bg-zinc-700 dark:bg-zinc-300 text-white dark:text-zinc-800' 
+                                : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300'
+                            }`}
+                          >
+                            {status.replace('_', ' ')}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {allGenres.length > 0 && (
+                      <div>
+                        <h3 className="font-medium text-sm mb-2 dark:text-white">Genres</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {allGenres.map(genre => (
+                            <button
+                              key={genre}
+                              onClick={() => toggleGenre(genre)}
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                selectedGenres.includes(genre) 
+                                  ? 'bg-zinc-700 dark:bg-zinc-300 text-white dark:text-zinc-800' 
+                                  : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300'
+                              }`}
+                            >
+                              {genre}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Results Summary */}
+              <div className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+                Showing {sortedAnime.length} of {animeList.length} anime
+              </div>
+
+              {/* Anime List */}
+              <div className="grid grid-cols-1 gap-2">
+                {sortedAnime.map((anime) => (
+                  <div
+                    key={anime.id}
+                    className="group bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                    onMouseEnter={() => handleMouseEnter(anime)}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={() => setHoveredAnime(null)}
+                  >
+                    <div className="flex flex-col gap-1 flex-grow">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">{anime.title}</span>
+                        {anime.year && (
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">({anime.year})</span>
+                        )}
+                      </div>
+                      
+                      {anime.genres && anime.genres.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {anime.genres.map(genre => (
+                            <span 
+                              key={genre} 
+                              className="px-2 py-0.5 text-xs rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
+                            >
+                              {genre}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      {anime.score !== null && anime.score > 0 && (
+                        <span className="px-2 py-1 text-xs rounded-md bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium">
+                          {anime.score}/10
+                        </span>
+                      )}
+                      
+                      {anime.status === 'watching' && (
+                        <span className="px-2 py-0.5 text-xs rounded-full font-medium bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100">
+                          Watching
+                        </span>
+                      )}
+                      
+                      {anime.status === 'dropped' && (
+                        <span className="px-2 py-0.5 text-xs rounded-full font-medium bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100">
+                          Dropped
+                        </span>
+                      )}
+                      
+                      {anime.status === 'plan_to_watch' && (
+                        <span className="px-2 py-0.5 text-xs rounded-full font-medium bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100">
+                          Plan to Watch
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Empty State */}
+              {sortedAnime.length === 0 && (
+                <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+                  <AlertCircle className="w-10 h-10 mx-auto text-zinc-400 mb-3" />
+                  <h3 className="text-zinc-700 dark:text-zinc-300 font-medium mb-1">No anime found</h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+                    Try adjusting your filters or search criteria
+                  </p>
+                </div>
               )}
             </div>
           </div>
-        ))}
-      </div>
+        </>
+      )}
 
       {/* Hover Preview */}
-      {hoveredAnime && imageCache[hoveredAnime.id] && (
+      {hoveredAnime && (
         <div
           className="fixed z-50 pointer-events-none"
           style={{ top: cursorPosition.y + 20, left: cursorPosition.x + 20 }}
         >
-          <Image
-            src={imageCache[hoveredAnime.id]}
-            alt={`${hoveredAnime.title} Cover`}
-            width={160}
-            height={240}
-            className="rounded shadow-lg object-cover"
-          />
+          {loading[hoveredAnime.id] ? (
+            <div className="w-40 h-60 bg-zinc-300 dark:bg-zinc-700 rounded shadow-lg flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-600"></div>
+            </div>
+          ) : imageCache[hoveredAnime.id] ? (
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-2 rounded shadow-lg">
+              <Image
+                src={imageCache[hoveredAnime.id]}
+                alt={`${hoveredAnime.title} Cover`}
+                width={160}
+                height={240}
+                className="rounded object-cover"
+              />
+              <div className="mt-2 text-center">
+                <p className="text-xs text-zinc-800 dark:text-zinc-200 font-medium truncate max-w-[160px]">
+                  {hoveredAnime.title}
+                </p>
+                {hoveredAnime.score && hoveredAnime.score > 0 && (
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+                    Score: {hoveredAnime.score}/10
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="w-40 h-60 bg-zinc-300 dark:bg-zinc-700 rounded shadow-lg flex items-center justify-center">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Loading...</p>
+            </div>
+          )}
         </div>
       )}
     </div>
