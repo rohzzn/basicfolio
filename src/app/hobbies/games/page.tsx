@@ -139,8 +139,8 @@ const readFromCache = (cacheKey: string) => {
       const cacheData = fs.readFileSync(cacheFile, 'utf8');
       const { timestamp, data } = JSON.parse(cacheData);
       
-      // Cache valid for 24 hours
-      if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+      // Cache valid for only 1 hour to ensure fresher data
+      if (Date.now() - timestamp < 60 * 60 * 1000) {
         return data;
       }
     }
@@ -165,7 +165,7 @@ const writeToCache = (cacheKey: string, data: ApiResponse) => {
 };
 
 // Use React's cache function to prevent duplicate fetches
-const fetchWithCache = cache(async (url: string) => {
+const fetchWithCache = cache(async (url: string, forceRefresh = false) => {
   console.log(`Fetching from: ${url}`);
   
   // Create a cache key from the URL
@@ -173,11 +173,16 @@ const fetchWithCache = cache(async (url: string) => {
     .replace(/[^a-zA-Z0-9]/g, '_')
     .substring(0, 100); // Limit filename length
   
-  // Try to get from file cache first
-  const cachedData = readFromCache(cacheKey);
-  if (cachedData) {
-    console.log(`Using cached data for: ${url}`);
-    return cachedData;
+  // Only use cache in non-forced refresh mode
+  if (!forceRefresh) {
+    // Try to get from file cache first
+    const cachedData = readFromCache(cacheKey);
+    if (cachedData) {
+      console.log(`Using cached data for: ${url}`);
+      return cachedData;
+    }
+  } else {
+    console.log(`Force refreshing data for: ${url}`);
   }
   
   // Improved exponential backoff retry logic
@@ -190,7 +195,7 @@ const fetchWithCache = cache(async (url: string) => {
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
       const response = await fetch(url, { 
-        next: { revalidate: 3600 * 24 } // Cache for 24 hours to avoid frequent API calls
+        next: { revalidate: 0 } // Don't use Next.js cache, always fresh data
       });
       
       if (response.ok) {
@@ -235,7 +240,13 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const Games = async () => {
   const CSGO_USER_ID = '76561198239653194';
   const apiKey = process.env.STEAM_API_KEY;
-  const isBuildTime = process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build';
+  // Only skip API calls during the actual build process, not during runtime in production
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
+  // Force refresh in production runtime to ensure fresh data
+  const forceRefresh = process.env.NODE_ENV === 'production' && !isBuildTime;
+  
+  // Add timestamp for cache busting in production
+  const cacheBuster = forceRefresh ? `&_t=${Date.now()}` : '';
 
   if (!apiKey) {
     console.error('Steam API Key is not set in environment variables.');
@@ -261,7 +272,8 @@ const Games = async () => {
     // Fetch Player Summaries
     try {
       const profileData = await fetchWithCache(
-        `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${CSGO_USER_ID}`
+        `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${CSGO_USER_ID}${cacheBuster}`,
+        forceRefresh
       );
       if (profileData.response && profileData.response.players && profileData.response.players.length > 0) {
         profile = profileData.response.players[0];
@@ -278,7 +290,8 @@ const Games = async () => {
     // Fetch all owned games
     try {
       const ownedGamesData = await fetchWithCache(
-        `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${apiKey}&steamid=${CSGO_USER_ID}&include_appinfo=1&include_played_free_games=1`
+        `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${apiKey}&steamid=${CSGO_USER_ID}&include_appinfo=1&include_played_free_games=1${cacheBuster}`,
+        forceRefresh
       );
       if (ownedGamesData.response && ownedGamesData.response.games) {
         ownedGames = ownedGamesData.response.games;
