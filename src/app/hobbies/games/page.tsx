@@ -7,6 +7,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cache } from 'react';
 import { Settings } from 'lucide-react';
+import fs from 'fs';
+import path from 'path';
 
 interface SteamProfile {
   personaname: string;
@@ -112,13 +114,75 @@ const mockGames: SteamGame[] = [
   }
 ];
 
+// File cache utilities
+const CACHE_DIR = path.join(process.cwd(), '.steam-cache');
+
+// Ensure cache directory exists
+try {
+  if (!fs.existsSync(CACHE_DIR)) {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.error('Failed to create cache directory:', err);
+}
+
+// Define type for the cached data
+interface ApiResponse {
+  [key: string]: unknown;
+}
+
+// Function to read from cache
+const readFromCache = (cacheKey: string) => {
+  try {
+    const cacheFile = path.join(CACHE_DIR, `${cacheKey}.json`);
+    if (fs.existsSync(cacheFile)) {
+      const cacheData = fs.readFileSync(cacheFile, 'utf8');
+      const { timestamp, data } = JSON.parse(cacheData);
+      
+      // Cache valid for 24 hours
+      if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+        return data;
+      }
+    }
+  } catch (err) {
+    console.error('Error reading from cache:', err);
+  }
+  return null;
+};
+
+// Function to write to cache
+const writeToCache = (cacheKey: string, data: ApiResponse) => {
+  try {
+    const cacheFile = path.join(CACHE_DIR, `${cacheKey}.json`);
+    const cacheData = {
+      timestamp: Date.now(),
+      data
+    };
+    fs.writeFileSync(cacheFile, JSON.stringify(cacheData, null, 2));
+  } catch (err) {
+    console.error('Error writing to cache:', err);
+  }
+};
+
 // Use React's cache function to prevent duplicate fetches
 const fetchWithCache = cache(async (url: string) => {
   console.log(`Fetching from: ${url}`);
   
-  // Exponential backoff retry logic
+  // Create a cache key from the URL
+  const cacheKey = url
+    .replace(/[^a-zA-Z0-9]/g, '_')
+    .substring(0, 100); // Limit filename length
+  
+  // Try to get from file cache first
+  const cachedData = readFromCache(cacheKey);
+  if (cachedData) {
+    console.log(`Using cached data for: ${url}`);
+    return cachedData;
+  }
+  
+  // Improved exponential backoff retry logic
   const MAX_RETRIES = 5;
-  const INITIAL_DELAY = 1000;
+  const INITIAL_DELAY = 2000; // Increased initial delay to 2 seconds
   
   let lastError;
   let delay = INITIAL_DELAY;
@@ -126,17 +190,19 @@ const fetchWithCache = cache(async (url: string) => {
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
       const response = await fetch(url, { 
-        next: { revalidate: 3600 } // Cache for 1 hour
+        next: { revalidate: 3600 * 24 } // Cache for 24 hours to avoid frequent API calls
       });
       
       if (response.ok) {
         const data = await response.json();
+        // Save successful response to file cache
+        writeToCache(cacheKey, data);
         return data;
       }
       
       lastError = new Error(`HTTP error ${response.status}`);
       
-      // Handle rate limiting with exponential backoff
+      // Handle rate limiting with improved exponential backoff
       if (response.status === 429 || response.status >= 500) {
         console.log(`Rate limited (${response.status}), backing off for ${delay}ms`);
         await new Promise(resolve => setTimeout(resolve, delay));
@@ -153,12 +219,23 @@ const fetchWithCache = cache(async (url: string) => {
     }
   }
   
+  // If we have a cached version (even if expired), use it as last resort
+  const expiredCache = readFromCache(cacheKey);
+  if (expiredCache) {
+    console.log(`Falling back to expired cache for: ${url}`);
+    return expiredCache;
+  }
+  
   throw lastError;
 });
+
+// Helper function to add delay between API calls
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const Games = async () => {
   const CSGO_USER_ID = '76561198239653194';
   const apiKey = process.env.STEAM_API_KEY;
+  const isBuildTime = process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build';
 
   if (!apiKey) {
     console.error('Steam API Key is not set in environment variables.');
@@ -175,32 +252,42 @@ const Games = async () => {
   let profileError = false;
   let ownedGamesError = false;
 
-  // Fetch Player Summaries
-  try {
-    const profileData = await fetchWithCache(
-      `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${CSGO_USER_ID}`
-    );
-    if (profileData.response && profileData.response.players && profileData.response.players.length > 0) {
-      profile = profileData.response.players[0];
-    }
-  } catch (error) {
-    console.error('Error fetching profile:', error);
+  // Skip API calls during build time to avoid rate limiting issues
+  if (isBuildTime) {
+    console.log('Using mock data during build process to avoid rate limiting');
     profileError = true;
-    // We'll use the mock data as fallback
-  }
-
-  // Fetch all owned games
-  try {
-    const ownedGamesData = await fetchWithCache(
-      `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${apiKey}&steamid=${CSGO_USER_ID}&include_appinfo=1&include_played_free_games=1`
-    );
-    if (ownedGamesData.response && ownedGamesData.response.games) {
-      ownedGames = ownedGamesData.response.games;
-    }
-  } catch (error) {
-    console.error('Error fetching owned games:', error);
     ownedGamesError = true;
-    // We'll use the mock data as fallback
+  } else {
+    // Fetch Player Summaries
+    try {
+      const profileData = await fetchWithCache(
+        `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${CSGO_USER_ID}`
+      );
+      if (profileData.response && profileData.response.players && profileData.response.players.length > 0) {
+        profile = profileData.response.players[0];
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      profileError = true;
+      // We'll use the mock data as fallback
+    }
+
+    // Add a delay between API calls to avoid rate limiting
+    await delay(3000);
+
+    // Fetch all owned games
+    try {
+      const ownedGamesData = await fetchWithCache(
+        `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${apiKey}&steamid=${CSGO_USER_ID}&include_appinfo=1&include_played_free_games=1`
+      );
+      if (ownedGamesData.response && ownedGamesData.response.games) {
+        ownedGames = ownedGamesData.response.games;
+      }
+    } catch (error) {
+      console.error('Error fetching owned games:', error);
+      ownedGamesError = true;
+      // We'll use the mock data as fallback
+    }
   }
 
   // Sort games by recent playtime first, then total playtime
