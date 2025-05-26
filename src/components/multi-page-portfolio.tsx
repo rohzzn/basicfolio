@@ -89,14 +89,6 @@ const getStatusColor = (status: string): string => {
   }
 };
 
-const formatTime = (timestamp: number): string => {
-  const minutes = Math.floor(timestamp / 60000);
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
-};
-
 const getActivityIcon = (type: number) => {
   switch (type) {
     case 0:
@@ -317,27 +309,42 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                           key={index}
                           className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
                         >
-                          <div className="flex items-center gap-1.5 mb-1">
-                            {getActivityIcon(activity.type)}
-                            <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
-                              {activity.name}
-                            </span>
+                          <div className="flex items-center gap-2 mb-1">
+                            {activity.assets?.large_image ? (
+                              <img 
+                                src={
+                                  activity.assets.large_image.startsWith("mp:") 
+                                    ? `https://media.discordapp.net/${activity.assets.large_image.replace('mp:', '')}`
+                                    : activity.assets.large_image.startsWith("spotify:") 
+                                      ? `https://i.scdn.co/image/${activity.assets.large_image.replace('spotify:', '')}`
+                                      : activity.assets.large_image.startsWith("external:")
+                                        ? activity.assets.large_image.replace("external:", "https://")
+                                        : activity.application_id 
+                                          ? `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`
+                                          : activity.assets.large_image
+                                }
+                                alt={activity.assets.large_text || activity.name}
+                                className="w-10 h-10 rounded-md object-cover"
+                              />
+                            ) : (
+                              getActivityIcon(activity.type)
+                            )}
+                            <div>
+                              <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
+                                {activity.name}
+                              </span>
+                              {activity.state && (
+                                <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+                                  {activity.state}
+                                </p>
+                              )}
+                              {activity.details && (
+                                <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+                                  {activity.details}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          {activity.state && (
-                            <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
-                              {activity.state}
-                            </p>
-                          )}
-                          {activity.details && (
-                            <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
-                              {activity.details}
-                            </p>
-                          )}
-                          {activity.timestamps?.start && (
-                            <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-500 mt-1">
-                              {formatTime(Date.now() - activity.timestamps.start)}
-                            </p>
-                          )}
                         </div>
                       ))}
                   </div>
