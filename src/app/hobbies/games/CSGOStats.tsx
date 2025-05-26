@@ -19,13 +19,13 @@ interface CSGOStats {
 }
 
 interface CSGOStatsProps {
-  stats: CSGOStats;
+  statsData: CSGOStats;
 }
 
-const CSGOStatsComponent: React.FC<CSGOStatsProps> = ({ stats }) => {
+const CSGOStatsComponent: React.FC<CSGOStatsProps> = ({ statsData }) => {
   // Extract specific stats
   const statMap: { [key: string]: number } = {};
-  stats.playerstats.stats.forEach(stat => {
+  statsData.playerstats.stats.forEach(stat => {
     statMap[stat.name] = stat.value;
   });
 
