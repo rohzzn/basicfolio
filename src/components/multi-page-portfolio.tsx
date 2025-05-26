@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Menu, X, Gamepad, Music, Loader2, Volume2, VolumeX, Focus, Clock } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import ModernCursor from './ModernCursor';
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
@@ -311,7 +312,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                         >
                           <div className="flex items-center gap-2 mb-1">
                             {activity.assets?.large_image ? (
-                              <img 
+                              <Image 
                                 src={
                                   activity.assets.large_image.startsWith("mp:") 
                                     ? `https://media.discordapp.net/${activity.assets.large_image.replace('mp:', '')}`
@@ -324,7 +325,9 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                                           : activity.assets.large_image
                                 }
                                 alt={activity.assets.large_text || activity.name}
-                                className="w-10 h-10 rounded-md object-cover"
+                                width={40}
+                                height={40}
+                                className="rounded-md object-cover"
                               />
                             ) : (
                               getActivityIcon(activity.type)
