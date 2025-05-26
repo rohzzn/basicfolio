@@ -1,0 +1,27 @@
+{
+  "timestamp": 1748296354586,
+  "data": {
+    "response": {
+      "players": [
+        {
+          "steamid": "76561198239653194",
+          "communityvisibilitystate": 3,
+          "profilestate": 1,
+          "personaname": "Rohan",
+          "commentpermission": 2,
+          "profileurl": "https://steamcommunity.com/id/rohzzn/",
+          "avatar": "https://avatars.steamstatic.com/c652ca7de0e97432b9b87446cce181175bdaa6ad.jpg",
+          "avatarmedium": "https://avatars.steamstatic.com/c652ca7de0e97432b9b87446cce181175bdaa6ad_medium.jpg",
+          "avatarfull": "https://avatars.steamstatic.com/c652ca7de0e97432b9b87446cce181175bdaa6ad_full.jpg",
+          "avatarhash": "c652ca7de0e97432b9b87446cce181175bdaa6ad",
+          "lastlogoff": 1747648019,
+          "personastate": 0,
+          "primaryclanid": "103582791429521408",
+          "timecreated": 1437142252,
+          "personastateflags": 0,
+          "loccountrycode": "IN"
+        }
+      ]
+    }
+  }
+}
