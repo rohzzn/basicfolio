@@ -6,13 +6,25 @@ import { FaArrowRight } from 'react-icons/fa';
 
 const Home: React.FC = () => {
   const [showImage, setShowImage] = useState(false);
+  const [emoji, setEmoji] = useState('👋');
+  
+  // Function to get a random emoji for visitor greeting
+  const getRandomEmoji = () => {
+    const emojis = ['👋', '👀', '✨', '🎉', '🚀', '🔥', '😊', '🙌', '💯', '🌟'];
+    return emojis[Math.floor(Math.random() * emojis.length)];
+  };
+  
+  const handleMouseEnter = () => {
+    setEmoji(getRandomEmoji());
+    setShowImage(true);
+  };
   
   return (
     <div className="max-w-4xl relative">
       <div className="mb-10">
         <h2 
           className="text-lg font-medium dark:text-white inline-block"
-          onMouseEnter={() => setShowImage(true)}
+          onMouseEnter={handleMouseEnter}
           onMouseLeave={() => setShowImage(false)}
         >
           Hey, I&apos;m Rohan Pothuru
@@ -30,7 +42,7 @@ const Home: React.FC = () => {
           <div className="relative w-64 h-80 overflow-hidden rounded-lg shadow-xl">
             {/* Replace with your actual image path - using a placeholder for now */}
             <Image 
-              src="/images/profile/profile-photo.jpg" 
+              src="/images/profile/profile-photo.JPG" 
               alt="Rohan's photo" 
               fill
               className="object-cover"
@@ -39,7 +51,7 @@ const Home: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
             {showImage && (
               <div className="absolute bottom-4 left-0 right-0 text-center text-white text-sm font-medium px-3 py-1 bg-black/40 backdrop-blur-sm">
-                You found me! 👋
+                You found me! {emoji}
               </div>
             )}
           </div>
