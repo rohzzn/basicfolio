@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 type User = {
   login: string;
@@ -37,11 +37,8 @@ export default function GuestbookPage() {
   const [isSending, setIsSending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchComments(1);
-  }, []);
-
-  const fetchComments = async (page: number, append: boolean = false) => {
+  // Use useCallback to memoize the fetchComments function
+  const fetchComments = useCallback(async (page: number, append: boolean = false) => {
     if (page === 1) setIsLoading(true);
     else setIsLoadingMore(true);
     
@@ -58,11 +55,13 @@ export default function GuestbookPage() {
       
       if (append) {
         // Append new comments to existing ones, avoiding duplicates
-        const existingIds = new Set(comments.map(comment => comment.id));
-        const uniqueNewComments = data.comments.filter(
-          (comment: Comment) => !existingIds.has(comment.id)
-        );
-        setComments([...comments, ...uniqueNewComments]);
+        setComments(prevComments => {
+          const existingIds = new Set(prevComments.map(comment => comment.id));
+          const uniqueNewComments = data.comments.filter(
+            (comment: Comment) => !existingIds.has(comment.id)
+          );
+          return [...prevComments, ...uniqueNewComments];
+        });
       } else {
         setComments(data.comments || []);
       }
@@ -80,13 +79,17 @@ export default function GuestbookPage() {
       setIsLoading(false);
       setIsLoadingMore(false);
     }
-  };
+  }, []); // No dependencies required as it doesn't use any external state
 
-  const loadMoreComments = () => {
+  useEffect(() => {
+    fetchComments(1);
+  }, [fetchComments]); // Add fetchComments to dependency array
+
+  const loadMoreComments = useCallback(() => {
     if (pagination.hasNextPage) {
       fetchComments(pagination.currentPage + 1, true);
     }
-  };
+  }, [pagination.hasNextPage, pagination.currentPage, fetchComments]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
