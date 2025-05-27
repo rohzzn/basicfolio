@@ -1,64 +1,63 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { FaArrowRight, FaEnvelope, FaLink, FaBook } from 'react-icons/fa';
+import { FaArrowRight } from 'react-icons/fa';
 
-const Home: React.FC = () => (
-  <div className="max-w-7xl">
-    <h2 className="text-lg font-medium mb-6 dark:text-white">Hey, I&#39;m Rohan Pothuru</h2>
-    <div className="space-y-4">
-      <p className="text-zinc-600 dark:text-zinc-400">
-        This is my lil corner of the internet.
-        Feel free to click around — you might accidentally learn too much about me.
-      </p>
-      <p className="text-zinc-600 dark:text-zinc-400">
-      Life Update:
-      </p>
-      <ul className="list-disc pl-5 text-zinc-600 dark:text-zinc-400 space-y-2">
-        <li>Grad CS student at UC, hanging on to that 4.0 GPA</li>
-        <li>Part-time dev at Cincinnati Children&apos;s — typing, debugging, surviving</li>
-        <li>Previously at ixigo, mostly vibing and learning the ropes</li>
-        <li>Always tinkering with side projects — for fun, learning, and maybe clout</li>
-        <li>Turning 24 this year — holy moly, where did the time go?</li>
-      </ul>
-      <br />
+const Home: React.FC = () => {
+  return (
+    <div className="max-w-4xl">
+      <div className="mb-10">
+        <h2 className="text-lg font-medium dark:text-white">Hey, I&apos;m Rohan Pothuru</h2>
+        <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+          This is my digital garden — a cozy corner of the internet where I share my thoughts, projects, and journey.
+        </p>
+      </div>
+      
+      {/* Summary Points */}
+      <div className="mb-12">
+        <h3 className="text-base font-medium mb-6 dark:text-white">Summary</h3>
+        
+        <ul className="space-y-4 list-disc pl-5 text-zinc-600 dark:text-zinc-400">
+          <li>Grad CS student at UC, hanging on to that 4.0 GPA</li>
+          <li>Part-time dev at Cincinnati Children&apos;s — typing, debugging, surviving</li>
+          <li>Previously at ixigo, mostly vibing and learning the ropes</li>
+          <li>Always tinkering with side projects — for fun, learning, and maybe clout</li>
+          <li>Turning 24 this year — holy moly, where did the time go?</li>
+        </ul>
+      </div>
+      
+      {/* Simple card links */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Link href="/links" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
+          <div className="flex justify-between items-center">
+            <span className="font-medium dark:text-white">On the Internet</span>
+            <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
+          </div>
+        </Link>
+        
+        <Link href="/guestbook" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
+          <div className="flex justify-between items-center">
+            <span className="font-medium dark:text-white">Guest Book</span>
+            <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
+          </div>
+        </Link>
+        
+        <Link href="/stack" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
+          <div className="flex justify-between items-center">
+            <span className="font-medium dark:text-white">Resume</span>
+            <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
+          </div>
+        </Link>
+        
+        <a href="mailto:pothurrs@mail.uc.edu" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
+          <div className="flex justify-between items-center">
+            <span className="font-medium dark:text-white">Contact</span>
+            <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
+          </div>
+        </a>
+      </div>
     </div>
-
-    <div className="mt-6 flex flex-wrap gap-4">
-      {/* Links */}
-      <Link
-        href="/links"
-        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
-      >
-        On the Internet
-        <FaLink className="ml-2" />
-      </Link>
-      {/* Guestbook */}
-      <Link
-        href="/guestbook"
-        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
-      >
-        Guest Book
-        <FaBook className="ml-2" />
-      </Link>
-      {/* Resume */}
-      <Link
-        href="/stack"
-        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
-      >
-        Resume
-        <FaArrowRight className="ml-2" />
-      </Link>
-      {/* Contact */}
-      <a
-        href="mailto:pothurrs@mail.uc.edu"
-        className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-6 py-3 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 ease-in-out transform hover:scale-105 active:scale-95"
-      >
-        Contact
-        <FaEnvelope className="ml-2" />
-      </a>
-    </div>
-  </div>
-);
+  );
+};
 
 export default Home;

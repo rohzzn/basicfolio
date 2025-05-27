@@ -13,6 +13,7 @@
     "@mapbox/polyline": "^1.2.1",
     "@prisma/client": "^6.1.0",
     "axios": "^1.7.9",
+    "framer-motion": "^12.14.0",
     "googleapis": "^149.0.0",
     "lucide-react": "^0.468.0",
     "next": "15.1.0",
