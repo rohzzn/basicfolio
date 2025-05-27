@@ -1,13 +1,50 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaArrowRight } from 'react-icons/fa';
 
 const Home: React.FC = () => {
+  const [showImage, setShowImage] = useState(false);
+  
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-4xl relative">
       <div className="mb-10">
-        <h2 className="text-lg font-medium dark:text-white">Hey, I&apos;m Rohan Pothuru</h2>
+        <h2 
+          className="text-lg font-medium dark:text-white inline-block"
+          onMouseEnter={() => setShowImage(true)}
+          onMouseLeave={() => setShowImage(false)}
+        >
+          Hey, I&apos;m Rohan Pothuru
+        </h2>
+        
+        {/* Secret image that appears on hover */}
+        <div 
+          className={`fixed right-0 top-1/4 transform transition-all duration-300 ease-in-out ${
+            showImage 
+              ? 'translate-x-0 opacity-100 -rotate-12' 
+              : 'translate-x-full opacity-0 rotate-12'
+          }`}
+          style={{ zIndex: 50, transformOrigin: 'bottom right' }}
+        >
+          <div className="relative w-64 h-80 overflow-hidden rounded-lg shadow-xl">
+            {/* Replace with your actual image path - using a placeholder for now */}
+            <Image 
+              src="/images/profile/profile-photo.jpg" 
+              alt="Rohan's photo" 
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+            {showImage && (
+              <div className="absolute bottom-4 left-0 right-0 text-center text-white text-sm font-medium px-3 py-1 bg-black/40 backdrop-blur-sm">
+                You found me! 👋
+              </div>
+            )}
+          </div>
+        </div>
+        
         <p className="mt-3 text-zinc-600 dark:text-zinc-400">
           This is my digital garden — a cozy corner of the internet where I share my thoughts, projects, and journey.
         </p>
