@@ -1,9 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Github, ExternalLink, Users, Eye, Download, Star, Globe, Gamepad, Cpu, Blocks, GitCommit, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState } from "react";
+import { Github, ExternalLink, Users, Eye, Download, Star, Globe, Gamepad, Cpu, Blocks } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import GitHubCalendar from "react-github-calendar";
 
 interface Project {
   title: string;
@@ -120,177 +119,8 @@ const ProjectCard = ({ project }: { project: Project }) => {
   );
 };
 
-// Custom GitHub Stats Component
-const GitHubStats = () => {
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const githubUsername = "rohzzn";
-  const availableYears = [2024, 2023, 2022, 2021, 2020];
-  
-  // Stats displayed on the commits tab
-  const stats = [
-    { label: "Total Repositories", value: "32+", icon: <Blocks className="w-4 h-4" /> },
-    { label: "Total Commits", value: "1,500+", icon: <GitCommit className="w-4 h-4" /> },
-    { label: "Pull Requests", value: "120+", icon: <Github className="w-4 h-4" /> },
-    { label: "Stars Received", value: "250+", icon: <Star className="w-4 h-4" /> },
-  ];
-
-  useEffect(() => {
-    // Check if user prefers dark mode or if the site is in dark mode
-    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches || 
-                      document.documentElement.classList.contains('dark');
-    setTheme(isDarkMode ? "dark" : "light");
-
-    // Listen for theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      setTheme(e.matches ? "dark" : "light");
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  const handleYearChange = (direction: 'prev' | 'next') => {
-    const currentIndex = availableYears.indexOf(selectedYear);
-    if (direction === 'prev' && currentIndex < availableYears.length - 1) {
-      setSelectedYear(availableYears[currentIndex + 1]);
-    } else if (direction === 'next' && currentIndex > 0) {
-      setSelectedYear(availableYears[currentIndex - 1]);
-    }
-  };
-
-  const renderCustomCalendar = () => {
-    return (
-      <>
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <h3 className="text-sm sm:text-base font-medium text-zinc-900 dark:text-white">
-              Contributions ({selectedYear})
-            </h3>
-            <Link
-              href={`https://github.com/${githubUsername}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-full transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-600"
-            >
-              <Github className="w-3 h-3" />
-              {githubUsername}
-            </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => handleYearChange('prev')}
-              disabled={availableYears.indexOf(selectedYear) >= availableYears.length - 1}
-              className="p-1 rounded-full bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={() => handleYearChange('next')}
-              disabled={availableYears.indexOf(selectedYear) <= 0}
-              className="p-1 rounded-full bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-100 dark:border-zinc-700 p-4 sm:p-6 mb-8">
-          <div className="overflow-x-auto">
-            <GitHubCalendar 
-              username={githubUsername} 
-              colorScheme={theme}
-              blockSize={12}
-              blockMargin={4}
-              fontSize={10}
-              year={selectedYear}
-              labels={{
-                totalCount: '{{count}} contributions in {{year}}'
-              }}
-              hideColorLegend={false}
-            />
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const renderStats = () => {
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat, index) => (
-          <div 
-            key={index}
-            className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-100 dark:border-zinc-700 p-4 flex flex-col items-center text-center"
-          >
-            <div className="p-3 bg-zinc-100 dark:bg-zinc-700 rounded-full mb-3">
-              {stat.icon}
-            </div>
-            <div className="font-semibold text-xl text-zinc-900 dark:text-white mb-1">
-              {stat.value}
-            </div>
-            <div className="text-xs text-zinc-600 dark:text-zinc-400">
-              {stat.label}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderTopRepos = () => {
-    const topRepos = [
-      { name: "basicfolio", description: "A minimal portfolio template for developers", stars: 42, language: "TypeScript" },
-      { name: "git-time-machine", description: "CLI tool for git history visualization", stars: 28, language: "JavaScript" },
-      { name: "scrapetron", description: "Web scraping framework with processing capabilities", stars: 19, language: "Python" },
-    ];
-
-    return (
-      <div className="mb-8">
-        <h3 className="text-sm sm:text-base font-medium text-zinc-900 dark:text-white mb-4">
-          Popular Repositories
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {topRepos.map((repo, index) => (
-            <div 
-              key={index}
-              className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-100 dark:border-zinc-700 p-4"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-medium text-zinc-900 dark:text-white">
-                  {repo.name}
-                </h4>
-                <div className="flex items-center text-xs text-zinc-600 dark:text-zinc-400">
-                  <Star className="w-3 h-3 mr-1" />
-                  {repo.stars}
-                </div>
-              </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3">
-                {repo.description}
-              </p>
-              <div className="flex items-center text-xs">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
-                {repo.language}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div>
-      {renderStats()}
-      {renderCustomCalendar()}
-      {renderTopRepos()}
-    </div>
-  );
-};
-
 const Projects = () => {
-  const [activeTab, setActiveTab] = useState<"application" | "web" | "game" | "other" | "commits">("application");
+  const [activeTab, setActiveTab] = useState<"application" | "web" | "game" | "other">("application");
   
   const projects: Project[] = [
     {
@@ -738,12 +568,11 @@ const Projects = () => {
     }
   ];
 
-  const categories: Record<typeof activeTab, Project[] | null> = {
+  const categories: Record<typeof activeTab, Project[]> = {
     application: projects.filter((p) => p.category === "application"),
     web: projects.filter((p) => p.category === "web"),
     game: projects.filter((p) => p.category === "game"),
     other: projects.filter((p) => p.category === "other"),
-    commits: null, // Special case handled separately
   };
 
   const displayCategories = [
@@ -751,7 +580,6 @@ const Projects = () => {
     { id: "web" as const, label: "Websites", icon: <Globe className="w-4 h-4" /> },
     { id: "game" as const, label: "Games", icon: <Gamepad className="w-4 h-4" /> },
     { id: "other" as const, label: "Other", icon: <Cpu className="w-4 h-4" /> },
-    { id: "commits" as const, label: "Commits", icon: <GitCommit className="w-4 h-4" /> },
   ];
 
   return (
@@ -777,38 +605,32 @@ const Projects = () => {
             >
               {category.icon}
               <span>{category.label}</span>
-              {category.id !== "commits" && (
-                <span className={`
-                  text-xs px-1.5 py-0.5 rounded-full text-center min-w-[20px]
-                  ${activeTab === category.id
-                    ? "bg-zinc-100 dark:bg-zinc-600 text-zinc-800 dark:text-zinc-200"
-                    : "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
-                  }
-                `}>
-                  {categories[category.id]?.length || 0}
-                </span>
-              )}
+              <span className={`
+                text-xs px-1.5 py-0.5 rounded-full text-center min-w-[20px]
+                ${activeTab === category.id
+                  ? "bg-zinc-100 dark:bg-zinc-600 text-zinc-800 dark:text-zinc-200"
+                  : "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
+                }
+              `}>
+                {categories[category.id]?.length || 0}
+              </span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Content Area */}
-      {activeTab === "commits" ? (
-        <GitHubStats />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-6 sm:mb-10 w-full">
-          {categories[activeTab]?.length ? (
-            categories[activeTab]!.map((project, index) => (
-              <ProjectCard key={index} project={project} />
-            ))
-          ) : (
-            <div className="col-span-full py-20 text-center">
-              <p className="text-zinc-500 dark:text-zinc-400">No projects found in this category.</p>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-6 sm:mb-10 w-full">
+        {categories[activeTab]?.length ? (
+          categories[activeTab].map((project, index) => (
+            <ProjectCard key={index} project={project} />
+          ))
+        ) : (
+          <div className="col-span-full py-20 text-center">
+            <p className="text-zinc-500 dark:text-zinc-400">No projects found in this category.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
