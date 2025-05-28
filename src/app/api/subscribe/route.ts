@@ -17,7 +17,7 @@ async function getSubscribers(): Promise<string[]> {
   if (process.env.VERCEL) {
     try {
       // Get subscribers from KV
-      const subscribers = await kv.smembers<string>(SUBSCRIBERS_KEY);
+      const subscribers = await kv.smembers(SUBSCRIBERS_KEY) as string[];
       return subscribers || [];
     } catch (error) {
       console.error('Vercel KV error:', error);
