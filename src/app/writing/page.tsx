@@ -15,6 +15,7 @@ import ChatGPTInterface from './chatgpt-interface';
 import DiscordArticle from './discord-article';
 import UCExperience from './uc-experience';
 import FirstSpring from './first-spring';
+import NewsletterLaunch from './newsletter-launch';
 
 // Track processed posts to avoid duplicate newsletter sends
 const processedPosts = new Set<string>();
@@ -106,6 +107,13 @@ const WritingPage = () => {
       date: '2021-04-28',
       displayDate: 'April 28, 2021',
       description: 'An insightful guide to getting started with graphic design, covering fundamentals, tools, and practical tips for beginners.'
+    },
+    {
+      slug: 'newsletter-launch',
+      title: 'Announcing: Subscribe to Get Updates on New Posts!',
+      date: '2025-05-28',
+      displayDate: 'May 28, 2025',
+      description: 'Introducing the new newsletter feature that automatically sends you notifications whenever new content is published.'
     }
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), []);
 
@@ -195,6 +203,8 @@ const WritingPage = () => {
         return <UCExperience onBack={() => setSelectedPost(null)} />;
       case 'first-spring':
         return <FirstSpring onBack={() => setSelectedPost(null)} />;
+      case 'newsletter-launch':
+        return <NewsletterLaunch onBack={() => setSelectedPost(null)} />;
       default:
         return null;
     }
