@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
 import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 import IxigoExperience from './ixigo-experience';
@@ -15,6 +15,9 @@ import ChatGPTInterface from './chatgpt-interface';
 import DiscordArticle from './discord-article';
 import UCExperience from './uc-experience';
 import FirstSpring from './first-spring';
+
+// Track processed posts to avoid duplicate newsletter sends
+const processedPosts = new Set<string>();
 
 const WritingPage = () => {
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
@@ -106,7 +109,67 @@ const WritingPage = () => {
     }
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), []);
 
+  // Function to send newsletter for a post
+  const sendNewsletterForPost = async (post: {
+    slug: string;
+    title: string;
+    description: string;
+    date: string;
+    displayDate: string;
+  }) => {
+    // Skip if already processed in this session
+    if (processedPosts.has(post.slug)) return;
+    
+    // Mark as processed to avoid duplicate sends
+    processedPosts.add(post.slug);
+    
+    try {
+      // Only attempt to send newsletter in production environment
+      if (process.env.NODE_ENV === 'production') {
+        const response = await fetch('/api/send-newsletter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_NEWSLETTER_API_KEY || ''}`,
+          },
+          body: JSON.stringify({
+            post: {
+              slug: post.slug,
+              title: post.title,
+              description: post.description,
+              url: `${window.location.origin}/writing?post=${post.slug}`,
+            },
+          }),
+        });
+        
+        const data = await response.json();
+        console.log('Newsletter status:', data);
+      }
+    } catch (error) {
+      console.error('Error sending newsletter:', error);
+    }
+  };
+
+  // Use effect to handle URL parameters
+  useEffect(() => {
+    // Check if there's a post parameter in the URL
+    const params = new URLSearchParams(window.location.search);
+    const postSlug = params.get('post');
+    
+    if (postSlug) {
+      setSelectedPost(postSlug);
+    }
+  }, []);
+
   const renderPost = () => {
+    // First send a newsletter notification about this post if it's new
+    if (selectedPost) {
+      const post = posts.find(p => p.slug === selectedPost);
+      if (post) {
+        sendNewsletterForPost(post);
+      }
+    }
+    
     switch(selectedPost) {
       case 'ixigo-experience':
         return <IxigoExperience onBack={() => setSelectedPost(null)} />;

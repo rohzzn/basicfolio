@@ -52,37 +52,43 @@ export default function SubscribersPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-md mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6 dark:text-white">Admin Login</h1>
-        <form onSubmit={handleLogin} className="bg-white dark:bg-zinc-800 rounded-lg shadow p-6">
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-white dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <button
-            type="submit"
-            className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium"
-          >
-            Login
-          </button>
-        </form>
+      <div className="max-w-7xl">
+        <h2 className="text-lg font-medium mb-6 dark:text-white">Newsletter Admin</h2>
+        <div className="max-w-md">
+          <form onSubmit={handleLogin} className="bg-white dark:bg-zinc-800 rounded-lg shadow p-6">
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium"
+            >
+              Login
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-7xl">
+      <h2 className="text-lg font-medium mb-6 dark:text-white">Newsletter Subscribers</h2>
+      
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold dark:text-white">Newsletter Subscribers</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Total subscribers: {subscribers.length}
+        </p>
         <div className="flex gap-2">
           <button
             onClick={handleRefresh}
@@ -101,7 +107,7 @@ export default function SubscribersPage() {
       </div>
       
       {isLoading ? (
-        <div className="flex justify-center items-center py-10">
+        <div className="flex items-center py-10">
           <div className="animate-pulse text-zinc-600 dark:text-zinc-400">Loading subscribers...</div>
         </div>
       ) : fetchError ? (
@@ -115,17 +121,14 @@ export default function SubscribersPage() {
           </button>
         </div>
       ) : subscribers.length > 0 ? (
-        <div>
-          <p className="mb-4 dark:text-white">Total subscribers: {subscribers.length}</p>
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow overflow-hidden">
-            <ul className="divide-y divide-gray-200 dark:divide-zinc-700">
-              {subscribers.map((email, index) => (
-                <li key={index} className="px-6 py-4 dark:text-white">
-                  {email}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="bg-white dark:bg-zinc-800 rounded-lg shadow overflow-hidden">
+          <ul className="divide-y divide-gray-200 dark:divide-zinc-700">
+            {subscribers.map((email, index) => (
+              <li key={index} className="px-6 py-4 dark:text-white">
+                {email}
+              </li>
+            ))}
+          </ul>
         </div>
       ) : (
         <div className="bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 rounded-lg p-4">
