@@ -164,6 +164,10 @@ async function sendEmailToSubscribers(
     url: string;
   }
 ): Promise<boolean> {
+  console.log('SendGrid config check:');
+  console.log('- API key exists:', !!process.env.SENDGRID_API_KEY);
+  console.log('- FROM_EMAIL exists:', !!process.env.FROM_EMAIL);
+  
   if (!process.env.SENDGRID_API_KEY || !process.env.FROM_EMAIL) {
     console.error('SendGrid API key or from email not configured');
     return false;
@@ -186,14 +190,30 @@ async function sendEmailToSubscribers(
       `,
     };
     
+    console.log('Email template created, preparing to send to subscribers');
+    
     // Send emails to each subscriber
     // Using individual emails for better privacy (not exposing other emails)
+    let successCount = 0;
+    let errorCount = 0;
+    
     for (const email of subscribers) {
-      const personalizedMessage = { ...message, to: email };
-      await sgMail.send(personalizedMessage);
+      try {
+        console.log(`Sending email to: ${email}`);
+        const personalizedMessage = { ...message, to: email };
+        const response = await sgMail.send(personalizedMessage);
+        console.log(`Email sent to ${email}, status code:`, response[0].statusCode);
+        successCount++;
+      } catch (error) {
+        console.error(`Failed to send email to ${email}:`, error);
+        errorCount++;
+      }
     }
     
-    return true;
+    console.log(`Email sending complete. Success: ${successCount}, Failed: ${errorCount}`);
+    
+    // Return true if at least one email was sent successfully
+    return successCount > 0;
   } catch (error) {
     console.error('Error sending newsletter emails:', error);
     return false;
@@ -202,36 +222,55 @@ async function sendEmailToSubscribers(
 
 export async function POST(request: Request) {
   try {
+    console.log('Newsletter API called, checking auth...');
+    
     // Verify the request is authenticated
     const authHeader = request.headers.get('authorization');
     if (!authHeader || authHeader !== `Bearer ${process.env.NEWSLETTER_API_KEY}`) {
+      console.log('Newsletter API authentication failed:', { 
+        authHeader: authHeader ? 'Present' : 'Missing',
+        envKeyExists: process.env.NEWSLETTER_API_KEY ? 'Yes' : 'No',
+        matches: authHeader === `Bearer ${process.env.NEWSLETTER_API_KEY}`
+      });
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
         { status: 401 }
       );
     }
     
+    console.log('Newsletter API authenticated, parsing post data...');
+    
     // Parse request body
     const { post } = await request.json();
     
     if (!post || !post.slug || !post.title || !post.description || !post.url) {
+      console.log('Invalid post data:', post);
       return NextResponse.json(
         { success: false, message: 'Invalid post data' },
         { status: 400 }
       );
     }
     
+    console.log('Newsletter post data valid, checking if already sent...');
+    
     // Check if this post has already been sent
     const sentPosts = await getSentPosts();
+    console.log('Previously sent posts:', sentPosts);
+    
     if (sentPosts.includes(post.slug)) {
+      console.log(`Newsletter already sent for post: ${post.slug}`);
       return NextResponse.json({
         success: false,
         message: 'Newsletter already sent for this post'
       });
     }
     
+    console.log('Post is new, fetching subscribers...');
+    
     // Get subscribers
     const subscribers = await getSubscribers();
+    console.log(`Found ${subscribers.length} subscribers`);
+    
     if (subscribers.length === 0) {
       return NextResponse.json({
         success: false,
@@ -239,10 +278,13 @@ export async function POST(request: Request) {
       });
     }
     
+    console.log('Sending emails to subscribers...');
+    
     // Send emails
     const sent = await sendEmailToSubscribers(subscribers, post);
     
     if (sent) {
+      console.log('Emails sent successfully, marking post as sent');
       // Mark post as sent
       await addToSentPosts(post.slug);
       
@@ -252,6 +294,7 @@ export async function POST(request: Request) {
         subscriberCount: subscribers.length
       });
     } else {
+      console.log('Failed to send emails');
       return NextResponse.json(
         { success: false, message: 'Failed to send newsletter' },
         { status: 500 }

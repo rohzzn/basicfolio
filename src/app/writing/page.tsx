@@ -126,32 +126,43 @@ const WritingPage = () => {
     displayDate: string;
   }) => {
     // Skip if already processed in this session
-    if (processedPosts.has(post.slug)) return;
+    if (processedPosts.has(post.slug)) {
+      console.log(`Post ${post.slug} already processed in this session, skipping newsletter`);
+      return;
+    }
+    
+    console.log(`Sending newsletter for post: ${post.slug}`);
     
     // Mark as processed to avoid duplicate sends
     processedPosts.add(post.slug);
     
     try {
-      // Only attempt to send newsletter in production environment
-      if (process.env.NODE_ENV === 'production') {
-        const response = await fetch('/api/send-newsletter', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_NEWSLETTER_API_KEY || ''}`,
+      // Attempt to send newsletter even in development for testing
+      const apiKey = process.env.NEXT_PUBLIC_NEWSLETTER_API_KEY || '';
+      console.log('Newsletter API key exists:', !!apiKey);
+      
+      console.log('Sending newsletter API request');
+      const response = await fetch('/api/send-newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          post: {
+            slug: post.slug,
+            title: post.title,
+            description: post.description,
+            url: `${window.location.origin}/writing?post=${post.slug}`,
           },
-          body: JSON.stringify({
-            post: {
-              slug: post.slug,
-              title: post.title,
-              description: post.description,
-              url: `${window.location.origin}/writing?post=${post.slug}`,
-            },
-          }),
-        });
-        
-        const data = await response.json();
-        console.log('Newsletter status:', data);
+        }),
+      });
+      
+      const data = await response.json();
+      console.log('Newsletter API response:', data);
+      
+      if (!response.ok) {
+        console.error('Newsletter API error:', data);
       }
     } catch (error) {
       console.error('Error sending newsletter:', error);
