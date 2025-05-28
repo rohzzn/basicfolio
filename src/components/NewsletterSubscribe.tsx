@@ -10,6 +10,10 @@ const NewsletterSubscribe: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Reset previous states
+    setStatus('idle');
+    setMessage('');
+    
     if (!email || !email.includes('@')) {
       setStatus('error');
       setMessage('Please enter a valid email address.');
@@ -18,34 +22,33 @@ const NewsletterSubscribe: React.FC = () => {
 
     setStatus('loading');
     
-    // This would typically connect to your newsletter service
-    // For now, we'll simulate a successful subscription
-    setTimeout(() => {
-      setStatus('success');
-      setMessage('Thanks for subscribing! Check your inbox to confirm.');
-      setEmail('');
-    }, 1500);
-    
-    // For actual implementation, you'd use something like:
-    // try {
-    //   const response = await fetch('/api/subscribe', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ email })
-    //   });
-    //   const data = await response.json();
-    //   if (response.ok) {
-    //     setStatus('success');
-    //     setMessage(data.message || 'Thanks for subscribing!');
-    //     setEmail('');
-    //   } else {
-    //     setStatus('error');
-    //     setMessage(data.message || 'Something went wrong. Please try again.');
-    //   }
-    // } catch (error) {
-    //   setStatus('error');
-    //   setMessage('Something went wrong. Please try again.');
-    // }
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setStatus('success');
+        setMessage(data.message || 'Thanks for subscribing!');
+        setEmail('');
+      } else {
+        setStatus('error');
+        setMessage(data.message || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      setStatus('error');
+      setMessage('Network error. Please check your connection and try again.');
+    }
+  };
+
+  const handleReset = () => {
+    setStatus('idle');
+    setMessage('');
   };
 
   return (
@@ -63,6 +66,8 @@ const NewsletterSubscribe: React.FC = () => {
           placeholder="Enter your email"
           className="flex-grow px-4 py-2 bg-white dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           disabled={status === 'loading' || status === 'success'}
+          aria-label="Email address"
+          required
         />
         <button
           type="submit"
@@ -74,15 +79,24 @@ const NewsletterSubscribe: React.FC = () => {
               ? 'bg-green-500 text-white cursor-not-allowed'
               : 'bg-blue-500 hover:bg-blue-600 text-white'
           }`}
+          aria-label={status === 'loading' ? 'Subscribing...' : status === 'success' ? 'Subscribed!' : 'Subscribe'}
         >
           {status === 'loading' ? 'Subscribing...' : status === 'success' ? 'Subscribed!' : 'Subscribe'}
         </button>
       </form>
       
       {message && (
-        <p className={`mt-2 text-sm ${status === 'error' ? 'text-red-500' : 'text-green-500'}`}>
-          {message}
-        </p>
+        <div className={`mt-3 flex justify-between items-center ${status === 'error' ? 'text-red-500' : 'text-green-500'}`}>
+          <p className="text-sm">{message}</p>
+          {status === 'success' && (
+            <button 
+              onClick={handleReset}
+              className="text-xs text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+            >
+              Subscribe another
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
