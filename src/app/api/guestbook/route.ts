@@ -43,7 +43,7 @@ export async function GET(request: Request) {
           ...(GITHUB_TOKEN && { Authorization: `token ${GITHUB_TOKEN}` }),
           'Content-Type': 'application/json',
         },
-        next: { revalidate: 60 }, // Revalidate cache every 60 seconds
+        next: { revalidate: 10 }, // Reduce revalidation to 10 seconds
       }
     );
 
@@ -147,6 +147,12 @@ export async function POST(request: Request) {
       comment: {
         id: commentData.id,
         createdAt: commentData.created_at,
+        displayName: name,
+        messageBody: message,
+        user: {
+          login: commentData.user.login,
+          avatarUrl: commentData.user.avatar_url
+        }
       }
     });
   } catch (error) {

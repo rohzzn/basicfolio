@@ -98,6 +98,18 @@ export default function GuestbookPage() {
     setIsSending(true);
     setError(null);
     
+    // Add optimistic update
+    const optimisticComment: Comment = {
+      id: Date.now(), // Temporary ID
+      displayName: name,
+      messageBody: message,
+      createdAt: new Date().toISOString(),
+      user: { login: 'you', avatarUrl: '' }
+    };
+    
+    // Add the optimistic comment to the beginning since comments are in reverse chronological order
+    setComments(prevComments => [optimisticComment, ...prevComments]);
+    
     try {
       const response = await fetch('/api/guestbook', {
         method: 'POST',
@@ -112,16 +124,37 @@ export default function GuestbookPage() {
         throw new Error(errorData.error || 'Failed to submit comment');
       }
       
+      const result = await response.json();
+      
       // Reset form fields
       setName('');
       setMessage('');
       
-      // Refresh comments
-      fetchComments(1);
+      // Update the optimistic comment with the real ID
+      setComments(prevComments => 
+        prevComments.map(comment => 
+          comment.id === optimisticComment.id 
+            ? { ...comment, id: result.comment.id, createdAt: result.comment.createdAt }
+            : comment
+        )
+      );
+      
+            // Increment total count if we're tracking it
+      if (typeof pagination.totalCount === 'number') {
+        setPagination(prev => ({
+          ...prev,
+          totalCount: Number(prev.totalCount) + 1 
+        }));
+      }
     } catch (error: unknown) {
       console.error('Error posting comment:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to submit your message. Please try again later.';
       setError(errorMessage);
+      
+      // Remove the optimistic comment on error
+      setComments(prevComments => 
+        prevComments.filter(comment => comment.id !== optimisticComment.id)
+      );
     } finally {
       setIsSending(false);
     }
