@@ -98,7 +98,7 @@ const Home: React.FC = () => {
           </div>
         </Link>
         
-        <a href="mailto:pothurrs@mail.uc.edu" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
+        <a href="mailto:hi@rohanpothuru.com" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
           <div className="flex justify-between items-center">
             <span className="font-medium dark:text-white">Contact</span>
             <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
