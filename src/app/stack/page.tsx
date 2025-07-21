@@ -45,7 +45,7 @@ const Stack = () => {
     {
       company: 'Abhibus (Ixigo)',
       role: 'Software Development Engineer',
-      duration: 'June 2023 - September 2023',
+      duration: 'June 2023 - June 2024',
     },
   ];
 
