@@ -39,7 +39,7 @@ const LinksPage = () => {
       title: "Gaming",
       links: [
         { title: "Steam", description: "Level 100", url: "https://steamcommunity.com/id/rohzzn" },
-        { title: "CS Settings", description: "CS config", url: "https://settings.gg/player/rohzzn" },
+        { title: "CS Settings", description: "CS config", url: "https://settings.gg/rohzzn" },
         { title: "FACEIT", description: "Peak Level 8", url: "https://www.faceit.com/en/players/Calatop" },
         { title: "Valorant Stats", description: "Competitive tracker", url: "https://tracker.gg/valorant/profile/riot/rohan%23main/performance?platform=pc&playlist=competitive&season=aef237a0-494d-3a14-a1c8-ec8de84e309c" },
         { title: "Epic Games", description: "Library", url: "https://store.epicgames.com/u/1bd07ece9fd14b2da2c64b2c31f6f96a" }
