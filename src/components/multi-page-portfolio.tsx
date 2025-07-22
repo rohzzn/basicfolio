@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import ModernCursor from './ModernCursor';
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
+import CommandPalette from './CommandPalette';
 
 interface NavLinkProps {
   href: string;
@@ -225,6 +226,8 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
+      <CommandPalette />
+      
       {isMenuOpen && (
         <div 
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
