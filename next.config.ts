@@ -3,25 +3,26 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      "cdn.myanimelist.net",
-      "cdn.dribbble.com",
-      "books.googleusercontent.com",
-      "lh3.googleusercontent.com",
-      "books.google.com", // Add this domain
-      "avatars.steamstatic.com",
-      'media.steampowered.com',
-      'steamuserimages-a.akamaihd.net',
-      'avatars.githubusercontent.com',
-      'dgtzuqphqg23d.cloudfront.net',
-      'i.scdn.co', // Add Spotify image domain
-      'cdn.discordapp.com', // Discord CDN for application assets
-      'media.discordapp.net', // Discord media CDN
-      'img.icons8.com', // For potential fallback icons
-      'i.ytimg.com', // YouTube image server
-      'yt3.ggpht.com', // YouTube profile images
-      'youtube.com', // YouTube thumbnails
-      'i.imgur.com', // Potential fallback images for YouTube
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cdn.myanimelist.net' },
+      { protocol: 'https', hostname: 'cdn.dribbble.com' },
+      { protocol: 'https', hostname: 'books.googleusercontent.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'http', hostname: 'books.google.com' }, // Allow HTTP for books.google.com
+      { protocol: 'https', hostname: 'books.google.com' }, // Also allow HTTPS for books.google.com
+      { protocol: 'https', hostname: 'avatars.steamstatic.com' },
+      { protocol: 'https', hostname: 'media.steampowered.com' },
+      { protocol: 'https', hostname: 'steamuserimages-a.akamaihd.net' },
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+      { protocol: 'https', hostname: 'dgtzuqphqg23d.cloudfront.net' },
+      { protocol: 'https', hostname: 'i.scdn.co' },
+      { protocol: 'https', hostname: 'cdn.discordapp.com' },
+      { protocol: 'https', hostname: 'media.discordapp.net' },
+      { protocol: 'https', hostname: 'img.icons8.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
+      { protocol: 'https', hostname: 'yt3.ggpht.com' },
+      { protocol: 'https', hostname: 'youtube.com' },
+      { protocol: 'https', hostname: 'i.imgur.com' },
     ],
   },
   // ... other configurations
