@@ -47,7 +47,7 @@ const defaultLinks = [
   { title: 'Writing', href: '/writing', icon: <FileText className="w-4 h-4" />, keywords: ['blog', 'articles', 'posts'] },
   { title: 'Links', href: '/links', icon: <Link2 className="w-4 h-4" />, keywords: ['social', 'contact', 'networks'] },
   { title: 'Timeline', href: '/timeline', icon: <Clock className="w-4 h-4" />, keywords: ['history', 'experience'] },
-  { title: 'Stack', href: '/stack', icon: <Laptop className="w-4 h-4" />, keywords: ['technology', 'tools'] },
+  { title: 'Resume', href: '/stack', icon: <Laptop className="w-4 h-4" />, keywords: ['technology', 'tools'] },
   { title: 'Focus', href: '/focus', icon: <Clock className="w-4 h-4" />, keywords: ['pomodoro', 'timer'], shortcut: 'F' },
   // Hobby pages
   { title: 'Activities', href: '/hobbies/strava', icon: <Activity className="w-4 h-4" />, keywords: ['strava', 'workout', 'running'] },
