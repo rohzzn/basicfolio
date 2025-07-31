@@ -276,7 +276,7 @@ const Stack = () => {
       {/* Action Buttons */}
       <div className="flex gap-4">
         <a
-          href="https://drive.google.com/file/d/1gkWlc-wY-rQW2nAB8XzAk6lhAbCxb2Yc/view?usp=sharing"
+          href="https://drive.google.com/file/d/136cRqYTuEn55Yjge6dgyliQMT9XNZFF7/view"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-6 py-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
