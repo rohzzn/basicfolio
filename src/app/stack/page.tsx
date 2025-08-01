@@ -47,6 +47,11 @@ const Stack = () => {
       role: 'Software Development Engineer',
       duration: 'June 2023 - June 2024',
     },
+    {
+      company: 'Fiverr (Freelance)',
+      role: 'Frontend Developer & Designer',
+      duration: 'November 2021 - June 2023',
+    },
   ];
 
   const education = [
