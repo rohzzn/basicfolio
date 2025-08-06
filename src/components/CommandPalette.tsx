@@ -124,10 +124,16 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
   const [inputValue, setInputValue] = useState('');
   const [pages, setPages] = useState<string[]>([]);
   const [recentCommands, setRecentCommands] = useState<RecentCommand[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
   
   const allItems = useMemo(() => {
     return [...links, ...quickLinks];
   }, [links]);
+
+  // Track mounted state to prevent hydration issues
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Load recent commands from localStorage on mount
   useEffect(() => {
@@ -236,9 +242,9 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
   }, [open]);
 
   const isMac = useMemo(() => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === 'undefined' || !isMounted) return false;
     return navigator.platform.toLowerCase().includes('mac');
-  }, []);
+  }, [isMounted]);
 
   const handleSelect = (value: string) => {
     const item = allItems.find((item) => 
@@ -317,7 +323,12 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
         className="fixed right-4 top-4 hidden h-6 items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 font-mono text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 md:flex"
         onClick={() => setOpen(true)}
       >
-        {isMac ? (
+        {!isMounted ? (
+          // Show a neutral placeholder during SSR to prevent hydration mismatch
+          <>
+            <span className="text-xs">⌘</span>K
+          </>
+        ) : isMac ? (
           <>
             <span className="text-xs">⌘</span>K
           </>

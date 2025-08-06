@@ -20,16 +20,25 @@ const Home: React.FC = () => {
   };
   
   return (
-    <div className="max-w-4xl relative">
-      <div className="mb-10">
-        <h2 
-          className="text-lg font-medium dark:text-white inline-block"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={() => setShowImage(false)}
-        >
-          Hey, I&apos;m Rohan Pothuru
-        </h2>
-        
+    <div className="max-w-7xl relative">
+      {/* Hero Section */}
+      <div className="mb-16">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-12">
+          <div className="flex-1">
+            <h1 
+              className="text-lg font-medium mb-6 dark:text-white inline-block"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={() => setShowImage(false)}
+            >
+              Hey, I&apos;m Rohan Pothuru
+            </h1>
+            
+            <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              I&apos;m a software engineer and computer science graduate student who loves building things that matter. Currently pursuing my M.Eng at the University of Cincinnati while working part-time as a developer at Cincinnati Children&apos;s Hospital, where I contribute to healthcare technology solutions that impact real lives.
+            </p>
+          </div>
+        </div>
+
         {/* Secret image that appears on hover */}
         <div 
           className={`fixed right-0 top-1/4 transform transition-all duration-300 ease-in-out ${
@@ -40,7 +49,6 @@ const Home: React.FC = () => {
           style={{ zIndex: 50, transformOrigin: 'bottom right' }}
         >
           <div className="relative w-64 h-80 overflow-hidden rounded-lg shadow-xl">
-            {/* Replace with your actual image path - using a placeholder for now */}
             <Image 
               src="/images/profile/profile-photo.JPG" 
               alt="Rohan's photo" 
@@ -56,54 +64,68 @@ const Home: React.FC = () => {
             )}
           </div>
         </div>
-        
-        <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-          This is my digital garden — a cozy corner of the internet where I share my thoughts, projects, and journey.
-        </p>
       </div>
-      
-      {/* Summary Points */}
-      <div className="mb-12">
-        <h3 className="text-base font-medium mb-6 dark:text-white">Summary</h3>
-        
-        <ul className="space-y-4 list-disc pl-5 text-zinc-600 dark:text-zinc-400">
-          <li>Grad CS student at UC, hanging on to that 4.0 GPA</li>
-          <li>Part-time dev at Cincinnati Children&apos;s — typing, debugging, surviving</li>
-          <li>Previously at ixigo, mostly vibing and learning the ropes</li>
-          <li>Always tinkering with side projects — for fun, learning, and maybe clout</li>
-          <li>Turning 24 this year — holy moly, where did the time go?</li>
-        </ul>
-      </div>
-      
-      {/* Simple card links */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Link href="/links" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
-          <div className="flex justify-between items-center">
-            <span className="font-medium dark:text-white">On the Internet</span>
-            <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
-          </div>
-        </Link>
-        
-        <Link href="/guestbook" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
-          <div className="flex justify-between items-center">
-            <span className="font-medium dark:text-white">Guest Book</span>
-            <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
-          </div>
-        </Link>
-        
-        <Link href="/stack" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
-          <div className="flex justify-between items-center">
-            <span className="font-medium dark:text-white">Resume</span>
-            <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
-          </div>
-        </Link>
-        
-        <a href="mailto:hi@rohanpothuru.com" className="block p-6 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
-          <div className="flex justify-between items-center">
-            <span className="font-medium dark:text-white">Contact</span>
-            <FaArrowRight className="text-zinc-500 dark:text-zinc-400" />
-          </div>
-        </a>
+
+      {/* Navigation Links */}
+      <div>
+        <h2 className="text-lg font-medium mb-6 dark:text-white">Explore</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link href="/links" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 transform hover:-translate-y-1">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+                  On the Internet
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                  Find me across platforms
+                </p>
+              </div>
+              <FaArrowRight className="text-zinc-400 dark:text-zinc-500 transform transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </div>
+          </Link>
+          
+          <Link href="/guestbook" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 transform hover:-translate-y-1">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+                  Guest Book
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                  Leave a message
+                </p>
+              </div>
+              <FaArrowRight className="text-zinc-400 dark:text-zinc-500 transform transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </div>
+          </Link>
+          
+          <Link href="/stack" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 transform hover:-translate-y-1">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+                  Resume
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                  View my experience
+                </p>
+              </div>
+              <FaArrowRight className="text-zinc-400 dark:text-zinc-500 transform transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </div>
+          </Link>
+          
+          <a href="mailto:hi@rohanpothuru.com" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 transform hover:-translate-y-1">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+                  Contact
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                  Let&apos;s connect
+                </p>
+              </div>
+              <FaArrowRight className="text-zinc-400 dark:text-zinc-500 transform transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </div>
+          </a>
+        </div>
       </div>
     </div>
   );
