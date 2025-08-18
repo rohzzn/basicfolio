@@ -124,6 +124,34 @@ const Projects = () => {
   
   const projects: Project[] = [
     {
+      title: "Contests",
+      description: "Discover programming contests and hackathons from around the world. Track your favorites, export to calendar, and stay ahead of the competition.",
+      tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+      category: 'web',
+      links: [
+        { label: "GitHub", url: "https://github.com/rohzzn/contests" },
+        { label: "Live", url: "http://contests.dev/" },
+      ],
+      metrics: {
+        users: 200,
+      },
+      image: "/projects/contests.png"
+    },
+    {
+      title: "ShutTab",
+      description: "A powerful API testing tool with real-time response validation and environment management.",
+      tech: ["JavaScript", "Chrome Extensions", "CSS"],
+      category: 'application',
+      links: [
+        { label: "GitHub", url: "https://github.com/rohzzn/ShutTab" },
+        { label: "Marketplace", url: "https://chromewebstore.google.com/detail/shuttab-%E2%80%93-free-site-block/lmkjcljgmcbechfhpkpamniadalgjojc" },
+      ],
+      metrics: {
+        users: 20,
+      },
+      image: "/projects/shuttab.png"
+    },
+    {
       title: "API Clinic",
       description: "A powerful API testing tool with real-time response validation and environment management.",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
@@ -133,7 +161,7 @@ const Projects = () => {
         { label: "Live", url: "https://apiclinic.vercel.app/" },
       ],
       metrics: {
-        preAI: true
+        users: 20,
       },
       image: "/projects/api.png"
     },
