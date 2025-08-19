@@ -143,7 +143,7 @@ const CustomCursor = () => {
       return;
     }
 
-    clickSoundRef.current = new Audio("/click.wav");
+    clickSoundRef.current = new Audio("/public_sounds_trigger.mp3");
     clickSoundRef.current.volume = 0.2;
 
     const fetchLocation = async () => {

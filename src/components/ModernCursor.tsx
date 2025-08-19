@@ -88,7 +88,7 @@ const ModernCursor: React.FC<CursorProps> = ({
     if (!hasMouse) return;
 
     // Load click sound
-    clickSoundRef.current = new Audio("/click.wav");
+    clickSoundRef.current = new Audio("/public_sounds_trigger.mp3");
     if (clickSoundRef.current) {
       clickSoundRef.current.volume = 0.2;
     }
