@@ -171,9 +171,16 @@ const ModernCursor: React.FC<CursorProps> = ({
       setIsPointer(!!isOverClickable);
     };
 
-    const handleMouseDown = () => {
+    const handleMouseDown = (e: MouseEvent) => {
       setIsClicking(true);
-      if (clickSoundRef.current) {
+      
+      // Only play sound when clicking on clickable elements
+      const target = e.target as HTMLElement;
+      const isClickableElement = target.closest(
+        "a, button, [role='button'], input, textarea, select, [tabindex]"
+      );
+      
+      if (isClickableElement && clickSoundRef.current) {
         clickSoundRef.current.currentTime = 0;
         clickSoundRef.current.play().catch(err => {
           // Suppress "user didn't interact" errors
