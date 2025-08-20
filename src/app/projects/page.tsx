@@ -139,7 +139,7 @@ const Projects = () => {
     },
     {
       title: "ShutTab",
-      description: "A powerful API testing tool with real-time response validation and environment management.",
+      description: "A Chrome extension that allows you to block websites for a specified time.",
       tech: ["JavaScript", "Chrome Extensions", "CSS"],
       category: 'application',
       links: [

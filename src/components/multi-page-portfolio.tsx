@@ -4,9 +4,9 @@ import { Menu, X, Gamepad, Music, Loader2, Volume2, VolumeX, Focus, Clock } from
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import ModernCursor from './ModernCursor';
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import CommandPalette from './CommandPalette';
+import CursorSound from './CursorSound';
 
 interface NavLinkProps {
   href: string;
@@ -227,6 +227,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
       <CommandPalette />
+      <CursorSound />
       
       {isMenuOpen && (
         <div 
@@ -391,7 +392,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         </button>
       </div>
       
-      <ModernCursor trailEffect={false} size={10} ringSize={40} />
+
     </div>
   );
 };

@@ -24,9 +24,4 @@ body {
   overflow-x: hidden;
 }
 
-/* Force all elements to use the same cursor */
-*, *::before, *::after, 
-a, button, [role="button"],
-a:hover, button:hover, [role="button"]:hover {
-  cursor: none !important;
-}
+/* Default cursor styles restored */
