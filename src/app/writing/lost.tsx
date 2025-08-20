@@ -31,17 +31,8 @@ const Lost: React.FC<ArticleProps> = ({ onBack }) => {
     
 
 
-     
-
-        
-     
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-        Lately, I’ve never felt more lost. Whatever it is I search for in people, it always seems to slip away. I lose sight of myself, stumbling into one mess after another, as if I’m drawn to making life harder than it has to be. I feel like I’ve hit rock bottom emotionally, physically, and mentally.
-        </p>
-      
-
         <p className="text-zinc-600 dark:text-zinc-400">
-         I wish to be better, and I should do better.
+         I should do better.
         </p>
       </div>
     </article>
