@@ -37,8 +37,8 @@ const Stack = () => {
 
   const experience = [
     {
-      company: 'Cincinnati Childrens Hospital Medical Center',
-      role: 'Software Development Engineer',
+      company: 'CCHMC',
+      role: 'Graduate Research Assistant',
       duration: 'January 2025 - Present',
     },
 
