@@ -178,8 +178,8 @@ const Games = async () => {
     ownedGamesError = true;
   }
 
-  // Sort games by recent playtime first, then total playtime
-  const sortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
+  // Sort games by recent playtime for recent games section
+  const recentlySortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
     if (a.playtime_2weeks && b.playtime_2weeks) {
       return b.playtime_2weeks - a.playtime_2weeks;
     }
@@ -188,11 +188,16 @@ const Games = async () => {
     return b.playtime_forever - a.playtime_forever;
   });
 
-  // Get recently played and all games
-  const recentGames = sortedGames.filter((game: SteamGame) => 
+  // Sort games by total playtime for top games section
+  const totalPlaytimeSortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
+    return b.playtime_forever - a.playtime_forever;
+  });
+
+  // Get recently played and top games
+  const recentGames = recentlySortedGames.filter((game: SteamGame) => 
     game.playtime_2weeks && game.playtime_2weeks > 0
   ).slice(0, 8);
-  const allGames = sortedGames.slice(0, 12);
+  const allGames = totalPlaytimeSortedGames.slice(0, 12);
 
   return (
     <div className="max-w-7xl">
