@@ -3,6 +3,7 @@
 import React from 'react';
 import Profile from './Profile';
 import RecentlyPlayedGames from './RecentlyPlayedGames';
+import SteamFriends from './SteamFriends';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cache } from 'react';
@@ -15,7 +16,30 @@ interface SteamProfile {
   avatarmedium: string;
   avatarfull: string;
   profileurl: string;
+  communityvisibilitystate?: number;
+  profilestate?: number;
+  lastlogoff?: number;
+  commentpermission?: number;
+  personastate?: number;
+  personastateflags?: number;
+  loccountrycode?: string;
+  locstatecode?: string;
+  loccityid?: number;
 }
+
+interface SteamFriend {
+  steamid: string;
+  relationship: string;
+  friend_since: number;
+  personaname?: string;
+  avatar?: string;
+  avatarmedium?: string;
+  avatarfull?: string;
+  personastate?: number;
+  gameextrainfo?: string;
+}
+
+
 
 interface SteamGame {
   appid: number;
@@ -90,6 +114,7 @@ const emptyProfile: SteamProfile = {
 };
 
 const emptyGames: SteamGame[] = [];
+const emptyFriends: SteamFriend[] = [];
 
 // Use React's cache function to prevent duplicate fetches
 const fetchWithCache = cache(async (url: string) => {
@@ -149,8 +174,11 @@ const Games = async () => {
   // Initialize with empty data
   let profile: SteamProfile = emptyProfile;
   let ownedGames: SteamGame[] = emptyGames;
+  let friends: SteamFriend[] = emptyFriends;
+  
   let profileError = false;
   let ownedGamesError = false;
+  let friendsError = false;
 
   // Fetch Player Summaries
   try {
@@ -176,6 +204,80 @@ const Games = async () => {
   } catch (error) {
     console.error('Error fetching owned games:', error);
     ownedGamesError = true;
+  }
+  
+
+  
+  // Fetch friends list
+  try {
+    console.log('Fetching friends list...');
+    // First get the friend list
+    const friendsData = await fetchWithCache(
+      `https://api.steampowered.com/ISteamUser/GetFriendList/v1/?key=${apiKey}&steamid=${STEAM_ID}&relationship=friend`
+    );
+    
+    if (friendsData.friendslist && friendsData.friendslist.friends) {
+      const friendsList = friendsData.friendslist.friends;
+      console.log('Total friends in list:', friendsList.length);
+      
+      // The Steam API has a limit of 100 profiles per call, so we need to batch them
+      const allFriendProfiles: SteamProfile[] = [];
+      const BATCH_SIZE = 100;
+      
+      // Split the friend IDs into batches of 100
+      for (let i = 0; i < friendsList.length; i += BATCH_SIZE) {
+        const batchIds = friendsList
+          .slice(i, i + BATCH_SIZE)
+          .map((friend: SteamFriend) => friend.steamid)
+          .join(',');
+        
+        console.log(`Fetching batch ${i / BATCH_SIZE + 1} of friends (${i} to ${Math.min(i + BATCH_SIZE, friendsList.length)})`);
+        
+        // Fetch profiles for this batch of friends
+        const batchProfiles = await fetchWithCache(
+          `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${batchIds}`
+        );
+        
+        if (batchProfiles.response && batchProfiles.response.players) {
+          allFriendProfiles.push(...batchProfiles.response.players);
+        }
+      }
+      
+      console.log('Total profiles fetched:', allFriendProfiles.length);
+      
+      // Combine friend data with profile data
+      friends = friendsList.map((friend: SteamFriend) => {
+        const profile = allFriendProfiles.find(
+          (p: SteamProfile) => p.steamid === friend.steamid
+        );
+        return { ...friend, ...profile };
+      });
+      
+      // Sort by playing status first, then online status, then by name
+      friends.sort((a, b) => {
+        // Playing friends first
+        if (a.gameextrainfo && !b.gameextrainfo) return -1;
+        if (!a.gameextrainfo && b.gameextrainfo) return 1;
+        
+        // Then online friends
+        if ((a.personastate || 0) > 0 && (b.personastate || 0) === 0) return -1;
+        if ((a.personastate || 0) === 0 && (b.personastate || 0) > 0) return 1;
+        
+        // Then by name
+        return (a.personaname || '').localeCompare(b.personaname || '');
+      });
+      
+      // Filter out offline friends
+      friends = friends.filter(friend => friend.personastate && friend.personastate > 0);
+      
+      const playingFriends = friends.filter(f => f.gameextrainfo);
+      console.log('Final filtered friends count:', friends.length);
+      console.log('Friends playing games:', playingFriends.length);
+      console.log('Games being played:', playingFriends.map(f => f.gameextrainfo).join(', '));
+    }
+  } catch (error) {
+    console.error('Error fetching friends:', error);
+    friendsError = true;
   }
 
   // Sort games by recent playtime for recent games section
@@ -236,61 +338,87 @@ const Games = async () => {
         </div>
       </section>
 
-      {/* Recent Games */}
+
+
+      {/* Gaming Content Layout - 3 columns on large screens */}
       <section className="mb-8">
         {ownedGamesError && (
           <div className="bg-yellow-50 dark:bg-zinc-800 p-4 rounded-lg mb-4">
             <p className="text-yellow-800 dark:text-yellow-400">Could not load game data.</p>
           </div>
         )}
-        {recentGames.length > 0 && (
-          <RecentlyPlayedGames games={recentGames} />
-        )}
-      </section>
-
-      {/* All Games */}
-      <section className="mb-8">
-        <h3 className="text-base font-medium mb-6 dark:text-white">Top Games</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {allGames.map((game) => (
-            <div 
-              key={game.appid} 
-              className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex flex-col"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded flex items-center justify-center overflow-hidden">
-                  {game.img_icon_url ? (
-                    <Image
-                      src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
-                      alt={`${game.name} Icon`}
-                      width={32}
-                      height={32}
-                      className="rounded"
-                    />
-                  ) : (
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">No IMG</span>
-                  )}
-                </div>
-                <h4 className="text-sm font-medium dark:text-white line-clamp-1">
-                  {game.name}
-                </h4>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main Content - Takes 3/4 of the space on large screens */}
+          <div className="lg:col-span-3 space-y-8">
+            {/* Recent Games */}
+            {recentGames.length > 0 && (
+              <div>
+                <RecentlyPlayedGames games={recentGames} />
               </div>
+            )}
+            
+            {/* Top Games */}
+            <div>
+              <h3 className="text-base font-medium mb-6 dark:text-white">Top Games</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {allGames.map((game) => (
+                  <div 
+                    key={game.appid} 
+                    className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex flex-col"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded flex items-center justify-center overflow-hidden">
+                        {game.img_icon_url ? (
+                          <Image
+                            src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
+                            alt={`${game.name} Icon`}
+                            width={32}
+                            height={32}
+                            className="rounded"
+                          />
+                        ) : (
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">No IMG</span>
+                        )}
+                      </div>
+                      <h4 className="text-sm font-medium dark:text-white line-clamp-1">
+                        {game.name}
+                      </h4>
+                    </div>
 
-              <div className="mt-auto space-y-1">
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                  Playtime: {Math.floor(game.playtime_forever / 60)}h
-                </p>
-                <Link 
-                  href={`https://store.steampowered.com/app/${game.appid}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 dark:text-blue-400 hover:underline text-xs flex items-center"
-                >
-                  View in Steam Store
-                </Link>
+                    <div className="mt-auto space-y-1">
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                        Playtime: {Math.floor(game.playtime_forever / 60)}h
+                      </p>
+                      <Link 
+                        href={`https://store.steampowered.com/app/${game.appid}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline text-xs flex items-center"
+                      >
+                        View in Steam Store
+                      </Link>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          </div>
+          
+          {/* Friends Column - Takes 1/4 of the space on large screens, full width on mobile */}
+          {!friendsError && friends.length > 0 && (
+            <div className="lg:col-span-1 flex flex-col">
+              <div className="mb-2 flex justify-between items-center">
+                <h3 className="text-base font-medium dark:text-white">Friends</h3>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 lg:hidden">Scroll to see more →</span>
+              </div>
+              <div className="flex-grow relative min-h-[400px] lg:min-h-0">
+                <div className="absolute inset-0">
+                  <SteamFriends friends={friends} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

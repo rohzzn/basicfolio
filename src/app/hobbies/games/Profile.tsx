@@ -19,7 +19,7 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = ({ profile }) => {
   return (
-    <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg flex items-center justify-between">
+    <div className="bg-zinc-100 dark:bg-zinc-800 p-4 sm:p-6 rounded-lg flex flex-col sm:flex-row items-center gap-4 sm:justify-between">
       <div className="flex items-center space-x-4">
         <Image
           src={profile.avatarmedium}
@@ -41,9 +41,9 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
         </div>
       </div>
       
-      <div className="flex items-center space-x-6">
+      <div className="flex items-center justify-center gap-3 sm:gap-6 mt-3 sm:mt-0">
         <div className="flex flex-col items-center">
-          <div className="relative w-12 h-12 mb-1">
+          <div className="relative w-10 h-10 sm:w-12 sm:h-12 mb-1">
             <Image
               src="/images/games/csgo-rank.png"
               alt="CS:GO Rank"
@@ -51,12 +51,12 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
               className="object-contain"
             />
           </div>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">Peak Rank</p>
-          <p className="text-sm font-medium dark:text-white">DMG</p>
+          <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400">CS:GO Rank</p>
+          <p className="text-xs sm:text-sm font-medium dark:text-white">DMG</p>
         </div>
         
         <div className="flex flex-col items-center">
-          <div className="relative w-12 h-12 mb-1">
+          <div className="relative w-10 h-10 sm:w-12 sm:h-12 mb-1">
             <Image
               src="/images/games/valorant-rank.png"
               alt="Valorant Rank"
@@ -64,12 +64,12 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
               className="object-contain"
             />
           </div>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">Peak Rank</p>
-          <p className="text-sm font-medium dark:text-white">Immortal 1</p>
+          <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400">Valorant Rank</p>
+          <p className="text-xs sm:text-sm font-medium dark:text-white">Immortal 1</p>
         </div>
         
         <div className="flex flex-col items-center">
-          <div className="relative w-12 h-12 mb-1">
+          <div className="relative w-10 h-10 sm:w-12 sm:h-12 mb-1">
             <Image
               src="/images/games/ow-rank.png"
               alt="Overwatch Rank"
@@ -77,8 +77,8 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
               className="object-contain"
             />
           </div>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">Peak Rank</p>
-          <p className="text-sm font-medium dark:text-white">Diamond</p>
+          <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400">Overwatch Rank</p>
+          <p className="text-xs sm:text-sm font-medium dark:text-white">Diamond</p>
         </div>
       </div>
     </div>
