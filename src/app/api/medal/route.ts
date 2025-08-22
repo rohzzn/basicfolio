@@ -91,19 +91,22 @@ export async function GET() {
     const clips: MedalClip[] = data.contentObjects.map((clip: Record<string, unknown>) => {
       // Extract the embed URL from the iframe code
       let embedUrl = '';
-      if (clip.embedIframeCode) {
+      if (clip.embedIframeCode && typeof clip.embedIframeCode === 'string') {
         const match = clip.embedIframeCode.match(/src='([^']+)'/);
         if (match && match[1]) {
           embedUrl = match[1];
         }
-      } else if (clip.embedIframeUrl) {
+      } else if (clip.embedIframeUrl && typeof clip.embedIframeUrl === 'string') {
         embedUrl = clip.embedIframeUrl;
       }
       
       // Extract the numeric content ID
-      const contentIdMatch = clip.contentId?.match(/^cid([0-9]+)$/);
+      let contentIdMatch = null;
+      if (typeof clip.contentId === 'string') {
+        contentIdMatch = clip.contentId.match(/^cid([0-9]+)$/);
+      }
       const numericId = contentIdMatch ? contentIdMatch[1] : 
-                        (clip.contentId ? clip.contentId.replace('cid', '') : '');
+                        (typeof clip.contentId === 'string' ? clip.contentId.replace('cid', '') : '');
       
       // Log the clip data for debugging
       console.log('Clip data:', {
@@ -115,9 +118,9 @@ export async function GET() {
       
       // Determine the proper game name
       let gameName = 'Unknown Game';
-      if (categoryNames[clip.categoryId]) {
+      if (typeof clip.categoryId === 'number' && categoryNames[clip.categoryId]) {
         gameName = categoryNames[clip.categoryId];
-      } else if (clip.categoryName) {
+      } else if (typeof clip.categoryName === 'string') {
         gameName = clip.categoryName;
       }
       
