@@ -20,6 +20,14 @@ const categoryNames: {[key: number]: string} = {
   76: 'Apex Legends',
   173: 'Valorant',
   730: 'CS2',
+  578: 'Call of Duty',
+  38: 'League of Legends',
+  32: 'Minecraft',
+  107: 'Overwatch',
+  516: 'Fall Guys',
+  432: 'Among Us',
+  504: 'Genshin Impact',
+  17: 'PUBG',
   // Add more as needed
 };
 
@@ -33,17 +41,32 @@ export async function GET() {
       throw new Error('Medal API key not configured');
     }
     
-    // Use the latest API endpoint with your user ID
-    const response = await fetch(
-      `https://developers.medal.tv/v1/latest?userId=${userId}&limit=12`,
-      {
-        headers: {
-          'Authorization': apiKey,
-          'Content-Type': 'application/json'
-        },
-        cache: 'no-store'
-      }
-    );
+    // Try both the latest API endpoint and the search API to get the best results
+    const [latestResponse, searchResponse] = await Promise.all([
+      fetch(
+        `https://developers.medal.tv/v1/latest?userId=${userId}&limit=12`,
+        {
+          headers: {
+            'Authorization': apiKey,
+            'Content-Type': 'application/json'
+          },
+          cache: 'no-store'
+        }
+      ),
+      fetch(
+        `https://developers.medal.tv/v1/search?text=by:rohzzn&limit=12`,
+        {
+          headers: {
+            'Authorization': apiKey,
+            'Content-Type': 'application/json'
+          },
+          cache: 'no-store'
+        }
+      )
+    ]);
+    
+    // Use the response that succeeded
+    const response = latestResponse.ok ? latestResponse : searchResponse;
 
     if (!response.ok) {
       throw new Error(`Medal API responded with status: ${response.status}`);
@@ -51,12 +74,21 @@ export async function GET() {
 
     const data = await response.json();
     
+    // Log the full API response for debugging
+    console.log('Medal API response structure:', Object.keys(data));
+    
     if (!data.contentObjects || !Array.isArray(data.contentObjects)) {
+      console.error('Invalid response format from Medal API:', data);
       throw new Error('Invalid response format from Medal API');
     }
     
+    // Log the first clip to understand its structure
+    if (data.contentObjects.length > 0) {
+      console.log('First clip structure:', Object.keys(data.contentObjects[0]));
+    }
+    
     // Map the response data to our interface
-    const clips: MedalClip[] = data.contentObjects.map((clip: any) => {
+    const clips: MedalClip[] = data.contentObjects.map((clip: Record<string, unknown>) => {
       // Extract the embed URL from the iframe code
       let embedUrl = '';
       if (clip.embedIframeCode) {
@@ -73,6 +105,22 @@ export async function GET() {
       const numericId = contentIdMatch ? contentIdMatch[1] : 
                         (clip.contentId ? clip.contentId.replace('cid', '') : '');
       
+      // Log the clip data for debugging
+      console.log('Clip data:', {
+        id: clip.contentId,
+        title: clip.contentTitle,
+        categoryId: clip.categoryId,
+        categoryName: clip.categoryName
+      });
+      
+      // Determine the proper game name
+      let gameName = 'Unknown Game';
+      if (categoryNames[clip.categoryId]) {
+        gameName = categoryNames[clip.categoryId];
+      } else if (clip.categoryName) {
+        gameName = clip.categoryName;
+      }
+      
       return {
         contentId: clip.contentId || '',
         contentTitle: clip.contentTitle || 'Untitled Clip',
@@ -82,7 +130,7 @@ export async function GET() {
         embedIframeUrl: embedUrl,
         createdTimestamp: clip.createdTimestamp || Date.now(),
         categoryId: clip.categoryId || 0,
-        categoryName: categoryNames[clip.categoryId] || 'Game',
+        categoryName: gameName,
         directClipUrl: clip.directClipUrl || '',
         videoLengthSeconds: clip.videoLengthSeconds || 0
       };

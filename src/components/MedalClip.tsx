@@ -4,23 +4,19 @@ import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 interface MedalClipProps {
-  contentId: string;
   contentTitle: string;
   contentThumbnail: string;
   embedIframeUrl: string;
   categoryName: string;
-  contentViews: number;
   createdTimestamp: number;
   directClipUrl?: string;
 }
 
 const MedalClip: React.FC<MedalClipProps> = ({
-  contentId,
   contentTitle,
   contentThumbnail,
   embedIframeUrl,
   categoryName,
-  contentViews,
   createdTimestamp,
   directClipUrl
 }) => {
@@ -57,9 +53,7 @@ const MedalClip: React.FC<MedalClipProps> = ({
         <h3 className="text-sm font-medium text-zinc-800 dark:text-white truncate" title={contentTitle}>
           {contentTitle}
         </h3>
-        <div className="flex justify-between items-center mt-2 text-xs text-zinc-600 dark:text-zinc-400">
-          <span>{categoryName}</span>
-        </div>
+
         <div className="flex justify-between items-center mt-1">
           <span className="text-xs text-zinc-500 dark:text-zinc-500">
             {formattedDate}

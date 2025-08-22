@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Medal, Video, ExternalLink } from 'lucide-react';
+import { Video, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -19,7 +19,6 @@ interface MedalClip {
 }
 
 export default function ClipsPage() {
-  const username = 'rohzzn'; // Your Medal.tv username
   const [clips, setClips] = useState<MedalClip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,42 +79,50 @@ export default function ClipsPage() {
       {!loading && clips.length > 0 && (
         <div>
           
-          {/* Featured clip (first clip) */}
-          {activeClip ? (
-            <div className="mb-8">
-              <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
-                <iframe 
-                  src={activeClip}
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 'none' }}
-                  title="Medal.tv Clip"
-                  allowFullScreen
-                  allow="autoplay"
-                />
-              </div>
+          {/* Featured clip */}
+          <div className="mb-8">
+            <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
+              <iframe 
+                src={activeClip || (clips[0] && clips[0].embedIframeUrl)}
+                width="100%" 
+                height="100%" 
+                style={{ border: 'none' }}
+                title="Medal.tv Clip"
+                allowFullScreen
+                allow="autoplay"
+              />
             </div>
-          ) : clips[0] && (
-            <div className="mb-8">
-              <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
-                <iframe 
-                  src={clips[0].embedIframeUrl}
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 'none' }}
-                  title="Medal.tv Clip"
-                  allowFullScreen
-                  allow="autoplay"
-                />
-              </div>
-              <div className="mt-4">
-                <h4 className="text-base font-medium dark:text-white">{clips[0].contentTitle}</h4>
-                <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                  <span>{clips[0].categoryName}</span>
+            <div className="mt-4 flex justify-between items-start">
+              <div>
+                <h4 className="text-base font-medium dark:text-white">
+                  {activeClip 
+                    ? clips.find(clip => clip.embedIframeUrl === activeClip)?.contentTitle 
+                    : clips[0]?.contentTitle}
+                </h4>
+                <div className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                  {activeClip 
+                    ? new Date(clips.find(clip => clip.embedIframeUrl === activeClip)?.createdTimestamp || 0).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })
+                    : new Date(clips[0]?.createdTimestamp || 0).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
                 </div>
               </div>
+              {activeClip && (
+                <button 
+                  onClick={() => setActiveClip(null)}
+                  className="text-xs font-medium px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-800 dark:text-zinc-200"
+                >
+                  Back to Latest
+                </button>
+              )}
             </div>
-          )}
+          </div>
           
           {/* Grid of other clips */}
           {clips.length > 1 && (
@@ -148,9 +155,7 @@ export default function ClipsPage() {
                     <h3 className="text-sm font-medium text-zinc-800 dark:text-white truncate" title={clip.contentTitle}>
                       {clip.contentTitle}
                     </h3>
-                    <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
-                      <span>{clip.categoryName}</span>
-                    </div>
+
                     <div className="flex justify-between items-center mt-1">
                       <span className="text-xs text-zinc-500 dark:text-zinc-500">
                         {new Date(clip.createdTimestamp).toLocaleDateString('en-US', {
