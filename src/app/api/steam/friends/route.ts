@@ -90,7 +90,7 @@ export async function GET() {
     });
     
     // Sort by playing status first, then online status, then by name
-    friends.sort((a, b) => {
+    friends.sort((a: SteamFriend, b: SteamFriend) => {
       // Playing friends first
       if (a.gameextrainfo && !b.gameextrainfo) return -1;
       if (!a.gameextrainfo && b.gameextrainfo) return 1;
