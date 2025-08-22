@@ -7,7 +7,6 @@ interface MedalClipProps {
   contentTitle: string;
   contentThumbnail: string;
   embedIframeUrl: string;
-  categoryName: string;
   createdTimestamp: number;
   directClipUrl?: string;
 }
@@ -16,7 +15,6 @@ const MedalClip: React.FC<MedalClipProps> = ({
   contentTitle,
   contentThumbnail,
   embedIframeUrl,
-  categoryName,
   createdTimestamp,
   directClipUrl
 }) => {

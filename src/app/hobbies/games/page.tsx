@@ -130,7 +130,7 @@ const fetchWithCache = cache(async (url: string) => {
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
       const response = await fetch(url, { 
-        next: { revalidate: 3600 } // Cache for 1 hour
+        cache: 'no-store' // Don't cache, always fetch fresh data
       });
       
       if (response.ok) {
@@ -267,8 +267,8 @@ const Games = async () => {
         return (a.personaname || '').localeCompare(b.personaname || '');
       });
       
-      // Filter out offline friends
-      friends = friends.filter(friend => friend.personastate && friend.personastate > 0);
+      // Keep all friends, don't filter out offline ones
+      // This will allow showing all friends, including those who are offline
       
       const playingFriends = friends.filter(f => f.gameextrainfo);
       console.log('Final filtered friends count:', friends.length);
@@ -405,17 +405,15 @@ const Games = async () => {
             </div>
           </div>
           
-          {/* Friends Column - Takes 1/4 of the space on large screens, full width on mobile */}
-          {!friendsError && friends.length > 0 && (
-            <div className="lg:col-span-1 flex flex-col">
+          {/* Friends Column - Always displayed beside games */}
+          {!friendsError && (
+            <div className="lg:col-span-1 flex flex-col sticky top-0 self-start">
               <div className="mb-2 flex justify-between items-center">
                 <h3 className="text-base font-medium dark:text-white">Friends</h3>
                 <span className="text-xs text-zinc-500 dark:text-zinc-400 lg:hidden">Scroll to see more →</span>
               </div>
-              <div className="flex-grow relative min-h-[400px] lg:min-h-0">
-                <div className="absolute inset-0">
-                  <SteamFriends friends={friends} />
-                </div>
+              <div className="flex-grow">
+                <SteamFriends friends={friends} />
               </div>
             </div>
           )}
