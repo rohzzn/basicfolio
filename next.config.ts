@@ -23,6 +23,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'yt3.ggpht.com' },
       { protocol: 'https', hostname: 'youtube.com' },
       { protocol: 'https', hostname: 'i.imgur.com' },
+      { protocol: 'https', hostname: 'cdn.medal.tv' },
     ],
   },
   // ... other configurations
