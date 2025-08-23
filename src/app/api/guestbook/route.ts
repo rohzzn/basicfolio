@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { containsOffensiveContent, checkRateLimit, cleanText } from '@/utils/moderation';
+import { headers } from 'next/headers';
 
 // Define types
 interface GitHubComment {
@@ -118,9 +120,31 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Get client IP for rate limiting
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for') || 'unknown';
     
-    // Format the comment body for GitHub
-    const commentBody = `**Name:** ${name.trim()}\n\n${message.trim()}`;
+    // Check rate limit
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Too many submissions. Please try again later.' },
+        { status: 429 }
+      );
+    }
+    
+    // Check for offensive content
+    if (containsOffensiveContent(name) || containsOffensiveContent(message)) {
+      return NextResponse.json(
+        { error: 'Your message contains inappropriate content that violates our community guidelines.' },
+        { status: 400 }
+      );
+    }
+    
+    // Clean and format the comment body for GitHub
+    const cleanName = cleanText(name.trim());
+    const cleanMessage = cleanText(message.trim());
+    const commentBody = `**Name:** ${cleanName}\n\n${cleanMessage}`;
     
     // Post to GitHub issue
     const response = await fetch(
@@ -147,8 +171,8 @@ export async function POST(request: Request) {
       comment: {
         id: commentData.id,
         createdAt: commentData.created_at,
-        displayName: name,
-        messageBody: message,
+        displayName: cleanName,
+        messageBody: cleanMessage,
         user: {
           login: commentData.user.login,
           avatarUrl: commentData.user.avatar_url
