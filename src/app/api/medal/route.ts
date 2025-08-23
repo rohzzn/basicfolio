@@ -83,8 +83,7 @@ export async function GET() {
     console.log('Search API status:', searchResponse.status);
     console.log('By Username API status:', byUsernameResponse.status);
     
-    // Collect all successful responses
-    const allResponses = [];
+    // Collect all content objects
     let allContentObjects = [];
     
     // Process latest response
