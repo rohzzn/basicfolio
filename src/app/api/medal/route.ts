@@ -84,7 +84,7 @@ export async function GET() {
     console.log('By Username API status:', byUsernameResponse.status);
     
     // Collect all content objects
-    let allContentObjects = [];
+    let allContentObjects: Record<string, unknown>[] = [];
     
     // Process latest response
     if (latestResponse.ok) {
