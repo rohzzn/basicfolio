@@ -9,7 +9,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
 // GET handler for retrieving all comments (including flagged ones)
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Check admin authorization
     const headersList = await headers();

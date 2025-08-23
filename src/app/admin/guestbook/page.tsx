@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 
 type User = {
   login: string;
@@ -22,7 +21,6 @@ export default function GuestbookAdminPage() {
   const [adminSecret, setAdminSecret] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const router = useRouter();
 
   // Function to fetch comments
   const fetchComments = async () => {
@@ -47,9 +45,10 @@ export default function GuestbookAdminPage() {
       const data = await response.json();
       setComments(data.comments || []);
       setAuthenticated(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching comments:', error);
-      setError(error.message || 'Failed to load guestbook entries');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load guestbook entries';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -81,9 +80,10 @@ export default function GuestbookAdminPage() {
       
       // Remove the comment from the state
       setComments(comments.filter(comment => comment.id !== commentId));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting comment:', error);
-      setError(error.message || 'Failed to delete comment');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete comment';
+      setError(errorMessage);
     } finally {
       setDeletingId(null);
     }
