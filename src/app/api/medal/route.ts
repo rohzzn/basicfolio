@@ -84,7 +84,7 @@ export async function GET() {
     console.log('By Username API status:', byUsernameResponse.status);
     
     // Collect all content objects
-    let allContentObjects: Record<string, unknown>[] = [];
+    let allContentObjects: any[] = [];
     
     // Process latest response
     if (latestResponse.ok) {
@@ -185,17 +185,17 @@ export async function GET() {
       }
       
       return {
-        contentId: clip.contentId || '',
-        contentTitle: clip.contentTitle || 'Untitled Clip',
-        contentViews: clip.contentViews || 0,
-        contentThumbnail: clip.contentThumbnail || 
+        contentId: typeof clip.contentId === 'string' ? clip.contentId : '',
+        contentTitle: typeof clip.contentTitle === 'string' ? clip.contentTitle : 'Untitled Clip',
+        contentViews: typeof clip.contentViews === 'number' ? clip.contentViews : 0,
+        contentThumbnail: typeof clip.contentThumbnail === 'string' ? clip.contentThumbnail : 
                          `https://cdn.medal.tv/content/${numericId}/thumbnail-large.webp`,
         embedIframeUrl: embedUrl,
-        createdTimestamp: clip.createdTimestamp || Date.now(),
-        categoryId: clip.categoryId || 0,
+        createdTimestamp: typeof clip.createdTimestamp === 'number' ? clip.createdTimestamp : Date.now(),
+        categoryId: typeof clip.categoryId === 'number' ? clip.categoryId : 0,
         categoryName: gameName,
-        directClipUrl: clip.directClipUrl || '',
-        videoLengthSeconds: clip.videoLengthSeconds || 0
+        directClipUrl: typeof clip.directClipUrl === 'string' ? clip.directClipUrl : '',
+        videoLengthSeconds: typeof clip.videoLengthSeconds === 'number' ? clip.videoLengthSeconds : 0
       };
     });
     
