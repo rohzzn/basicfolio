@@ -405,14 +405,14 @@ const Games = async () => {
             </div>
           </div>
           
-          {/* Friends Column - Always displayed beside games */}
+          {/* Friends Column - Always displayed beside games with fixed height */}
           {!friendsError && (
-            <div className="lg:col-span-1 flex flex-col sticky top-0 self-start">
+            <div className="lg:col-span-1 flex flex-col">
               <div className="mb-2 flex justify-between items-center">
                 <h3 className="text-base font-medium dark:text-white">Friends</h3>
-                <span className="text-xs text-zinc-500 dark:text-zinc-400 lg:hidden">Scroll to see more →</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">Scroll to see more</span>
               </div>
-              <div className="flex-grow">
+              <div className="h-full">
                 <SteamFriends friends={friends} />
               </div>
             </div>

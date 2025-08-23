@@ -16,7 +16,6 @@ import DiscordArticle from './discord-article';
 import UCExperience from './uc-experience';
 import FirstSpring from './first-spring';
 import NewsletterLaunch from './newsletter-launch';
-import Lost from './lost';
 
 // Track processed posts to avoid duplicate newsletter sends
 const processedPosts = new Set<string>();
@@ -25,13 +24,6 @@ const WritingPage = () => {
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
 
   const posts = useMemo(() => [
-    {
-      slug: 'lost',
-      title: 'Lost',
-      date: '2025-08-19',
-      displayDate: 'Aug 19, 2025',
-      description: 'Day to remember.'
-    },
     {
       slug: 'first-spring',
       title: 'My Second Semester at UC: Challenging Academics, Leadership, and Cincinnati in Bloom',
@@ -198,8 +190,6 @@ const WritingPage = () => {
     }
     
     switch(selectedPost) {
-      case 'lost':
-        return <Lost onBack={() => setSelectedPost(null)} />;
       case 'ixigo-experience':
         return <IxigoExperience onBack={() => setSelectedPost(null)} />;
       case 'beginners-guide-programming':

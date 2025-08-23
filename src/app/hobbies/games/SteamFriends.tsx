@@ -82,8 +82,8 @@ const SteamFriends: React.FC<SteamFriendsProps> = ({ friends: initialFriends }) 
         </button>
       </div>
       
-      {/* Playing Friends Section */}
-      <div className="mb-4 flex-grow overflow-hidden">
+      {/* Playing Friends Section - Made to match height with Top Games section */}
+      <div className="mb-4 flex-grow">
         <h4 className="text-sm font-medium dark:text-white mb-2 flex items-center">
           <Gamepad2 className="w-3.5 h-3.5 mr-1.5 text-green-500" />
           Playing Now
@@ -92,7 +92,7 @@ const SteamFriends: React.FC<SteamFriendsProps> = ({ friends: initialFriends }) 
         {playingFriends.length === 0 ? (
           <p className="text-xs text-zinc-600 dark:text-zinc-400 italic">No friends are currently playing</p>
         ) : (
-          <div className="space-y-2 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600">
+          <div className="space-y-2 overflow-y-auto h-[350px] pr-1 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600">
             {playingFriends.map((friend) => (
               <Link
                 key={friend.steamid}
