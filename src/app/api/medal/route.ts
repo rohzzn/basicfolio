@@ -84,7 +84,8 @@ export async function GET() {
     console.log('By Username API status:', byUsernameResponse.status);
     
     // Collect all content objects
-    let allContentObjects: any[] = [];
+    // Using unknown[] instead of any[] to satisfy ESLint
+    let allContentObjects: unknown[] = [];
     
     // Process latest response
     if (latestResponse.ok) {
