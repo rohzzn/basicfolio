@@ -83,15 +83,20 @@ export async function GET() {
     console.log('Search API status:', searchResponse.status);
     console.log('By Username API status:', byUsernameResponse.status);
     
+    // Define a type for the Medal API response objects
+    interface MedalApiObject {
+      contentId?: string | number;
+      [key: string]: unknown;
+    }
+    
     // Collect all content objects
-    // Using unknown[] instead of any[] to satisfy ESLint
-    let allContentObjects: unknown[] = [];
+    let allContentObjects: MedalApiObject[] = [];
     
     // Process latest response
     if (latestResponse.ok) {
       const latestData = await latestResponse.json();
       if (latestData.contentObjects && Array.isArray(latestData.contentObjects)) {
-        allContentObjects = [...allContentObjects, ...latestData.contentObjects];
+        allContentObjects = [...allContentObjects, ...latestData.contentObjects as MedalApiObject[]];
         console.log(`Added ${latestData.contentObjects.length} clips from latest endpoint`);
       }
     }
@@ -100,7 +105,7 @@ export async function GET() {
     if (searchResponse.ok) {
       const searchData = await searchResponse.json();
       if (searchData.contentObjects && Array.isArray(searchData.contentObjects)) {
-        allContentObjects = [...allContentObjects, ...searchData.contentObjects];
+        allContentObjects = [...allContentObjects, ...searchData.contentObjects as MedalApiObject[]];
         console.log(`Added ${searchData.contentObjects.length} clips from search endpoint`);
       }
     }
@@ -109,7 +114,7 @@ export async function GET() {
     if (byUsernameResponse.ok) {
       const usernameData = await byUsernameResponse.json();
       if (usernameData.contentObjects && Array.isArray(usernameData.contentObjects)) {
-        allContentObjects = [...allContentObjects, ...usernameData.contentObjects];
+        allContentObjects = [...allContentObjects, ...usernameData.contentObjects as MedalApiObject[]];
         console.log(`Added ${usernameData.contentObjects.length} clips from username endpoint`);
       }
     }
@@ -124,7 +129,7 @@ export async function GET() {
     
     // Remove duplicates by contentId
     const uniqueClips = Array.from(
-      new Map(allContentObjects.map(clip => [clip.contentId, clip])).values()
+      new Map(allContentObjects.map(clip => [String(clip.contentId || ''), clip])).values()
     );
     
     console.log(`After removing duplicates: ${uniqueClips.length} unique clips`);
@@ -149,7 +154,7 @@ export async function GET() {
     }
     
     // Map the response data to our interface
-    const clips: MedalClip[] = data.contentObjects.map((clip: Record<string, unknown>) => {
+    const clips: MedalClip[] = data.contentObjects.map((clip: MedalApiObject) => {
       // Extract the embed URL from the iframe code
       let embedUrl = '';
       if (clip.embedIframeCode && typeof clip.embedIframeCode === 'string') {
