@@ -20,9 +20,50 @@ interface MedalClip {
 
 export default function ClipsPage() {
   const [clips, setClips] = useState<MedalClip[]>([]);
+  const [filteredClips, setFilteredClips] = useState<MedalClip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeClip, setActiveClip] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+
+  // Filter clips based on the active filter
+  useEffect(() => {
+    if (clips.length === 0) return;
+    
+    if (activeFilter === "all") {
+      setFilteredClips(clips);
+      return;
+    }
+    
+    const filtered = clips.filter(clip => {
+      const title = clip.contentTitle.toLowerCase();
+      
+      switch(activeFilter) {
+        case "2k":
+          return title.includes("2k") || title.includes(" 2 ") || title.includes("double") || title.includes("2 kill");
+        case "3k":
+          return title.includes("3k") || title.includes(" 3 ") || title.includes("triple") || title.includes("3 kill");
+        case "4k":
+          return title.includes("4k") || title.includes(" 4 ") || title.includes("quad") || title.includes("4 kill");
+        case "5k":
+          return title.includes("5k") || title.includes(" 5 ") || title.includes("penta") || 
+                 title.includes("ace") || title.includes("5 kill") || title.includes("pentakill");
+        case "other":
+          // Check if title doesn't contain any of the number patterns
+          const hasNumberPattern = /\b[1-5]k\b|\b[1-5] kill|\b[1-5]\b|single|double|triple|quad|penta|ace/.test(title);
+          return !hasNumberPattern;
+        default:
+          return true;
+      }
+    });
+    
+    setFilteredClips(filtered);
+    
+    // Reset active clip if it's not in the filtered clips
+    if (activeClip && !filtered.some(clip => clip.embedIframeUrl === activeClip)) {
+      setActiveClip(filtered.length > 0 ? filtered[0].embedIframeUrl : null);
+    }
+  }, [activeFilter, clips, activeClip]);
 
   useEffect(() => {
     const fetchClips = async () => {
@@ -36,6 +77,7 @@ export default function ClipsPage() {
         
         const data = await response.json();
         setClips(data.clips);
+        setFilteredClips(data.clips);
       } catch (err) {
         setError('Failed to load clips. Please try again later.');
         console.error('Error fetching clips:', err);
@@ -53,9 +95,42 @@ export default function ClipsPage() {
     return `${mins}:${secs < 10 ? '0' + secs : secs}`;
   };
 
+  // Filter options
+  const filterOptions = [
+    { id: "all", label: "All Clips" },
+    { id: "2k", label: "2 Kills" },
+    { id: "3k", label: "3 Kills" },
+    { id: "4k", label: "4 Kills" },
+    { id: "5k", label: "Ace" },
+    { id: "other", label: "Others" }
+  ];
+
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming Clips</h2>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h2 className="text-lg font-medium dark:text-white">Gaming Clips</h2>
+        
+        <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
+          {filterOptions.map(option => (
+            <button
+              key={option.id}
+              onClick={() => setActiveFilter(option.id)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+                activeFilter === option.id 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+              }`}
+            >
+              {option.label}
+              {option.id !== 'all' && activeFilter === option.id && filteredClips.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 bg-white bg-opacity-20 rounded-full text-xs">
+                  {filteredClips.length}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
       
       {loading && (
         <div className="flex justify-center items-center h-64">
@@ -76,14 +151,27 @@ export default function ClipsPage() {
         </div>
       )}
       
-      {!loading && clips.length > 0 && (
+      {!loading && !error && clips.length > 0 && filteredClips.length === 0 && (
+        <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-8 text-center">
+          <Video className="w-12 h-12 mx-auto mb-4 text-zinc-400 dark:text-zinc-500" />
+          <p className="text-zinc-600 dark:text-zinc-400">No clips match the selected filter</p>
+          <button 
+            onClick={() => setActiveFilter('all')}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Show All Clips
+          </button>
+        </div>
+      )}
+      
+      {!loading && filteredClips.length > 0 && (
         <div>
           
           {/* Featured clip */}
           <div className="mb-8">
             <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
               <iframe 
-                src={activeClip || (clips[0] && clips[0].embedIframeUrl)}
+                src={activeClip || (filteredClips[0] && filteredClips[0].embedIframeUrl)}
                 width="100%" 
                 height="100%" 
                 style={{ border: 'none' }}
@@ -97,7 +185,7 @@ export default function ClipsPage() {
                 <h4 className="text-base font-medium dark:text-white">
                   {activeClip 
                     ? clips.find(clip => clip.embedIframeUrl === activeClip)?.contentTitle 
-                    : clips[0]?.contentTitle}
+                    : filteredClips[0]?.contentTitle}
                 </h4>
                 <div className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
                   {activeClip 
@@ -106,7 +194,7 @@ export default function ClipsPage() {
                         month: 'short',
                         day: 'numeric'
                       })
-                    : new Date(clips[0]?.createdTimestamp || 0).toLocaleDateString('en-US', {
+                    : new Date(filteredClips[0]?.createdTimestamp || 0).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric'
@@ -125,9 +213,9 @@ export default function ClipsPage() {
           </div>
           
           {/* Grid of other clips */}
-          {clips.length > 1 && (
+          {filteredClips.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {clips.slice(1).map((clip) => (
+              {filteredClips.slice(1).map((clip) => (
                 <div 
                   key={clip.contentId} 
                   className="flex flex-col rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"

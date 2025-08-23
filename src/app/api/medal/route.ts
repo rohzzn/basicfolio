@@ -37,14 +37,17 @@ export async function GET() {
     const apiKey = process.env.MEDAL_API_KEY;
     const userId = process.env.MEDAL_USER_ID || '436315303'; // Your actual user ID
     
+    console.log('Using Medal API Key:', apiKey ? 'Key exists (not showing for security)' : 'Missing');
+    console.log('Using Medal User ID:', userId);
+    
     if (!apiKey) {
       throw new Error('Medal API key not configured');
     }
     
-    // Try both the latest API endpoint and the search API to get the best results
-    const [latestResponse, searchResponse] = await Promise.all([
+    // Try multiple API endpoints and combine results to get more clips
+    const [latestResponse, searchResponse, byUsernameResponse] = await Promise.all([
       fetch(
-        `https://developers.medal.tv/v1/latest?userId=${userId}&limit=12`,
+        `https://developers.medal.tv/v1/latest?userId=${userId}&limit=30`,
         {
           headers: {
             'Authorization': apiKey,
@@ -54,7 +57,17 @@ export async function GET() {
         }
       ),
       fetch(
-        `https://developers.medal.tv/v1/search?text=by:rohzzn&limit=12`,
+        `https://developers.medal.tv/v1/search?text=by:rohzzn&limit=30`,
+        {
+          headers: {
+            'Authorization': apiKey,
+            'Content-Type': 'application/json'
+          },
+          cache: 'no-store'
+        }
+      ),
+      fetch(
+        `https://developers.medal.tv/v1/search?text=rohzzn&limit=30`,
         {
           headers: {
             'Authorization': apiKey,
@@ -65,22 +78,70 @@ export async function GET() {
       )
     ]);
     
-    // Use the response that succeeded
-    const response = latestResponse.ok ? latestResponse : searchResponse;
-
-    if (!response.ok) {
-      throw new Error(`Medal API responded with status: ${response.status}`);
+    // Log response statuses for debugging
+    console.log('Latest API status:', latestResponse.status);
+    console.log('Search API status:', searchResponse.status);
+    console.log('By Username API status:', byUsernameResponse.status);
+    
+    // Collect all successful responses
+    const allResponses = [];
+    let allContentObjects = [];
+    
+    // Process latest response
+    if (latestResponse.ok) {
+      const latestData = await latestResponse.json();
+      if (latestData.contentObjects && Array.isArray(latestData.contentObjects)) {
+        allContentObjects = [...allContentObjects, ...latestData.contentObjects];
+        console.log(`Added ${latestData.contentObjects.length} clips from latest endpoint`);
+      }
     }
-
-    const data = await response.json();
+    
+    // Process search response
+    if (searchResponse.ok) {
+      const searchData = await searchResponse.json();
+      if (searchData.contentObjects && Array.isArray(searchData.contentObjects)) {
+        allContentObjects = [...allContentObjects, ...searchData.contentObjects];
+        console.log(`Added ${searchData.contentObjects.length} clips from search endpoint`);
+      }
+    }
+    
+    // Process by username response
+    if (byUsernameResponse.ok) {
+      const usernameData = await byUsernameResponse.json();
+      if (usernameData.contentObjects && Array.isArray(usernameData.contentObjects)) {
+        allContentObjects = [...allContentObjects, ...usernameData.contentObjects];
+        console.log(`Added ${usernameData.contentObjects.length} clips from username endpoint`);
+      }
+    }
+    
+    // If we have no content objects, try another approach or throw error
+    if (allContentObjects.length === 0) {
+      console.error('No clips found from any endpoint');
+      throw new Error('No clips found from any Medal API endpoint');
+    }
+    
+    console.log(`Total clips collected: ${allContentObjects.length}`);
+    
+    // Remove duplicates by contentId
+    const uniqueClips = Array.from(
+      new Map(allContentObjects.map(clip => [clip.contentId, clip])).values()
+    );
+    
+    console.log(`After removing duplicates: ${uniqueClips.length} unique clips`);
+    
+    // Use the combined data
+    const data = { contentObjects: uniqueClips };
     
     // Log the full API response for debugging
     console.log('Medal API response structure:', Object.keys(data));
+    console.log('Medal API response data:', JSON.stringify(data).substring(0, 500) + '...');
     
     if (!data.contentObjects || !Array.isArray(data.contentObjects)) {
       console.error('Invalid response format from Medal API:', data);
       throw new Error('Invalid response format from Medal API');
     }
+    
+    console.log('Number of clips found:', data.contentObjects.length);
     
     // Log the first clip to understand its structure
     if (data.contentObjects.length > 0) {
