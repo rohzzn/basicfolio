@@ -3,7 +3,7 @@
 import React from 'react';
 import Profile from './Profile';
 import RecentlyPlayedGames from './RecentlyPlayedGames';
-import SteamFriends from './SteamFriends';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { cache } from 'react';
@@ -26,19 +26,6 @@ interface SteamProfile {
   locstatecode?: string;
   loccityid?: number;
 }
-
-interface SteamFriend {
-  steamid: string;
-  relationship: string;
-  friend_since: number;
-  personaname?: string;
-  avatar?: string;
-  avatarmedium?: string;
-  avatarfull?: string;
-  personastate?: number;
-  gameextrainfo?: string;
-}
-
 
 
 interface SteamGame {
@@ -114,8 +101,6 @@ const emptyProfile: SteamProfile = {
 };
 
 const emptyGames: SteamGame[] = [];
-const emptyFriends: SteamFriend[] = [];
-
 // Use React's cache function to prevent duplicate fetches
 const fetchWithCache = cache(async (url: string) => {
   console.log(`Fetching from: ${url}`);
@@ -174,11 +159,8 @@ const Games = async () => {
   // Initialize with empty data
   let profile: SteamProfile = emptyProfile;
   let ownedGames: SteamGame[] = emptyGames;
-  let friends: SteamFriend[] = emptyFriends;
-  
   let profileError = false;
   let ownedGamesError = false;
-  let friendsError = false;
 
   // Fetch Player Summaries
   try {
@@ -205,80 +187,7 @@ const Games = async () => {
     console.error('Error fetching owned games:', error);
     ownedGamesError = true;
   }
-  
 
-  
-  // Fetch friends list
-  try {
-    console.log('Fetching friends list...');
-    // First get the friend list
-    const friendsData = await fetchWithCache(
-      `https://api.steampowered.com/ISteamUser/GetFriendList/v1/?key=${apiKey}&steamid=${STEAM_ID}&relationship=friend`
-    );
-    
-    if (friendsData.friendslist && friendsData.friendslist.friends) {
-      const friendsList = friendsData.friendslist.friends;
-      console.log('Total friends in list:', friendsList.length);
-      
-      // The Steam API has a limit of 100 profiles per call, so we need to batch them
-      const allFriendProfiles: SteamProfile[] = [];
-      const BATCH_SIZE = 100;
-      
-      // Split the friend IDs into batches of 100
-      for (let i = 0; i < friendsList.length; i += BATCH_SIZE) {
-        const batchIds = friendsList
-          .slice(i, i + BATCH_SIZE)
-          .map((friend: SteamFriend) => friend.steamid)
-          .join(',');
-        
-        console.log(`Fetching batch ${i / BATCH_SIZE + 1} of friends (${i} to ${Math.min(i + BATCH_SIZE, friendsList.length)})`);
-        
-        // Fetch profiles for this batch of friends
-        const batchProfiles = await fetchWithCache(
-          `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${batchIds}`
-        );
-        
-        if (batchProfiles.response && batchProfiles.response.players) {
-          allFriendProfiles.push(...batchProfiles.response.players);
-        }
-      }
-      
-      console.log('Total profiles fetched:', allFriendProfiles.length);
-      
-      // Combine friend data with profile data
-      friends = friendsList.map((friend: SteamFriend) => {
-        const profile = allFriendProfiles.find(
-          (p: SteamProfile) => p.steamid === friend.steamid
-        );
-        return { ...friend, ...profile };
-      });
-      
-      // Sort by playing status first, then online status, then by name
-      friends.sort((a, b) => {
-        // Playing friends first
-        if (a.gameextrainfo && !b.gameextrainfo) return -1;
-        if (!a.gameextrainfo && b.gameextrainfo) return 1;
-        
-        // Then online friends
-        if ((a.personastate || 0) > 0 && (b.personastate || 0) === 0) return -1;
-        if ((a.personastate || 0) === 0 && (b.personastate || 0) > 0) return 1;
-        
-        // Then by name
-        return (a.personaname || '').localeCompare(b.personaname || '');
-      });
-      
-      // Keep all friends, don't filter out offline ones
-      // This will allow showing all friends, including those who are offline
-      
-      const playingFriends = friends.filter(f => f.gameextrainfo);
-      console.log('Final filtered friends count:', friends.length);
-      console.log('Friends playing games:', playingFriends.length);
-      console.log('Games being played:', playingFriends.map(f => f.gameextrainfo).join(', '));
-    }
-  } catch (error) {
-    console.error('Error fetching friends:', error);
-    friendsError = true;
-  }
 
   // Sort games by recent playtime for recent games section
   const recentlySortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
@@ -338,9 +247,7 @@ const Games = async () => {
         </div>
       </section>
 
-
-
-      {/* Gaming Content Layout - 3 columns on large screens */}
+      {/* Gaming Content Layout */}
       <section className="mb-8">
         {ownedGamesError && (
           <div className="bg-yellow-50 dark:bg-zinc-800 p-4 rounded-lg mb-4">
@@ -348,9 +255,8 @@ const Games = async () => {
           </div>
         )}
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Main Content - Takes 3/4 of the space on large screens */}
-          <div className="lg:col-span-3 space-y-8">
+        <div className="grid grid-cols-1 gap-6">
+          <div className="space-y-8">
             {/* Recent Games */}
             {recentGames.length > 0 && (
               <div>
@@ -404,19 +310,6 @@ const Games = async () => {
               </div>
             </div>
           </div>
-          
-          {/* Friends Column - Always displayed beside games with fixed height */}
-          {!friendsError && (
-            <div className="lg:col-span-1 flex flex-col">
-              <div className="mb-2 flex justify-between items-center">
-                <h3 className="text-base font-medium dark:text-white">Friends</h3>
-                <span className="text-xs text-zinc-500 dark:text-zinc-400">Scroll to see more</span>
-              </div>
-              <div className="h-full">
-                <SteamFriends friends={friends} />
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
