@@ -125,6 +125,17 @@ const Projects = () => {
   
   const projects: Project[] = [
     {
+      title: "Interactions",
+      description: "Interaction Design Challenge - Take on the 7-day challenge and craft beautiful UI interactions daily. Make your designs come alive!",
+      tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+      category: 'other',
+      links: [
+        { label: "GitHub", url: "https://github.com/rohzzn/interactions" },
+        { label: "Live", url: "https://interactions.rohan.host/" },
+      ],
+      image: "/projects/interactions.png"
+    },
+    {
       title: "Contests",
       description: "Discover programming contests and hackathons from around the world. Track your favorites, export to calendar, and stay ahead of the competition.",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
