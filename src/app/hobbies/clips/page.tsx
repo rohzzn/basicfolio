@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Video, ExternalLink } from 'lucide-react';
+import { Video, Play, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -23,7 +23,6 @@ export default function ClipsPage() {
   const [filteredClips, setFilteredClips] = useState<MedalClip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeClip, setActiveClip] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
   // Filter clips based on the active filter
@@ -58,12 +57,7 @@ export default function ClipsPage() {
     });
     
     setFilteredClips(filtered);
-    
-    // Reset active clip if it's not in the filtered clips
-    if (activeClip && !filtered.some(clip => clip.embedIframeUrl === activeClip)) {
-      setActiveClip(filtered.length > 0 ? filtered[0].embedIframeUrl : null);
-    }
-  }, [activeFilter, clips, activeClip]);
+  }, [activeFilter, clips]);
 
   useEffect(() => {
     const fetchClips = async () => {
@@ -88,6 +82,7 @@ export default function ClipsPage() {
 
     fetchClips();
   }, []);
+
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -115,16 +110,16 @@ export default function ClipsPage() {
             <button
               key={option.id}
               onClick={() => setActiveFilter(option.id)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 activeFilter === option.id 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                  ? 'bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white' 
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
               }`}
             >
-              {option.label}
-              {option.id !== 'all' && activeFilter === option.id && filteredClips.length > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 bg-white bg-opacity-20 rounded-full text-xs">
-                  {filteredClips.length}
+              <span>{option.label}</span>
+              {option.id !== 'all' && activeFilter === option.id && (
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  ({filteredClips.length})
                 </span>
               )}
             </button>
@@ -139,8 +134,20 @@ export default function ClipsPage() {
       )}
       
       {error && (
-        <div className="bg-yellow-50 dark:bg-zinc-800 p-4 rounded-lg mb-6">
-          <p className="text-yellow-800 dark:text-yellow-400">{error}</p>
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <Video className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+            <h3 className="text-sm font-medium dark:text-white">Unable to load clips</h3>
+          </div>
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-4">
+            There was an issue connecting to Medal.tv. This could be due to API rate limits or temporary server issues.
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="text-xs font-medium px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-md hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       )}
       
@@ -157,7 +164,7 @@ export default function ClipsPage() {
           <p className="text-zinc-600 dark:text-zinc-400">No clips match the selected filter</p>
           <button 
             onClick={() => setActiveFilter('all')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="mt-4 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
           >
             Show All Clips
           </button>
@@ -165,111 +172,51 @@ export default function ClipsPage() {
       )}
       
       {!loading && filteredClips.length > 0 && (
-        <div>
+        <div className="space-y-8">
           
-          {/* Featured clip */}
-          <div className="mb-8">
-            <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
-              <iframe 
-                src={activeClip || (filteredClips[0] && filteredClips[0].embedIframeUrl)}
-                width="100%" 
-                height="100%" 
-                style={{ border: 'none' }}
-                title="Medal.tv Clip"
-                allowFullScreen
-                allow="autoplay"
-              />
-            </div>
-            <div className="mt-4 flex justify-between items-start">
-              <div>
-                <h4 className="text-base font-medium dark:text-white">
-                  {activeClip 
-                    ? clips.find(clip => clip.embedIframeUrl === activeClip)?.contentTitle 
-                    : filteredClips[0]?.contentTitle}
-                </h4>
-                <div className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-                  {activeClip 
-                    ? new Date(clips.find(clip => clip.embedIframeUrl === activeClip)?.createdTimestamp || 0).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })
-                    : new Date(filteredClips[0]?.createdTimestamp || 0).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
+          {/* Clips grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredClips.map((clip) => (
+              <Link
+                key={clip.contentId}
+                href={clip.directClipUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200"
+              >
+                <div className="relative aspect-video w-full bg-zinc-200 dark:bg-zinc-700">
+                  <Image
+                    src={clip.contentThumbnail}
+                    alt={clip.contentTitle}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="bg-black/70 rounded-full p-4">
+                      <Play className="w-8 h-8 text-white fill-white" />
+                    </div>
+                  </div>
+                  {clip.videoLengthSeconds > 0 && (
+                    <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-1 rounded text-xs text-white font-medium">
+                      {formatDuration(clip.videoLengthSeconds)}
+                    </div>
+                  )}
                 </div>
-              </div>
-              {activeClip && (
-                <button 
-                  onClick={() => setActiveClip(null)}
-                  className="text-xs font-medium px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-800 dark:text-zinc-200"
-                >
-                  Back to Latest
-                </button>
-              )}
-            </div>
+                <div className="p-4">
+                  <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white mb-2 line-clamp-2" title={clip.contentTitle}>
+                    {clip.contentTitle}
+                  </h3>
+                  <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                    <Calendar className="w-3 h-3" />
+                    {new Date(clip.createdTimestamp).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
-          
-          {/* Grid of other clips */}
-          {filteredClips.length > 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredClips.slice(1).map((clip) => (
-                <div 
-                  key={clip.contentId} 
-                  className="flex flex-col rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                  onClick={() => setActiveClip(clip.embedIframeUrl)}
-                >
-                  <div className="relative aspect-video w-full">
-                    <Image
-                      src={clip.contentThumbnail}
-                      alt={clip.contentTitle}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="bg-black bg-opacity-50 rounded-full p-3">
-                        <Video className="w-8 h-8 text-white" />
-                      </div>
-                    </div>
-                    {clip.videoLengthSeconds > 0 && (
-                      <div className="absolute bottom-2 right-2 bg-black bg-opacity-70 px-2 py-1 rounded text-xs text-white">
-                        {formatDuration(clip.videoLengthSeconds)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-medium text-zinc-800 dark:text-white truncate" title={clip.contentTitle}>
-                      {clip.contentTitle}
-                    </h3>
-
-                    <div className="flex justify-between items-center mt-1">
-                      <span className="text-xs text-zinc-500 dark:text-zinc-500">
-                        {new Date(clip.createdTimestamp).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
-                      </span>
-                      {clip.directClipUrl && (
-                        <Link 
-                          href={clip.directClipUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center text-xs text-blue-600 dark:text-blue-400 hover:underline"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <span className="mr-1">View on Medal</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>

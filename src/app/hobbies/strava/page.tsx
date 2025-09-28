@@ -108,6 +108,13 @@ const StravaPage: React.FC = () => {
 
   const fetchStravaData = async (daysAgo: number) => {
     try {
+      // Check if environment variables are available
+      if (!process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID || 
+          !process.env.NEXT_PUBLIC_STRAVA_CLIENT_SECRET || 
+          !process.env.NEXT_PUBLIC_STRAVA_REFRESH_TOKEN) {
+        throw new Error('Strava API credentials not configured');
+      }
+
       const tokenResponse = await fetch('https://www.strava.com/oauth/token', {
         method: 'POST',
         headers: {

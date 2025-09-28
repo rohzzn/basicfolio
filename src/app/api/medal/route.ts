@@ -155,6 +155,14 @@ export async function GET() {
     
     // Map the response data to our interface
     const clips: MedalClip[] = data.contentObjects.map((clip: MedalApiObject) => {
+      // Extract the numeric content ID first
+      let contentIdMatch = null;
+      if (typeof clip.contentId === 'string') {
+        contentIdMatch = clip.contentId.match(/^cid([0-9]+)$/);
+      }
+      const numericId = contentIdMatch ? contentIdMatch[1] : 
+                        (typeof clip.contentId === 'string' ? clip.contentId.replace('cid', '') : '');
+      
       // Extract the embed URL from the iframe code
       let embedUrl = '';
       if (clip.embedIframeCode && typeof clip.embedIframeCode === 'string') {
@@ -166,13 +174,10 @@ export async function GET() {
         embedUrl = clip.embedIframeUrl;
       }
       
-      // Extract the numeric content ID
-      let contentIdMatch = null;
-      if (typeof clip.contentId === 'string') {
-        contentIdMatch = clip.contentId.match(/^cid([0-9]+)$/);
+      // If no embed URL found, construct one from the content ID
+      if (!embedUrl && numericId) {
+        embedUrl = `https://medal.tv/games/valorant/clips/${numericId}/embed`;
       }
-      const numericId = contentIdMatch ? contentIdMatch[1] : 
-                        (typeof clip.contentId === 'string' ? clip.contentId.replace('cid', '') : '');
       
       // Log the clip data for debugging
       console.log('Clip data:', {

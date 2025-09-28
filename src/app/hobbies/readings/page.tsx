@@ -72,8 +72,6 @@ const Readings: React.FC = () => {
 
   useEffect(() => {
     let isMounted = true;
-    const loadedCovers: { [title: string]: string } = {};
-    let loadedCount = 0;
 
     const loadCover = async (book: Book) => {
       try {
@@ -81,11 +79,11 @@ const Readings: React.FC = () => {
         const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=1`);
         const data = await res.json();
         if (data.items?.[0]?.volumeInfo?.imageLinks?.thumbnail && isMounted) {
-          loadedCovers[book.title] = data.items[0].volumeInfo.imageLinks.thumbnail;
-          loadedCount++;
-          if (loadedCount % 5 === 0 || loadedCount === books.length) {
-            setCovers(prev => ({ ...prev, ...loadedCovers }));
-          }
+          // Use higher quality image
+          let imageUrl = data.items[0].volumeInfo.imageLinks.thumbnail;
+          // Replace zoom=1 with zoom=0 for better quality
+          imageUrl = imageUrl.replace('zoom=1', 'zoom=0');
+          setCovers(prev => ({ ...prev, [book.title]: imageUrl }));
         }
       } catch (error) {
         console.error("Error fetching book cover:", error);
@@ -93,13 +91,19 @@ const Readings: React.FC = () => {
     };
 
     const fetchCovers = async () => {
-      // Load covers in batches of 5
-      const chunks = Array.from({ length: Math.ceil(books.length / 5) }, (_, i) =>
-        books.slice(i * 5, (i + 1) * 5)
-      );
-
-      for (const chunk of chunks) {
+      // Load first 6 books immediately for above-the-fold content
+      const priorityBooks = sortedBooks.slice(0, 6);
+      const remainingBooks = sortedBooks.slice(6);
+      
+      // Load priority books first
+      await Promise.all(priorityBooks.map(loadCover));
+      
+      // Then load remaining books in smaller batches for better performance
+      for (let i = 0; i < remainingBooks.length; i += 3) {
+        const chunk = remainingBooks.slice(i, i + 3);
         await Promise.all(chunk.map(loadCover));
+        // Small delay to prevent API rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     };
 
@@ -108,7 +112,7 @@ const Readings: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [sortedBooks]);
 
   return (
     <div className="max-w-7xl">
@@ -185,44 +189,45 @@ const Readings: React.FC = () => {
         {sortedBooks.map((book, index) => (
           <div 
             key={index} 
-            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex gap-4"
+            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200"
           >
-            <div
-              className="relative w-20 h-32 flex-shrink-0 bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden"
-              style={{
-                borderLeft: "4px solid #aaa",
-                transform: "perspective(600px) rotateY(-5deg)",
-              }}
-            >
-              {covers[book.title] ? (
-                <Image
-                  src={covers[book.title]}
-                  alt={book.title}
-                  fill
-                  className="object-cover"
-                  sizes="80px"
-                  priority={index < 6}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <BookIcon className="w-6 h-6 text-zinc-400" />
-                </div>
-              )}
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-medium dark:text-white mb-1">{book.title}</h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2">{book.review}</p>
-              <div className="flex gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      i < book.score
-                        ? "bg-zinc-800 dark:bg-zinc-200"
-                        : "bg-zinc-300 dark:bg-zinc-600"
-                    }`}
+            <div className="flex gap-4">
+              <div className="relative w-16 h-24 flex-shrink-0 bg-gradient-to-b from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800 rounded-md overflow-hidden shadow-md">
+                {covers[book.title] ? (
+                  <Image
+                    src={covers[book.title]}
+                    alt={book.title}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                    priority={index < 6}
                   />
-                ))}
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <BookIcon className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-medium dark:text-white mb-2 line-clamp-2">{book.title}</h3>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-2">{book.review}</p>
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3 h-3 ${
+                          i < book.score
+                            ? "fill-zinc-700 text-zinc-700 dark:fill-zinc-300 dark:text-zinc-300"
+                            : "text-zinc-300 dark:text-zinc-600"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                    {book.score}/5
+                  </span>
+                </div>
               </div>
             </div>
           </div>
