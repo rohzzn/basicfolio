@@ -161,16 +161,16 @@ const WritingPage = () => {
           <article 
             key={post.slug}
             onClick={() => setSelectedPost(post.slug)}
-            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 sm:p-6 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
           >
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-2">
-              <h3 className="text-base font-medium dark:text-white">{post.title}</h3>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 gap-2">
+              <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">{post.title}</h3>
               <div className="flex items-center text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
                 <Calendar className="w-3 h-3 mr-1" />
                 <time dateTime={post.date}>{post.displayDate}</time>
               </div>
             </div>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">{post.description}</p>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400">{post.description}</p>
           </article>
         ))}
       </div>
