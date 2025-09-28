@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
+import WeatherIcon from './WeatherIcon';
+import DigitalClock from './Clock';
 
 interface NavLinkProps {
   href: string;
@@ -381,7 +383,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         <button
           onClick={togglePlay}
           disabled={!audioLoaded}
-          className={`flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300 pl-2 border-l border-zinc-200 dark:border-zinc-700 ${!audioLoaded ? 'opacity-50' : ''}`}
+          className={`flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300 ${!audioLoaded ? 'opacity-50' : ''}`}
           aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
         >
           {isPlaying ? (
@@ -390,6 +392,14 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             <VolumeX className="w-3.5 h-3.5" />
           )}
         </button>
+        
+        <div className="pl-2 border-l border-zinc-200 dark:border-zinc-700">
+          <WeatherIcon />
+        </div>
+        
+        <div>
+          <DigitalClock />
+        </div>
       </div>
       
 
