@@ -13,7 +13,6 @@ const LinksPage = () => {
         { title: "Spotify", description: "Playlists", url: "https://open.spotify.com/user/rohansanjeev" },
         { title: "YouTube", description: "Content", url: "https://youtube.com/rohzzn" },
         { title: "Reddit", description: "Posts & comments", url: "https://www.reddit.com/user/rohzzn/" },
-        { title: "Newsletter", description: "Get updates directly", url: "/writing#newsletter" },
       ]
     },
     coding: {
@@ -42,6 +41,9 @@ const LinksPage = () => {
         { title: "CS Settings", description: "CS config", url: "https://settings.gg/rohzzn" },
         { title: "FACEIT", description: "Peak Level 8", url: "https://www.faceit.com/en/players/Calatop" },
         { title: "Valorant Stats", description: "Competitive tracker", url: "https://tracker.gg/valorant/profile/riot/rohan%23main/performance?platform=pc&playlist=competitive&season=aef237a0-494d-3a14-a1c8-ec8de84e309c" },
+        { title: "Valorant Stats Alt", description: "Alt account stats", url: "https://tracker.gg/valorant/profile/riot/rohan%2331337/overview?platform=pc&playlist=competitive&season=5adc33fa-4f30-2899-f131-6fba64c5dd3a" },
+        { title: "Leetify", description: "CS2 performance analytics", url: "https://leetify.com/@rohzzn" },
+        { title: "CSWatch", description: "CS2 match history", url: "https://cswatch.in/player/76561198239653194" },
         { title: "Epic Games", description: "Library", url: "https://store.epicgames.com/u/1bd07ece9fd14b2da2c64b2c31f6f96a" }
       ]
     },
