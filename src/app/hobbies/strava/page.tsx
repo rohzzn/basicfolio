@@ -296,11 +296,11 @@ const StravaPage: React.FC = () => {
         </select>
       </div>
 
-      {/* Enhanced Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
           <div className="flex items-center gap-2 mb-2">
-            <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <Activity className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
             <h3 className="text-sm font-medium dark:text-white">Activities</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
@@ -311,9 +311,9 @@ const StravaPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
           <div className="flex items-center gap-2 mb-2">
-            <Map className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <Map className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
             <h3 className="text-sm font-medium dark:text-white">Distance</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
@@ -324,9 +324,9 @@ const StravaPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
           <div className="flex items-center gap-2 mb-2">
-            <Timer className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+            <Timer className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
             <h3 className="text-sm font-medium dark:text-white">Active Time</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
@@ -337,9 +337,9 @@ const StravaPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
           <div className="flex items-center gap-2 mb-2">
-            <Flame className="w-5 h-5 text-red-600 dark:text-red-400" />
+            <Flame className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
             <h3 className="text-sm font-medium dark:text-white">Calories</h3>
           </div>
           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
@@ -349,37 +349,6 @@ const StravaPage: React.FC = () => {
             Estimated calories burned
           </p>
         </div>
-      </div>
-
-      {/* Secondary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-          <div className="flex items-center gap-2 mb-2">
-            <ArrowUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <h3 className="text-sm font-medium dark:text-white">Elevation</h3>
-          </div>
-          <p className="text-xl font-bold text-zinc-700 dark:text-zinc-300">
-            {stats.totalElevation.toFixed(0)}m
-          </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Total gain
-          </p>
-        </div>
-
-        {stats.avgHeartRate > 0 && (
-          <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <Heart className="w-5 h-5 text-red-600 dark:text-red-400" />
-              <h3 className="text-sm font-medium dark:text-white">Heart Rate</h3>
-            </div>
-            <p className="text-xl font-bold text-zinc-700 dark:text-zinc-300">
-              {Math.round(stats.avgHeartRate)} bpm
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-              Avg / {stats.maxHeartRate} max
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Recent Activities */}
@@ -480,15 +449,17 @@ const StravaPage: React.FC = () => {
                 )} */}
 
                 <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div>
-                    <div className="flex items-center gap-1 mb-1">
-                      <Watch className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                      <p className="text-xs text-zinc-500">Duration</p>
+                  {activity.moving_time > 0 && (
+                    <div>
+                      <div className="flex items-center gap-1 mb-1">
+                        <Watch className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                        <p className="text-xs text-zinc-500">Duration</p>
+                      </div>
+                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        {formatTime(activity.moving_time)}
+                      </p>
                     </div>
-                    <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                      {formatTime(activity.moving_time)}
-                    </p>
-                  </div>
+                  )}
                   
                   {activity.average_speed > 0 && (
                     <div>
@@ -519,15 +490,17 @@ const StravaPage: React.FC = () => {
                     </div>
                   )}
 
-                  <div>
-                    <div className="flex items-center gap-1 mb-1">
-                      <Flame className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                      <p className="text-xs text-zinc-500">Calories</p>
+                  {calculateCalories(activity) > 0 && (
+                    <div>
+                      <div className="flex items-center gap-1 mb-1">
+                        <Flame className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                        <p className="text-xs text-zinc-500">Calories</p>
+                      </div>
+                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        {calculateCalories(activity)} kcal
+                      </p>
                     </div>
-                    <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                      {calculateCalories(activity)} kcal
-                    </p>
-                  </div>
+                  )}
 
                   {activity.average_heartrate && (
                     <div>

@@ -34,7 +34,7 @@ const Home: React.FC = () => {
             </h1>
             
             <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              I&apos;m a software engineer and computer science graduate student who loves building things that matter. Currently pursuing my Masters at the University of Cincinnati while working part-time as a developer at Cincinnati Children&apos;s Hospital, where I contribute to healthcare technology solutions that impact real lives.
+              I&apos;m a software engineer and computer science graduate student who loves building things that matter. Currently pursuing my Masters at the University of Cincinnati while working part-time as a developer at Cincinnati Children&apos;s Hospital, where I contribute to healthcare tech.
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ const Home: React.FC = () => {
       <div>
         <h2 className="text-lg font-medium mb-6 dark:text-white">Explore</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link href="/links" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 transform hover:-translate-y-1">
+          <Link href="/links" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
@@ -84,7 +84,7 @@ const Home: React.FC = () => {
             </div>
           </Link>
           
-          <Link href="/guestbook" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 transform hover:-translate-y-1">
+          <Link href="/guestbook" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
             </div>
           </Link>
           
-          <Link href="/stack" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 transform hover:-translate-y-1">
+          <Link href="/stack" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
@@ -112,7 +112,7 @@ const Home: React.FC = () => {
             </div>
           </Link>
           
-          <a href="mailto:hi@rohanpothuru.com" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 transform hover:-translate-y-1">
+          <a href="mailto:hi@rohanpothuru.com" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">

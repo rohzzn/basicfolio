@@ -89,7 +89,7 @@ const Hobbies: React.FC = () => (
         <Link
           key={card.href}
           href={card.href}
-          className="group bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95"
+          className="group bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200"
         >
           <div className="flex items-center gap-3 mb-3">
             <card.icon className="w-5 h-5 text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors" />

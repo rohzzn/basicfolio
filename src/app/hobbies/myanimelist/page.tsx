@@ -278,41 +278,38 @@ const MyAnimeList: React.FC = () => {
       ) : (
         <>
           {/* Stats Section */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-              <div className="flex items-center gap-2 mb-1">
-                <List className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <List className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                 <h3 className="text-sm font-medium dark:text-white">Watched</h3>
               </div>
-              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.watched}</p>
+              <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{stats.watched}</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Completed anime</p>
             </div>
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                 <h3 className="text-sm font-medium dark:text-white">Watching</h3>
               </div>
-              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.watching}</p>
+              <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{stats.watching}</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Currently watching</p>
             </div>
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-              <div className="flex items-center gap-2 mb-1">
-                <AlertCircle className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertCircle className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                 <h3 className="text-sm font-medium dark:text-white">Plan to Watch</h3>
               </div>
-              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.planToWatch}</p>
+              <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{stats.planToWatch}</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">In backlog</p>
             </div>
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-              <div className="flex items-center gap-2 mb-1">
-                <X className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-                <h3 className="text-sm font-medium dark:text-white">Dropped</h3>
-              </div>
-              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.dropped}</p>
-            </div>
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
-              <div className="flex items-center gap-2 mb-1">
-                <Star className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Star className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                 <h3 className="text-sm font-medium dark:text-white">Average Score</h3>
               </div>
-              <p className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">{stats.avgScore}</p>
+              <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{stats.avgScore}</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Out of 10</p>
             </div>
           </div>
 
