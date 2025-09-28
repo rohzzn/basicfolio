@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Github, ExternalLink, Users, Eye, Download, Star, Globe, Gamepad, Cpu, Blocks } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 interface Project {
   title: string;
@@ -21,107 +20,81 @@ interface Project {
 }
 
 const ProjectCard = ({ project }: { project: Project }) => {
+  const primaryLink = project.links[0];
+  const hasMetrics = project.metrics && (project.metrics.users || project.metrics.visits || project.metrics.downloads || project.metrics.githubStars);
+  
   return (
-    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg border border-zinc-100 dark:border-zinc-700 hover:border-zinc-200 dark:hover:border-zinc-600 h-full flex flex-col">
-      {/* Project image - clean with no overlay text */}
-      <div className="w-full overflow-hidden">
-        <Image
-          src={project.image}
-          alt={project.title}
-          width={600}
-          height={315}
-          className="w-full h-auto object-cover transition-transform duration-500 hover:scale-105"
-          priority
-        />
-      </div>
-      
-      {/* Content section - completely separate from image */}
-      <div className="p-4 flex flex-col flex-grow">
-        {/* Title and metrics */}
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-base font-medium text-zinc-900 dark:text-white">
+    <Link
+      href={primaryLink.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 block"
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
             {project.title}
           </h3>
-          
-          {/* Metrics badges */}
-          {project.metrics && (
-            <div className="flex gap-1.5">
-              {project.metrics.users && (
-                <div className="flex items-center text-[10px] text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-700/50 px-1.5 py-0.5 rounded">
-                  <Users className="w-2.5 h-2.5 mr-1" />
-                  {new Intl.NumberFormat().format(project.metrics.users)}
-                </div>
-              )}
-              {project.metrics.visits && (
-                <div className="flex items-center text-[10px] text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-700/50 px-1.5 py-0.5 rounded">
-                  <Eye className="w-2.5 h-2.5 mr-1" />
-                  {new Intl.NumberFormat().format(project.metrics.visits)}
-                </div>
-              )}
-              {project.metrics.downloads && (
-                <div className="flex items-center text-[10px] text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-700/50 px-1.5 py-0.5 rounded">
-                  <Download className="w-2.5 h-2.5 mr-1" />
-                  {new Intl.NumberFormat().format(project.metrics.downloads)}
-                </div>
-              )}
-              {project.metrics.githubStars && (
-                <div className="flex items-center text-[10px] text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-700/50 px-1.5 py-0.5 rounded">
-                  <Star className="w-2.5 h-2.5 mr-1" />
-                  {new Intl.NumberFormat().format(project.metrics.githubStars)}
-                </div>
-              )}
-            </div>
-          )}
+          <ExternalLink className="w-3 h-3 text-zinc-400 dark:text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
         
-        {/* Description */}
-        <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-2">
-          {project.description}
-        </p>
-        
-        {/* Tech stack */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {project.tech.map((tech, index) => (
-            <span
-              key={index}
-              className="text-[10px] font-medium px-2 py-0.5 bg-zinc-100 dark:bg-zinc-700/50 text-zinc-700 dark:text-zinc-300 rounded-full"
-            >
-              {tech}
-            </span>
-          ))}
-        </div>
-        
-        {/* Links */}
-        <div className="flex items-center gap-2 mt-auto pt-3 border-t border-zinc-100 dark:border-zinc-700">
-          {project.links.map((link, index) => (
-            <Link
-              key={index}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-700/50 px-2.5 py-1.5 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-            >
-              {link.label === "GitHub" ? (
-                <>GitHub <Github className="w-3 h-3" /></>
-              ) : (
-                <>{link.label} <ExternalLink className="w-3 h-3" /></>
-              )}
-            </Link>
-          ))}
-        </div>
+        {/* Single prominent metric */}
+        {hasMetrics && (
+          <div className="flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+            {project.metrics?.users && (
+              <>
+                <Users className="w-3 h-3 mr-1" />
+                {new Intl.NumberFormat().format(project.metrics.users)}
+              </>
+            )}
+            {!project.metrics?.users && project.metrics?.visits && (
+              <>
+                <Eye className="w-3 h-3 mr-1" />
+                {new Intl.NumberFormat().format(project.metrics.visits)}
+              </>
+            )}
+            {!project.metrics?.users && !project.metrics?.visits && project.metrics?.downloads && (
+              <>
+                <Download className="w-3 h-3 mr-1" />
+                {new Intl.NumberFormat().format(project.metrics.downloads)}
+              </>
+            )}
+            {!project.metrics?.users && !project.metrics?.visits && !project.metrics?.downloads && project.metrics?.githubStars && (
+              <>
+                <Star className="w-3 h-3 mr-1" />
+                {new Intl.NumberFormat().format(project.metrics.githubStars)}
+              </>
+            )}
+          </div>
+        )}
       </div>
-    </div>
+      
+      <p className="text-xs text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 mb-3">
+        {project.description}
+      </p>
+      
+      {/* Primary tech stack (max 3) */}
+      <div className="flex flex-wrap gap-1.5">
+        {project.tech.slice(0, 3).map((tech, index) => (
+          <span
+            key={index}
+            className="text-xs px-2 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded-md"
+          >
+            {tech}
+          </span>
+        ))}
+        {project.tech.length > 3 && (
+          <span className="text-xs px-2 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded-md">
+            +{project.tech.length - 3}
+          </span>
+        )}
+      </div>
+    </Link>
   );
 };
 
 const Projects = () => {
   const [activeTab, setActiveTab] = useState<"application" | "web" | "game" | "other">("application");
-  const [isInView, setIsInView] = useState(false);
-  
-  // Animation on mount
-  useEffect(() => {
-    setIsInView(true);
-  }, []);
   
   const projects: Project[] = [
     {
@@ -623,56 +596,39 @@ const Projects = () => {
   ];
 
   return (
-    <div className="w-full max-w-7xl">
-      <div className="mb-8">
-        <h2 className="text-lg sm:text-xl font-medium mb-3 dark:text-white">Projects</h2>
-      </div>
+    <div className="max-w-7xl">
+      <h2 className="text-lg font-medium mb-6 dark:text-white">Projects</h2>
 
-      {/* Modern Category Pills */}
-      <div className="mb-8 overflow-x-auto -mx-4 px-4 pb-2">
-        <div className="flex gap-2 p-1.5 min-w-fit">
+      {/* Simplified Category Tabs */}
+      <div className="mb-8">
+        <div className="flex flex-wrap gap-2">
           {displayCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveTab(category.id)}
               className={`
-                flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-full transition-all duration-300
+                flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors
                 ${activeTab === category.id
-                  ? "bg-zinc-800 dark:bg-white text-white dark:text-zinc-800"
-                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                  ? "bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white"
+                  : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                 }
               `}
             >
               {category.icon}
               <span>{category.label}</span>
-              <span className={`
-                text-xs px-1.5 py-0.5 rounded-full text-center min-w-[20px]
-                ${activeTab === category.id
-                  ? "bg-white/20 dark:bg-zinc-800/20 text-white dark:text-zinc-800"
-                  : "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
-                }
-              `}>
-                {categories[category.id]?.length || 0}
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                ({categories[category.id]?.length || 0})
               </span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Content Area with Grid */}
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 w-full transition-opacity duration-500 ${isInView ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Simple Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories[activeTab]?.length ? (
           categories[activeTab].map((project, index) => (
-            <div 
-              key={index}
-              className="transform transition-all duration-500"
-              style={{
-                transitionDelay: `${index * 50}ms`,
-                transform: isInView ? 'translateY(0)' : 'translateY(20px)'
-              }}
-            >
-              <ProjectCard project={project} />
-            </div>
+            <ProjectCard key={index} project={project} />
           ))
         ) : (
           <div className="col-span-full py-20 text-center">
