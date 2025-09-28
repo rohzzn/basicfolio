@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
-import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 import IxigoExperience from './ixigo-experience';
 import BeginnersGuideDesign from './beginners-guide-design';
 import BeginnersGuideProgramming from './beginners-guide-programming';
@@ -15,10 +14,6 @@ import ChatGPTInterface from './chatgpt-interface';
 import DiscordArticle from './discord-article';
 import UCExperience from './uc-experience';
 import FirstSpring from './first-spring';
-import NewsletterLaunch from './newsletter-launch';
-
-// Track processed posts to avoid duplicate newsletter sends
-const processedPosts = new Set<string>();
 
 const WritingPage = () => {
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
@@ -108,66 +103,8 @@ const WritingPage = () => {
       displayDate: 'April 28, 2021',
       description: 'An insightful guide to getting started with graphic design, covering fundamentals, tools, and practical tips for beginners.'
     },
-    {
-      slug: 'newsletter-launch',
-      title: 'Announcing: Subscribe to Get Updates on New Posts!',
-      date: '2025-05-28',
-      displayDate: 'May 28, 2025',
-      description: 'Introducing the new newsletter feature that automatically sends you notifications whenever new content is published.'
-    }
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), []);
 
-  // Function to send newsletter for a post
-  const sendNewsletterForPost = async (post: {
-    slug: string;
-    title: string;
-    description: string;
-    date: string;
-    displayDate: string;
-  }) => {
-    // Skip if already processed in this session
-    if (processedPosts.has(post.slug)) {
-      console.log(`Post ${post.slug} already processed in this session, skipping newsletter`);
-      return;
-    }
-    
-    console.log(`Sending newsletter for post: ${post.slug}`);
-    
-    // Mark as processed to avoid duplicate sends
-    processedPosts.add(post.slug);
-    
-    try {
-      // Attempt to send newsletter even in development for testing
-      const apiKey = process.env.NEXT_PUBLIC_NEWSLETTER_API_KEY || '';
-      console.log('Newsletter API key exists:', !!apiKey);
-      
-      console.log('Sending newsletter API request');
-      const response = await fetch('/api/send-newsletter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          post: {
-            slug: post.slug,
-            title: post.title,
-            description: post.description,
-            url: `${window.location.origin}/writing?post=${post.slug}`,
-          },
-        }),
-      });
-      
-      const data = await response.json();
-      console.log('Newsletter API response:', data);
-      
-      if (!response.ok) {
-        console.error('Newsletter API error:', data);
-      }
-    } catch (error) {
-      console.error('Error sending newsletter:', error);
-    }
-  };
 
   // Use effect to handle URL parameters
   useEffect(() => {
@@ -181,14 +118,6 @@ const WritingPage = () => {
   }, []);
 
   const renderPost = () => {
-    // First send a newsletter notification about this post if it's new
-    if (selectedPost) {
-      const post = posts.find(p => p.slug === selectedPost);
-      if (post) {
-        sendNewsletterForPost(post);
-      }
-    }
-    
     switch(selectedPost) {
       case 'ixigo-experience':
         return <IxigoExperience onBack={() => setSelectedPost(null)} />;
@@ -214,8 +143,6 @@ const WritingPage = () => {
         return <UCExperience onBack={() => setSelectedPost(null)} />;
       case 'first-spring':
         return <FirstSpring onBack={() => setSelectedPost(null)} />;
-      case 'newsletter-launch':
-        return <NewsletterLaunch onBack={() => setSelectedPost(null)} />;
       default:
         return null;
     }
@@ -228,11 +155,6 @@ const WritingPage = () => {
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Writing</h2>
-      
-      {/* Newsletter Subscribe */}
-      <div>
-        <NewsletterSubscribe />
-      </div>
       
       <div className="grid gap-4 sm:gap-6">
         {posts.map((post) => (
