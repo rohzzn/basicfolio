@@ -187,7 +187,7 @@ export default function GuestbookPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name..."
-              className="bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+              className="bg-transparent border-b border-zinc-200 dark:border-zinc-700 px-0 py-2 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-500 transition-colors"
               disabled={isSending}
               required
             />
@@ -195,16 +195,16 @@ export default function GuestbookPage() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Your message..."
-              className="bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 min-h-[100px]"
+              className="bg-transparent border-b border-zinc-200 dark:border-zinc-700 px-0 py-2 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-500 transition-colors min-h-[100px] resize-none"
               disabled={isSending}
               required
             />
             <button
               type="submit"
               disabled={isSending || !name.trim() || !message.trim()}
-              className="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="self-start px-0 py-1 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-b border-transparent hover:border-zinc-300 dark:hover:border-zinc-600"
             >
-              {isSending ? 'Sending...' : 'Send'}
+              {isSending ? 'Sending...' : 'Send →'}
             </button>
           </div>
         </form>
@@ -240,27 +240,19 @@ export default function GuestbookPage() {
           ) : (
             <div className="space-y-6">
               {comments.map((comment, index) => (
-                <div key={comment.id} className="flex gap-4 py-4 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
-                  {/* Numbering Section */}
-                  <div className="flex-shrink-0 text-zinc-500 dark:text-zinc-400">
-                    <span className="font-semibold">{comments.length - index}.</span>
+                <article key={comment.id}>
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">
+                      {comment.displayName || 'Anonymous'}
+                    </h3>
+                    <time className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+                      {formatDate(comment.createdAt)}
+                    </time>
                   </div>
-
-                  {/* Comment Content */}
-                  <div className="flex-grow">
-                    <div className="flex items-baseline flex-wrap gap-2">
-                      <span className="font-medium text-zinc-800 dark:text-zinc-200">
-                        {comment.displayName || 'Anonymous'}
-                      </span>
-                      <span className="text-xs text-zinc-500 dark:text-zinc-500">
-                        {formatDate(comment.createdAt)}
-                      </span>
-                    </div>
-                    <p className="text-zinc-600 dark:text-zinc-400 mt-1 whitespace-pre-wrap">
-                      {comment.messageBody}
-                    </p>
-                  </div>
-                </div>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap">
+                    {comment.messageBody}
+                  </p>
+                </article>
               ))}
               
               {/* Load More Button */}
@@ -269,16 +261,9 @@ export default function GuestbookPage() {
                   <button
                     onClick={loadMoreComments}
                     disabled={isLoadingMore}
-                    className="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-b border-transparent hover:border-zinc-300 dark:hover:border-zinc-600"
                   >
-                    {isLoadingMore ? (
-                      <span className="flex items-center justify-center">
-                        <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-zinc-700 dark:border-zinc-300 mr-2"></span>
-                        Loading...
-                      </span>
-                    ) : (
-                      'Load More Messages'
-                    )}
+                    {isLoadingMore ? 'Loading...' : 'Load More →'}
                   </button>
                 </div>
               )}
