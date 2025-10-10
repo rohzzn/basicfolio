@@ -457,7 +457,7 @@ const StravaPage: React.FC = () => {
                       {activity.average_heartrate && activity.average_heartrate > 0 && (
                         <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
                       )}
-                      {activity.total_photo_count && activity.total_photo_count > 1 && (
+                      {activity.total_photo_count > 1 && (
                         <div>{activity.total_photo_count} photos</div>
                       )}
                     </div>
@@ -486,7 +486,7 @@ const StravaPage: React.FC = () => {
                     {activity.average_heartrate && activity.average_heartrate > 0 && (
                       <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
                     )}
-                    {activity.total_photo_count && activity.total_photo_count > 1 && (
+                    {activity.total_photo_count > 1 && (
                       <div>{activity.total_photo_count} photos</div>
                     )}
                   </div>
@@ -494,7 +494,7 @@ const StravaPage: React.FC = () => {
               </article>
               
               {/* Divider line between activities (except for the last one) */}
-              {index < activities.length - 1 && (
+              {(index < activities.length - 1) && (
                 <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-6"></div>
               )}
             </div>
