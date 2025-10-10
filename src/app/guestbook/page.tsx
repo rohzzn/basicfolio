@@ -239,7 +239,7 @@ export default function GuestbookPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {comments.map((comment, index) => (
+              {comments.map((comment) => (
                 <article key={comment.id}>
                   <div className="flex items-start justify-between gap-4 mb-2">
                     <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">
