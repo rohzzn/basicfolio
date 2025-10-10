@@ -40,18 +40,6 @@ const Readings: React.FC = () => {
   const [sortBy, setSortBy] = useState<'score' | 'title'>('score');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
-  // Calculate stats
-  const stats = useMemo(() => {
-    const totalBooks = books.length;
-    const avgScore = books.reduce((acc, book) => acc + book.score, 0) / totalBooks;
-    const fiveStarBooks = books.filter(book => book.score === 5).length;
-
-    return {
-      totalBooks,
-      avgScore: avgScore.toFixed(1),
-      fiveStarBooks
-    };
-  }, []);
 
   // Sort books
   const sortedBooks = useMemo(() => {
