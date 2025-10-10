@@ -48,8 +48,8 @@ const ActivityPolyline: React.FC<{ polyline: string }> = ({ polyline }) => {
   const minLng = Math.min(...points.map(p => p[1]));
   const maxLng = Math.max(...points.map(p => p[1]));
   
-  const height = 100;
-  const width = 200;
+  const height = 200;
+  const width = 400;
   
   const normalizedPoints = points.map(point => [
     ((point[1] - minLng) / (maxLng - minLng)) * width,
@@ -304,264 +304,203 @@ const StravaPage: React.FC = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Activity className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-            <h3 className="text-sm font-medium dark:text-white">Activities</h3>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+        <article>
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Activities</h3>
           </div>
-          <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
+          <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">
             {stats.totalActivities}
           </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400">
             {stats.weeklyActivities} in the last week
           </p>
-        </div>
+        </article>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Map className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-            <h3 className="text-sm font-medium dark:text-white">Distance</h3>
+        <article>
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Distance</h3>
           </div>
-          <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
+          <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">
             {formatDistance(stats.totalDistance)}
           </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400">
             {formatDistance(stats.weeklyDistance)} in the last week
           </p>
-        </div>
+        </article>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Timer className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-            <h3 className="text-sm font-medium dark:text-white">Active Time</h3>
+        <article>
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Active Time</h3>
           </div>
-          <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
+          <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">
             {formatTime(stats.totalTime)}
           </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400">
             {Math.round(stats.totalTime / 3600)} hours total
           </p>
-        </div>
+        </article>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Flame className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-            <h3 className="text-sm font-medium dark:text-white">Calories</h3>
+        <article>
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Calories</h3>
           </div>
-          <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
+          <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">
             {stats.totalCalories.toLocaleString()}
           </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400">
             Estimated calories burned
           </p>
-        </div>
+        </article>
       </div>
+
+      {/* Divider */}
+      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
 
       {/* Recent Activities */}
       <div className="mb-6">
-        <h3 className="text-lg font-medium mb-4 dark:text-white">Recent Activities</h3>
-        <div className="space-y-4">
-          {activities.map((activity) => (
-            <div 
-              key={activity.id}
-              className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-6 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-base font-medium dark:text-white">{activity.name}</h4>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Calendar className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      {formatDate(activity.start_date)}
-                    </p>
-                  </div>
+        <h3 className="text-lg font-medium mb-6 dark:text-white">Recent Activities</h3>
+        <div className="space-y-6">
+          {activities.map((activity, index) => (
+            <div key={activity.id}>
+              <article>
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">
+                    {activity.name}
+                  </h4>
+                  <time className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+                    {formatDate(activity.start_date)}
+                  </time>
                 </div>
                 {activity.distance > 0 && (
-                  <span className="text-sm px-3 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-700 dark:text-zinc-300 font-medium">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3">
                     {formatDistance(activity.distance)}
-                  </span>
-                )}
-              </div>
-                
-              <div className="flex flex-col md:flex-row gap-6">
-                {/* Display photos if available (from Hevy) */}
-                {activity.photos?.primary?.urls && (
-                  <div className="w-full md:w-auto">
-                    <Image 
-                      src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
-                      alt={`Photo from ${activity.name}`}
-                      className="rounded-lg"
-                      width={600}
-                      height={300}
-                      style={{ 
-                        maxHeight: '300px', 
-                        width: 'auto',
-                        height: 'auto',
-                        objectFit: 'contain' 
-                      }}
-                      onError={(e) => console.error('Image failed to load:', e)}
-                    />
-                  </div>
+                  </p>
                 )}
 
-                {/* If no photo but there's a map polyline, show the map */}
-                {!activity.photos?.primary?.urls && activity.map?.summary_polyline && (
-                  <div className="w-[200px] h-[100px] bg-zinc-200 dark:bg-zinc-700/50 rounded-lg overflow-hidden flex items-center justify-center">
-                    <ActivityPolyline polyline={activity.map.summary_polyline} />
-                  </div>
-                )}
+                {/* Check if we have any visual content (photos or maps) */}
+                {(activity.photos?.primary?.urls || activity.map?.summary_polyline || (activity.photos && !activity.photos.primary?.urls && activity.photos.primary)) ? (
+                  <div className="flex gap-6">
+                    {/* Left side - Images/Maps */}
+                    <div className="flex-shrink-0">
+                      {/* Display photos if available */}
+                      {activity.photos?.primary?.urls && (
+                        <Image 
+                          src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
+                          alt={`Photo from ${activity.name}`}
+                          className="rounded-lg"
+                          width={400}
+                          height={300}
+                          style={{ 
+                            maxHeight: '300px', 
+                            width: 'auto',
+                            height: 'auto',
+                            objectFit: 'contain' 
+                          }}
+                          onError={(e) => console.error('Image failed to load:', e)}
+                        />
+                      )}
 
-                {/* If the previous approach doesn't show images, add this fallback approach */}
-                {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
-                  <div className="w-full md:w-auto">
-                    <Image 
-                      src={
-                        typeof activity.photos.primary === 'object' && 
-                        'source' in activity.photos.primary && 
-                        'unique_id' in activity.photos.primary && 
-                        activity.photos.primary.source === 1 && 
-                        typeof activity.photos.primary.unique_id === 'string'
-                          ? `https://dgtzuqphqg23d.cloudfront.net/${activity.photos.primary.unique_id}-768x576.jpg`
-                          : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
-                      } 
-                      alt={`Photo from ${activity.name}`}
-                      className="rounded-lg"
-                      width={600}
-                      height={300}
-                      style={{ 
-                        maxHeight: '300px', 
-                        width: 'auto',
-                        height: 'auto',
-                        objectFit: 'contain' 
-                      }}
-                      onError={(e) => {
-                        console.error('Fallback image failed to load:', e);
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
+                      {/* If no photo but there's a map polyline, show the map */}
+                      {!activity.photos?.primary?.urls && activity.map?.summary_polyline && (
+                        <div className="w-[400px] h-[200px] bg-zinc-200 dark:bg-zinc-700/50 rounded-lg overflow-hidden flex items-center justify-center">
+                          <ActivityPolyline polyline={activity.map.summary_polyline} />
+                        </div>
+                      )}
 
-                {/* Alternative display for photos to debug the structure - ONLY ENABLE THIS FOR DEBUGGING */}
-                {/* {activity.total_photo_count && activity.total_photo_count > 0 && !activity.photos?.primary?.urls && (
-                  <div className="w-full md:w-auto bg-zinc-200 dark:bg-zinc-700 rounded-lg p-4 text-center">
-                    <p className="text-zinc-700 dark:text-zinc-300">Activity has {activity.total_photo_count} photos</p>
-                    <pre className="text-xs mt-2 text-left overflow-auto max-h-[200px]">
-                      {JSON.stringify(activity.photos, null, 2)}
-                    </pre>
-                  </div>
-                )} */}
-
-                <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {activity.moving_time > 0 && (
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <Watch className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                        <p className="text-xs text-zinc-500">Duration</p>
-                      </div>
-                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        {formatTime(activity.moving_time)}
-                      </p>
+                      {/* Fallback approach for different photo structures */}
+                      {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
+                        <Image 
+                          src={
+                            typeof activity.photos.primary === 'object' && 
+                            'source' in activity.photos.primary && 
+                            'unique_id' in activity.photos.primary && 
+                            activity.photos.primary.source === 1 && 
+                            typeof activity.photos.primary.unique_id === 'string'
+                              ? `https://dgtzuqphqg23d.cloudfront.net/${activity.photos.primary.unique_id}-768x576.jpg`
+                              : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
+                          } 
+                          alt={`Photo from ${activity.name}`}
+                          className="rounded-lg"
+                          width={400}
+                          height={300}
+                          style={{ 
+                            maxHeight: '300px', 
+                            width: 'auto',
+                            height: 'auto',
+                            objectFit: 'contain' 
+                          }}
+                          onError={(e) => {
+                            console.error('Fallback image failed to load:', e);
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      )}
                     </div>
-                  )}
-                  
-                  {activity.average_speed > 0 && (
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <Gauge className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                        <p className="text-xs text-zinc-500">
-                          {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}
-                        </p>
-                      </div>
-                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+
+                    {/* Right side - Activity Details */}
+                    <div className="flex-1 text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
+                      {activity.moving_time > 0 && (
+                        <div>Duration: {formatTime(activity.moving_time)}</div>
+                      )}
+                      {activity.average_speed > 0 && (
+                        <div>
+                          {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}: {' '}
+                          {activity.type === 'Run' || activity.type === 'Walk' 
+                            ? formatPace(activity.average_speed)
+                            : formatSpeed(activity.average_speed)
+                          }
+                        </div>
+                      )}
+                      {activity.total_elevation_gain > 0 && (
+                        <div>Elevation: {activity.total_elevation_gain.toFixed(0)}m</div>
+                      )}
+                      {calculateCalories(activity) > 0 && (
+                        <div>Calories: {calculateCalories(activity)} kcal</div>
+                      )}
+                      {activity.average_heartrate && activity.average_heartrate > 0 && (
+                        <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
+                      )}
+                      {activity.total_photo_count && activity.total_photo_count > 1 && (
+                        <div>{activity.total_photo_count} photos</div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  /* No visual content - just show details without flex layout */
+                  <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
+                    {activity.moving_time > 0 && (
+                      <div>Duration: {formatTime(activity.moving_time)}</div>
+                    )}
+                    {activity.average_speed > 0 && (
+                      <div>
+                        {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}: {' '}
                         {activity.type === 'Run' || activity.type === 'Walk' 
                           ? formatPace(activity.average_speed)
                           : formatSpeed(activity.average_speed)
                         }
-                      </p>
-                    </div>
-                  )}
-
-                  {activity.total_elevation_gain > 0 && (
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <ArrowUp className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                        <p className="text-xs text-zinc-500">Elevation</p>
                       </div>
-                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        {activity.total_elevation_gain.toFixed(0)}m
-                      </p>
-                    </div>
-                  )}
-
-                  {calculateCalories(activity) > 0 && (
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <Flame className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                        <p className="text-xs text-zinc-500">Calories</p>
-                      </div>
-                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        {calculateCalories(activity)} kcal
-                      </p>
-                    </div>
-                  )}
-
-                  {activity.average_heartrate && (
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <Heart className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                        <p className="text-xs text-zinc-500">Heart Rate</p>
-                      </div>
-                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        {Math.round(activity.average_heartrate)} bpm avg
-                      </p>
-                      {activity.max_heartrate && (
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                          {Math.round(activity.max_heartrate)} bpm max
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {activity.suffer_score && (
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <Sun className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                        <p className="text-xs text-zinc-500">Training Load</p>
-                      </div>
-                      <div className="w-full h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${activity.suffer_score > 150 ? 'bg-red-500' : activity.suffer_score > 100 ? 'bg-orange-500' : 'bg-green-500'} rounded-full`}
-                          style={{ width: `${Math.min((activity.suffer_score / 250) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                        {activity.suffer_score} / 250
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Show photo count if there are multiple photos */}
-                  {(activity.total_photo_count && activity.total_photo_count > 1) && (
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-zinc-500 dark:text-zinc-400" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="3" width="18" height="18" rx="2" />
-                          <circle cx="8.5" cy="8.5" r="1.5" />
-                          <path d="M20.4 14.5L16 10 4 20" />
-                        </svg>
-                        <p className="text-xs text-zinc-500">Photos</p>
-                      </div>
-                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        {activity.total_photo_count} photos
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
+                    )}
+                    {activity.total_elevation_gain > 0 && (
+                      <div>Elevation: {activity.total_elevation_gain.toFixed(0)}m</div>
+                    )}
+                    {calculateCalories(activity) > 0 && (
+                      <div>Calories: {calculateCalories(activity)} kcal</div>
+                    )}
+                    {activity.average_heartrate && activity.average_heartrate > 0 && (
+                      <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
+                    )}
+                    {activity.total_photo_count && activity.total_photo_count > 1 && (
+                      <div>{activity.total_photo_count} photos</div>
+                    )}
+                  </div>
+                )}
+              </article>
+              
+              {/* Divider line between activities (except for the last one) */}
+              {index < activities.length - 1 && (
+                <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-6"></div>
+              )}
             </div>
           ))}
 
@@ -575,8 +514,7 @@ const StravaPage: React.FC = () => {
 
       {/* No Activities Message */}
       {!loading && activities.length === 0 && (
-        <div className="text-center py-12 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-          <Activity className="w-12 h-12 text-zinc-400 dark:text-zinc-500 mx-auto mb-4" />
+        <div className="text-center py-12">
           <p className="text-zinc-600 dark:text-zinc-400">No activities found in the selected time range</p>
         </div>
       )}
