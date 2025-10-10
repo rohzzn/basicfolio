@@ -15,13 +15,33 @@ const setup: Setup[] = [
   {
     category: "Workstation",
     items: [
-      { name: 'MacBook Air 13" (2022)', description: 'M2, 8GB RAM, 128GB SSD', url: 'https://www.apple.com/macbook-air-m2/' },    
-      { name: "BenQ PD2700U", description: "27\" IPS Monitor", url: "https://www.benq.com/en-us/monitor/designer/pd2700u.html" },
-      { name: "Keychron K8", description: "Mechanical Keyboard with Brown Switches", url: "https://www.keychron.com/products/keychron-k8-wireless-mechanical-keyboard" },
-      { name: "Razor Death Adder V2", description: "Wireless Mouse", url: "https://www.razer.com/gaming-mice/razer-deathadder-v2" },
-      { name: "Airpods Pro 2", description: "Noise Cancelling Earbuds", url: "https://www.apple.com/airpods-pro/" },
+      { name: 'MacBook Air 13" (2022) (Home Server)', description: 'M2, 8GB RAM, 128GB SSD', url: 'https://www.apple.com/macbook-air-m2/' },
+      { name: 'MacBook Pro 14" M3 Pro', description: 'Work Laptop', url: 'https://www.apple.com/macbook-pro-14-and-16/' },    
+      { name: "Koorui 27\" 300Hz", description: "Gaming Monitor", url: "https://www.amazon.com/dp/B0BQJBQZQX" },
+      { name: "BenQ Mobiuz 27\" 165Hz", description: "Secondary Monitor", url: "https://www.benq.com/en-us/monitor/gaming/ex270qm.html" },
+      { name: "GTRACING Gaming Chair", description: "Ergonomic Gaming Chair", url: "https://www.gtracingchair.com/" },
       { name: "Logitech C920", description: "HD Webcam", url: "https://www.logitech.com/en-us/products/webcams/c920-pro-hd-webcam.html" },
-      { name: "IKEA Markus", description: "Office Chair", url: "https://www.ikea.com/us/en/p/markus-office-chair-vissle-dark-gray-90289172/" }
+      { name: "iPad 10th Gen", description: "Tablet for Design & Notes", url: "https://www.apple.com/ipad-10.9/" },
+      { name: "Steam Deck OLED", description: "Handheld Gaming", url: "https://store.steampowered.com/steamdeck" }
+    ]
+  },
+  {
+    category: "Peripherals",
+    items: [
+      { name: "Razer Viper V3 Pro", description: "Primary Gaming Mouse", url: "https://www.razer.com/gaming-mice/razer-viper-v3-pro" },
+      { name: "Razer DeathAdder V2", description: "Secondary Mouse", url: "https://www.razer.com/gaming-mice/razer-deathadder-v2" },
+      { name: "Glorious Model O", description: "Lightweight Gaming Mouse", url: "https://www.gloriousgaming.com/products/glorious-model-o-black" },
+      { name: "Logitech G102", description: "Budget Gaming Mouse", url: "https://www.logitechg.com/en-us/products/gaming-mice/g102-lightsync-rgb-gaming-mouse.html" },
+      { name: "Keychron K8", description: "Wireless Mechanical Keyboard", url: "https://www.keychron.com/products/keychron-k8-wireless-mechanical-keyboard" },
+      { name: "GK61 (Gateron Browns)", description: "60% Mechanical Keyboard", url: "https://www.amazon.com/dp/B07JBQZPX6" },
+      { name: "HyperX Cloud 2 (Wireless)", description: "Primary Gaming Headset", url: "https://www.hyperxgaming.com/us/headsets/cloud-flight-wireless-gaming-headset" },
+      { name: "Apple EarPods", description: "Wired Earphones", url: "https://www.apple.com/us/shop/product/MMTN2AM/A/earpods-with-35-mm-headphone-plug" },
+      { name: "Razer Kraken", description: "Gaming Headset", url: "https://www.razer.com/gaming-headsets/razer-kraken" },
+      { name: "HyperX Cloud", description: "Gaming Headset", url: "https://www.hyperxgaming.com/us/headsets/cloud-gaming-headset" },
+      { name: "HyperX SoloCast", description: "USB Microphone", url: "https://www.hyperxgaming.com/us/microphones/hyperx-solocast-usb-microphone" },
+      { name: "Blue Snowball", description: "USB Microphone", url: "https://www.bluemic.com/en-us/products/snowball/" },
+      { name: "Artisan FX Zero XSOFT", description: "Premium Gaming Mousepad", url: "https://www.artisan-jp.com/fx-zero-eng.html" },
+      { name: "Razer Gigantus", description: "Large Gaming Mousepad", url: "https://www.razer.com/gaming-mouse-mats/razer-gigantus-v2" }
     ]
   },
   {
@@ -31,64 +51,38 @@ const setup: Setup[] = [
       { name: "Warp", description: "Terminal", url: "https://www.warp.dev/" },
       { name: "Docker Desktop", description: "Container Management", url: "https://www.docker.com/products/docker-desktop/" },
       { name: "Burp Suite", description: "Security Assessment", url: "https://portswigger.net/burp" },
-      { name: "Postman", description: "API Testing Tool", url: "https://www.postman.com/" },
-      { name: "GitHub Desktop", description: "Git GUI", url: "https://desktop.github.com/" },
-      { name: "MongoDB Compass", description: "Database GUI", url: "https://www.mongodb.com/products/compass" },
-      { name: "TablePlus", description: "Database Management", url: "https://tableplus.com/" },
-      { name: "Insomnia", description: "API Design Platform", url: "https://insomnia.rest/" }
+      { name: "Postman", description: "API Testing Tool", url: "https://www.postman.com/" }
     ]
   },
   {
-    category: "Mac Dock",
+    category: "Apps I Like",
     items: [
-      { name: "Arc", description: "Primary Browser", url: "https://arc.net/" },
+      { name: "Flighty", description: "Flight Tracker", url: "https://www.flightyapp.com/" },
+      { name: "Balatro", description: "Poker Roguelike Game", url: "https://store.steampowered.com/app/2379780/Balatro/" },
+      { name: "Fold", description: "Money Manager", url: "https://fold.money/" },
+      { name: "Hevy", description: "Workout Tracker", url: "https://www.hevyapp.com/" },
       { name: "Raycast", description: "Spotlight Replacement", url: "https://www.raycast.com/" },
-      { name: "Teams", description: "Work Collaboration", url: "https://www.microsoft.com/en-us/microsoft-teams/download-app" },
-      { name: "Notion", description: "Notes & Documentation", url: "https://www.notion.so/" },
-      { name: "Typora", description: "Markdown Editor", url: "https://typora.io/" },
-      { name: "Spotify", description: "Music Streaming", url: "https://www.spotify.com/" },
-      { name: "Discord", description: "Community and Chat", url: "https://discord.com/" },
-      { name: "Adobe Photoshop", description: "Image Editing", url: "https://www.adobe.com/products/photoshop.html" },
-      { name: "Figma", description: "UI/UX Design", url: "https://www.figma.com/" },
-      { name: "Bitwarden", description: "Password Manager", url: "https://bitwarden.com/" },
       { name: "Authy", description: "Two Factor Auth", url: "https://authy.com/" },
-      { name: "Clean My Mac", description: "System Cleaner", url: "https://macpaw.com/cleanmymac" },
-      { name: "Cheatsheet", description: "Shortcuts", url: "https://www.mediaatelier.com/CheatSheet/" },
-      { name: "Shottr", description: "Screenshot Tool", url: "https://shottr.cc/" },
-      { name: "Rectangle", description: "Window Manager", url: "https://rectangleapp.com/" },
-      { name: "Numi", description: "Calculator", url: "https://numi.app/" },
-      { name: "Slack", description: "Team Communication", url: "https://slack.com/" }
+      { name: "CheatSheet", description: "Keyboard Shortcuts", url: "https://www.mediaatelier.com/CheatSheet/" },
+      { name: "Bitwarden", description: "Password Manager", url: "https://bitwarden.com/" },
+      { name: "Photoshop", description: "Editing", url: "https://www.adobe.com/products/photoshop.html" },
+      { name: "Discord", description: "Community Chat", url: "https://discord.com/" },
+      { name: "Spotify", description: "Music Streaming", url: "https://www.spotify.com/" },
+      { name: "Typora", description: "Markdown Editor", url: "https://typora.io/" }
     ]
   },
   {
-    category: "Mobile Setup",
+    category: "Bookmarks (Cool Finds)",
     items: [
-      { name: "iPhone 16 Pro", description: "Daily Driver", url: "https://www.apple.com/iphone-14-pro/" },
-      { name: "Perplexity", description: "AI Search Engine", url: "https://www.perplexity.ai/" },
-      { name: "Apple Calendar", description: "Planning & Tasks", url: "https://apps.apple.com/us/app/calendar/id1108185179" },
-      { name: "Kino", description: "Camera App", url: "https://apps.apple.com/us/app/kino-analog-film-camera/id1473600853" },
-      { name: "Fold", description: "Money Management", url: "https://fold.money/" },
-      { name: "Flighty", description: "Flights Tracker", url: "https://www.flightyapp.com/" },
-      { name: "Robinhood", description: "Stocks & Crypto", url: "https://robinhood.com/us/en/" },
-      { name: "Phantom", description: "Crypto Wallet", url: "https://phantom.app/" },
-      { name: "Apollo", description: "Reddit Client", url: "https://apolloapp.io/" },
-      { name: "Things", description: "Task Management", url: "https://culturedcode.com/things/" },
-      { name: "Halide", description: "Pro Camera", url: "https://halide.cam/" }
-    ]
-  },
-  {
-    category: "Editor Setup",
-    items: [
-      { name: "Theme", description: "Gruvbox Hard Theme", url: "https://marketplace.visualstudio.com/items?itemName=jdinhlife.gruvbox" },
-      { name: "Font", description: "JetBrains Mono", url: "https://www.jetbrains.com/lp/mono/" },
-      { name: "File Icons", description: "Material Icon Theme", url: "https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme" },
-      { name: "Prettier", description: "Code Formatter", url: "https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode" },
-      { name: "ESLint", description: "Linting", url: "https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint" },
-      { name: "GitLens", description: "Git Supercharged", url: "https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens" },
-      { name: "Path Intellisense", description: "Autocomplete", url: "https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense" },
-      { name: "Error Lens", description: "Error Highlighting", url: "https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens" },
-      { name: "GitHub Copilot", description: "AI Assistant", url: "https://github.com/features/copilot" },
-      { name: "Live Share", description: "Collaboration", url: "https://marketplace.visualstudio.com/items?itemName=MS-vsliveshare.vsliveshare" }
+      { name: "Shorts.so", description: "Screenshot Editor", url: "https://shorts.so/" },
+      { name: "Globe Explorer", description: "Fun Visualizations", url: "https://explorer.globe.engineer/" },
+      { name: "Fontshare", description: "Free Quality Fonts", url: "https://www.fontshare.com/" },
+      { name: "Free Faces", description: "Font Gallery", url: "https://www.freefaces.gallery/" },
+      { name: "SVGL", description: "SVG Logo Library", url: "https://svgl.app/" },
+      { name: "Curated Supply", description: "Well Designed Things", url: "https://curated.supply/" },
+      { name: "Rotato", description: "3D Device Mockups", url: "https://rotato.app/" },
+      { name: "Adobe Podcast Enhance", description: "Audio Enhancement", url: "https://podcast.adobe.com/enhance" },
+      { name: "ElevenLabs", description: "AI Voice Generation", url: "https://elevenlabs.io/" }
     ]
   }
 ];
