@@ -68,9 +68,14 @@ const LinksPage = () => {
       <h2 className="text-lg font-medium mb-8 dark:text-white">On the Internet</h2>
       
       {/* Link Groups */}
-      <div className="space-y-16">
+      <div>
         {Object.values(linkGroups).map((group, index) => (
-          <LinkGroup key={index} title={group.title} links={group.links} />
+          <div key={index}>
+            {index > 0 && (
+              <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
+            )}
+            <LinkGroup title={group.title} links={group.links} />
+          </div>
         ))}
       </div>
     </div>

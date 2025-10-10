@@ -153,6 +153,9 @@ const Stack = () => {
         </div>
       </section>
 
+      {/* Divider */}
+      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
+
       {/* Education Section */}
       <section className="mb-12">
         <h3 className="text-lg font-medium mb-6 dark:text-white">Education</h3>
@@ -179,6 +182,9 @@ const Stack = () => {
         </div>
       </section>
 
+      {/* Divider */}
+      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
+
       {/* Skills Section */}
       <section className="mb-12">
         <h3 className="text-lg font-medium mb-6 dark:text-white">Skills</h3>
@@ -198,6 +204,9 @@ const Stack = () => {
           ))}
         </div>
       </section>
+
+      {/* Divider */}
+      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
 
       {/* Certifications Section */}
       <section className="mb-12">
@@ -232,28 +241,36 @@ const Stack = () => {
 
       {/* LeetCode Stats */}
       {leetcodeStats && (
-        <section className="mb-12">
-          <h3 className="text-lg font-medium mb-6 dark:text-white">LeetCode Stats</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div>
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.totalSolved}</p>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">Problems Solved</p>
+        <>
+          {/* Divider */}
+          <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
+          
+          <section className="mb-12">
+            <h3 className="text-lg font-medium mb-6 dark:text-white">LeetCode Stats</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div>
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.totalSolved}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">Problems Solved</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.easySolved}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">Easy</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.mediumSolved}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">Medium</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.hardSolved}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">Hard</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.easySolved}</p>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">Easy</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.mediumSolved}</p>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">Medium</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.hardSolved}</p>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">Hard</p>
-            </div>
-          </div>
-        </section>
+          </section>
+        </>
       )}
+
+      {/* Divider */}
+      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
 
       {/* Action Buttons */}
       <div className="flex gap-6">
