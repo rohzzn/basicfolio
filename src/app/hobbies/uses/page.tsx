@@ -1,10 +1,9 @@
 "use client";
 import React from 'react';
-import { Laptop, Monitor, Code, Terminal, Smartphone } from 'lucide-react';
+import Image from 'next/image';
 
 interface Setup {
   category: string;
-  icon: React.ReactNode;
   items: Array<{
     name: string;
     description?: string;
@@ -15,7 +14,6 @@ interface Setup {
 const setup: Setup[] = [
   {
     category: "Workstation",
-    icon: <Monitor className="w-4 h-4" />,
     items: [
       { name: 'MacBook Air 13" (2022)', description: 'M2, 8GB RAM, 128GB SSD', url: 'https://www.apple.com/macbook-air-m2/' },    
       { name: "BenQ PD2700U", description: "27\" IPS Monitor", url: "https://www.benq.com/en-us/monitor/designer/pd2700u.html" },
@@ -28,7 +26,6 @@ const setup: Setup[] = [
   },
   {
     category: "Development",
-    icon: <Code className="w-4 h-4" />,
     items: [
       { name: "Visual Studio Code", description: "Primary Editor", url: "https://code.visualstudio.com" },
       { name: "Warp", description: "Terminal", url: "https://www.warp.dev/" },
@@ -42,24 +39,7 @@ const setup: Setup[] = [
     ]
   },
   {
-    category: "Editor Setup",
-    icon: <Terminal className="w-4 h-4" />,
-    items: [
-      { name: "Theme", description: "Gruvbox Hard Theme", url: "https://marketplace.visualstudio.com/items?itemName=jdinhlife.gruvbox" },
-      { name: "Font", description: "JetBrains Mono", url: "https://www.jetbrains.com/lp/mono/" },
-      { name: "File Icons", description: "Material Icon Theme", url: "https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme" },
-      { name: "Prettier", description: "Code Formatter", url: "https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode" },
-      { name: "ESLint", description: "Linting", url: "https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint" },
-      { name: "GitLens", description: "Git Supercharged", url: "https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens" },
-      { name: "Path Intellisense", description: "Autocomplete", url: "https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense" },
-      { name: "Error Lens", description: "Error Highlighting", url: "https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens" },
-      { name: "GitHub Copilot", description: "AI Assistant", url: "https://github.com/features/copilot" },
-      { name: "Live Share", description: "Collaboration", url: "https://marketplace.visualstudio.com/items?itemName=MS-vsliveshare.vsliveshare" }
-    ]
-  },
-  {
     category: "Mac Dock",
-    icon: <Laptop className="w-4 h-4" />,
     items: [
       { name: "Arc", description: "Primary Browser", url: "https://arc.net/" },
       { name: "Raycast", description: "Spotlight Replacement", url: "https://www.raycast.com/" },
@@ -82,7 +62,6 @@ const setup: Setup[] = [
   },
   {
     category: "Mobile Setup",
-    icon: <Smartphone className="w-4 h-4" />,
     items: [
       { name: "iPhone 16 Pro", description: "Daily Driver", url: "https://www.apple.com/iphone-14-pro/" },
       { name: "Perplexity", description: "AI Search Engine", url: "https://www.perplexity.ai/" },
@@ -96,63 +75,79 @@ const setup: Setup[] = [
       { name: "Things", description: "Task Management", url: "https://culturedcode.com/things/" },
       { name: "Halide", description: "Pro Camera", url: "https://halide.cam/" }
     ]
+  },
+  {
+    category: "Editor Setup",
+    items: [
+      { name: "Theme", description: "Gruvbox Hard Theme", url: "https://marketplace.visualstudio.com/items?itemName=jdinhlife.gruvbox" },
+      { name: "Font", description: "JetBrains Mono", url: "https://www.jetbrains.com/lp/mono/" },
+      { name: "File Icons", description: "Material Icon Theme", url: "https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme" },
+      { name: "Prettier", description: "Code Formatter", url: "https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode" },
+      { name: "ESLint", description: "Linting", url: "https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint" },
+      { name: "GitLens", description: "Git Supercharged", url: "https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens" },
+      { name: "Path Intellisense", description: "Autocomplete", url: "https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense" },
+      { name: "Error Lens", description: "Error Highlighting", url: "https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens" },
+      { name: "GitHub Copilot", description: "AI Assistant", url: "https://github.com/features/copilot" },
+      { name: "Live Share", description: "Collaboration", url: "https://marketplace.visualstudio.com/items?itemName=MS-vsliveshare.vsliveshare" }
+    ]
   }
 ];
 
 const Uses = () => {
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Uses</h2>
+      <h2 className="text-lg font-medium mb-8 dark:text-white">Uses</h2>
       
-      <div className="space-y-8">
-        {/* Description */}
-        <p className="text-zinc-600 dark:text-zinc-400">
-          A list of hardware, software, and tools I use on a daily basis.
-        </p>
-
+      {/* Setup Images */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        {[1, 2, 3, 4].map((num) => (
+          <div key={num} className="relative aspect-[4/3] rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+            <Image
+              src={`/images/setup/${num}.png`}
+              alt={`Setup ${num}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 25vw"
+            />
+          </div>
+        ))}
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
         {/* Setup Categories */}
         {setup.map((category, index) => (
-          <div key={index} className="space-y-4">
-            <div className="flex items-center gap-2">
-              {category.icon}
-              <h3 className="text-base font-medium dark:text-white">{category.category}</h3>
-            </div>
+          <div key={index}>
+            <h3 className="text-base font-medium mb-6 dark:text-white">{category.category}</h3>
             
-            <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+            <div className="space-y-6">
               {category.items.map((item, itemIndex) => (
-                <div
-                  key={itemIndex}
-                  className={`p-4 flex flex-col ${
-                    itemIndex !== category.items.length - 1
-                      ? 'border-b border-zinc-200 dark:border-zinc-700'
-                      : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                      {item.url ? (
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-zinc-900 dark:hover:text-white inline-flex items-center gap-1"
-                        >
-                          {item.name}
-                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21 3V8M21 3H16M21 3L13 11M10 5H6C4.89543 5 4 5.89543 4 7V18C4 19.1046 4.89543 20 6 20H17C18.1046 20 19 19.1046 19 18V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </a>
-                      ) : (
-                        item.name
-                      )}
-                    </span>
-                    {item.description && (
+                <article key={itemIndex} className="group">
+                  {item.url ? (
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block hover:opacity-70 transition-opacity"
+                    >
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-medium dark:text-white">{item.name}</h4>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                          {item.description}
+                        </span>
+                      </div>
+                    </a>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium dark:text-white">{item.name}</h4>
                       <span className="text-xs text-zinc-500 dark:text-zinc-400">
                         {item.description}
                       </span>
-                    )}
-                  </div>
-                </div>
+                    </div>
+                  )}
+                  {itemIndex !== category.items.length - 1 && (
+                    <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 mt-6"></div>
+                  )}
+                </article>
               ))}
             </div>
           </div>

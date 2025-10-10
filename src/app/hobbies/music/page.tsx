@@ -58,7 +58,7 @@ interface CurrentlyPlaying {
 }
 
 // Tabs and time range types
-type MusicTab = 'artists' | 'tracks' | 'playlists' | 'genres';
+type MusicTab = 'artists' | 'tracks' | 'playlists' | 'recent';
 type TimeRange = 'short_term' | 'medium_term' | 'long_term';
 
 // Default images to use for placeholders
@@ -88,10 +88,10 @@ interface CurrentlyPlayingResponse {
 
 const MusicPage: React.FC = () => {
   // Tab state
-  const [activeTab, setActiveTab] = useState<MusicTab>('artists');
+  const [activeTab, setActiveTab] = useState<MusicTab>('recent');
   
   // Data states
-  const [, setRecentTracks] = useState<SpotifyTrack[]>([]);
+  const [recentTracks, setRecentTracks] = useState<SpotifyTrack[]>([]);
   const [topTracks, setTopTracks] = useState<SpotifyTrack[]>([]);
   const [topArtists, setTopArtists] = useState<SpotifyArtist[]>([]);
   const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
@@ -233,7 +233,7 @@ const MusicPage: React.FC = () => {
         
         // Try to fetch recently played tracks
         try {
-          const recentData = await safeFetch<RecentTracksResponse>('/me/player/recently-played', { limit: '10' });
+          const recentData = await safeFetch<RecentTracksResponse>('/me/player/recently-played', { limit: '50' });
           if (recentData && recentData.items && isMounted) {
             setRecentTracks(recentData.items.map(item => item.track).filter(Boolean));
             setLoadedSections(prev => ({ ...prev, recentTracks: true }));
@@ -245,7 +245,7 @@ const MusicPage: React.FC = () => {
         // Try to fetch top tracks
         try {
           const tracksData = await safeFetch<TopItemsResponse<SpotifyTrack>>('/me/top/tracks', { 
-            limit: '20', 
+            limit: '50', 
             time_range: timeRange 
           });
           if (tracksData && tracksData.items && isMounted) {
@@ -259,7 +259,7 @@ const MusicPage: React.FC = () => {
         // Try to fetch top artists
         try {
           const artistsData = await safeFetch<TopItemsResponse<SpotifyArtist>>('/me/top/artists', { 
-            limit: '20', 
+            limit: '50', 
             time_range: timeRange 
           });
           if (artistsData && artistsData.items && isMounted) {
@@ -359,14 +359,14 @@ const MusicPage: React.FC = () => {
     <div className="border-b border-zinc-200 dark:border-zinc-700 mb-6">
       <div className="flex space-x-6">
         <button
-          onClick={() => setActiveTab('artists')}
-          className={`py-3 px-1 relative ${activeTab === 'artists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+          onClick={() => setActiveTab('recent')}
+          className={`py-3 px-1 relative ${activeTab === 'recent' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
         >
           <div className="flex items-center gap-2">
-            <User className="w-4 h-4" />
-            <span>Artists</span>
+            <Clock className="w-4 h-4" />
+            <span>Recent</span>
           </div>
-          {activeTab === 'artists' && (
+          {activeTab === 'recent' && (
             <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
           )}
         </button>
@@ -385,14 +385,14 @@ const MusicPage: React.FC = () => {
         </button>
         
         <button
-          onClick={() => setActiveTab('genres')}
-          className={`py-3 px-1 relative ${activeTab === 'genres' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+          onClick={() => setActiveTab('artists')}
+          className={`py-3 px-1 relative ${activeTab === 'artists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
         >
           <div className="flex items-center gap-2">
-            <Music className="w-4 h-4" />
-            <span>Genres</span>
+            <User className="w-4 h-4" />
+            <span>Artists</span>
           </div>
-          {activeTab === 'genres' && (
+          {activeTab === 'artists' && (
             <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
           )}
         </button>
@@ -538,6 +538,28 @@ const MusicPage: React.FC = () => {
     </div>
   );
 
+  // Custom playlist descriptions
+  const getPlaylistDescription = (name: string, trackCount: number) => {
+    const lowerName = name.toLowerCase();
+    
+    if (lowerName.includes('melodies') || trackCount > 900) {
+      return 'melodies / pop / bittersweet';
+    } else if (lowerName.includes('shaking') || lowerName.includes('braids')) {
+      return 'rap / hip hop';
+    } else if (lowerName.includes('desi')) {
+      return 'telugu / tamil / hindi';
+    } else if (lowerName.includes('her') && trackCount < 50) {
+      return 'lil romantic / lil sad';
+    } else if (lowerName.includes('low fidelity') || lowerName.includes('lo-fi') || lowerName.includes('lofi')) {
+      return 'chill / study / ambient';
+    } else if (lowerName.includes('adrenaline') || lowerName.includes('energy') || lowerName.includes('pump')) {
+      return 'high energy / workout / intense';
+    }
+    
+    // Fallback to original description or genre-based description
+    return null;
+  };
+
   // Playlists tab content
   const PlaylistsTabContent = () => (
     <div>
@@ -547,34 +569,36 @@ const MusicPage: React.FC = () => {
       
       {playlists.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {playlists.map(playlist => (
-            <a
-              key={playlist.id}
-              href={playlist.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col"
-            >
-              <div className="relative w-full aspect-square mb-3">
-                <Image
-                  src={getSafeImageUrl(playlist.images)}
-                  alt={playlist.name}
-                  fill
-                  className="rounded-md object-cover"
-                  unoptimized
-                />
-              </div>
-              <h4 className="font-medium dark:text-white text-sm mb-1 truncate">{playlist.name}</h4>
-              <p className="text-xs text-zinc-500 dark:text-zinc-500">
-                {playlist.tracks?.total || 0} tracks
-              </p>
-              {playlist.description && (
-                <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1 line-clamp-1">
-                  {playlist.description}
+          {playlists.map(playlist => {
+            const customDescription = getPlaylistDescription(playlist.name, playlist.tracks?.total || 0);
+            
+            return (
+              <a
+                key={playlist.id}
+                href={playlist.external_urls.spotify}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col"
+              >
+                <div className="relative w-full aspect-square mb-3">
+                  <Image
+                    src={getSafeImageUrl(playlist.images)}
+                    alt={playlist.name}
+                    fill
+                    className="rounded-md object-cover"
+                    unoptimized
+                  />
+                </div>
+                <h4 className="font-medium dark:text-white text-sm mb-1 truncate">{playlist.name}</h4>
+                <p className="text-xs text-zinc-500 dark:text-zinc-500 mb-1">
+                  {playlist.tracks?.total || 0} tracks
                 </p>
-              )}
-            </a>
-          ))}
+                <p className="text-xs text-zinc-400 dark:text-zinc-400 line-clamp-2">
+                  {customDescription || playlist.description || 'No description'}
+                </p>
+              </a>
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
@@ -584,104 +608,85 @@ const MusicPage: React.FC = () => {
     </div>
   );
 
-  // Genres tab content
-  const GenresTabContent = () => {
-    // Process artists to extract and count genres
-    const genreCounts: Record<string, number> = {};
-    const genreArtists: Record<string, string[]> = {};
-    
-    // Count genres from top artists
-    topArtists.forEach(artist => {
-      if (artist.genres && artist.genres.length > 0) {
-        artist.genres.forEach(genre => {
-          // Increment genre count
-          genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-          
-          // Track artists for each genre
-          if (!genreArtists[genre]) {
-            genreArtists[genre] = [];
-          }
-          if (!genreArtists[genre].includes(artist.name)) {
-            genreArtists[genre].push(artist.name);
-          }
-        });
-      }
-    });
-    
-    // Sort genres by count (popularity)
-    const sortedGenres = Object.keys(genreCounts).sort((a, b) => {
-      return genreCounts[b] - genreCounts[a];
-    });
-    
-    // Find the maximum count to calculate percentages
-    const maxCount = Math.max(...Object.values(genreCounts));
-    
-    return (
-      <div>
-        <TimeRangeSelector />
-        <h3 className="text-base font-medium mb-5 dark:text-white">
-          Top Genres • {timeRangeLabels[timeRange]}
-        </h3>
-        
-        {sortedGenres.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {sortedGenres.map(genre => {
-              const count = genreCounts[genre];
-              const percentage = Math.round((count / maxCount) * 100);
-              const artists = genreArtists[genre].slice(0, 3); // Show up to 3 artists
-              
-              return (
-                <div 
-                  key={genre}
-                  className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 hover:bg-zinc-200 dark:hover:bg-zinc-700/80 transition-colors"
-                >
-                  <h4 className="font-medium dark:text-white text-sm mb-2 capitalize">{genre}</h4>
-                  
-                  {/* Progress bar showing relative popularity */}
-                  <div className="w-full bg-zinc-200 dark:bg-zinc-700 h-2 rounded-full mb-3">
-                    <div 
-                      className="bg-zinc-400 dark:bg-zinc-500 h-2 rounded-full"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-                  
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">
-                    {count} {count === 1 ? 'artist' : 'artists'}
-                  </p>
-                  
-                  {artists.length > 0 && (
-                    <div className="text-xs text-zinc-600 dark:text-zinc-400">
-                      <p className="font-medium mb-1">Top artists:</p>
-                      <ul className="list-disc pl-4 space-y-0.5">
-                        {artists.map(artist => (
-                          <li key={artist}>{artist}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+  // Recent tracks tab content
+  const RecentTabContent = () => (
+    <div>
+      <h3 className="text-base font-medium mb-5 dark:text-white">
+        Recently Played
+      </h3>
+      
+      {recentTracks.length > 0 ? (
+        <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-12">#</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400">Track</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 hidden md:table-cell">Album</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-20">
+                    <Clock className="w-3 h-3 inline" />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentTracks.map((track, index) => (
+                  <tr 
+                    key={`${track.id}-${index}`}
+                    className="border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700/50 transition-colors"
+                  >
+                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">{index + 1}</td>
+                    <td className="px-4 py-3">
+                      <a 
+                        href={track.external_urls.spotify}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                      >
+                        <div className="relative shrink-0 w-10 h-10">
+                          <Image
+                            src={getSafeImageUrl(track.album?.images)}
+                            alt={track.album?.name || 'Album cover'}
+                            fill
+                            className="rounded object-cover"
+                            unoptimized
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium dark:text-white line-clamp-1">{track.name}</p>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-500 line-clamp-1">
+                            {track.artists.map(a => a.name).join(', ')}
+                          </p>
+                        </div>
+                      </a>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-500 hidden md:table-cell line-clamp-1">
+                      {track.album?.name || 'Unknown album'}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-500 text-right">
+                      {formatDuration(track.duration_ms)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ) : (
-          <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-            <p className="text-zinc-500 dark:text-zinc-400">
-              {authIssues.topArtists 
-                ? "Missing permission to access genre data" 
-                : "No genre data available"}
-            </p>
-          </div>
-        )}
-      </div>
-    );
-  };
+        </div>
+      ) : (
+        <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+          <p className="text-zinc-500 dark:text-zinc-400">
+            {authIssues.recentTracks 
+              ? "Missing permission to access recently played tracks" 
+              : "No recent tracks available"}
+          </p>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-4 dark:text-white">Music Library</h2>
-      <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-        A glimpse into my musical tastes and listening habits via Spotify.
-      </p>
+      <h2 className="text-lg font-medium mb-8 dark:text-white">Music Library</h2>
       
       {loading ? (
         <div className="flex justify-center items-center h-64">
@@ -803,6 +808,7 @@ const MusicPage: React.FC = () => {
               </section>
             )}
 
+
             {/* Tab Navigation */}
             <TabNavigation />
             
@@ -810,19 +816,9 @@ const MusicPage: React.FC = () => {
             {activeTab === 'artists' && <ArtistsTabContent />}
             {activeTab === 'tracks' && <TracksTabContent />}
             {activeTab === 'playlists' && <PlaylistsTabContent />}
-            {activeTab === 'genres' && <GenresTabContent />}
+            {activeTab === 'recent' && <RecentTabContent />}
           </div>
           
-          <div className="pt-4 text-center">
-            <a 
-              href="https://open.spotify.com/user/rohansanjeev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
-            >
-              View full profile on Spotify <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
         </div>
       )}
     </div>
