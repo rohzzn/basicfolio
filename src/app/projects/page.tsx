@@ -31,67 +31,80 @@ const ProjectCard = ({ project }: { project: Project }) => {
     link.label === "Invite"
   );
   
+  // Determine primary link (live/demo first, then source, then fallback)
+  const primaryLink = liveLink || githubLink || project.links[0];
+  
   return (
-    <article className="group cursor-pointer">
-      <div className="flex items-start justify-between gap-4 mb-2">
-        <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
-          {project.title}
-        </h3>
-        
-        {/* Links on the right */}
-        <div className="flex items-center gap-2 text-xs shrink-0">
-          {githubLink && (
-            <Link
-              href={githubLink.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-              title="View source code"
-            >
-              ↗
-            </Link>
-          )}
+    <Link
+      href={primaryLink?.url || "#"}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group cursor-pointer block"
+    >
+      <article>
+        <div className="flex items-start justify-between gap-4 mb-2">
+          <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+            {project.title}
+          </h3>
           
-          {liveLink && (
-            <Link
-              href={liveLink.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-              title={
-                liveLink.label.includes("Demo") ? "View demo" :
-                liveLink.label.includes("Live") ? "Visit live site" :
-                liveLink.label.includes("Marketplace") ? "View in store" :
-                liveLink.label.includes("Plugin") ? "Get plugin" :
-                liveLink.label.includes("Package") ? "View package" :
-                liveLink.label === "Chapter" ? "Read more" :
-                liveLink.label === "Invite" ? "Join server" :
-                "Visit"
-              }
-            >
-              →
-            </Link>
-          )}
-          
-          {/* Fallback link */}
-          {!githubLink && !liveLink && project.links[0] && (
-            <Link
-              href={project.links[0].url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-              title="Visit"
-            >
-              →
-            </Link>
-          )}
+          {/* Links on the right */}
+          <div className="flex items-center gap-2 text-xs shrink-0">
+            {githubLink && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(githubLink.url, '_blank', 'noopener,noreferrer');
+                }}
+                className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                title="View source code"
+              >
+                ↗
+              </button>
+            )}
+            
+            {liveLink && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(liveLink.url, '_blank', 'noopener,noreferrer');
+                }}
+                className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                title={
+                  liveLink.label.includes("Demo") ? "View demo" :
+                  liveLink.label.includes("Live") ? "Visit live site" :
+                  liveLink.label.includes("Marketplace") ? "View in store" :
+                  liveLink.label.includes("Plugin") ? "Get plugin" :
+                  liveLink.label.includes("Package") ? "View package" :
+                  liveLink.label === "Chapter" ? "Read more" :
+                  liveLink.label === "Invite" ? "Join server" :
+                  "Visit"
+                }
+              >
+                →
+              </button>
+            )}
+            
+            {/* Fallback link */}
+            {!githubLink && !liveLink && project.links[0] && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(project.links[0].url, '_blank', 'noopener,noreferrer');
+                }}
+                className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                title="Visit"
+              >
+                →
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-      
-      <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
-        {project.description}
-      </p>
-    </article>
+        
+        <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+          {project.description}
+        </p>
+      </article>
+    </Link>
   );
 };
 
