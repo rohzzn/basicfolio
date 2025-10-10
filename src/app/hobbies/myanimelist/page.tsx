@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import { SortAsc, SortDesc, Star, List, AlertCircle, Clock, Filter, X, Search, RefreshCw } from 'lucide-react';
+import { SortAsc, SortDesc, Filter, X, Search, RefreshCw } from 'lucide-react';
 
 interface Anime {
   id: number;

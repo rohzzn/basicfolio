@@ -1,10 +1,6 @@
 "use client";
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { 
-  Activity, Timer, Map, Calendar, Watch, ArrowUp, 
-  Gauge, Heart, Flame, Sun
-} from 'lucide-react';
 import { decode } from '@mapbox/polyline';
 
 interface StravaActivity {
