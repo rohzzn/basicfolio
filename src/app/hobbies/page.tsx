@@ -1,82 +1,68 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { Activity, Gamepad2, BookOpen, PenTool, Film, Laptop, Keyboard, Music, Youtube, Code, Video } from 'lucide-react';
 
-interface HobbyCard {
+interface Hobby {
   title: string;
   description: string;
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
 }
 
-const hobbyCards: HobbyCard[] = [
+const hobbies: Hobby[] = [
   {
     title: "Activities",
     description: "Tracking workouts and daily activities with personal stats.",
-    href: "/hobbies/strava",
-    icon: Activity
+    href: "/hobbies/strava"
   },
-
   {
     title: "Anime",
     description: "My curated collection of watched series and personal ratings.",
-    href: "/hobbies/myanimelist",
-    icon: Film
+    href: "/hobbies/myanimelist"
   },
   {
     title: "Books",
     description: "A growing library of books that have shaped my perspective.",
-    href: "/hobbies/readings",
-    icon: BookOpen
+    href: "/hobbies/readings"
   },
   {
     title: "Content",
     description: "My YouTube videos, tutorials, and creative content.",
-    href: "/hobbies/content",
-    icon: Youtube
+    href: "/hobbies/content"
   },
   {
     title: "Designs",
     description: "Portfolio of UI/UX designs and creative projects.",
-    href: "/hobbies/art",
-    icon: PenTool
+    href: "/hobbies/art"
   },
   {
     title: "Gaming",
     description: "My gaming journey, achievements, and Steam library.",
-    href: "/hobbies/games",
-    icon: Gamepad2
+    href: "/hobbies/games"
   },
   {
     title: "Gaming Clips",
     description: "Latest gaming clips from CS, Valorant, and more.",
-    href: "/hobbies/clips",
-    icon: Video
+    href: "/hobbies/clips"
   },
   {
     title: "Hackathons",
     description: "Events I've participated in, projects built, and achievements.",
-    href: "/hobbies/hackathons",
-    icon: Code
+    href: "/hobbies/hackathons"
   },
   {
     title: "Music",
     description: "Music that resonates with me, from playlists to favorite tracks.",
-    href: "/hobbies/music",
-    icon: Music
+    href: "/hobbies/music"
   },
   {
     title: "Setup",
     description: "My workstation, development environment, and daily tools.",
-    href: "/hobbies/uses",
-    icon: Laptop
+    href: "/hobbies/uses"
   },
   {
     title: "Typing",
     description: "Test your typing speed and compare with my 115 WPM record.",
-    href: "/hobbies/typing",
-    icon: Keyboard
+    href: "/hobbies/typing"
   }
 ];
 
@@ -84,22 +70,28 @@ const Hobbies: React.FC = () => (
   <div className="max-w-7xl">
     <h2 className="text-lg font-medium mb-6 dark:text-white">Hobbies</h2>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {hobbyCards.map((card) => (
+    <div className="space-y-6">
+      {hobbies.map((hobby) => (
         <Link
-          key={card.href}
-          href={card.href}
-          className="group bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200"
+          key={hobby.href}
+          href={hobby.href}
+          className="group cursor-pointer block"
         >
-          <div className="flex items-center gap-3 mb-3">
-            <card.icon className="w-5 h-5 text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors" />
-            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
-              {card.title}
-            </h3>
-          </div>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
-            {card.description}
-          </p>
+          <article>
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+                {hobby.title}
+              </h3>
+              
+              <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+                →
+              </div>
+            </div>
+            
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+              {hobby.description}
+            </p>
+          </article>
         </Link>
       ))}
     </div>
