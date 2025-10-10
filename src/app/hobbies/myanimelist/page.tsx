@@ -278,79 +278,77 @@ const MyAnimeList: React.FC = () => {
       ) : (
         <>
           {/* Stats Section */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-              <div className="flex items-center gap-2 mb-2">
-                <List className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-                <h3 className="text-sm font-medium dark:text-white">Watched</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <article>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Watched</h3>
               </div>
-              <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{stats.watched}</p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Completed anime</p>
-            </div>
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-                <h3 className="text-sm font-medium dark:text-white">Watching</h3>
+              <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">{stats.watched}</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Completed anime</p>
+            </article>
+            <article>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Watching</h3>
               </div>
-              <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{stats.watching}</p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Currently watching</p>
-            </div>
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-                <h3 className="text-sm font-medium dark:text-white">Plan to Watch</h3>
+              <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">{stats.watching}</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Currently watching</p>
+            </article>
+            <article>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Plan to Watch</h3>
               </div>
-              <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{stats.planToWatch}</p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">In backlog</p>
-            </div>
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Star className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-                <h3 className="text-sm font-medium dark:text-white">Average Score</h3>
+              <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">{stats.planToWatch}</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">In backlog</p>
+            </article>
+            <article>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Average Score</h3>
               </div>
-              <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{stats.avgScore}</p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Out of 10</p>
-            </div>
+              <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">{stats.avgScore}</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Out of 10</p>
+            </article>
           </div>
+
+          {/* Divider */}
+          <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
 
           {/* Currently Watching Section */}
           {currentlyWatching.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-md font-medium mb-4 dark:text-white">Currently Watching</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="mb-12">
+              <h3 className="text-lg font-medium mb-6 dark:text-white">Currently Watching</h3>
+              <div className="space-y-6">
                 {currentlyWatching.map(anime => (
-                  <div key={`watching-${anime.id}`} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden flex flex-col">
-                    <div className="relative flex items-center justify-center bg-zinc-200 dark:bg-zinc-700">
-                      {anime.image ? (
-                        <Image 
-                          src={anime.image} 
-                          alt={anime.title}
-                          width={160}
-                          height={240}
-                          className="w-full h-auto"
-                        />
-                      ) : (
-                        <div className="h-[200px] w-full flex items-center justify-center">
-                          <span className="text-zinc-500 dark:text-zinc-400 text-xs">No Image</span>
-                        </div>
-                      )}
+                  <article 
+                    key={`watching-${anime.id}`}
+                    className="group cursor-pointer"
+                    onMouseEnter={() => handleMouseEnter(anime)}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={() => setHoveredAnime(null)}
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+                        {anime.title}
+                      </h4>
                       {anime.score && anime.score > 0 && (
-                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
                           {anime.score}/10
-                        </div>
+                        </span>
                       )}
                     </div>
-                    <div className="p-3">
-                      <p className="text-sm font-medium dark:text-white line-clamp-1">{anime.title}</p>
-                      <div className="flex mt-2">
-                        <span className="px-2 py-0.5 text-xs rounded-full font-medium bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100">
-                          Watching
-                        </span>
+                    {anime.year && (
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2">({anime.year})</p>
+                    )}
+                    {anime.genres && anime.genres.length > 0 && (
+                      <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {anime.genres.join(' • ')}
                       </div>
-                    </div>
-                  </div>
+                    )}
+                  </article>
                 ))}
               </div>
+              
+              {/* Divider */}
+              <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
             </div>
           )}
 
@@ -486,74 +484,56 @@ const MyAnimeList: React.FC = () => {
               </div>
 
               {/* Anime List */}
-              <div className="grid grid-cols-1 gap-2">
-                {sortedAnime.map((anime) => (
-                  <div
-                    key={anime.id}
-                    className="group bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                    onMouseEnter={() => handleMouseEnter(anime)}
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={() => setHoveredAnime(null)}
-                  >
-                    <div className="flex flex-col gap-1 flex-grow">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">{anime.title}</span>
-                        {anime.year && (
-                          <span className="text-xs text-zinc-500 dark:text-zinc-400">({anime.year})</span>
-                        )}
+              <div className="space-y-6">
+                {sortedAnime.map((anime, index) => (
+                  <div key={anime.id}>
+                    <article
+                      className="group cursor-pointer"
+                      onMouseEnter={() => handleMouseEnter(anime)}
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={() => setHoveredAnime(null)}
+                    >
+                      <div className="flex items-start justify-between gap-4 mb-2">
+                        <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+                          {anime.title}
+                        </h4>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {anime.year && (
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">({anime.year})</span>
+                          )}
+                          {anime.score !== null && anime.score > 0 && (
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                              {anime.score}/10
+                            </span>
+                          )}
+                        </div>
                       </div>
                       
-                      {anime.genres && anime.genres.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {anime.genres.map(genre => (
-                            <span 
-                              key={genre} 
-                              className="px-2 py-0.5 text-xs rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
-                            >
-                              {genre}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                      <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
+                        {anime.genres && anime.genres.length > 0 && (
+                          <div>{anime.genres.join(' • ')}</div>
+                        )}
+                        
+                        {anime.status && anime.status !== 'watched' && (
+                          <div className="capitalize">
+                            Status: {anime.status.replace('_', ' ')}
+                          </div>
+                        )}
+                      </div>
+                    </article>
                     
-                    <div className="flex items-center gap-3">
-                      {anime.score !== null && anime.score > 0 && (
-                        <span className="px-2 py-1 text-xs rounded-md bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium">
-                          {anime.score}/10
-                        </span>
-                      )}
-                      
-                      {anime.status === 'watching' && (
-                        <span className="px-2 py-0.5 text-xs rounded-full font-medium bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100">
-                          Watching
-                        </span>
-                      )}
-                      
-                      {anime.status === 'dropped' && (
-                        <span className="px-2 py-0.5 text-xs rounded-full font-medium bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100">
-                          Dropped
-                        </span>
-                      )}
-                      
-                      {anime.status === 'plan_to_watch' && (
-                        <span className="px-2 py-0.5 text-xs rounded-full font-medium bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100">
-                          Plan to Watch
-                        </span>
-                      )}
-                    </div>
+                    {/* Divider line between anime (except for the last one) */}
+                    {index < sortedAnime.length - 1 && (
+                      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-6"></div>
+                    )}
                   </div>
                 ))}
               </div>
 
               {/* Empty State */}
               {sortedAnime.length === 0 && (
-                <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-                  <AlertCircle className="w-10 h-10 mx-auto text-zinc-400 mb-3" />
-                  <h3 className="text-zinc-700 dark:text-zinc-300 font-medium mb-1">No anime found</h3>
-                  <p className="text-zinc-500 dark:text-zinc-400 text-sm">
-                    Try adjusting your filters or search criteria
-                  </p>
+                <div className="text-center py-12">
+                  <p className="text-zinc-600 dark:text-zinc-400">No anime found. Try adjusting your filters or search criteria.</p>
                 </div>
               )}
             </div>
