@@ -3,7 +3,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Profile from './Profile';
-import RecentlyPlayedGames from './RecentlyPlayedGames';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -101,50 +100,7 @@ const emptyProfile: SteamProfile = {
 };
 
 const emptyGames: SteamGame[] = [];
-// Fetch function for client-side requests
-const fetchWithRetry = async (url: string) => {
-  console.log(`Fetching from: ${url}`);
-  
-  // Simple retry logic with backoff
-  const MAX_RETRIES = 3;
-  const INITIAL_DELAY = 1000;
-  
-  let lastError;
-  let delay = INITIAL_DELAY;
-  
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    try {
-      const response = await fetch(url, { 
-        cache: 'no-store' // Don't cache, always fetch fresh data
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        return data;
-      }
-      
-      lastError = new Error(`HTTP error ${response.status}`);
-      
-      if (response.status === 429) {
-        await new Promise(resolve => setTimeout(resolve, delay));
-        delay *= 2; // Exponential backoff
-        continue;
-      }
-      
-      throw lastError;
-    } catch (error) {
-      lastError = error;
-      console.error(`Attempt ${attempt + 1} failed:`, error);
-      await new Promise(resolve => setTimeout(resolve, delay));
-      delay *= 2;
-    }
-  }
-  
-  throw lastError;
-};
-
 const Games = () => {
-  const STEAM_ID = '76561198239653194';
   
   // State for data
   const [profile, setProfile] = useState<SteamProfile>(emptyProfile);
@@ -292,7 +248,7 @@ const Games = () => {
                             const target = e.target as HTMLImageElement;
                             // Fallback to capsule image if header fails
                             target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`;
-                            target.onError = () => {
+                            target.onerror = () => {
                               target.style.display = 'none';
                               const parent = target.parentElement;
                               if (parent) {
