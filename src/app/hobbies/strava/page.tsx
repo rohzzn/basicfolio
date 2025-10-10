@@ -462,149 +462,99 @@ const StravaPage: React.FC = () => {
 
         {/* Cards View */}
         {viewMode === 'cards' && (
-          <div className="space-y-6">
-            {activities.map((activity, index) => (
-              <div key={activity.id}>
-                <article className="group cursor-pointer block">
-                  <div className="flex items-start justify-between gap-4 mb-2">
-                    <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
-                      {activity.name}
-                    </h4>
-                    <time className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                      {formatDate(activity.start_date)}
-                    </time>
-                  </div>
-                  
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activities.map((activity) => (
+              <article key={activity.id} className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-6 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group cursor-pointer">
+                {/* Header */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-2 line-clamp-2">
+                    {activity.name}
+                  </h4>
+                  <time className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {formatDate(activity.start_date)}
+                  </time>
                   {activity.distance > 0 && (
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
                       {formatDistance(activity.distance)}
                     </p>
                   )}
+                </div>
 
-                  {/* Check if we have any visual content (photos or maps) */}
-                  {(activity.photos?.primary?.urls || activity.map?.summary_polyline || (activity.photos && !activity.photos.primary?.urls && activity.photos.primary)) ? (
-                    <div className="flex gap-6">
-                      {/* Left side - Images/Maps */}
-                      <div className="flex-shrink-0">
-                        {/* Display photos if available */}
-                        {activity.photos?.primary?.urls && (
-                          <Image 
-                            src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
-                            alt={`Photo from ${activity.name}`}
-                            className="rounded-lg"
-                            width={400}
-                            height={300}
-                            style={{ 
-                              maxHeight: '300px', 
-                              width: 'auto',
-                              height: 'auto',
-                              objectFit: 'contain' 
-                            }}
-                            onError={(e) => console.error('Image failed to load:', e)}
-                          />
-                        )}
+                {/* Visual Content */}
+                {(activity.photos?.primary?.urls || activity.map?.summary_polyline || (activity.photos && !activity.photos.primary?.urls && activity.photos.primary)) && (
+                  <div className="mb-4">
+                    {/* Display photos if available */}
+                    {activity.photos?.primary?.urls && (
+                      <Image 
+                        src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
+                        alt={`Photo from ${activity.name}`}
+                        className="rounded-lg w-full h-48 object-cover"
+                        width={300}
+                        height={200}
+                        onError={(e) => console.error('Image failed to load:', e)}
+                      />
+                    )}
 
-                        {/* If no photo but there's a map polyline, show the map */}
-                        {!activity.photos?.primary?.urls && activity.map?.summary_polyline && (
-                          <div className="w-[400px] h-[200px] bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden flex items-center justify-center">
-                            <ActivityPolyline polyline={activity.map.summary_polyline} />
-                          </div>
-                        )}
-
-                        {/* Fallback approach for different photo structures */}
-                        {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
-                          <Image 
-                            src={
-                              typeof activity.photos.primary === 'object' && 
-                              'source' in activity.photos.primary && 
-                              'unique_id' in activity.photos.primary && 
-                              activity.photos.primary.source === 1 && 
-                              typeof activity.photos.primary.unique_id === 'string'
-                                ? `https://dgtzuqphqg23d.cloudfront.net/${activity.photos.primary.unique_id}-768x576.jpg`
-                                : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
-                            } 
-                            alt={`Photo from ${activity.name}`}
-                            className="rounded-lg"
-                            width={400}
-                            height={300}
-                            style={{ 
-                              maxHeight: '300px', 
-                              width: 'auto',
-                              height: 'auto',
-                              objectFit: 'contain' 
-                            }}
-                            onError={(e) => {
-                              console.error('Fallback image failed to load:', e);
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        )}
+                    {/* If no photo but there's a map polyline, show the map */}
+                    {!activity.photos?.primary?.urls && activity.map?.summary_polyline && (
+                      <div className="w-full h-48 bg-zinc-100 dark:bg-zinc-700 rounded-lg overflow-hidden flex items-center justify-center">
+                        <ActivityPolyline polyline={activity.map.summary_polyline} />
                       </div>
+                    )}
 
-                      {/* Right side - Activity Details */}
-                      <div className="flex-1 text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
-                        {activity.moving_time > 0 && (
-                          <div>Duration: {formatTime(activity.moving_time)}</div>
-                        )}
-                        {activity.average_speed > 0 && (
-                          <div>
-                            {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}: {' '}
-                            {activity.type === 'Run' || activity.type === 'Walk' 
-                              ? formatPace(activity.average_speed)
-                              : formatSpeed(activity.average_speed)
-                            }
-                          </div>
-                        )}
-                        {activity.total_elevation_gain > 0 && (
-                          <div>Elevation: {activity.total_elevation_gain.toFixed(0)}m</div>
-                        )}
-                        {calculateCalories(activity) > 0 && (
-                          <div>Calories: {calculateCalories(activity)} kcal</div>
-                        )}
-                        {activity.average_heartrate && activity.average_heartrate > 0 && (
-                          <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
-                        )}
-                        {(activity.total_photo_count ?? 0) > 1 && (
-                          <div>{activity.total_photo_count} photos</div>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    /* No visual content - just show details without flex layout */
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
-                      {activity.moving_time > 0 && (
-                        <div>Duration: {formatTime(activity.moving_time)}</div>
-                      )}
-                      {activity.average_speed > 0 && (
-                        <div>
-                          {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}: {' '}
-                          {activity.type === 'Run' || activity.type === 'Walk' 
-                            ? formatPace(activity.average_speed)
-                            : formatSpeed(activity.average_speed)
-                          }
-                        </div>
-                      )}
-                      {activity.total_elevation_gain > 0 && (
-                        <div>Elevation: {activity.total_elevation_gain.toFixed(0)}m</div>
-                      )}
-                      {calculateCalories(activity) > 0 && (
-                        <div>Calories: {calculateCalories(activity)} kcal</div>
-                      )}
-                      {activity.average_heartrate && activity.average_heartrate > 0 && (
-                        <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
-                      )}
-                      {(activity.total_photo_count ?? 0) > 1 && (
-                        <div>{activity.total_photo_count} photos</div>
-                      )}
+                    {/* Fallback approach for different photo structures */}
+                    {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
+                      <Image 
+                        src={
+                          typeof activity.photos.primary === 'object' && 
+                          'source' in activity.photos.primary && 
+                          'unique_id' in activity.photos.primary && 
+                          activity.photos.primary.source === 1 && 
+                          typeof activity.photos.primary.unique_id === 'string'
+                            ? `https://dgtzuqphqg23d.cloudfront.net/${activity.photos.primary.unique_id}-768x576.jpg`
+                            : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
+                        } 
+                        alt={`Photo from ${activity.name}`}
+                        className="rounded-lg w-full h-48 object-cover"
+                        width={300}
+                        height={200}
+                        onError={(e) => {
+                          console.error('Fallback image failed to load:', e);
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    )}
+                  </div>
+                )}
+
+                {/* Activity Details */}
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
+                  {activity.moving_time > 0 && (
+                    <div>Duration: {formatTime(activity.moving_time)}</div>
+                  )}
+                  {activity.average_speed > 0 && (
+                    <div>
+                      {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}: {' '}
+                      {activity.type === 'Run' || activity.type === 'Walk' 
+                        ? formatPace(activity.average_speed)
+                        : formatSpeed(activity.average_speed)
+                      }
                     </div>
                   )}
-                </article>
-                
-                {/* Divider line between activities (except for the last one) */}
-                {(index < activities.length - 1) && (
-                  <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-6"></div>
-                )}
-              </div>
+                  {activity.total_elevation_gain > 0 && (
+                    <div>Elevation: {activity.total_elevation_gain.toFixed(0)}m</div>
+                  )}
+                  {calculateCalories(activity) > 0 && (
+                    <div>Calories: {calculateCalories(activity)} kcal</div>
+                  )}
+                  {activity.average_heartrate && activity.average_heartrate > 0 && (
+                    <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
+                  )}
+                  {(activity.total_photo_count ?? 0) > 1 && (
+                    <div>{activity.total_photo_count} photos</div>
+                  )}
+                </div>
+              </article>
             ))}
           </div>
         )}
