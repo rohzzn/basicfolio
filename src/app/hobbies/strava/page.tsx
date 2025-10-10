@@ -457,7 +457,7 @@ const StravaPage: React.FC = () => {
                       {activity.average_heartrate && activity.average_heartrate > 0 && (
                         <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
                       )}
-                      {activity.total_photo_count > 1 && (
+                      {(activity.total_photo_count ?? 0) > 1 && (
                         <div>{activity.total_photo_count} photos</div>
                       )}
                     </div>
@@ -486,7 +486,7 @@ const StravaPage: React.FC = () => {
                     {activity.average_heartrate && activity.average_heartrate > 0 && (
                       <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
                     )}
-                    {activity.total_photo_count > 1 && (
+                    {(activity.total_photo_count ?? 0) > 1 && (
                       <div>{activity.total_photo_count} photos</div>
                     )}
                   </div>
