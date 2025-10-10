@@ -288,7 +288,7 @@ const Projects = () => {
       category: 'application',
       links: [
         { label: "GitHub", url: "https://github.com/rohzzn/Zenitsu-bot" },
-        { label: "Invite", url: "https://discord.com/oauth2/authorize?client_id=766218598913146901&permissions=8&scope=bot" },
+        { label: "Invite", url: "https://discord.com/oauth2/authorize?client_id=766218598913146901" },
       ],
       metrics: {
         users: 200,
