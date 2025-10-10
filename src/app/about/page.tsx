@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaArrowRight } from 'react-icons/fa';
 
 const Home: React.FC = () => {
   const [showImage, setShowImage] = useState(false);
@@ -35,6 +34,10 @@ const Home: React.FC = () => {
             
             <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
               I&apos;m a software engineer and computer science graduate student who loves building things that matter. Currently pursuing my Masters at the University of Cincinnati while working part-time as a developer at Cincinnati Children&apos;s Hospital, where I contribute to healthcare tech.
+            </p>
+            
+            <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed mt-4">
+              When I&apos;m not coding, you&apos;ll find me taking photos, gaming with friends, or working on random design projects that catch my interest. I also spend way too much time tweaking my setup and discovering new tools that probably don&apos;t make me more productive but are fun to play with.
             </p>
           </div>
         </div>
@@ -69,61 +72,69 @@ const Home: React.FC = () => {
       {/* Navigation Links */}
       <div>
         <h2 className="text-lg font-medium mb-6 dark:text-white">Explore</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link href="/links" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+        <div className="space-y-6">
+          <Link href="/links" className="group cursor-pointer block">
+            <article>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
                   On the Internet
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  Find me across platforms
-                </p>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+                  →
+                </div>
               </div>
-              <FaArrowRight className="text-zinc-400 dark:text-zinc-500 transform transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                Find me across platforms
+              </p>
+            </article>
           </Link>
           
-          <Link href="/guestbook" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+          <Link href="/guestbook" className="group cursor-pointer block">
+            <article>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
                   Guest Book
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  Leave a message
-                </p>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+                  →
+                </div>
               </div>
-              <FaArrowRight className="text-zinc-400 dark:text-zinc-500 transform transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                Leave a message
+              </p>
+            </article>
           </Link>
           
-          <Link href="/stack" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+          <Link href="/stack" className="group cursor-pointer block">
+            <article>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
                   Resume
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  View my experience
-                </p>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+                  →
+                </div>
               </div>
-              <FaArrowRight className="text-zinc-400 dark:text-zinc-500 transform transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                View my experience
+              </p>
+            </article>
           </Link>
           
-          <a href="mailto:hi@rohanpothuru.com" className="group p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+          <a href="mailto:hi@rohanpothuru.com" className="group cursor-pointer block">
+            <article>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
                   Contact
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  Let&apos;s connect
-                </p>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+                  →
+                </div>
               </div>
-              <FaArrowRight className="text-zinc-400 dark:text-zinc-500 transform transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                Let&apos;s connect
+              </p>
+            </article>
           </a>
         </div>
       </div>
