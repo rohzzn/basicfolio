@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { Users, Eye, Download, Star, Globe, Gamepad, Cpu, Blocks } from "lucide-react";
 import Link from "next/link";
 
 interface Project {
@@ -20,8 +19,6 @@ interface Project {
 }
 
 const ProjectCard = ({ project }: { project: Project }) => {
-  const hasMetrics = project.metrics && (project.metrics.users || project.metrics.visits || project.metrics.downloads || project.metrics.githubStars);
-  
   // Find GitHub and Live links
   const githubLink = project.links.find(link => link.label === "GitHub");
   const liveLink = project.links.find(link => 
@@ -35,91 +32,66 @@ const ProjectCard = ({ project }: { project: Project }) => {
   );
   
   return (
-    <div className="group bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200">
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+    <article className="group cursor-pointer">
+      <div className="flex items-start justify-between gap-4 mb-2">
+        <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
           {project.title}
         </h3>
         
-        {/* Single prominent metric */}
-        {hasMetrics && (
-          <div className="flex items-center text-xs text-zinc-500 dark:text-zinc-400">
-            {project.metrics?.users && (
-              <>
-                <Users className="w-3 h-3 mr-1" />
-                {new Intl.NumberFormat().format(project.metrics.users)}
-              </>
-            )}
-            {!project.metrics?.users && project.metrics?.visits && (
-              <>
-                <Eye className="w-3 h-3 mr-1" />
-                {new Intl.NumberFormat().format(project.metrics.visits)}
-              </>
-            )}
-            {!project.metrics?.users && !project.metrics?.visits && project.metrics?.downloads && (
-              <>
-                <Download className="w-3 h-3 mr-1" />
-                {new Intl.NumberFormat().format(project.metrics.downloads)}
-              </>
-            )}
-            {!project.metrics?.users && !project.metrics?.visits && !project.metrics?.downloads && project.metrics?.githubStars && (
-              <>
-                <Star className="w-3 h-3 mr-1" />
-                {new Intl.NumberFormat().format(project.metrics.githubStars)}
-              </>
-            )}
-          </div>
-        )}
+        {/* Links on the right */}
+        <div className="flex items-center gap-2 text-xs shrink-0">
+          {githubLink && (
+            <Link
+              href={githubLink.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+              title="View source code"
+            >
+              ↗
+            </Link>
+          )}
+          
+          {liveLink && (
+            <Link
+              href={liveLink.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+              title={
+                liveLink.label.includes("Demo") ? "View demo" :
+                liveLink.label.includes("Live") ? "Visit live site" :
+                liveLink.label.includes("Marketplace") ? "View in store" :
+                liveLink.label.includes("Plugin") ? "Get plugin" :
+                liveLink.label.includes("Package") ? "View package" :
+                liveLink.label === "Chapter" ? "Read more" :
+                liveLink.label === "Invite" ? "Join server" :
+                "Visit"
+              }
+            >
+              →
+            </Link>
+          )}
+          
+          {/* Fallback link */}
+          {!githubLink && !liveLink && project.links[0] && (
+            <Link
+              href={project.links[0].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+              title="Visit"
+            >
+              →
+            </Link>
+          )}
+        </div>
       </div>
       
-      <p className="text-xs text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 mb-4">
+      <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
         {project.description}
       </p>
-      
-      {/* Links */}
-      <div className="flex items-center gap-3 text-xs">
-        {githubLink && (
-          <Link
-            href={githubLink.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors font-medium"
-          >
-            Source
-          </Link>
-        )}
-        
-        {liveLink && (
-          <Link
-            href={liveLink.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors font-medium"
-          >
-            {liveLink.label.includes("Demo") ? "Demo" :
-             liveLink.label.includes("Live") ? "Live" :
-             liveLink.label.includes("Marketplace") ? "Store" :
-             liveLink.label.includes("Plugin") ? "Plugin" :
-             liveLink.label.includes("Package") ? "Package" :
-             liveLink.label === "Chapter" ? "Read" :
-             liveLink.label === "Invite" ? "Join" :
-             "Visit"}
-          </Link>
-        )}
-        
-        {/* Fallback link if neither GitHub nor live link exists */}
-        {!githubLink && !liveLink && project.links[0] && (
-          <Link
-            href={project.links[0].url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors font-medium"
-          >
-            Visit
-          </Link>
-        )}
-      </div>
-    </div>
+    </article>
   );
 };
 
@@ -619,49 +591,41 @@ const Projects = () => {
   };
 
   const displayCategories = [
-    { id: "application" as const, label: "Applications", icon: <Blocks className="w-4 h-4" /> },
-    { id: "web" as const, label: "Websites", icon: <Globe className="w-4 h-4" /> },
-    { id: "game" as const, label: "Games", icon: <Gamepad className="w-4 h-4" /> },
-    { id: "other" as const, label: "Other", icon: <Cpu className="w-4 h-4" /> },
+    { id: "application" as const, label: "applications" },
+    { id: "web" as const, label: "web" },
+    { id: "game" as const, label: "games" },
+    { id: "other" as const, label: "other" },
   ];
 
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Projects</h2>
 
-      {/* Simplified Category Tabs */}
-      <div className="mb-8">
-        <div className="flex flex-wrap gap-2">
-          {displayCategories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setActiveTab(category.id)}
-              className={`
-                flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors
-                ${activeTab === category.id
-                  ? "bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
-                }
-              `}
-            >
-              {category.icon}
-              <span>{category.label}</span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                ({categories[category.id]?.length || 0})
-              </span>
-            </button>
-          ))}
-        </div>
+      {/* Categories */}
+      <div className="flex gap-4 mb-8">
+        {displayCategories.map((category) => (
+          <button
+            key={category.id}
+            onClick={() => setActiveTab(category.id)}
+            className={`text-sm capitalize transition-colors ${
+              activeTab === category.id
+                ? 'text-zinc-900 dark:text-white font-medium'
+                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+            }`}
+          >
+            {category.label}
+          </button>
+        ))}
       </div>
 
-      {/* Simple Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Projects List */}
+      <div className="space-y-6">
         {categories[activeTab]?.length ? (
           categories[activeTab].map((project, index) => (
             <ProjectCard key={index} project={project} />
           ))
         ) : (
-          <div className="col-span-full py-20 text-center">
+          <div className="py-20 text-center">
             <p className="text-zinc-500 dark:text-zinc-400">No projects found in this category.</p>
           </div>
         )}
