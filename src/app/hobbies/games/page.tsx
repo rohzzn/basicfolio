@@ -1,12 +1,12 @@
 // src/app/hobbies/games/page.tsx
+'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Profile from './Profile';
 import RecentlyPlayedGames from './RecentlyPlayedGames';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { cache } from 'react';
 import { Settings } from 'lucide-react';
 
 interface SteamProfile {
@@ -101,8 +101,8 @@ const emptyProfile: SteamProfile = {
 };
 
 const emptyGames: SteamGame[] = [];
-// Use React's cache function to prevent duplicate fetches
-const fetchWithCache = cache(async (url: string) => {
+// Fetch function for client-side requests
+const fetchWithRetry = async (url: string) => {
   console.log(`Fetching from: ${url}`);
   
   // Simple retry logic with backoff
@@ -141,53 +141,55 @@ const fetchWithCache = cache(async (url: string) => {
   }
   
   throw lastError;
-});
+};
 
-const Games = async () => {
+const Games = () => {
   const STEAM_ID = '76561198239653194';
-  const apiKey = process.env.STEAM_API_KEY;
+  
+  // State for data
+  const [profile, setProfile] = useState<SteamProfile>(emptyProfile);
+  const [ownedGames, setOwnedGames] = useState<SteamGame[]>(emptyGames);
+  const [profileError, setProfileError] = useState(false);
+  const [ownedGamesError, setOwnedGamesError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  if (!apiKey) {
-    console.error('Steam API Key is not set in environment variables.');
-    return (
-      <div className="max-w-7xl">
-        <p className="text-red-500">Steam API Key not configured.</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch from our API routes instead of directly from Steam
+        const [profileResponse, gamesResponse] = await Promise.all([
+          fetch('/api/steam/profile').catch(() => null),
+          fetch('/api/steam/games').catch(() => null)
+        ]);
 
-  // Initialize with empty data
-  let profile: SteamProfile = emptyProfile;
-  let ownedGames: SteamGame[] = emptyGames;
-  let profileError = false;
-  let ownedGamesError = false;
+        if (profileResponse && profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          if (profileData.response && profileData.response.players && profileData.response.players.length > 0) {
+            setProfile(profileData.response.players[0]);
+          }
+        } else {
+          setProfileError(true);
+        }
 
-  // Fetch Player Summaries
-  try {
-    const profileData = await fetchWithCache(
-      `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${STEAM_ID}`
-    );
-    if (profileData.response && profileData.response.players && profileData.response.players.length > 0) {
-      profile = profileData.response.players[0];
-    }
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    profileError = true;
-  }
+        if (gamesResponse && gamesResponse.ok) {
+          const gamesData = await gamesResponse.json();
+          if (gamesData.response && gamesData.response.games) {
+            setOwnedGames(gamesData.response.games);
+          }
+        } else {
+          setOwnedGamesError(true);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setProfileError(true);
+        setOwnedGamesError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Fetch all owned games
-  try {
-    const ownedGamesData = await fetchWithCache(
-      `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${apiKey}&steamid=${STEAM_ID}&include_appinfo=1&include_played_free_games=1`
-    );
-    if (ownedGamesData.response && ownedGamesData.response.games) {
-      ownedGames = ownedGamesData.response.games;
-    }
-  } catch (error) {
-    console.error('Error fetching owned games:', error);
-    ownedGamesError = true;
-  }
-
+    fetchData();
+  }, []);
 
   // Sort games by recent playtime for recent games section
   const recentlySortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
@@ -207,8 +209,17 @@ const Games = async () => {
   // Get recently played and top games
   const recentGames = recentlySortedGames.filter((game: SteamGame) => 
     game.playtime_2weeks && game.playtime_2weeks > 0
-  ).slice(0, 8);
+  ).slice(0, 2);
   const allGames = totalPlaytimeSortedGames.slice(0, 12);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl">
+        <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming</h2>
+        <p className="text-zinc-500 dark:text-zinc-400">Loading gaming data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl">
@@ -255,59 +266,103 @@ const Games = async () => {
           </div>
         )}
         
-        <div className="grid grid-cols-1 gap-6">
-          <div className="space-y-8">
-            {/* Recent Games */}
-            {recentGames.length > 0 && (
-              <div>
-                <RecentlyPlayedGames games={recentGames} />
-              </div>
-            )}
-            
-            {/* Top Games */}
+        <div className="space-y-8">
+          {/* Recent Games */}
+          {recentGames.length > 0 && (
             <div>
-              <h3 className="text-base font-medium mb-6 dark:text-white">Top Games</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {allGames.map((game) => (
-                  <div 
-                    key={game.appid} 
-                    className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex flex-col"
+              <h3 className="text-base font-medium mb-6 dark:text-white">Recent Games</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {recentGames.map((game) => (
+                  <Link
+                    key={game.appid}
+                    href={`https://store.steampowered.com/app/${game.appid}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group cursor-pointer block"
                   >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded flex items-center justify-center overflow-hidden">
-                        {game.img_icon_url ? (
-                          <Image
-                            src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
-                            alt={`${game.name} Icon`}
-                            width={32}
-                            height={32}
-                            className="rounded"
-                          />
-                        ) : (
-                          <span className="text-xs text-zinc-500 dark:text-zinc-400">No IMG</span>
-                        )}
+                    <article className="text-center">
+                      <div className="w-full aspect-[460/215] bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-3">
+                        <Image
+                          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
+                          alt={`${game.name} Header`}
+                          width={460}
+                          height={215}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            // Fallback to capsule image if header fails
+                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`;
+                            target.onError = () => {
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                parent.innerHTML = '<span class="text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center w-full h-full">No IMG</span>';
+                              }
+                            };
+                          }}
+                        />
                       </div>
-                      <h4 className="text-sm font-medium dark:text-white line-clamp-1">
+                      <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1">
                         {game.name}
                       </h4>
-                    </div>
-
-                    <div className="mt-auto space-y-1">
-                      <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                        Playtime: {Math.floor(game.playtime_forever / 60)}h
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {game.playtime_2weeks && game.playtime_2weeks > 0 
+                          ? `${Math.floor(game.playtime_2weeks / 60)}h recently` 
+                          : `${Math.floor(game.playtime_forever / 60)}h total`}
                       </p>
-                      <Link 
-                        href={`https://store.steampowered.com/app/${game.appid}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 dark:text-blue-400 hover:underline text-xs flex items-center"
-                      >
-                        View in Steam Store
-                      </Link>
-                    </div>
-                  </div>
+                    </article>
+                  </Link>
                 ))}
               </div>
+            </div>
+          )}
+          
+          {/* Top Games */}
+          <div>
+            <h3 className="text-base font-medium mb-6 dark:text-white">Top Games</h3>
+            <div className="space-y-4">
+              {allGames.map((game, index) => (
+                <div key={game.appid}>
+                  <Link
+                    href={`https://store.steampowered.com/app/${game.appid}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group cursor-pointer block"
+                  >
+                    <article>
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {game.img_icon_url ? (
+                            <Image
+                              src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
+                              alt={`${game.name} Icon`}
+                              width={32}
+                              height={32}
+                              className="rounded"
+                            />
+                          ) : (
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">No IMG</span>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between gap-4">
+                            <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                              {game.name}
+                            </h4>
+                            <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                              <span>{Math.floor(game.playtime_forever / 60)}h</span>
+                              <span>→</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  </Link>
+                  {index < allGames.length - 1 && (
+                    <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-4"></div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>

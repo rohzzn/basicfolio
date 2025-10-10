@@ -175,22 +175,17 @@ const ArtPage = () => {
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Design</h2>
-      
-      {/* Description */}
-      <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-        A collection of my design work and experiments. This page is still in WIP 🪴.
-      </p>
 
       {/* Filter Buttons */}
-      <div className="flex gap-4 mb-8">
+      <div className="flex gap-4 mb-12">
         {(['all', 'Behance', 'Dribbble'] as const).map((filter) => (
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
-            className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+            className={`text-sm capitalize transition-colors ${
               activeFilter === filter
-                ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                ? 'text-zinc-900 dark:text-white font-medium'
+                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
             }`}
           >
             {filter === 'all' ? 'All Projects' : filter}
@@ -201,62 +196,51 @@ const ArtPage = () => {
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProjects.map((project) => (
-          <div 
+          <Link 
             key={project.id}
-            className="group bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden"
+            href={project.projectUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group cursor-pointer block"
           >
-            {/* Project Image */}
-            <div className="relative h-48 w-full overflow-hidden">
-              <Image
-                src={project.imageUrl}
-                alt={project.title}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </div>
-
-            {/* Project Info */}
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-medium dark:text-white">{project.title}</h3>
-                <Link 
-                  href={project.projectUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
-                >
-                  <ExternalLink size={16} />
-                </Link>
-              </div>
-              
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
-                {project.description}
-              </p>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.tags.map((tag, tagIndex) => (
-                  <span 
-                    key={tagIndex}
-                    className="text-xs px-2 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded"
-                  >
-                    {tag}
-                  </span>
-                ))}
+            <article className="overflow-hidden">
+              {/* Project Image - Large and High Quality */}
+              <div className="relative h-64 w-full overflow-hidden rounded-lg mb-4">
+                <Image
+                  src={project.imageUrl}
+                  alt={project.title}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
               </div>
 
-              {/* Platform Badge */}
-              <div className="mt-4">
-                <span className={`text-xs px-2 py-1 rounded ${
-                  project.platform === 'Behance' 
-                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-                    : 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400'
-                }`}>
-                  {project.platform}
-                </span>
+              {/* Project Info */}
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-4">
+                  <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+                    {project.title}
+                  </h3>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {project.platform}
+                    </span>
+                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                      →
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                  {project.description}
+                </p>
+
+                {/* Tags */}
+                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {project.tags.join(' • ')}
+                </div>
               </div>
-            </div>
-          </div>
+            </article>
+          </Link>
         ))}
       </div>
 

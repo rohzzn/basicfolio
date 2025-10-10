@@ -38,9 +38,9 @@ const RecentlyPlayedGames: React.FC<RecentlyPlayedGamesProps> = ({ games }) => {
         {games.map((game) => (
           <div 
             key={game.appid} 
-            className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 flex flex-col"
+            className="p-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-lg transition-colors"
           >
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3 mb-2">
               <Image
                 src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
                 alt={`${game.name} Icon`}
@@ -48,27 +48,16 @@ const RecentlyPlayedGames: React.FC<RecentlyPlayedGamesProps> = ({ games }) => {
                 height={32}
                 className="rounded"
               />
-              <h4 className="text-sm font-medium dark:text-white line-clamp-1">
+              <h4 className="text-sm font-medium dark:text-white line-clamp-1 flex-1">
                 {game.name}
               </h4>
             </div>
 
-            <div className="mt-auto space-y-1">
-              {game.playtime_2weeks && (
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                  Recent: {formatPlaytime(game.playtime_2weeks)}
-                </p>
-              )}
-
-              <Link 
-                href={`https://store.steampowered.com/app/${game.appid}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-2 inline-block"
-              >
-                View on Steam →
-              </Link>
-            </div>
+            {game.playtime_2weeks && (
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 ml-11">
+                {formatPlaytime(game.playtime_2weeks)} recently
+              </p>
+            )}
           </div>
         ))}
       </div>
