@@ -25,3 +25,36 @@ body {
 }
 
 /* Default cursor styles restored */
+
+/* Original 3D Book Animation from techprep-gh */
+.perspective-900 {
+  perspective: 900px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.transition-transform-075s {
+  transition: transform 0.75s ease;
+}
+
+.rotate-y-30 {
+  transform: rotateY(-30deg);
+}
+
+.page-transform {
+  transform: translateX(calc(200px - 50px / 2 - 3px)) rotateY(90deg) translateX(25px);
+}
+
+.back-cover-transform {
+  transform: translateZ(-50px);
+}
+
+.shadow-image-shadow {
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.shadow-back-cover-shadow {
+  box-shadow: -10px 0 25px 6px rgba(0, 0, 0, 0.2);
+}
