@@ -101,6 +101,7 @@ const StravaPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState(30);
+  const [viewMode, setViewMode] = useState<'cards' | 'calendar'>('cards');
 
   const fetchStravaData = async (daysAgo: number) => {
     try {
@@ -355,87 +356,222 @@ const StravaPage: React.FC = () => {
 
       {/* Recent Activities */}
       <div className="mb-6">
-        <h3 className="text-lg font-medium mb-6 dark:text-white">Recent Activities</h3>
-        <div className="space-y-6">
-          {activities.map((activity, index) => (
-            <div key={activity.id}>
-              <article>
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">
-                    {activity.name}
-                  </h4>
-                  <time className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                    {formatDate(activity.start_date)}
-                  </time>
-                </div>
-                {activity.distance > 0 && (
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3">
-                    {formatDistance(activity.distance)}
-                  </p>
-                )}
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-medium dark:text-white">Recent Activities</h3>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setViewMode('cards')}
+              className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                viewMode === 'cards' 
+                  ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' 
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+              }`}
+            >
+              Cards
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                viewMode === 'calendar' 
+                  ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' 
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+              }`}
+            >
+              Calendar
+            </button>
+          </div>
+        </div>
 
-                {/* Check if we have any visual content (photos or maps) */}
-                {(activity.photos?.primary?.urls || activity.map?.summary_polyline || (activity.photos && !activity.photos.primary?.urls && activity.photos.primary)) ? (
-                  <div className="flex gap-6">
-                    {/* Left side - Images/Maps */}
-                    <div className="flex-shrink-0">
-                      {/* Display photos if available */}
-                      {activity.photos?.primary?.urls && (
-                        <Image 
-                          src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
-                          alt={`Photo from ${activity.name}`}
-                          className="rounded-lg"
-                          width={400}
-                          height={300}
-                          style={{ 
-                            maxHeight: '300px', 
-                            width: 'auto',
-                            height: 'auto',
-                            objectFit: 'contain' 
-                          }}
-                          onError={(e) => console.error('Image failed to load:', e)}
-                        />
-                      )}
-
-                      {/* If no photo but there's a map polyline, show the map */}
-                      {!activity.photos?.primary?.urls && activity.map?.summary_polyline && (
-                        <div className="w-[400px] h-[200px] bg-zinc-200 dark:bg-zinc-700/50 rounded-lg overflow-hidden flex items-center justify-center">
-                          <ActivityPolyline polyline={activity.map.summary_polyline} />
+        {/* Calendar View */}
+        {viewMode === 'calendar' && (
+          <div className="space-y-6">
+            <div className="text-center">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+                Activity intensity over the past {timeRange} days
+              </p>
+            </div>
+            
+            {/* Calendar heatmap */}
+            <div className="p-6">
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-xs text-zinc-500 dark:text-zinc-400 text-center py-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              
+              <div className="grid grid-cols-7 gap-1">
+                {Array.from({ length: Math.ceil(timeRange / 7) * 7 }, (_, i) => {
+                  const date = new Date();
+                  date.setDate(date.getDate() - (timeRange - i));
+                  
+                  const dayActivities = activities.filter(activity => {
+                    const activityDate = new Date(activity.start_date);
+                    return activityDate.toDateString() === date.toDateString();
+                  });
+                  
+                  const intensity = Math.min(dayActivities.length, 4);
+                  const intensityColors = [
+                    'bg-zinc-100 dark:bg-zinc-800',
+                    'bg-zinc-200 dark:bg-zinc-700',
+                    'bg-zinc-300 dark:bg-zinc-600',
+                    'bg-zinc-400 dark:bg-zinc-500',
+                    'bg-zinc-500 dark:bg-zinc-400'
+                  ];
+                  
+                  return (
+                    <div
+                      key={i}
+                      className={`aspect-square rounded-sm ${intensityColors[intensity]} border border-zinc-200 dark:border-zinc-700 hover:ring-2 hover:ring-zinc-400 transition-all cursor-pointer group relative`}
+                      title={`${date.toDateString()}: ${dayActivities.length} activities`}
+                    >
+                      {dayActivities.length > 0 && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                            {dayActivities.length}
+                          </span>
                         </div>
                       )}
-
-                      {/* Fallback approach for different photo structures */}
-                      {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
-                        <Image 
-                          src={
-                            typeof activity.photos.primary === 'object' && 
-                            'source' in activity.photos.primary && 
-                            'unique_id' in activity.photos.primary && 
-                            activity.photos.primary.source === 1 && 
-                            typeof activity.photos.primary.unique_id === 'string'
-                              ? `https://dgtzuqphqg23d.cloudfront.net/${activity.photos.primary.unique_id}-768x576.jpg`
-                              : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
-                          } 
-                          alt={`Photo from ${activity.name}`}
-                          className="rounded-lg"
-                          width={400}
-                          height={300}
-                          style={{ 
-                            maxHeight: '300px', 
-                            width: 'auto',
-                            height: 'auto',
-                            objectFit: 'contain' 
-                          }}
-                          onError={(e) => {
-                            console.error('Fallback image failed to load:', e);
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      )}
                     </div>
+                  );
+                })}
+              </div>
+              
+              <div className="flex items-center justify-between mt-4 text-xs text-zinc-500 dark:text-zinc-400">
+                <span>Less</span>
+                <div className="flex gap-1">
+                  {[0, 1, 2, 3, 4].map(level => (
+                    <div
+                      key={level}
+                      className={`w-3 h-3 rounded-sm ${
+                        level === 0 ? 'bg-zinc-100 dark:bg-zinc-800' :
+                        level === 1 ? 'bg-zinc-200 dark:bg-zinc-700' :
+                        level === 2 ? 'bg-zinc-300 dark:bg-zinc-600' :
+                        level === 3 ? 'bg-zinc-400 dark:bg-zinc-500' :
+                        'bg-zinc-500 dark:bg-zinc-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span>More</span>
+              </div>
+            </div>
+          </div>
+        )}
 
-                    {/* Right side - Activity Details */}
-                    <div className="flex-1 text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
+        {/* Cards View */}
+        {viewMode === 'cards' && (
+          <div className="space-y-6">
+            {activities.map((activity, index) => (
+              <div key={activity.id}>
+                <article className="group cursor-pointer block">
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+                      {activity.name}
+                    </h4>
+                    <time className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+                      {formatDate(activity.start_date)}
+                    </time>
+                  </div>
+                  
+                  {activity.distance > 0 && (
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3">
+                      {formatDistance(activity.distance)}
+                    </p>
+                  )}
+
+                  {/* Check if we have any visual content (photos or maps) */}
+                  {(activity.photos?.primary?.urls || activity.map?.summary_polyline || (activity.photos && !activity.photos.primary?.urls && activity.photos.primary)) ? (
+                    <div className="flex gap-6">
+                      {/* Left side - Images/Maps */}
+                      <div className="flex-shrink-0">
+                        {/* Display photos if available */}
+                        {activity.photos?.primary?.urls && (
+                          <Image 
+                            src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
+                            alt={`Photo from ${activity.name}`}
+                            className="rounded-lg"
+                            width={400}
+                            height={300}
+                            style={{ 
+                              maxHeight: '300px', 
+                              width: 'auto',
+                              height: 'auto',
+                              objectFit: 'contain' 
+                            }}
+                            onError={(e) => console.error('Image failed to load:', e)}
+                          />
+                        )}
+
+                        {/* If no photo but there's a map polyline, show the map */}
+                        {!activity.photos?.primary?.urls && activity.map?.summary_polyline && (
+                          <div className="w-[400px] h-[200px] bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden flex items-center justify-center">
+                            <ActivityPolyline polyline={activity.map.summary_polyline} />
+                          </div>
+                        )}
+
+                        {/* Fallback approach for different photo structures */}
+                        {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
+                          <Image 
+                            src={
+                              typeof activity.photos.primary === 'object' && 
+                              'source' in activity.photos.primary && 
+                              'unique_id' in activity.photos.primary && 
+                              activity.photos.primary.source === 1 && 
+                              typeof activity.photos.primary.unique_id === 'string'
+                                ? `https://dgtzuqphqg23d.cloudfront.net/${activity.photos.primary.unique_id}-768x576.jpg`
+                                : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
+                            } 
+                            alt={`Photo from ${activity.name}`}
+                            className="rounded-lg"
+                            width={400}
+                            height={300}
+                            style={{ 
+                              maxHeight: '300px', 
+                              width: 'auto',
+                              height: 'auto',
+                              objectFit: 'contain' 
+                            }}
+                            onError={(e) => {
+                              console.error('Fallback image failed to load:', e);
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Right side - Activity Details */}
+                      <div className="flex-1 text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
+                        {activity.moving_time > 0 && (
+                          <div>Duration: {formatTime(activity.moving_time)}</div>
+                        )}
+                        {activity.average_speed > 0 && (
+                          <div>
+                            {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}: {' '}
+                            {activity.type === 'Run' || activity.type === 'Walk' 
+                              ? formatPace(activity.average_speed)
+                              : formatSpeed(activity.average_speed)
+                            }
+                          </div>
+                        )}
+                        {activity.total_elevation_gain > 0 && (
+                          <div>Elevation: {activity.total_elevation_gain.toFixed(0)}m</div>
+                        )}
+                        {calculateCalories(activity) > 0 && (
+                          <div>Calories: {calculateCalories(activity)} kcal</div>
+                        )}
+                        {activity.average_heartrate && activity.average_heartrate > 0 && (
+                          <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
+                        )}
+                        {(activity.total_photo_count ?? 0) > 1 && (
+                          <div>{activity.total_photo_count} photos</div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    /* No visual content - just show details without flex layout */
+                    <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
                       {activity.moving_time > 0 && (
                         <div>Duration: {formatTime(activity.moving_time)}</div>
                       )}
@@ -461,51 +597,24 @@ const StravaPage: React.FC = () => {
                         <div>{activity.total_photo_count} photos</div>
                       )}
                     </div>
-                  </div>
-                ) : (
-                  /* No visual content - just show details without flex layout */
-                  <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
-                    {activity.moving_time > 0 && (
-                      <div>Duration: {formatTime(activity.moving_time)}</div>
-                    )}
-                    {activity.average_speed > 0 && (
-                      <div>
-                        {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}: {' '}
-                        {activity.type === 'Run' || activity.type === 'Walk' 
-                          ? formatPace(activity.average_speed)
-                          : formatSpeed(activity.average_speed)
-                        }
-                      </div>
-                    )}
-                    {activity.total_elevation_gain > 0 && (
-                      <div>Elevation: {activity.total_elevation_gain.toFixed(0)}m</div>
-                    )}
-                    {calculateCalories(activity) > 0 && (
-                      <div>Calories: {calculateCalories(activity)} kcal</div>
-                    )}
-                    {activity.average_heartrate && activity.average_heartrate > 0 && (
-                      <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
-                    )}
-                    {(activity.total_photo_count ?? 0) > 1 && (
-                      <div>{activity.total_photo_count} photos</div>
-                    )}
-                  </div>
+                  )}
+                </article>
+                
+                {/* Divider line between activities (except for the last one) */}
+                {(index < activities.length - 1) && (
+                  <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-6"></div>
                 )}
-              </article>
-              
-              {/* Divider line between activities (except for the last one) */}
-              {(index < activities.length - 1) && (
-                <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-6"></div>
-              )}
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
+        )}
 
-          {loading && (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-400" />
-            </div>
-          )}
-        </div>
+
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-400" />
+          </div>
+        )}
       </div>
 
       {/* No Activities Message */}

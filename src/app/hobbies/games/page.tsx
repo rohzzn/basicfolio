@@ -36,6 +36,7 @@ interface SteamGame {
   img_logo_url?: string;
 }
 
+
 interface Achievement {
   tournament: string;
   year: string;
@@ -135,6 +136,7 @@ const Games = () => {
         } else {
           setOwnedGamesError(true);
         }
+
       } catch (error) {
         console.error('Error fetching data:', error);
         setProfileError(true);
