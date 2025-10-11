@@ -93,14 +93,14 @@ const Readings: React.FC = () => {
         </button>
       </div>
 
-      {/* Books Grid - Original techprep-gh Implementation */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8 py-8">
+      {/* Books Grid - Responsive Implementation */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 md:gap-8 py-8">
         {sortedBooks.map((book, index) => (
           <article key={index} className="group cursor-pointer">
-            {/* Book Container - Exact replica of techprep-gh */}
-            <div className="w-[200px] h-[260px] m-[30px] flex items-center justify-center perspective-900">
+            {/* Book Container - Responsive sizes */}
+            <div className="w-full max-w-[200px] mx-auto aspect-[200/260] flex items-center justify-center perspective-900">
               <div
-                className="w-[200px] h-[260px] relative preserve-3d rotate-y-30 transition-transform-075s"
+                className="w-full h-full relative preserve-3d rotate-y-30 transition-transform-075s"
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.transform = "rotateY(0deg)")
                 }
@@ -121,29 +121,29 @@ const Readings: React.FC = () => {
                     target.style.display = 'none';
                     const parent = target.parentElement;
                     if (parent) {
-                      parent.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800 flex items-center justify-center rounded-r rounded-l-[3px]"><span class="text-3xl">📖</span></div>';
+                      parent.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800 flex items-center justify-center rounded-r rounded-l-[3px]"><span class="text-2xl sm:text-3xl">📖</span></div>';
                     }
                   }}
                 />
                 
-                {/* Pages */}
-                <div className="bg-gradient-to-r from-white via-gray-50 to-gray-100 h-[calc(260px-2*6px)] w-[50px] top-[3px] absolute page-transform border-l border-gray-200 shadow-sm">
+                {/* Pages - Responsive sizing */}
+                <div className="bg-gradient-to-r from-white via-gray-50 to-gray-100 h-[calc(100%-12px)] w-[25%] max-w-[50px] top-[6px] absolute page-transform border-l border-gray-200 shadow-sm">
                   {/* Page lines effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-100/30 to-transparent"></div>
                   <div className="absolute top-2 bottom-2 left-1 right-1 bg-gradient-to-r from-gray-100/50 to-transparent"></div>
                 </div>
                 
                 {/* Back Cover */}
-                <div className="rounded-r bg-[#01060f] h-[260px] w-[200px] left-0 absolute back-cover-transform shadow-back-cover-shadow" />
+                <div className="rounded-r bg-[#01060f] h-full w-full left-0 absolute back-cover-transform shadow-back-cover-shadow" />
               </div>
             </div>
             
-            {/* Info Panel - Positioned to account for 3D rotation */}
-            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 mt-4 text-center transform group-hover:translate-x-8">
-              <h3 className="text-sm font-medium dark:text-white mb-1 line-clamp-2">
+            {/* Info Panel - Centered below book */}
+            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 mt-2 sm:mt-4 text-center">
+              <h3 className="text-xs sm:text-sm font-medium dark:text-white mb-1 line-clamp-2 px-1">
                 {book.title}
               </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2 line-clamp-2">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2 line-clamp-2 px-1">
                 {book.review}
               </p>
               <div className="flex items-center justify-center gap-2">

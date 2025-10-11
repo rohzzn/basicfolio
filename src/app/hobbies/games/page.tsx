@@ -167,7 +167,7 @@ const Games = () => {
   // Get recently played and top games
   const recentGames = recentlySortedGames.filter((game: SteamGame) => 
     game.playtime_2weeks && game.playtime_2weeks > 0
-  ).slice(0, 2);
+  ).slice(0, 4);
   const allGames = totalPlaytimeSortedGames.slice(0, 12);
 
   if (loading) {
@@ -229,7 +229,7 @@ const Games = () => {
           {recentGames.length > 0 && (
             <div>
               <h3 className="text-base font-medium mb-6 dark:text-white">Recent Games</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {recentGames.map((game) => (
                   <Link
                     key={game.appid}
@@ -238,8 +238,8 @@ const Games = () => {
                     rel="noopener noreferrer"
                     className="group cursor-pointer block"
                   >
-                    <article className="text-center">
-                      <div className="w-full aspect-[460/215] bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-3">
+                    <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                      <div className="w-full aspect-[460/215] bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-2">
                         <Image
                           src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
                           alt={`${game.name} Header`}
@@ -260,7 +260,7 @@ const Games = () => {
                           }}
                         />
                       </div>
-                      <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1">
+                      <h4 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1 line-clamp-2">
                         {game.name}
                       </h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -278,48 +278,65 @@ const Games = () => {
           {/* Top Games */}
           <div>
             <h3 className="text-base font-medium mb-6 dark:text-white">Top Games</h3>
-            <div className="space-y-4">
-              {allGames.map((game, index) => (
-                <div key={game.appid}>
-                  <Link
-                    href={`https://store.steampowered.com/app/${game.appid}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group cursor-pointer block"
-                  >
-                    <article>
-                      <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
-                          {game.img_icon_url ? (
-                            <Image
-                              src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
-                              alt={`${game.name} Icon`}
-                              width={32}
-                              height={32}
-                              className="rounded"
-                            />
-                          ) : (
-                            <span className="text-xs text-zinc-500 dark:text-zinc-400">No IMG</span>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between gap-4">
-                            <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                              {game.name}
-                            </h4>
-                            <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                              <span>{Math.floor(game.playtime_forever / 60)}h</span>
-                              <span>→</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  </Link>
-                  {index < allGames.length - 1 && (
-                    <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-4"></div>
-                  )}
-                </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {allGames.map((game) => (
+                <Link
+                  key={game.appid}
+                  href={`https://store.steampowered.com/app/${game.appid}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group cursor-pointer block"
+                >
+                  <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-center">
+                    <div className="w-full aspect-[600/900] bg-zinc-200 dark:bg-zinc-700 rounded mx-auto mb-2 overflow-hidden">
+                      <Image
+                        src={game.appid === 243470 
+                          ? `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`
+                          : `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/library_600x900.jpg`
+                        }
+                        alt={`${game.name} Library`}
+                        width={600}
+                        height={900}
+                        className="w-full h-full object-cover rounded"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          // Fallback to capsule image if library fails
+                          target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_616x353.jpg`;
+                          target.onerror = () => {
+                            // Second fallback to header image
+                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
+                            target.onerror = () => {
+                              // Final fallback to icon if available
+                              if (game.img_icon_url) {
+                                target.src = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
+                                target.className = "w-8 h-8 mx-auto my-auto object-contain rounded";
+                                target.onerror = () => {
+                                  target.style.display = 'none';
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    parent.innerHTML = '<span class="text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center w-full h-full">🎮</span>';
+                                  }
+                                };
+                              } else {
+                                target.style.display = 'none';
+                                const parent = target.parentElement;
+                                if (parent) {
+                                  parent.innerHTML = '<span class="text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center w-full h-full">🎮</span>';
+                                }
+                              }
+                            };
+                          };
+                        }}
+                      />
+                    </div>
+                    <h4 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1 line-clamp-2">
+                      {game.name}
+                    </h4>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {Math.floor(game.playtime_forever / 60)}h
+                    </p>
+                  </article>
+                </Link>
               ))}
             </div>
           </div>
