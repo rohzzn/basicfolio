@@ -134,7 +134,7 @@ const Readings: React.FC = () => {
                 </div>
                 
                 {/* Back Cover */}
-                <div className="rounded-r bg-[#01060f] h-full w-full left-0 absolute back-cover-transform shadow-back-cover-shadow" />
+                <div className="rounded-r bg-gradient-to-r from-gray-800 to-gray-900 h-full w-full left-0 absolute back-cover-transform shadow-back-cover-shadow" />
               </div>
             </div>
             

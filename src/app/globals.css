@@ -48,7 +48,7 @@ body {
 }
 
 .back-cover-transform {
-  transform: translateZ(-50px);
+  transform: translateZ(-3px);
 }
 
 .shadow-image-shadow {
