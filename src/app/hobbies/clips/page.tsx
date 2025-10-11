@@ -134,12 +134,7 @@ export default function ClipsPage() {
       <div className="mb-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold dark:text-white mb-2">Gaming Clips</h2>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {!loading && clips.length > 0 && (
-                <>Showing {filteredClips.length} of {clips.length} clips</>
-              )}
-            </p>
+            <h2 className="text-lg font-medium dark:text-white mb-6">Gaming Clips</h2>
           </div>
           
           <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
