@@ -17,7 +17,7 @@ const LinkGroup: React.FC<LinkGroupProps> = ({ title, links }) => {
   return (
     <div>
       <h3 className="text-lg font-medium mb-6 dark:text-white">{title}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {links.map((link, index) => (
           <Link
             key={index}
@@ -26,16 +26,13 @@ const LinkGroup: React.FC<LinkGroupProps> = ({ title, links }) => {
             rel="noopener noreferrer"
             className="group cursor-pointer block"
           >
-            <article>
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
+              <div className="mb-2">
+                <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                   {link.title}
                 </h4>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                  →
-                </div>
               </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 {link.description}
               </p>
             </article>
