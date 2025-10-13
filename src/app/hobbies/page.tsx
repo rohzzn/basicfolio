@@ -82,10 +82,6 @@ const Hobbies: React.FC = () => (
               <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
                 {hobby.title}
               </h3>
-              
-              <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                →
-              </div>
             </div>
             
             <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">

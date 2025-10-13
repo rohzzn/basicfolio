@@ -179,6 +179,23 @@ export async function GET() {
         embedUrl = `https://medal.tv/games/valorant/clips/${numericId}/embed`;
       }
       
+      // Ensure the embed URL is in the correct format for iframe embedding
+      if (embedUrl && !embedUrl.includes('/embed')) {
+        // Convert regular Medal.tv URLs to embed URLs
+        if (embedUrl.includes('medal.tv/games/') && embedUrl.includes('/clips/')) {
+          embedUrl = embedUrl.replace(/\/clips\/([^\/]+)$/, '/clips/$1/embed');
+        } else if (embedUrl.includes('medal.tv/clip/')) {
+          // Handle different URL formats
+          const clipIdMatch = embedUrl.match(/medal\.tv\/clip\/([^\/\?]+)/);
+          if (clipIdMatch && clipIdMatch[1]) {
+            embedUrl = `https://medal.tv/games/valorant/clips/${clipIdMatch[1]}/embed`;
+          }
+        }
+      }
+      
+      // Log the embed URL for debugging
+      console.log('Embed URL for clip:', embedUrl);
+      
       // Log the clip data for debugging
       console.log('Clip data:', {
         id: clip.contentId,

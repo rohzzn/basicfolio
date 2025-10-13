@@ -42,62 +42,24 @@ const ProjectCard = ({ project }: { project: Project }) => {
       className="group cursor-pointer block"
     >
       <article>
-        <div className="flex items-start justify-between gap-4 mb-2">
-          <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+        <div className="mb-2 flex items-center gap-2">
+          <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
             {project.title}
           </h3>
           
-          {/* Links on the right */}
-          <div className="flex items-center gap-2 text-xs shrink-0">
-            {githubLink && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  window.open(githubLink.url, '_blank', 'noopener,noreferrer');
-                }}
-                className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-                title="View source code"
-              >
-                ↗
-              </button>
-            )}
-            
-            {liveLink && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  window.open(liveLink.url, '_blank', 'noopener,noreferrer');
-                }}
-                className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-                title={
-                  liveLink.label.includes("Demo") ? "View demo" :
-                  liveLink.label.includes("Live") ? "Visit live site" :
-                  liveLink.label.includes("Marketplace") ? "View in store" :
-                  liveLink.label.includes("Plugin") ? "Get plugin" :
-                  liveLink.label.includes("Package") ? "View package" :
-                  liveLink.label === "Chapter" ? "Read more" :
-                  liveLink.label === "Invite" ? "Join server" :
-                  "Visit"
-                }
-              >
-                →
-              </button>
-            )}
-            
-            {/* Fallback link */}
-            {!githubLink && !liveLink && project.links[0] && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  window.open(project.links[0].url, '_blank', 'noopener,noreferrer');
-                }}
-                className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-                title="Visit"
-              >
-                →
-              </button>
-            )}
-          </div>
+          {/* Subtle source indicator - only appears on hover, right beside title */}
+          {githubLink && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(githubLink.url, '_blank', 'noopener,noreferrer');
+              }}
+              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-all text-xs opacity-0 group-hover:opacity-100"
+              title="View source code"
+            >
+              src
+            </button>
+          )}
         </div>
         
         <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">

@@ -25,10 +25,24 @@ const nextConfig = {
       { protocol: 'https', hostname: 'youtube.com' },
       { protocol: 'https', hostname: 'i.imgur.com' },
       { protocol: 'https', hostname: 'cdn.medal.tv' },
+      { protocol: 'https', hostname: 'medal.tv' },
       { protocol: 'https', hostname: 'images-na.ssl-images-amazon.com' },
       { protocol: 'https', hostname: 'm.media-amazon.com' },
       { protocol: 'https', hostname: 'covers.openlibrary.org' },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-src 'self' https://medal.tv https://*.medal.tv https://www.youtube.com https://youtube.com; frame-ancestors 'self';"
+          },
+        ],
+      },
+    ]
   },
   // ... other configurations
 };

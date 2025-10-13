@@ -72,66 +72,54 @@ const Home: React.FC = () => {
       {/* Navigation Links */}
       <div>
         <h2 className="text-lg font-medium mb-6 dark:text-white">Explore</h2>
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link href="/links" className="group cursor-pointer block">
-            <article>
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                   On the Internet
                 </h3>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                  →
-                </div>
               </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Find me across platforms
               </p>
             </article>
           </Link>
           
           <Link href="/guestbook" className="group cursor-pointer block">
-            <article>
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                   Guest Book
                 </h3>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                  →
-                </div>
               </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Leave a message
               </p>
             </article>
           </Link>
           
           <Link href="/stack" className="group cursor-pointer block">
-            <article>
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                   Resume
                 </h3>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                  →
-                </div>
               </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 View my experience
               </p>
             </article>
           </Link>
           
           <a href="mailto:hi@rohanpothuru.com" className="group cursor-pointer block">
-            <article>
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                   Contact
                 </h3>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                  →
-                </div>
               </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Let&apos;s connect
               </p>
             </article>
