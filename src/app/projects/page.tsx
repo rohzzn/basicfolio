@@ -75,6 +75,17 @@ const Projects = () => {
   
   const projects: Project[] = [
     {
+      title: "Wordle Clone",
+      description: "A web application that creates word clouds based on the user's input text. This application is a clone of the popular word cloud generator, Wordle, built using JavaScript.",
+      tech: ["JavaScript", "HTML", "CSS"],
+      category: 'game',
+      links: [
+        { label: "GitHub", url: "https://github.com/rohzzn/wordle" },
+        { label: "Live", url: "https://rohzzn.github.io/wordle/" },
+      ],
+      image: "/projects/wordle.png"
+    },
+    {
       title: "Interactions",
       description: "Interaction Design Challenge - Take on the 7-day challenge and craft beautiful UI interactions daily. Make your designs come alive!",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],

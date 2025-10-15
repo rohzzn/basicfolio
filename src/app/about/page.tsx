@@ -33,7 +33,7 @@ const Home: React.FC = () => {
             </h1>
             
             <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              I&apos;m a software engineer and computer science graduate student who loves building things that matter. Currently pursuing my Masters at the University of Cincinnati while working part-time as a developer at Cincinnati Children&apos;s Hospital, where I contribute to healthcare tech.
+              I&apos;m a software engineer and computer science graduate student who loves building things that matter. Currently pursuing my Masters at the University of Cincinnati while working part-time as a developer, where I contribute to healthcare tech.
             </p>
             
             <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed mt-4">
