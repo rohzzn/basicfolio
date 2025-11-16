@@ -28,8 +28,8 @@ const LinkGroup: React.FC<LinkGroupProps> = ({ title, links }) => {
           >
             <article className="flex items-start justify-between gap-4">
               <h4 className="text-sm font-medium dark:text-white flex-shrink-0">
-                {link.title}
-              </h4>
+                  {link.title}
+                </h4>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 text-right">
                 {link.description}
               </p>

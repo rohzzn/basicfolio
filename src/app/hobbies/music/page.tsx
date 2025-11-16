@@ -473,38 +473,38 @@ const MusicPage: React.FC = () => {
     };
 
     return (
-      <div className="border-b border-zinc-200 dark:border-zinc-700 mb-6">
-        <div className="flex space-x-6">
-          <button
-            onClick={() => setActiveTab('recent')}
-            className={`py-3 px-1 relative ${activeTab === 'recent' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-          >
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>Recent</span>
-            </div>
-            {activeTab === 'recent' && (
-              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-            )}
-          </button>
-          
+    <div className="border-b border-zinc-200 dark:border-zinc-700 mb-6">
+      <div className="flex space-x-6">
+        <button
+          onClick={() => setActiveTab('recent')}
+          className={`py-3 px-1 relative ${activeTab === 'recent' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+        >
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            <span>Recent</span>
+          </div>
+          {activeTab === 'recent' && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+          )}
+        </button>
+        
           <div className="relative">
             <div className="flex items-center">
-              <button
-                onClick={() => setActiveTab('tracks')}
+        <button
+          onClick={() => setActiveTab('tracks')}
                 onMouseEnter={handleTracksMouseEnter}
                 onMouseLeave={handleTracksMouseLeave}
-                className={`py-3 px-1 relative ${activeTab === 'tracks' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-              >
-                <div className="flex items-center gap-2">
-                  <Headphones className="w-4 h-4" />
-                  <span>Tracks</span>
-                </div>
-                {activeTab === 'tracks' && (
-                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-                )}
-              </button>
-              
+          className={`py-3 px-1 relative ${activeTab === 'tracks' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+        >
+          <div className="flex items-center gap-2">
+            <Headphones className="w-4 h-4" />
+            <span>Tracks</span>
+          </div>
+          {activeTab === 'tracks' && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+          )}
+        </button>
+        
               {/* Horizontal Time Range Options */}
               {showTracksDropdown && (
                 <div 
@@ -558,20 +558,20 @@ const MusicPage: React.FC = () => {
           
           <div className="relative">
             <div className="flex items-center">
-              <button
-                onClick={() => setActiveTab('artists')}
+        <button
+          onClick={() => setActiveTab('artists')}
                 onMouseEnter={handleArtistsMouseEnter}
                 onMouseLeave={handleArtistsMouseLeave}
-                className={`py-3 px-1 relative ${activeTab === 'artists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-              >
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  <span>Artists</span>
-                </div>
-                {activeTab === 'artists' && (
-                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-                )}
-              </button>
+          className={`py-3 px-1 relative ${activeTab === 'artists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+        >
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            <span>Artists</span>
+          </div>
+          {activeTab === 'artists' && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+          )}
+        </button>
               
               {/* Horizontal Time Range Options */}
               {showArtistsDropdown && (
@@ -623,22 +623,22 @@ const MusicPage: React.FC = () => {
               )}
             </div>
           </div>
-          
-          <button
-            onClick={() => setActiveTab('playlists')}
-            className={`py-3 px-1 relative ${activeTab === 'playlists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-          >
-            <div className="flex items-center gap-2">
-              <ListMusic className="w-4 h-4" />
-              <span>Playlists</span>
-            </div>
-            {activeTab === 'playlists' && (
-              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-            )}
-          </button>
-        </div>
+        
+        <button
+          onClick={() => setActiveTab('playlists')}
+          className={`py-3 px-1 relative ${activeTab === 'playlists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+        >
+          <div className="flex items-center gap-2">
+            <ListMusic className="w-4 h-4" />
+            <span>Playlists</span>
+          </div>
+          {activeTab === 'playlists' && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+          )}
+        </button>
       </div>
-    );
+    </div>
+  );
   };
 
   // Artists tab content
@@ -705,27 +705,27 @@ const MusicPage: React.FC = () => {
         </div>
       ) : topTracks.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {topTracks.map((track, index) => (
+                {topTracks.map((track, index) => (
             <a
-              key={`${track.id}-${index}`}
-              href={track.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
+                    key={`${track.id}-${index}`}
+                        href={track.external_urls.spotify}
+                        target="_blank" 
+                        rel="noopener noreferrer"
               className="group cursor-pointer block"
-            >
+                      >
               <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200">
                 <div className="flex items-start gap-3">
                   <div className="relative shrink-0 w-16 h-16">
-                    <Image
-                      src={getSafeImageUrl(track.album?.images)}
-                      alt={track.album?.name || 'Album cover'}
-                      fill
+                          <Image
+                            src={getSafeImageUrl(track.album?.images)}
+                            alt={track.album?.name || 'Album cover'}
+                            fill
                       className="rounded-md object-cover"
-                      unoptimized
-                    />
+                            unoptimized
+                          />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-md flex items-center justify-center">
                       <Play className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
+                        </div>
                   </div>
                   
                   <div className="flex-1 min-w-0">
@@ -733,13 +733,13 @@ const MusicPage: React.FC = () => {
                       {track.name}
                     </h4>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mt-1">
-                      {track.artists.map(a => a.name).join(', ')}
-                    </p>
-                  </div>
+                            {track.artists.map(a => a.name).join(', ')}
+                          </p>
+                        </div>
                 </div>
               </article>
             </a>
-          ))}
+                ))}
         </div>
       ) : (
         <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
@@ -834,25 +834,25 @@ const MusicPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {recentTracks.slice(0, 20).map((track, index) => (
             <a
-              key={`${track.id}-${index}`}
-              href={track.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
+                    key={`${track.id}-${index}`}
+                        href={track.external_urls.spotify}
+                        target="_blank" 
+                        rel="noopener noreferrer"
               className="group cursor-pointer block"
-            >
+                      >
               <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200">
                 <div className="flex items-start gap-3">
                   <div className="relative shrink-0 w-16 h-16">
-                    <Image
-                      src={getSafeImageUrl(track.album?.images)}
-                      alt={track.album?.name || 'Album cover'}
-                      fill
+                          <Image
+                            src={getSafeImageUrl(track.album?.images)}
+                            alt={track.album?.name || 'Album cover'}
+                            fill
                       className="rounded-md object-cover"
-                      unoptimized
-                    />
+                            unoptimized
+                          />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-md flex items-center justify-center">
                       <Play className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
+                        </div>
                   </div>
                   
                   <div className="flex-1 min-w-0">
@@ -860,13 +860,13 @@ const MusicPage: React.FC = () => {
                       {track.name}
                     </h4>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mt-1">
-                      {track.artists.map(a => a.name).join(', ')}
-                    </p>
-                  </div>
+                            {track.artists.map(a => a.name).join(', ')}
+                          </p>
+                        </div>
                 </div>
               </article>
             </a>
-          ))}
+                ))}
         </div>
       ) : (
         <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">

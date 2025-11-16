@@ -109,7 +109,7 @@ const Readings: React.FC = () => {
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
               }}
-            >
+              >
               {/* Book Cover */}
               <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden shadow-lg">
                 <Image
@@ -161,16 +161,16 @@ const Readings: React.FC = () => {
                 {book.review}
               </p>
               <div className="flex items-center gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className={`text-xs ${
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className={`text-xs ${
                       i < book.score ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'
-                    }`}
-                  >
-                    ★
-                  </span>
-                ))}
+                      }`}
+                    >
+                      ★
+                    </span>
+                  ))}
               </div>
             </div>
           </article>

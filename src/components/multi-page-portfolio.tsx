@@ -266,7 +266,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
           <nav className="flex-1 px-4 sm:px-6 lg:px-8 overflow-y-auto pb-4">
             <div className="space-y-1">
-              {[
+              {              [
                 { path: "/", label: "About" },
                 { path: "/projects", label: "Projects" },
                 { path: "/writing", label: "Writing" },
