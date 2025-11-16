@@ -100,6 +100,7 @@ const MusicPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('medium_term');
   
+  
   // Map time range to human-readable format
   const timeRangeLabels: Record<TimeRange, string> = {
     'short_term': 'Last Month',
@@ -320,7 +321,7 @@ const MusicPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps - Intentionally only runs once on mount
+  }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // Function to fetch time-range specific data
   const fetchTimeRangeData = async (newTimeRange: TimeRange, dataType: 'tracks' | 'artists' | 'both') => {
@@ -428,6 +429,7 @@ const MusicPage: React.FC = () => {
     }
     return images[0].url;
   };
+
 
   const hasLoadedAnySection = Object.values(loadedSections).some(Boolean);
   const hasAuthorizationIssues = Object.values(authIssues).some(Boolean);
@@ -962,7 +964,7 @@ const MusicPage: React.FC = () => {
                   {currentlyPlaying.isPlaying ? 'Now Playing' : 'Last Played'}
                 </h3>
                 
-                <div className="bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 rounded-lg p-4 md:p-6 border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm">
+        <div className="bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 rounded-lg p-4 md:p-6 border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm">
                   <div className="flex flex-col md:flex-row gap-4 items-center">
                     <div className="relative shrink-0">
                       <Image 
