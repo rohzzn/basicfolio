@@ -23,7 +23,7 @@ const MyAnimeList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [username, setUsername] = useState<string>(MAL_USERNAME);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'all' | 'watching' | 'watched' | 'plan_to_watch'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'plan_to_watch'>('all');
 
   // Fetch anime data from MyAnimeList
   useEffect(() => {
@@ -74,7 +74,7 @@ const MyAnimeList: React.FC = () => {
         return false;
       }
       
-      // Filter by active tab
+      // Filter by active tab (only for All and Plan to Watch sections)
       if (activeTab !== 'all' && anime.status !== activeTab) {
         return false;
       }
@@ -136,9 +136,85 @@ const MyAnimeList: React.FC = () => {
         </div>
       ) : (
         <>
+          {/* WATCHING Section */}
+          <div className="mb-8">
+            <div className="text-sm font-medium text-zinc-900 dark:text-white mb-6">Watching</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {animeList
+                .filter(anime => anime.status === 'watching')
+                .sort((a, b) => {
+                  if (a.score !== null && b.score !== null) {
+                    if (a.score !== b.score) return b.score - a.score;
+                  }
+                  if (a.score !== null && b.score === null) return -1;
+                  if (a.score === null && b.score !== null) return 1;
+                  return a.title.localeCompare(b.title);
+                })
+                .map((anime) => (
+                  <div key={anime.id} className="group flex gap-4 p-4 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                    {/* Anime Cover */}
+                    <div 
+                      className="w-32 h-44 flex-shrink-0 relative transition-all duration-300 cursor-pointer"
+                      style={{
+                        transformStyle: 'preserve-3d',
+                        transform: 'rotateY(0deg) rotateX(0deg)',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'rotateY(-10deg) rotateX(3deg) scale(1.05)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded overflow-hidden shadow-lg">
+                        {anime.image ? (
+                          <Image
+                            src={anime.image}
+                            alt={anime.title}
+                            fill
+                            className="object-cover"
+                            sizes="128px"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">📺</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Spine Effect */}
+                      <div 
+                        className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-zinc-300 to-zinc-500 dark:from-zinc-600 dark:to-zinc-800"
+                        style={{
+                          transform: 'rotateY(90deg)',
+                          transformOrigin: 'left center',
+                          boxShadow: 'inset -1px 0 2px rgba(0,0,0,0.2)'
+                        }}
+                      ></div>
+                    </div>
+                    
+                    {/* Anime Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-2">
+                        {anime.title}
+                      </h3>
+                      
+                      {anime.score && anime.score > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">Score:</span>
+                          <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            {anime.score}/10
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
 
-          {/* Search and Tabs */}
-          <div className="mb-8 space-y-4">
+          {/* Search */}
+          <div className="mb-6">
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
               <input
@@ -149,98 +225,87 @@ const MyAnimeList: React.FC = () => {
                 className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:focus:ring-zinc-600"
               />
             </div>
+          </div>
             
-            <div className="flex gap-4">
-              {[
-                { id: 'all' as const, label: 'All' },
-                { id: 'watching' as const, label: 'Watching' },
-                { id: 'watched' as const, label: 'Watched' },
-                { id: 'plan_to_watch' as const, label: 'Plan to Watch' }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`text-sm capitalize transition-colors ${
-                    activeTab === tab.id
-                      ? 'text-zinc-900 dark:text-white font-medium'
-                      : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+          {/* All | Plan to Watch Tabs */}
+          <div className="flex gap-4 mb-8">
+            {[
+              { id: 'all' as const, label: 'All' },
+              { id: 'plan_to_watch' as const, label: 'Plan to Watch' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`text-sm capitalize transition-colors ${
+                  activeTab === tab.id
+                    ? 'text-zinc-900 dark:text-white font-medium'
+                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          {/* 3D Anime Grid */}
-          <div 
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
-            style={{ perspective: '1000px' }}
-          >
+          {/* 3-Column Anime List */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedAnime.map((anime) => (
-              <div key={anime.id} className="group">
+              <div key={anime.id} className="group flex gap-4 p-4 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                {/* Anime Cover */}
                 <div 
-                  className="aspect-[3/4] relative mb-3 transition-all duration-300 cursor-pointer"
+                  className="w-32 h-44 flex-shrink-0 relative transition-all duration-300 cursor-pointer"
                   style={{
                     transformStyle: 'preserve-3d',
                     transform: 'rotateY(0deg) rotateX(0deg)',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'rotateY(-15deg) rotateX(5deg) scale(1.05)';
+                    e.currentTarget.style.transform = 'rotateY(-10deg) rotateX(3deg) scale(1.05)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
                   }}
                 >
-                  {/* Anime Cover */}
-                  <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden shadow-lg">
+                  <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded overflow-hidden shadow-lg">
                     {anime.image ? (
                       <Image
                         src={anime.image}
                         alt={anime.title}
                         fill
                         className="object-cover"
-                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+                        sizes="128px"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center px-2">
-                          No Image
-                        </p>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">📺</span>
                       </div>
                     )}
                   </div>
                   
                   {/* Spine Effect */}
                   <div 
-                    className="absolute top-0 right-0 w-3 h-full bg-gradient-to-b from-zinc-300 to-zinc-500 dark:from-zinc-600 dark:to-zinc-800"
+                    className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-zinc-300 to-zinc-500 dark:from-zinc-600 dark:to-zinc-800"
                     style={{
                       transform: 'rotateY(90deg)',
                       transformOrigin: 'left center',
-                      boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.2)'
-                    }}
-                  ></div>
-                  
-                  {/* Pages Effect */}
-                  <div 
-                    className="absolute top-1 right-1 w-2 h-[calc(100%-8px)] bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-300 dark:to-gray-400"
-                    style={{
-                      transform: 'translateZ(-2px)',
-                      borderRadius: '0 2px 2px 0'
+                      boxShadow: 'inset -1px 0 2px rgba(0,0,0,0.2)'
                     }}
                   ></div>
                 </div>
                 
-                <div>
-                  <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1">
+                {/* Anime Info */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-2">
                     {anime.title}
                   </h3>
-                  <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
-                    {anime.year && <span>{anime.year}</span>}
-                    {anime.score && anime.score > 0 && (
-                      <span className="font-medium">{anime.score}/10</span>
-                    )}
-                  </div>
+                  
+                  {anime.score && anime.score > 0 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400">Score:</span>
+                      <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        {anime.score}/10
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

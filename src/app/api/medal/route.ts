@@ -47,7 +47,7 @@ export async function GET() {
     // Try multiple API endpoints and combine results to get more clips
     const [latestResponse, searchResponse, byUsernameResponse] = await Promise.all([
       fetch(
-        `https://developers.medal.tv/v1/latest?userId=${userId}&limit=100`,
+        `https://developers.medal.tv/v1/latest?userId=${userId}&limit=30`,
         {
           headers: {
             'Authorization': apiKey,
@@ -57,7 +57,7 @@ export async function GET() {
         }
       ),
       fetch(
-        `https://developers.medal.tv/v1/search?text=by:rohzzn&limit=100`,
+        `https://developers.medal.tv/v1/search?text=by:rohzzn&limit=30`,
         {
           headers: {
             'Authorization': apiKey,
@@ -67,7 +67,7 @@ export async function GET() {
         }
       ),
       fetch(
-        `https://developers.medal.tv/v1/search?text=rohzzn&limit=100`,
+        `https://developers.medal.tv/v1/search?text=rohzzn&limit=30`,
         {
           headers: {
             'Authorization': apiKey,

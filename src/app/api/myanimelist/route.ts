@@ -134,7 +134,7 @@ export async function GET(request: Request) {
             status: mapStatus(item.list_status.status),
             genres: item.node.genres?.map(genre => genre.name) || [],
             year: item.node.start_season?.year || null,
-            image: item.node.main_picture?.medium || null
+            image: item.node.main_picture?.large || item.node.main_picture?.medium || null
           };
         } catch (err) {
           console.error('Error processing anime item:', err, item);
