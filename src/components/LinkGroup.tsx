@@ -16,26 +16,27 @@ interface LinkGroupProps {
 const LinkGroup: React.FC<LinkGroupProps> = ({ title, links }) => {
   return (
     <div>
-      <h3 className="text-lg font-medium mb-6 dark:text-white">{title}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <h3 className="text-base font-medium mb-8 dark:text-white">{title}</h3>
+      <div className="space-y-4">
         {links.map((link, index) => (
           <Link
             key={index}
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group cursor-pointer block"
+            className="group cursor-pointer block hover:opacity-70 transition-opacity"
           >
-            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
-              <div className="mb-2">
-                <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  {link.title}
-                </h4>
-              </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            <article className="flex items-start justify-between gap-4">
+              <h4 className="text-sm font-medium dark:text-white flex-shrink-0">
+                {link.title}
+              </h4>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 text-right">
                 {link.description}
               </p>
             </article>
+            {index !== links.length - 1 && (
+              <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 mt-4"></div>
+            )}
           </Link>
         ))}
       </div>

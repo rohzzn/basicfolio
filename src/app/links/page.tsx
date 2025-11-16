@@ -68,13 +68,15 @@ const LinksPage = () => {
       <h2 className="text-lg font-medium mb-8 dark:text-white">On the Internet</h2>
       
       {/* Link Groups */}
-      <div>
+      <div className="md:columns-2 md:gap-16 space-y-12">
         {Object.values(linkGroups).map((group, index) => (
-          <div key={index}>
-            {index > 0 && (
-              <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
-            )}
+          <div key={index} className="break-inside-avoid mb-12">
             <LinkGroup title={group.title} links={group.links} />
+            
+            {/* Divider between categories */}
+            {index !== Object.values(linkGroups).length - 1 && (
+              <div className="w-full h-px bg-zinc-200/50 dark:bg-zinc-800/50 mt-8"></div>
+            )}
           </div>
         ))}
       </div>
