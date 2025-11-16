@@ -321,7 +321,7 @@ const MusicPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Function to fetch time-range specific data
   const fetchTimeRangeData = async (newTimeRange: TimeRange, dataType: 'tracks' | 'artists' | 'both') => {
