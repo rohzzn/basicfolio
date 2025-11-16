@@ -173,13 +173,7 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
   }
 
   if (!currentlyPlaying) {
-    return (
-      <div className="text-xs text-zinc-500 dark:text-zinc-400 py-2">
-        <span className="flex items-center justify-center gap-1">
-          <Music className="w-3 h-3" /> Not playing
-        </span>
-      </div>
-    );
+    return null;
   }
 
   return (
