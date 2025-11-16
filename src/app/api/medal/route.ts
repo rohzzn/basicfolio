@@ -47,7 +47,7 @@ export async function GET() {
     // Try multiple API endpoints and combine results to get more clips
     const [latestResponse, searchResponse, byUsernameResponse] = await Promise.all([
       fetch(
-        `https://developers.medal.tv/v1/latest?userId=${userId}&limit=30`,
+        `https://developers.medal.tv/v1/latest?userId=${userId}&limit=100`,
         {
           headers: {
             'Authorization': apiKey,
@@ -57,7 +57,7 @@ export async function GET() {
         }
       ),
       fetch(
-        `https://developers.medal.tv/v1/search?text=by:rohzzn&limit=30`,
+        `https://developers.medal.tv/v1/search?text=by:rohzzn&limit=100`,
         {
           headers: {
             'Authorization': apiKey,
@@ -67,7 +67,7 @@ export async function GET() {
         }
       ),
       fetch(
-        `https://developers.medal.tv/v1/search?text=rohzzn&limit=30`,
+        `https://developers.medal.tv/v1/search?text=rohzzn&limit=100`,
         {
           headers: {
             'Authorization': apiKey,
@@ -118,6 +118,18 @@ export async function GET() {
         console.log(`Added ${usernameData.contentObjects.length} clips from username endpoint`);
       }
     }
+    
+    // Remove duplicates based on contentId
+    const uniqueContentObjects = allContentObjects.filter((clip, index, self) => {
+      const contentId = typeof clip.contentId === 'string' ? clip.contentId : String(clip.contentId || '');
+      return index === self.findIndex(c => {
+        const cId = typeof c.contentId === 'string' ? c.contentId : String(c.contentId || '');
+        return cId === contentId;
+      });
+    });
+    
+    allContentObjects = uniqueContentObjects;
+    console.log(`Unique clips after deduplication: ${allContentObjects.length}`);
     
     // If we have no content objects, try another approach or throw error
     if (allContentObjects.length === 0) {
