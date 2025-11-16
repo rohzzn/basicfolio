@@ -252,7 +252,7 @@ const MusicPage: React.FC = () => {
         try {
           const tracksData = await safeFetch<TopItemsResponse<SpotifyTrack>>('/me/top/tracks', { 
             limit: '50', 
-            time_range: timeRange 
+            time_range: 'medium_term' 
           });
           if (tracksData && tracksData.items && isMounted) {
             setTopTracks(tracksData.items);
@@ -266,7 +266,7 @@ const MusicPage: React.FC = () => {
         try {
           const artistsData = await safeFetch<TopItemsResponse<SpotifyArtist>>('/me/top/artists', { 
             limit: '50', 
-            time_range: timeRange 
+            time_range: 'medium_term' 
           });
           if (artistsData && artistsData.items && isMounted) {
             setTopArtists(artistsData.items);
