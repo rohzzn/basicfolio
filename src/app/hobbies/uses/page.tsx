@@ -107,13 +107,13 @@ const Uses = () => {
         ))}
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
+      <div className="md:columns-2 md:gap-16 space-y-12">
         {/* Setup Categories */}
         {setup.map((category, index) => (
-          <div key={index}>
-            <h3 className="text-base font-medium mb-6 dark:text-white">{category.category}</h3>
+          <div key={index} className="break-inside-avoid mb-12">
+            <h3 className="text-base font-medium mb-8 dark:text-white">{category.category}</h3>
             
-            <div className="space-y-6">
+            <div className="space-y-4">
               {category.items.map((item, itemIndex) => (
                 <article key={itemIndex} className="group">
                   {item.url ? (
@@ -123,27 +123,32 @@ const Uses = () => {
                       rel="noopener noreferrer"
                       className="block hover:opacity-70 transition-opacity"
                     >
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-medium dark:text-white">{item.name}</h4>
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      <div className="flex items-start justify-between gap-4">
+                        <h4 className="text-sm font-medium dark:text-white flex-shrink-0">{item.name}</h4>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 text-right">
                           {item.description}
                         </span>
                       </div>
                     </a>
                   ) : (
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-medium dark:text-white">{item.name}</h4>
-                      <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="flex items-start justify-between gap-4">
+                      <h4 className="text-sm font-medium dark:text-white flex-shrink-0">{item.name}</h4>
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 text-right">
                         {item.description}
                       </span>
                     </div>
                   )}
                   {itemIndex !== category.items.length - 1 && (
-                    <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 mt-6"></div>
+                    <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 mt-4"></div>
                   )}
                 </article>
               ))}
             </div>
+            
+            {/* Divider between categories */}
+            {index !== setup.length - 1 && (
+              <div className="w-full h-px bg-zinc-200/50 dark:bg-zinc-800/50 mt-8"></div>
+            )}
           </div>
         ))}
       </div>
