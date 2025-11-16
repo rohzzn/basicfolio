@@ -320,7 +320,7 @@ const MusicPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []); // No dependencies - only runs once on mount
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps - Intentionally only runs once on mount
 
   // Function to fetch time-range specific data
   const fetchTimeRangeData = async (newTimeRange: TimeRange, dataType: 'tracks' | 'artists' | 'both') => {
@@ -432,31 +432,6 @@ const MusicPage: React.FC = () => {
   const hasLoadedAnySection = Object.values(loadedSections).some(Boolean);
   const hasAuthorizationIssues = Object.values(authIssues).some(Boolean);
   
-  // Time range selector component
-  const TimeRangeSelector = () => (
-    <div className="flex items-center justify-end mb-5">
-      <div className="flex text-xs space-x-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
-        <button 
-          onClick={() => setTimeRange('short_term')}
-          className={`px-3 py-1.5 rounded ${timeRange === 'short_term' ? 'bg-white dark:bg-zinc-700 shadow-sm font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
-        >
-          1 Month
-        </button>
-        <button 
-          onClick={() => setTimeRange('medium_term')}
-          className={`px-3 py-1.5 rounded ${timeRange === 'medium_term' ? 'bg-white dark:bg-zinc-700 shadow-sm font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
-        >
-          6 Months
-        </button>
-        <button 
-          onClick={() => setTimeRange('long_term')}
-          className={`px-3 py-1.5 rounded ${timeRange === 'long_term' ? 'bg-white dark:bg-zinc-700 shadow-sm font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
-        >
-          All Time
-        </button>
-      </div>
-    </div>
-  );
 
   // Tab navigation component with dropdown for time ranges
   const TabNavigation = () => {
@@ -512,141 +487,139 @@ const MusicPage: React.FC = () => {
           </button>
           
           <div className="relative">
-            <button
-              onClick={() => setActiveTab('tracks')}
-              onMouseEnter={handleTracksMouseEnter}
-              onMouseLeave={handleTracksMouseLeave}
-              className={`py-3 px-1 relative ${activeTab === 'tracks' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-            >
-              <div className="flex items-center gap-2">
-                <Headphones className="w-4 h-4" />
-                <span>Tracks</span>
-                {(activeTab === 'tracks' || showTracksDropdown) && (
-                  <span className="text-xs opacity-60">•</span>
-                )}
-              </div>
-              {activeTab === 'tracks' && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-              )}
-            </button>
-            
-            {/* Tracks Dropdown */}
-            {showTracksDropdown && (
-              <div 
-                className="absolute top-full left-0 mt-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg py-2 z-10 min-w-[140px]"
+            <div className="flex items-center">
+              <button
+                onClick={() => setActiveTab('tracks')}
                 onMouseEnter={handleTracksMouseEnter}
                 onMouseLeave={handleTracksMouseLeave}
+                className={`py-3 px-1 relative ${activeTab === 'tracks' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
               >
-                <button
-                  onClick={() => {
-                    setTimeRange('short_term');
-                    fetchTimeRangeData('short_term', 'tracks');
-                    setActiveTab('tracks');
-                    setShowTracksDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
-                    timeRange === 'short_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
-                  }`}
+                <div className="flex items-center gap-2">
+                  <Headphones className="w-4 h-4" />
+                  <span>Tracks</span>
+                </div>
+                {activeTab === 'tracks' && (
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+                )}
+              </button>
+              
+              {/* Horizontal Time Range Options */}
+              {showTracksDropdown && (
+                <div 
+                  className="flex items-center gap-3 ml-4"
+                  onMouseEnter={handleTracksMouseEnter}
+                  onMouseLeave={handleTracksMouseLeave}
                 >
-                  Last Month
-                </button>
-                <button
-                  onClick={() => {
-                    setTimeRange('medium_term');
-                    fetchTimeRangeData('medium_term', 'tracks');
-                    setActiveTab('tracks');
-                    setShowTracksDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
-                    timeRange === 'medium_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
-                  }`}
-                >
-                  Last 6 Months
-                </button>
-                <button
-                  onClick={() => {
-                    setTimeRange('long_term');
-                    fetchTimeRangeData('long_term', 'tracks');
-                    setActiveTab('tracks');
-                    setShowTracksDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
-                    timeRange === 'long_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
-                  }`}
-                >
-                  All Time
-                </button>
-              </div>
-            )}
+                  <button
+                    onClick={() => {
+                      setTimeRange('short_term');
+                      fetchTimeRangeData('short_term', 'tracks');
+                      setActiveTab('tracks');
+                      setShowTracksDropdown(false);
+                    }}
+                    className={`text-xs px-2 py-1 rounded transition-colors ${
+                      timeRange === 'short_term' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    1M
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTimeRange('medium_term');
+                      fetchTimeRangeData('medium_term', 'tracks');
+                      setActiveTab('tracks');
+                      setShowTracksDropdown(false);
+                    }}
+                    className={`text-xs px-2 py-1 rounded transition-colors ${
+                      timeRange === 'medium_term' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    6M
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTimeRange('long_term');
+                      fetchTimeRangeData('long_term', 'tracks');
+                      setActiveTab('tracks');
+                      setShowTracksDropdown(false);
+                    }}
+                    className={`text-xs px-2 py-1 rounded transition-colors ${
+                      timeRange === 'long_term' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    All
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="relative">
-            <button
-              onClick={() => setActiveTab('artists')}
-              onMouseEnter={handleArtistsMouseEnter}
-              onMouseLeave={handleArtistsMouseLeave}
-              className={`py-3 px-1 relative ${activeTab === 'artists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-            >
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span>Artists</span>
-                {(activeTab === 'artists' || showArtistsDropdown) && (
-                  <span className="text-xs opacity-60">•</span>
-                )}
-              </div>
-              {activeTab === 'artists' && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-              )}
-            </button>
-            
-            {/* Artists Dropdown */}
-            {showArtistsDropdown && (
-              <div 
-                className="absolute top-full left-0 mt-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg py-2 z-10 min-w-[140px]"
+            <div className="flex items-center">
+              <button
+                onClick={() => setActiveTab('artists')}
                 onMouseEnter={handleArtistsMouseEnter}
                 onMouseLeave={handleArtistsMouseLeave}
+                className={`py-3 px-1 relative ${activeTab === 'artists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
               >
-                <button
-                  onClick={() => {
-                    setTimeRange('short_term');
-                    fetchTimeRangeData('short_term', 'artists');
-                    setActiveTab('artists');
-                    setShowArtistsDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
-                    timeRange === 'short_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
-                  }`}
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  <span>Artists</span>
+                </div>
+                {activeTab === 'artists' && (
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+                )}
+              </button>
+              
+              {/* Horizontal Time Range Options */}
+              {showArtistsDropdown && (
+                <div 
+                  className="flex items-center gap-3 ml-4"
+                  onMouseEnter={handleArtistsMouseEnter}
+                  onMouseLeave={handleArtistsMouseLeave}
                 >
-                  Last Month
-                </button>
-                <button
-                  onClick={() => {
-                    setTimeRange('medium_term');
-                    fetchTimeRangeData('medium_term', 'artists');
-                    setActiveTab('artists');
-                    setShowArtistsDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
-                    timeRange === 'medium_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
-                  }`}
-                >
-                  Last 6 Months
-                </button>
-                <button
-                  onClick={() => {
-                    setTimeRange('long_term');
-                    fetchTimeRangeData('long_term', 'artists');
-                    setActiveTab('artists');
-                    setShowArtistsDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
-                    timeRange === 'long_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
-                  }`}
-                >
-                  All Time
-                </button>
-              </div>
-            )}
+                  <button
+                    onClick={() => {
+                      setTimeRange('short_term');
+                      fetchTimeRangeData('short_term', 'artists');
+                      setActiveTab('artists');
+                      setShowArtistsDropdown(false);
+                    }}
+                    className={`text-xs px-2 py-1 rounded transition-colors ${
+                      timeRange === 'short_term' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    1M
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTimeRange('medium_term');
+                      fetchTimeRangeData('medium_term', 'artists');
+                      setActiveTab('artists');
+                      setShowArtistsDropdown(false);
+                    }}
+                    className={`text-xs px-2 py-1 rounded transition-colors ${
+                      timeRange === 'medium_term' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    6M
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTimeRange('long_term');
+                      fetchTimeRangeData('long_term', 'artists');
+                      setActiveTab('artists');
+                      setShowArtistsDropdown(false);
+                    }}
+                    className={`text-xs px-2 py-1 rounded transition-colors ${
+                      timeRange === 'long_term' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    All
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           
           <button
@@ -685,7 +658,7 @@ const MusicPage: React.FC = () => {
               href={artist.external_urls.spotify}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col"
+              className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col"
             >
               <div className="relative w-full aspect-square mb-3">
                 <Image
@@ -827,7 +800,7 @@ const MusicPage: React.FC = () => {
                 href={playlist.external_urls.spotify}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col"
+                className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col"
               >
                 <div className="relative w-full aspect-square mb-3">
                   <Image
