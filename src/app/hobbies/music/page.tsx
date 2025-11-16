@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Music, Clock, User, Disc, Play, Pause, ExternalLink, Headphones, ListMusic } from 'lucide-react';
 
@@ -124,10 +124,15 @@ const MusicPage: React.FC = () => {
     currentlyPlaying: false
   });
 
+  // Separate loading states for tracks and artists
+  const [tracksLoading, setTracksLoading] = useState(false);
+  const [artistsLoading, setArtistsLoading] = useState(false);
+
+  // Initial data fetch (without time range dependency)
   useEffect(() => {
     let isMounted = true;
     
-    const fetchSpotifyData = async () => {
+    const fetchInitialSpotifyData = async () => {
       try {
         if (isMounted) setLoading(true);
         
@@ -242,7 +247,7 @@ const MusicPage: React.FC = () => {
           console.log('Could not load recent tracks');
         }
         
-        // Try to fetch top tracks
+        // Try to fetch top tracks (initial load with default time range)
         try {
           const tracksData = await safeFetch<TopItemsResponse<SpotifyTrack>>('/me/top/tracks', { 
             limit: '50', 
@@ -256,7 +261,7 @@ const MusicPage: React.FC = () => {
           console.log('Could not load top tracks');
         }
         
-        // Try to fetch top artists
+        // Try to fetch top artists (initial load with default time range)
         try {
           const artistsData = await safeFetch<TopItemsResponse<SpotifyArtist>>('/me/top/artists', { 
             limit: '50', 
@@ -309,13 +314,112 @@ const MusicPage: React.FC = () => {
       }
     };
     
-    fetchSpotifyData();
+    fetchInitialSpotifyData();
     
     // Cleanup function
     return () => {
       isMounted = false;
     };
-  }, [timeRange]);
+  }, []); // No dependencies - only runs once on mount
+
+  // Function to fetch time-range specific data
+  const fetchTimeRangeData = async (newTimeRange: TimeRange, dataType: 'tracks' | 'artists' | 'both') => {
+    try {
+      // Set loading states
+      if (dataType === 'tracks' || dataType === 'both') setTracksLoading(true);
+      if (dataType === 'artists' || dataType === 'both') setArtistsLoading(true);
+
+      // Get access token
+      const getAccessToken = async () => {
+        try {
+          const clientId = '45adef0727fa4c5780c3f7408debee63';
+          const clientSecret = '23257ff89ada446eb418c9b77be72b85';
+          const refreshToken = 'AQDpB5aYyV0IBPO9Zz5TRT0K7RDUevzTEO0pugOZK6Pq-s2TuwiQi1U0ZJ1rXOqRcsvBTfO4_OBW7RJi6k3kGcBr58mPlRveQfCNzW4TrUPzFsGMXGkZbT-G54sLjacjfjE';
+          
+          const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Authorization': `Basic ${btoa(`${clientId}:${clientSecret}`)}`
+            },
+            body: new URLSearchParams({
+              grant_type: 'refresh_token',
+              refresh_token: refreshToken
+            })
+          });
+          
+          const data = await tokenResponse.json();
+          return data.access_token;
+        } catch (error) {
+          console.error('Access token error:', error);
+          return null;
+        }
+      };
+
+      const accessToken = await getAccessToken();
+      if (!accessToken) return;
+
+      // Safe API fetch helper
+      const safeFetch = async <T,>(endpoint: string, params: Record<string, string> = {}): Promise<T | null> => {
+        try {
+          const queryParams = new URLSearchParams(params).toString();
+          const url = `https://api.spotify.com/v1${endpoint}${queryParams ? `?${queryParams}` : ''}`;
+          
+          const response = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+          });
+          
+          if (!response.ok) return null;
+          
+          const text = await response.text();
+          if (!text || text.trim() === '') return null;
+          
+          return JSON.parse(text) as T;
+        } catch (error) {
+          console.error(`Failed to fetch ${endpoint}:`, error);
+          return null;
+        }
+      };
+
+      // Fetch tracks if needed
+      if (dataType === 'tracks' || dataType === 'both') {
+        try {
+          const tracksData = await safeFetch<TopItemsResponse<SpotifyTrack>>('/me/top/tracks', { 
+            limit: '50', 
+            time_range: newTimeRange 
+          });
+          if (tracksData && tracksData.items) {
+            setTopTracks(tracksData.items);
+          }
+        } catch {
+          console.log('Could not load top tracks');
+        } finally {
+          setTracksLoading(false);
+        }
+      }
+
+      // Fetch artists if needed
+      if (dataType === 'artists' || dataType === 'both') {
+        try {
+          const artistsData = await safeFetch<TopItemsResponse<SpotifyArtist>>('/me/top/artists', { 
+            limit: '50', 
+            time_range: newTimeRange 
+          });
+          if (artistsData && artistsData.items) {
+            setTopArtists(artistsData.items);
+          }
+        } catch {
+          console.log('Could not load top artists');
+        } finally {
+          setArtistsLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching time range data:', error);
+      setTracksLoading(false);
+      setArtistsLoading(false);
+    }
+  };
 
   // Function to safely get image URLs with fallback
   const getSafeImageUrl = (images: SpotifyImage[] | undefined): string => {
@@ -354,74 +458,226 @@ const MusicPage: React.FC = () => {
     </div>
   );
 
-  // Tab navigation component
-  const TabNavigation = () => (
-    <div className="border-b border-zinc-200 dark:border-zinc-700 mb-6">
-      <div className="flex space-x-6">
-        <button
-          onClick={() => setActiveTab('recent')}
-          className={`py-3 px-1 relative ${activeTab === 'recent' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-        >
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            <span>Recent</span>
+  // Tab navigation component with dropdown for time ranges
+  const TabNavigation = () => {
+    const [showTracksDropdown, setShowTracksDropdown] = useState(false);
+    const [showArtistsDropdown, setShowArtistsDropdown] = useState(false);
+
+    // Use refs to track timeouts
+    const tracksTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const artistsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleTracksMouseEnter = () => {
+      if (tracksTimeoutRef.current) {
+        clearTimeout(tracksTimeoutRef.current);
+        tracksTimeoutRef.current = null;
+      }
+      setShowTracksDropdown(true);
+    };
+
+    const handleTracksMouseLeave = () => {
+      tracksTimeoutRef.current = setTimeout(() => {
+        setShowTracksDropdown(false);
+      }, 300);
+    };
+
+    const handleArtistsMouseEnter = () => {
+      if (artistsTimeoutRef.current) {
+        clearTimeout(artistsTimeoutRef.current);
+        artistsTimeoutRef.current = null;
+      }
+      setShowArtistsDropdown(true);
+    };
+
+    const handleArtistsMouseLeave = () => {
+      artistsTimeoutRef.current = setTimeout(() => {
+        setShowArtistsDropdown(false);
+      }, 300);
+    };
+
+    return (
+      <div className="border-b border-zinc-200 dark:border-zinc-700 mb-6">
+        <div className="flex space-x-6">
+          <button
+            onClick={() => setActiveTab('recent')}
+            className={`py-3 px-1 relative ${activeTab === 'recent' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+          >
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span>Recent</span>
+            </div>
+            {activeTab === 'recent' && (
+              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+            )}
+          </button>
+          
+          <div className="relative">
+            <button
+              onClick={() => setActiveTab('tracks')}
+              onMouseEnter={handleTracksMouseEnter}
+              onMouseLeave={handleTracksMouseLeave}
+              className={`py-3 px-1 relative ${activeTab === 'tracks' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+            >
+              <div className="flex items-center gap-2">
+                <Headphones className="w-4 h-4" />
+                <span>Tracks</span>
+                {(activeTab === 'tracks' || showTracksDropdown) && (
+                  <span className="text-xs opacity-60">•</span>
+                )}
+              </div>
+              {activeTab === 'tracks' && (
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+              )}
+            </button>
+            
+            {/* Tracks Dropdown */}
+            {showTracksDropdown && (
+              <div 
+                className="absolute top-full left-0 mt-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg py-2 z-10 min-w-[140px]"
+                onMouseEnter={handleTracksMouseEnter}
+                onMouseLeave={handleTracksMouseLeave}
+              >
+                <button
+                  onClick={() => {
+                    setTimeRange('short_term');
+                    fetchTimeRangeData('short_term', 'tracks');
+                    setActiveTab('tracks');
+                    setShowTracksDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
+                    timeRange === 'short_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  Last Month
+                </button>
+                <button
+                  onClick={() => {
+                    setTimeRange('medium_term');
+                    fetchTimeRangeData('medium_term', 'tracks');
+                    setActiveTab('tracks');
+                    setShowTracksDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
+                    timeRange === 'medium_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  onClick={() => {
+                    setTimeRange('long_term');
+                    fetchTimeRangeData('long_term', 'tracks');
+                    setActiveTab('tracks');
+                    setShowTracksDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
+                    timeRange === 'long_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  All Time
+                </button>
+              </div>
+            )}
           </div>
-          {activeTab === 'recent' && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-          )}
-        </button>
-        
-        <button
-          onClick={() => setActiveTab('tracks')}
-          className={`py-3 px-1 relative ${activeTab === 'tracks' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-        >
-          <div className="flex items-center gap-2">
-            <Headphones className="w-4 h-4" />
-            <span>Tracks</span>
+          
+          <div className="relative">
+            <button
+              onClick={() => setActiveTab('artists')}
+              onMouseEnter={handleArtistsMouseEnter}
+              onMouseLeave={handleArtistsMouseLeave}
+              className={`py-3 px-1 relative ${activeTab === 'artists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+            >
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>Artists</span>
+                {(activeTab === 'artists' || showArtistsDropdown) && (
+                  <span className="text-xs opacity-60">•</span>
+                )}
+              </div>
+              {activeTab === 'artists' && (
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+              )}
+            </button>
+            
+            {/* Artists Dropdown */}
+            {showArtistsDropdown && (
+              <div 
+                className="absolute top-full left-0 mt-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg py-2 z-10 min-w-[140px]"
+                onMouseEnter={handleArtistsMouseEnter}
+                onMouseLeave={handleArtistsMouseLeave}
+              >
+                <button
+                  onClick={() => {
+                    setTimeRange('short_term');
+                    fetchTimeRangeData('short_term', 'artists');
+                    setActiveTab('artists');
+                    setShowArtistsDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
+                    timeRange === 'short_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  Last Month
+                </button>
+                <button
+                  onClick={() => {
+                    setTimeRange('medium_term');
+                    fetchTimeRangeData('medium_term', 'artists');
+                    setActiveTab('artists');
+                    setShowArtistsDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
+                    timeRange === 'medium_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  onClick={() => {
+                    setTimeRange('long_term');
+                    fetchTimeRangeData('long_term', 'artists');
+                    setActiveTab('artists');
+                    setShowArtistsDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${
+                    timeRange === 'long_term' ? 'text-black dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  All Time
+                </button>
+              </div>
+            )}
           </div>
-          {activeTab === 'tracks' && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-          )}
-        </button>
-        
-        <button
-          onClick={() => setActiveTab('artists')}
-          className={`py-3 px-1 relative ${activeTab === 'artists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-        >
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4" />
-            <span>Artists</span>
-          </div>
-          {activeTab === 'artists' && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-          )}
-        </button>
-        
-        <button
-          onClick={() => setActiveTab('playlists')}
-          className={`py-3 px-1 relative ${activeTab === 'playlists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
-        >
-          <div className="flex items-center gap-2">
-            <ListMusic className="w-4 h-4" />
-            <span>Playlists</span>
-          </div>
-          {activeTab === 'playlists' && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
-          )}
-        </button>
+          
+          <button
+            onClick={() => setActiveTab('playlists')}
+            className={`py-3 px-1 relative ${activeTab === 'playlists' ? 'text-black dark:text-white font-medium' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
+          >
+            <div className="flex items-center gap-2">
+              <ListMusic className="w-4 h-4" />
+              <span>Playlists</span>
+            </div>
+            {activeTab === 'playlists' && (
+              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black dark:bg-white"></div>
+            )}
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Artists tab content
   const ArtistsTabContent = () => (
     <div>
-      <TimeRangeSelector />
       <h3 className="text-base font-medium mb-5 dark:text-white">
         Top Artists • {timeRangeLabels[timeRange]}
       </h3>
       
-      {topArtists.length > 0 ? (
+      {artistsLoading ? (
+        <div className="flex justify-center items-center h-32">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-400"></div>
+        </div>
+      ) : topArtists.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {topArtists.map(artist => (
             <a 
@@ -429,7 +685,7 @@ const MusicPage: React.FC = () => {
               href={artist.external_urls.spotify}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col"
+              className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col"
             >
               <div className="relative w-full aspect-square mb-3">
                 <Image
@@ -464,67 +720,60 @@ const MusicPage: React.FC = () => {
   // Tracks tab content
   const TracksTabContent = () => (
     <div>
-      <TimeRangeSelector />
       <h3 className="text-base font-medium mb-5 dark:text-white">
         Top Tracks • {timeRangeLabels[timeRange]}
       </h3>
       
-      {topTracks.length > 0 ? (
-        <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-zinc-200 dark:border-zinc-700">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-12">#</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400">Track</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 hidden md:table-cell">Album</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-20">
-                    <Clock className="w-3 h-3 inline" />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {topTracks.map((track, index) => (
-                  <tr 
-                    key={`${track.id}-${index}`}
-                    className="border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700/50 transition-colors"
-                  >
-                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">{index + 1}</td>
-                    <td className="px-4 py-3">
-                      <a 
-                        href={track.external_urls.spotify}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                      >
-                        <div className="relative shrink-0 w-10 h-10">
-                          <Image
-                            src={getSafeImageUrl(track.album?.images)}
-                            alt={track.album?.name || 'Album cover'}
-                            fill
-                            className="rounded object-cover"
-                            unoptimized
-                          />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium dark:text-white line-clamp-1">{track.name}</p>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-500 line-clamp-1">
-                            {track.artists.map(a => a.name).join(', ')}
-                          </p>
-                        </div>
-                      </a>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-500 hidden md:table-cell line-clamp-1">
-                      {track.album?.name || 'Unknown album'}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-500 text-right">
-                      {formatDuration(track.duration_ms)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      {tracksLoading ? (
+        <div className="flex justify-center items-center h-32">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-400"></div>
+        </div>
+      ) : topTracks.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {topTracks.map((track, index) => (
+            <a
+              key={`${track.id}-${index}`}
+              href={track.external_urls.spotify}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group cursor-pointer block"
+            >
+              <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700">
+                <div className="flex items-start gap-3">
+                  <div className="relative shrink-0 w-12 h-12">
+                    <Image
+                      src={getSafeImageUrl(track.album?.images)}
+                      alt={track.album?.name || 'Album cover'}
+                      fill
+                      className="rounded-md object-cover"
+                      unoptimized
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-md flex items-center justify-center">
+                      <Play className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-medium dark:text-white line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                      {track.name}
+                    </h4>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mt-1">
+                      {track.artists.map(a => a.name).join(', ')}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-200/50 dark:border-zinc-700/50">
+                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
+                    #{index + 1}
+                  </span>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
+                    {formatDuration(track.duration_ms)}
+                  </span>
+                </div>
+              </article>
+            </a>
+          ))}
         </div>
       ) : (
         <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
@@ -578,7 +827,7 @@ const MusicPage: React.FC = () => {
                 href={playlist.external_urls.spotify}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col"
+                className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col"
               >
                 <div className="relative w-full aspect-square mb-3">
                   <Image
@@ -616,61 +865,51 @@ const MusicPage: React.FC = () => {
       </h3>
       
       {recentTracks.length > 0 ? (
-        <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-zinc-200 dark:border-zinc-700">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-12">#</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400">Track</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 hidden md:table-cell">Album</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-20">
-                    <Clock className="w-3 h-3 inline" />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentTracks.map((track, index) => (
-                  <tr 
-                    key={`${track.id}-${index}`}
-                    className="border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700/50 transition-colors"
-                  >
-                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">{index + 1}</td>
-                    <td className="px-4 py-3">
-                      <a 
-                        href={track.external_urls.spotify}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                      >
-                        <div className="relative shrink-0 w-10 h-10">
-                          <Image
-                            src={getSafeImageUrl(track.album?.images)}
-                            alt={track.album?.name || 'Album cover'}
-                            fill
-                            className="rounded object-cover"
-                            unoptimized
-                          />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium dark:text-white line-clamp-1">{track.name}</p>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-500 line-clamp-1">
-                            {track.artists.map(a => a.name).join(', ')}
-                          </p>
-                        </div>
-                      </a>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-500 hidden md:table-cell line-clamp-1">
-                      {track.album?.name || 'Unknown album'}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-500 text-right">
-                      {formatDuration(track.duration_ms)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {recentTracks.slice(0, 20).map((track, index) => (
+            <a
+              key={`${track.id}-${index}`}
+              href={track.external_urls.spotify}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group cursor-pointer block"
+            >
+              <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700">
+                <div className="flex items-start gap-3">
+                  <div className="relative shrink-0 w-12 h-12">
+                    <Image
+                      src={getSafeImageUrl(track.album?.images)}
+                      alt={track.album?.name || 'Album cover'}
+                      fill
+                      className="rounded-md object-cover"
+                      unoptimized
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-md flex items-center justify-center">
+                      <Play className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-medium dark:text-white line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                      {track.name}
+                    </h4>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mt-1">
+                      {track.artists.map(a => a.name).join(', ')}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-200/50 dark:border-zinc-700/50">
+                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
+                    #{index + 1}
+                  </span>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
+                    {formatDuration(track.duration_ms)}
+                  </span>
+                </div>
+              </article>
+            </a>
+          ))}
         </div>
       ) : (
         <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
@@ -750,7 +989,7 @@ const MusicPage: React.FC = () => {
                   {currentlyPlaying.isPlaying ? 'Now Playing' : 'Last Played'}
                 </h3>
                 
-                <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 md:p-6">
+                <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 md:p-6 border border-zinc-200/50 dark:border-zinc-800/50">
                   <div className="flex flex-col md:flex-row gap-4 items-center">
                     <div className="relative shrink-0">
                       <Image 

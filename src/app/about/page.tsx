@@ -112,7 +112,7 @@ const Home: React.FC = () => {
                 Contact
               </h3>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                Let's connect
+                Let&apos;s connect
               </p>
             </article>
           </a>
