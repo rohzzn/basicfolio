@@ -102,14 +102,6 @@ const MyAnimeList: React.FC = () => {
     setIsRefreshing(true);
   };
 
-  // Get stats for display
-  const stats = useMemo(() => {
-    const watched = animeList.filter(anime => anime.status === 'watched').length;
-    const watching = animeList.filter(anime => anime.status === 'watching').length;
-    const planToWatch = animeList.filter(anime => anime.status === 'plan_to_watch').length;
-    
-    return { watched, watching, planToWatch, total: animeList.length };
-  }, [animeList]);
 
   return (
     <div className="max-w-7xl">

@@ -2,105 +2,6 @@
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 
-// Custom CSS for 3D book effects
-const bookStyles = `
-  .book-container {
-    perspective: 1000px;
-    transform-style: preserve-3d;
-  }
-  
-  .book-3d {
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.6s ease;
-    cursor: pointer;
-  }
-  
-  .book-3d:hover {
-    transform: translateZ(20px) rotateY(-15deg);
-  }
-  
-  .book-3d.flipped {
-    transform: translateZ(20px) rotateY(-180deg);
-  }
-  
-  .book-cover {
-    position: absolute;
-    backface-visibility: hidden;
-    border-radius: 4px 8px 8px 4px;
-    box-shadow: 
-      2px 0 10px rgba(0,0,0,0.2),
-      0 0 0 1px rgba(0,0,0,0.1);
-  }
-  
-  .book-back {
-    position: absolute;
-    backface-visibility: hidden;
-    transform: rotateY(180deg);
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 8px 4px 4px 8px;
-    box-shadow: 
-      -2px 0 10px rgba(0,0,0,0.2),
-      0 0 0 1px rgba(0,0,0,0.1);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  .book-spine {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 12px;
-    height: 100%;
-    background: linear-gradient(90deg, 
-      rgba(0,0,0,0.1) 0%, 
-      rgba(255,255,255,0.1) 50%, 
-      rgba(0,0,0,0.1) 100%);
-    transform: rotateY(90deg) translateZ(6px);
-    transform-origin: right center;
-  }
-  
-  .book-pages {
-    position: absolute;
-    right: -2px;
-    top: 2px;
-    width: 8px;
-    height: calc(100% - 4px);
-    background: linear-gradient(90deg, #f8f9fa 0%, #ffffff  50%, #f1f3f4 100%);
-    transform: translateZ(-1px);
-    border-radius: 0 2px 2px 0;
-    box-shadow: inset -1px 0 2px rgba(0,0,0,0.1);
-  }
-  
-  .book-pages::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 3px,
-      rgba(0,0,0,0.03) 3px,
-      rgba(0,0,0,0.03) 4px
-    );
-  }
-  
-  .rating-stars {
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
-  }
-`;
-
-if (typeof document !== 'undefined') {
-  const styleElement = document.createElement('style');
-  styleElement.textContent = bookStyles;
-  document.head.appendChild(styleElement);
-}
-
 interface Book {
   title: string;
   review: string;
@@ -138,20 +39,6 @@ const books: Book[] = [
 const Readings: React.FC = () => {
   const [sortBy, setSortBy] = useState<'score' | 'title'>('score');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [flippedBooks, setFlippedBooks] = useState<Set<number>>(new Set());
-
-  const toggleBookFlip = (index: number) => {
-    setFlippedBooks(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
-      } else {
-        newSet.add(index);
-      }
-      return newSet;
-    });
-  };
-
 
   // Sort books
   const sortedBooks = useMemo(() => {
@@ -159,7 +46,6 @@ const Readings: React.FC = () => {
       if (sortBy === 'score') {
         return sortDirection === 'desc' ? b.score - a.score : a.score - b.score;
       }
-      // Sort by title
       return sortDirection === 'desc' 
         ? b.title.localeCompare(a.title) 
         : a.title.localeCompare(b.title);
@@ -169,7 +55,6 @@ const Readings: React.FC = () => {
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Readings</h2>
-
 
       {/* Sort Controls */}
       <div className="flex gap-4 mb-8">
@@ -205,96 +90,61 @@ const Readings: React.FC = () => {
         </button>
       </div>
 
-      {/* 3D Books Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 sm:gap-8 py-8">
-        {sortedBooks.map((book, index) => {
-          const isFlipped = flippedBooks.has(index);
-          return (
-            <article key={index} className="group">
-              <div className="book-container w-full max-w-[160px] mx-auto">
-                <div 
-                  className={`book-3d aspect-[3/4] ${isFlipped ? 'flipped' : ''}`}
-                  onClick={() => toggleBookFlip(index)}
-                >
-                  {/* Front Cover */}
-                  <div className="book-cover w-full h-full">
-                    <Image
-                      src={book.cover}
-                      alt={book.title}
-                      fill
-                      className="object-cover rounded-[4px_8px_8px_4px]"
-                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const parent = target.parentElement;
-                        if (parent) {
-                          parent.innerHTML = `
-                            <div class="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-400 dark:from-zinc-700 dark:to-zinc-900 flex items-center justify-center rounded-[4px_8px_8px_4px] text-zinc-600 dark:text-zinc-300">
-                              <span class="text-3xl">📚</span>
-                            </div>
-                          `;
-                        }
-                      }}
-                    />
-                  </div>
-
-                  {/* Book Spine */}
-                  <div className="book-spine"></div>
-
-                  {/* Book Pages */}
-                  <div className="book-pages"></div>
-
-                  {/* Back Cover */}
-                  <div className="book-back w-full h-full dark:bg-gradient-to-br dark:from-zinc-800 dark:to-zinc-900 dark:text-zinc-200">
-                    <div>
-                      <h3 className="text-sm font-medium mb-3 line-clamp-3 text-zinc-800 dark:text-zinc-200">
-                        {book.title}
-                      </h3>
-                      <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-4 mb-4">
-                        {book.review}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-0.5 rating-stars">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <span
-                            key={i}
-                            className={`text-sm ${
-                              i < book.score
-                                ? "text-amber-400"
-                                : "text-zinc-300 dark:text-zinc-600"
-                            }`}
-                          >
-                            ★
-                          </span>
-                        ))}
+      {/* Simple Books Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+        {sortedBooks.map((book, index) => (
+          <article key={index} className="group">
+            <div className="aspect-[3/4] relative mb-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
+              <Image
+                src={book.cover}
+                alt={book.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-200"
+                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `
+                      <div class="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-400 dark:from-zinc-700 dark:to-zinc-900 flex items-center justify-center text-zinc-600 dark:text-zinc-300">
+                        <span class="text-3xl">📚</span>
                       </div>
-                      <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                        {book.score}/5
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    `;
+                  }
+                }}
+              />
               
-              {/* Book Title - Always visible */}
-              <div className="mt-3 text-center px-2">
-                <h3 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                  {book.title}
-                </h3>
+              {/* Score overlay */}
+              {book.score && book.score > 0 && (
+                <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                  {book.score}
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1">
+                {book.title}
+              </h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-2">
+                {book.review}
+              </p>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`text-xs ${
+                      i < book.score ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'
+                    }`}
+                  >
+                    ★
+                  </span>
+                ))}
               </div>
-            </article>
-          );
-        })}
-      </div>
-
-      {/* Instructions */}
-      <div className="mt-8 text-center">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Click on any book to flip it and see the review
-        </p>
+            </div>
+          </article>
+        ))}
       </div>
     </div>
   );
