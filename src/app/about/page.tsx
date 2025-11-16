@@ -71,15 +71,13 @@ const Home: React.FC = () => {
 
       {/* Navigation Links */}
       <div>
-        <h2 className="text-lg font-medium mb-6 dark:text-white">Explore</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h2 className="text-lg font-medium mb-8 dark:text-white">Explore</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link href="/links" className="group cursor-pointer block">
-            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
-              <div className="mb-2">
-                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  On the Internet
-                </h3>
-              </div>
+            <article className="p-6 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 hover:shadow-sm">
+              <h3 className="text-sm font-medium text-zinc-900 dark:text-white mb-2">
+                On the Internet
+              </h3>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Find me across platforms
               </p>
@@ -87,12 +85,10 @@ const Home: React.FC = () => {
           </Link>
           
           <Link href="/guestbook" className="group cursor-pointer block">
-            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
-              <div className="mb-2">
-                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  Guest Book
-                </h3>
-              </div>
+            <article className="p-6 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 hover:shadow-sm">
+              <h3 className="text-sm font-medium text-zinc-900 dark:text-white mb-2">
+                Guest Book
+              </h3>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Leave a message
               </p>
@@ -100,12 +96,10 @@ const Home: React.FC = () => {
           </Link>
           
           <Link href="/stack" className="group cursor-pointer block">
-            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
-              <div className="mb-2">
-                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  Resume
-                </h3>
-              </div>
+            <article className="p-6 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 hover:shadow-sm">
+              <h3 className="text-sm font-medium text-zinc-900 dark:text-white mb-2">
+                Resume
+              </h3>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 View my experience
               </p>
@@ -113,14 +107,12 @@ const Home: React.FC = () => {
           </Link>
           
           <a href="mailto:hi@rohanpothuru.com" className="group cursor-pointer block">
-            <article className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
-              <div className="mb-2">
-                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  Contact
-                </h3>
-              </div>
+            <article className="p-6 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 hover:shadow-sm">
+              <h3 className="text-sm font-medium text-zinc-900 dark:text-white mb-2">
+                Contact
+              </h3>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                Let&apos;s connect
+                Let's connect
               </p>
             </article>
           </a>
