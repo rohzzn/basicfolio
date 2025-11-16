@@ -90,37 +90,67 @@ const Readings: React.FC = () => {
         </button>
       </div>
 
-      {/* Simple Books Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+      {/* 3D Books Grid */}
+      <div 
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
+        style={{ perspective: '1000px' }}
+      >
         {sortedBooks.map((book, index) => (
           <article key={index} className="group">
-            <div className="aspect-[3/4] relative mb-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
-              <Image
-                src={book.cover}
-                alt={book.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-200"
-                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent) {
-                    parent.innerHTML = `
-                      <div class="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-400 dark:from-zinc-700 dark:to-zinc-900 flex items-center justify-center text-zinc-600 dark:text-zinc-300">
-                        <span class="text-3xl">📚</span>
-                      </div>
-                    `;
-                  }
-                }}
-              />
+            <div 
+              className="aspect-[3/4] relative mb-3 transition-all duration-300 cursor-pointer"
+              style={{
+                transformStyle: 'preserve-3d',
+                transform: 'rotateY(0deg) rotateX(0deg)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'rotateY(-15deg) rotateX(5deg) scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+              }}
+            >
+              {/* Book Cover */}
+              <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden shadow-lg">
+                <Image
+                  src={book.cover}
+                  alt={book.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = `
+                        <div class="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-400 dark:from-zinc-700 dark:to-zinc-900 flex items-center justify-center text-zinc-600 dark:text-zinc-300">
+                          <span class="text-3xl">📚</span>
+                        </div>
+                      `;
+                    }
+                  }}
+                />
+              </div>
               
-              {/* Score overlay */}
-              {book.score && book.score > 0 && (
-                <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                  {book.score}
-                </div>
-              )}
+              {/* Book Spine */}
+              <div 
+                className="absolute top-0 right-0 w-3 h-full bg-gradient-to-b from-zinc-300 to-zinc-500 dark:from-zinc-600 dark:to-zinc-800"
+                style={{
+                  transform: 'rotateY(90deg)',
+                  transformOrigin: 'left center',
+                  boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.2)'
+                }}
+              ></div>
+              
+              {/* Book Pages */}
+              <div 
+                className="absolute top-1 right-1 w-2 h-[calc(100%-8px)] bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-300 dark:to-gray-400"
+                style={{
+                  transform: 'translateZ(-2px)',
+                  borderRadius: '0 2px 2px 0'
+                }}
+              ></div>
             </div>
             
             <div>
