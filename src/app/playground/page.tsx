@@ -176,12 +176,24 @@ const PlaygroundPage: React.FC = () => {
     <div className="fixed inset-0 overflow-visible">
       {/* Designer Dots Background */}
       <div 
+        className="absolute inset-0 opacity-40 dark:opacity-20"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.6) 1px, transparent 0)
+          `,
+          backgroundSize: '16px 16px'
+        }}
+      />
+      
+      {/* Secondary Dot Layer for Depth */}
+      <div 
         className="absolute inset-0 opacity-20 dark:opacity-10"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.3) 1px, transparent 0)
+            radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.4) 0.5px, transparent 0)
           `,
-          backgroundSize: '20px 20px'
+          backgroundSize: '8px 8px',
+          backgroundPosition: '4px 4px'
         }}
       />
       
