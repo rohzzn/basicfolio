@@ -2,6 +2,105 @@
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 
+// Custom CSS for 3D book effects
+const bookStyles = `
+  .book-container {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+  
+  .book-3d {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+    cursor: pointer;
+  }
+  
+  .book-3d:hover {
+    transform: translateZ(20px) rotateY(-15deg);
+  }
+  
+  .book-3d.flipped {
+    transform: translateZ(20px) rotateY(-180deg);
+  }
+  
+  .book-cover {
+    position: absolute;
+    backface-visibility: hidden;
+    border-radius: 4px 8px 8px 4px;
+    box-shadow: 
+      2px 0 10px rgba(0,0,0,0.2),
+      0 0 0 1px rgba(0,0,0,0.1);
+  }
+  
+  .book-back {
+    position: absolute;
+    backface-visibility: hidden;
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px 4px 4px 8px;
+    box-shadow: 
+      -2px 0 10px rgba(0,0,0,0.2),
+      0 0 0 1px rgba(0,0,0,0.1);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .book-spine {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 12px;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      rgba(0,0,0,0.1) 0%, 
+      rgba(255,255,255,0.1) 50%, 
+      rgba(0,0,0,0.1) 100%);
+    transform: rotateY(90deg) translateZ(6px);
+    transform-origin: right center;
+  }
+  
+  .book-pages {
+    position: absolute;
+    right: -2px;
+    top: 2px;
+    width: 8px;
+    height: calc(100% - 4px);
+    background: linear-gradient(90deg, #f8f9fa 0%, #ffffff  50%, #f1f3f4 100%);
+    transform: translateZ(-1px);
+    border-radius: 0 2px 2px 0;
+    box-shadow: inset -1px 0 2px rgba(0,0,0,0.1);
+  }
+  
+  .book-pages::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.03) 3px,
+      rgba(0,0,0,0.03) 4px
+    );
+  }
+  
+  .rating-stars {
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+  }
+`;
+
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = bookStyles;
+  document.head.appendChild(styleElement);
+}
+
 interface Book {
   title: string;
   review: string;
@@ -39,6 +138,19 @@ const books: Book[] = [
 const Readings: React.FC = () => {
   const [sortBy, setSortBy] = useState<'score' | 'title'>('score');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [flippedBooks, setFlippedBooks] = useState<Set<number>>(new Set());
+
+  const toggleBookFlip = (index: number) => {
+    setFlippedBooks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
 
 
   // Sort books
@@ -93,81 +205,96 @@ const Readings: React.FC = () => {
         </button>
       </div>
 
-      {/* Books Grid - Responsive Implementation */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 md:gap-8 py-8">
-        {sortedBooks.map((book, index) => (
-          <article key={index} className="group cursor-pointer">
-            {/* Book Container - Responsive sizes */}
-            <div className="w-full max-w-[200px] mx-auto aspect-[200/260] flex items-center justify-center perspective-900">
-              <div
-                className="w-full h-full relative preserve-3d rotate-y-30 transition-transform-075s"
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "rotateY(0deg)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "rotateY(-30deg)")
-                }
-              >
-                {/* Front Cover */}
-                <Image
-                  src={book.cover}
-                  alt={book.title}
-                  width={200}
-                  height={260}
-                  className="w-full h-full absolute rounded-r rounded-l-[3px] shadow-image-shadow object-cover"
-                  priority={index < 12}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const parent = target.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800 flex items-center justify-center rounded-r rounded-l-[3px]"><span class="text-2xl sm:text-3xl">📖</span></div>';
-                    }
-                  }}
-                />
-                
-                {/* Pages - Responsive sizing */}
-                <div className="bg-gradient-to-r from-white via-gray-50 to-gray-100 h-[calc(100%-12px)] w-[25%] max-w-[50px] top-[6px] absolute page-transform border-l border-gray-200 shadow-sm">
-                  {/* Page lines effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-100/30 to-transparent"></div>
-                  <div className="absolute top-2 bottom-2 left-1 right-1 bg-gradient-to-r from-gray-100/50 to-transparent"></div>
+      {/* 3D Books Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 sm:gap-8 py-8">
+        {sortedBooks.map((book, index) => {
+          const isFlipped = flippedBooks.has(index);
+          return (
+            <article key={index} className="group">
+              <div className="book-container w-full max-w-[160px] mx-auto">
+                <div 
+                  className={`book-3d aspect-[3/4] ${isFlipped ? 'flipped' : ''}`}
+                  onClick={() => toggleBookFlip(index)}
+                >
+                  {/* Front Cover */}
+                  <div className="book-cover w-full h-full">
+                    <Image
+                      src={book.cover}
+                      alt={book.title}
+                      fill
+                      className="object-cover rounded-[4px_8px_8px_4px]"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `
+                            <div class="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-400 dark:from-zinc-700 dark:to-zinc-900 flex items-center justify-center rounded-[4px_8px_8px_4px] text-zinc-600 dark:text-zinc-300">
+                              <span class="text-3xl">📚</span>
+                            </div>
+                          `;
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* Book Spine */}
+                  <div className="book-spine"></div>
+
+                  {/* Book Pages */}
+                  <div className="book-pages"></div>
+
+                  {/* Back Cover */}
+                  <div className="book-back w-full h-full dark:bg-gradient-to-br dark:from-zinc-800 dark:to-zinc-900 dark:text-zinc-200">
+                    <div>
+                      <h3 className="text-sm font-medium mb-3 line-clamp-3 text-zinc-800 dark:text-zinc-200">
+                        {book.title}
+                      </h3>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-4 mb-4">
+                        {book.review}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-0.5 rating-stars">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <span
+                            key={i}
+                            className={`text-sm ${
+                              i < book.score
+                                ? "text-amber-400"
+                                : "text-zinc-300 dark:text-zinc-600"
+                            }`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                        {book.score}/5
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                
-                {/* Back Cover */}
-                <div className="rounded-r bg-gradient-to-r from-gray-800 to-gray-900 h-full w-full left-0 absolute back-cover-transform shadow-back-cover-shadow" />
               </div>
-            </div>
-            
-            {/* Info Panel - Centered below book */}
-            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 mt-2 sm:mt-4 text-center">
-              <h3 className="text-xs sm:text-sm font-medium dark:text-white mb-1 line-clamp-2 px-1">
-                {book.title}
-              </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2 line-clamp-2 px-1">
-                {book.review}
-              </p>
-              <div className="flex items-center justify-center gap-2">
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span
-                      key={i}
-                      className={`text-xs ${
-                        i < book.score
-                          ? "text-amber-400"
-                          : "text-zinc-300 dark:text-zinc-600"
-                      }`}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                  {book.score}/5
-                </span>
+              
+              {/* Book Title - Always visible */}
+              <div className="mt-3 text-center px-2">
+                <h3 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                  {book.title}
+                </h3>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
+      </div>
+
+      {/* Instructions */}
+      <div className="mt-8 text-center">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          Click on any book to flip it and see the review
+        </p>
       </div>
     </div>
   );
