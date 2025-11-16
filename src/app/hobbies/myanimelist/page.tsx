@@ -23,7 +23,7 @@ const MyAnimeList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [username, setUsername] = useState<string>(MAL_USERNAME);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'all' | 'plan_to_watch'>('all');
+  const [activeTab, setActiveTab] = useState<'watched' | 'plan_to_watch' | 'dropped'>('watched');
 
   // Fetch anime data from MyAnimeList
   useEffect(() => {
@@ -74,8 +74,8 @@ const MyAnimeList: React.FC = () => {
         return false;
       }
       
-      // Filter by active tab (only for All and Plan to Watch sections)
-      if (activeTab !== 'all' && anime.status !== activeTab) {
+      // Filter by active tab (Completed, Plan to Watch, Dropped)
+      if (anime.status !== activeTab) {
         return false;
       }
       
@@ -227,12 +227,13 @@ const MyAnimeList: React.FC = () => {
             </div>
           </div>
             
-          {/* All | Plan to Watch Tabs */}
-          <div className="flex gap-4 mb-8">
-            {[
-              { id: 'all' as const, label: 'All' },
-              { id: 'plan_to_watch' as const, label: 'Plan to Watch' }
-            ].map((tab) => (
+          {/* All | Plan to Watch | Dropped Tabs */}
+            <div className="flex gap-4 mb-8">
+              {[
+                { id: 'watched' as const, label: 'Watched' },
+                { id: 'plan_to_watch' as const, label: 'Plan to Watch' },
+                { id: 'dropped' as const, label: 'Dropped' }
+              ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
