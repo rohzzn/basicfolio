@@ -112,7 +112,7 @@ const Home: React.FC = () => {
                 Archive
               </h3>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                Visual collection
+                Recent moments
               </p>
             </article>
           </Link>
