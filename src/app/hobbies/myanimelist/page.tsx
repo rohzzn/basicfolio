@@ -123,12 +123,12 @@ const MyAnimeList: React.FC = () => {
           <p className="text-zinc-700 dark:text-zinc-300">Loading anime list...</p>
         </div>
       ) : error ? (
-        <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-xl mb-6">
-          <h3 className="text-red-600 dark:text-red-400 font-medium mb-2">Error Loading Anime List</h3>
-          <p className="text-red-500 dark:text-red-300 mb-4">{error}</p>
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-xl mb-6">
+          <h3 className="text-zinc-800 dark:text-zinc-200 font-medium mb-2">Error Loading Anime List</h3>
+          <p className="text-zinc-600 dark:text-zinc-400 mb-4">{error}</p>
           <button 
             onClick={handleRefresh}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
+            className="bg-zinc-800 dark:bg-zinc-200 hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-zinc-800 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Try Again
@@ -172,44 +172,75 @@ const MyAnimeList: React.FC = () => {
             </div>
           </div>
 
-          {/* Anime Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {/* 3D Anime Grid */}
+          <div 
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
+            style={{ perspective: '1000px' }}
+          >
             {sortedAnime.map((anime) => (
               <div key={anime.id} className="group">
-                <div className="aspect-[3/4] relative mb-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
-                  {anime.image ? (
-                    <Image
-                      src={anime.image}
-                      alt={anime.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-200"
-                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center px-2">
-                        No Image
-                      </p>
-                    </div>
-                  )}
+                <div 
+                  className="aspect-[3/4] relative mb-3 transition-all duration-300 cursor-pointer"
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    transform: 'rotateY(0deg) rotateX(0deg)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'rotateY(-15deg) rotateX(5deg) scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+                  }}
+                >
+                  {/* Anime Cover */}
+                  <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden shadow-lg">
+                    {anime.image ? (
+                      <Image
+                        src={anime.image}
+                        alt={anime.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center px-2">
+                          No Image
+                        </p>
+                      </div>
+                    )}
+                  </div>
                   
-                  {/* Score overlay */}
-                  {anime.score && anime.score > 0 && (
-                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                      {anime.score}
-                    </div>
-                  )}
+                  {/* Spine Effect */}
+                  <div 
+                    className="absolute top-0 right-0 w-3 h-full bg-gradient-to-b from-zinc-300 to-zinc-500 dark:from-zinc-600 dark:to-zinc-800"
+                    style={{
+                      transform: 'rotateY(90deg)',
+                      transformOrigin: 'left center',
+                      boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.2)'
+                    }}
+                  ></div>
+                  
+                  {/* Pages Effect */}
+                  <div 
+                    className="absolute top-1 right-1 w-2 h-[calc(100%-8px)] bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-300 dark:to-gray-400"
+                    style={{
+                      transform: 'translateZ(-2px)',
+                      borderRadius: '0 2px 2px 0'
+                    }}
+                  ></div>
                 </div>
                 
                 <div>
-                  <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                  <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1">
                     {anime.title}
                   </h3>
-                  {anime.year && (
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                      {anime.year}
-                    </p>
-                  )}
+                  <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                    {anime.year && <span>{anime.year}</span>}
+                    {anime.score && anime.score > 0 && (
+                      <span className="font-medium">{anime.score}/10</span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
