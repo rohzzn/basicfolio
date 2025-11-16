@@ -321,7 +321,7 @@ const MusicPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [timeRange]);
+  }, []);
 
   // Function to fetch time-range specific data
   const fetchTimeRangeData = async (newTimeRange: TimeRange, dataType: 'tracks' | 'artists' | 'both') => {
@@ -660,7 +660,7 @@ const MusicPage: React.FC = () => {
               href={artist.external_urls.spotify}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col"
+              className="p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
             >
               <div className="relative w-full aspect-square mb-3">
                 <Image
@@ -713,9 +713,9 @@ const MusicPage: React.FC = () => {
               rel="noopener noreferrer"
               className="group cursor-pointer block"
             >
-              <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700">
+              <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200">
                 <div className="flex items-start gap-3">
-                  <div className="relative shrink-0 w-12 h-12">
+                  <div className="relative shrink-0 w-16 h-16">
                     <Image
                       src={getSafeImageUrl(track.album?.images)}
                       alt={track.album?.name || 'Album cover'}
@@ -729,22 +729,13 @@ const MusicPage: React.FC = () => {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium dark:text-white line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                    <h4 className="text-sm font-medium dark:text-white line-clamp-1 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                       {track.name}
                     </h4>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mt-1">
                       {track.artists.map(a => a.name).join(', ')}
                     </p>
                   </div>
-                </div>
-                
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-200/50 dark:border-zinc-700/50">
-                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
-                    #{index + 1}
-                  </span>
-                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
-                    {formatDuration(track.duration_ms)}
-                  </span>
                 </div>
               </article>
             </a>
@@ -802,7 +793,7 @@ const MusicPage: React.FC = () => {
                 href={playlist.external_urls.spotify}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col"
+                className="p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
               >
                 <div className="relative w-full aspect-square mb-3">
                   <Image
@@ -849,9 +840,9 @@ const MusicPage: React.FC = () => {
               rel="noopener noreferrer"
               className="group cursor-pointer block"
             >
-              <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700">
+              <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200">
                 <div className="flex items-start gap-3">
-                  <div className="relative shrink-0 w-12 h-12">
+                  <div className="relative shrink-0 w-16 h-16">
                     <Image
                       src={getSafeImageUrl(track.album?.images)}
                       alt={track.album?.name || 'Album cover'}
@@ -865,22 +856,13 @@ const MusicPage: React.FC = () => {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium dark:text-white line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                    <h4 className="text-sm font-medium dark:text-white line-clamp-1 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                       {track.name}
                     </h4>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mt-1">
                       {track.artists.map(a => a.name).join(', ')}
                     </p>
                   </div>
-                </div>
-                
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-200/50 dark:border-zinc-700/50">
-                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
-                    #{index + 1}
-                  </span>
-                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
-                    {formatDuration(track.duration_ms)}
-                  </span>
                 </div>
               </article>
             </a>
@@ -1008,14 +990,6 @@ const MusicPage: React.FC = () => {
                         </div>
                       </div>
                       
-                      <a 
-                        href={currentlyPlaying.track.external_urls.spotify}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mt-3 transition-colors"
-                      >
-                        Open in Spotify <ExternalLink className="w-3 h-3" />
-                      </a>
                     </div>
                   </div>
                 </div>
