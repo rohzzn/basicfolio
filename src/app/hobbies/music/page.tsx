@@ -962,7 +962,7 @@ const MusicPage: React.FC = () => {
                   {currentlyPlaying.isPlaying ? 'Now Playing' : 'Last Played'}
                 </h3>
                 
-                <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 md:p-6 border border-zinc-200/50 dark:border-zinc-800/50">
+                <div className="bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 rounded-lg p-4 md:p-6 border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm">
                   <div className="flex flex-col md:flex-row gap-4 items-center">
                     <div className="relative shrink-0">
                       <Image 
