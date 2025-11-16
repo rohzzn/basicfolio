@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 
 interface DraggableItem {
@@ -11,9 +11,28 @@ interface DraggableItem {
   alt: string;
 }
 
+// Available images from playground folder - will maintain natural aspect ratios
+const PLAYGROUND_IMAGES = [
+  { src: '/images/playground/1.png', alt: 'Personal moment 1' },
+  { src: '/images/playground/2.png', alt: 'Personal moment 2' },
+  { src: '/images/playground/3.png', alt: 'Personal moment 3' },
+  { src: '/images/playground/4.png', alt: 'Personal moment 4' },
+  { src: '/images/playground/5.png', alt: 'Personal moment 5' },
+  { src: '/images/playground/6.png', alt: 'Personal moment 6' },
+  { src: '/images/playground/7.png', alt: 'Personal moment 7' },
+  { src: '/images/playground/8.png', alt: 'Personal moment 8' },
+  { src: '/images/playground/9.png', alt: 'Personal moment 9' },
+  { src: '/images/playground/10.png', alt: 'Personal moment 10' },
+  { src: '/images/playground/11.png', alt: 'Personal moment 11' },
+  { src: '/images/playground/12.png', alt: 'Personal moment 12' },
+  { src: '/images/playground/13.png', alt: 'Personal moment 13' },
+  { src: '/images/playground/14.png', alt: 'Personal moment 14' },
+  { src: '/images/playground/15.png', alt: 'Personal moment 15' }
+];
+
 const PlaygroundPage: React.FC = () => {
   // Function to generate well-distributed positions across the viewport (avoiding sidebar)
-  const getDistributedPosition = (index: number, total: number) => {
+  const getDistributedPosition = useCallback((index: number, total: number) => {
     // Create a grid-like distribution with some randomness
     const cols = Math.ceil(Math.sqrt(total));
     const rows = Math.ceil(total / cols);
@@ -46,26 +65,7 @@ const PlaygroundPage: React.FC = () => {
       x: Math.max(sidebarWidth + 20, Math.min(window.innerWidth - rightPadding, baseX + randomOffsetX)),
       y: Math.max(20, Math.min(window.innerHeight - bottomPadding, baseY + randomOffsetY))
     };
-  };
-
-  // Available images from playground folder - will maintain natural aspect ratios
-  const playgroundImages = [
-    { src: '/images/playground/1.png', alt: 'Personal moment 1' },
-    { src: '/images/playground/2.png', alt: 'Personal moment 2' },
-    { src: '/images/playground/3.png', alt: 'Personal moment 3' },
-    { src: '/images/playground/4.png', alt: 'Personal moment 4' },
-    { src: '/images/playground/5.png', alt: 'Personal moment 5' },
-    { src: '/images/playground/6.png', alt: 'Personal moment 6' },
-    { src: '/images/playground/7.png', alt: 'Personal moment 7' },
-    { src: '/images/playground/8.png', alt: 'Personal moment 8' },
-    { src: '/images/playground/9.png', alt: 'Personal moment 9' },
-    { src: '/images/playground/10.png', alt: 'Personal moment 10' },
-    { src: '/images/playground/11.png', alt: 'Personal moment 11' },
-    { src: '/images/playground/12.png', alt: 'Personal moment 12' },
-    { src: '/images/playground/13.png', alt: 'Personal moment 13' },
-    { src: '/images/playground/14.png', alt: 'Personal moment 14' },
-    { src: '/images/playground/15.png', alt: 'Personal moment 15' }
-  ];
+  }, []);
 
   const [items, setItems] = useState<DraggableItem[]>([]);
 
@@ -73,8 +73,8 @@ const PlaygroundPage: React.FC = () => {
   useEffect(() => {
     const initialItems: DraggableItem[] = [];
     
-    playgroundImages.forEach((img, index) => {
-      const position = getDistributedPosition(index, playgroundImages.length);
+    PLAYGROUND_IMAGES.forEach((img, index) => {
+      const position = getDistributedPosition(index, PLAYGROUND_IMAGES.length);
       initialItems.push({
         id: `image-${index + 1}`,
         x: position.x,
@@ -85,7 +85,7 @@ const PlaygroundPage: React.FC = () => {
     });
     
     setItems(initialItems);
-  }, []);
+  }, [getDistributedPosition]);
 
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -118,7 +118,7 @@ const PlaygroundPage: React.FC = () => {
     setDraggedItem(itemId);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!draggedItem || !containerRef.current) return;
 
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -130,9 +130,9 @@ const PlaygroundPage: React.FC = () => {
         ? { ...item, x: newX, y: newY }
         : item
     ));
-  };
+  }, [draggedItem, dragOffset.x, dragOffset.y]);
 
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!draggedItem || !containerRef.current) return;
 
     const touch = e.touches[0];
@@ -145,17 +145,17 @@ const PlaygroundPage: React.FC = () => {
         ? { ...item, x: newX, y: newY }
         : item
     ));
-  };
+  }, [draggedItem, dragOffset.x, dragOffset.y]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setDraggedItem(null);
     setDragOffset({ x: 0, y: 0 });
-  };
+  }, []);
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     setDraggedItem(null);
     setDragOffset({ x: 0, y: 0 });
-  };
+  }, []);
 
   useEffect(() => {
     if (draggedItem) {
@@ -170,7 +170,7 @@ const PlaygroundPage: React.FC = () => {
         document.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [draggedItem, dragOffset]);
+  }, [draggedItem, handleMouseMove, handleTouchMove, handleMouseUp, handleTouchEnd]);
 
   return (
     <div className="fixed inset-0 overflow-visible">
