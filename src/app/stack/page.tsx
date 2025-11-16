@@ -62,7 +62,7 @@ const Stack = () => {
         "Cloud Computing",
         "Innovation Design Thinking",
         "Large Scale Software Engineering",
-        "Visual Interfaces Data",
+        "Network Security",
         "Software Testing and Quality Assurance",
       ],
     },
@@ -77,6 +77,10 @@ const Stack = () => {
         "Object Oriented Programming",
         "Computer Networks",
         "Analysis and Design of Algorithms",
+        "Software Engineering",
+        "Computer Networks",
+        "Compiler Design",
+        "Internet of Things",
       ],
     }
   ];
@@ -128,166 +132,196 @@ const Stack = () => {
 
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Resume</h2>
+      <h2 className="text-lg font-medium mb-8 dark:text-white">Resume</h2>
 
-      {/* Experience Section */}
-      <section className="mb-12">
-        <h3 className="text-lg font-medium mb-6 dark:text-white">Experience</h3>
-        
-        <div className="space-y-6">
-          {experience.map((exp, index) => (
-            <article key={index}>
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">
-                  {exp.company}
-                </h4>
-                <time className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                  {exp.duration}
-                </time>
-              </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                {exp.role}
-              </p>
-            </article>
-          ))}
+      {/* Resume PDF Container */}
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm">
+        {/* Resume Header */}
+        <div className="p-8 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+              Rohan Pothuru
+            </h1>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
+              Software Engineer & Computer Science Graduate Student
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 text-xs text-zinc-500 dark:text-zinc-500">
+              <span>hi@rohanpothuru.com</span>
+              <span>•</span>
+              <span>Cincinnati, OH</span>
+              <span>•</span>
+              <span>github.com/rohzzn</span>
+              <span>•</span>
+              <span>linkedin.com/in/rohzzn</span>
+            </div>
+          </div>
         </div>
-      </section>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
-
-      {/* Education Section */}
-      <section className="mb-12">
-        <h3 className="text-lg font-medium mb-6 dark:text-white">Education</h3>
-
-        <div className="space-y-6">
-          {education.map((edu, index) => (
-            <article key={index}>
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">
-                  {edu.school}
-                </h4>
-                <time className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                  {edu.duration}
-                </time>
-              </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3">
-                {edu.degree}
-              </p>
-              <div className="text-xs text-zinc-500 dark:text-zinc-500">
-                {edu.coursework.join(' • ')}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Divider */}
-      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
-
-      {/* Skills Section */}
-      <section className="mb-12">
-        <h3 className="text-lg font-medium mb-6 dark:text-white">Skills</h3>
-
-        <div className="space-y-6">
-          {Object.entries(skills).map(([category, items]) => (
-            <article key={category}>
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1 capitalize">
-                  {category}
-                </h4>
-              </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                {items.join(' • ')}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Divider */}
-      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
-
-      {/* Certifications Section */}
-      <section className="mb-12">
-        <h3 className="text-lg font-medium mb-6 dark:text-white">Certifications</h3>
-
-        <div className="space-y-6">
-          {certifications.map((cert, index) => (
-            <a
-              key={index}
-              href={cert.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group cursor-pointer block"
-            >
-              <article>
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
-                    {cert.name}
-                  </h4>
-                  <div className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
-                    →
+        {/* Resume Content */}
+        <div className="p-8 space-y-8">
+          {/* Experience Section */}
+          <section>
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+              EXPERIENCE
+            </h3>
+            
+            <div className="space-y-4">
+              {experience.map((exp, index) => (
+                <div key={index}>
+                  <div className="flex items-start justify-between mb-1">
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-zinc-900 dark:text-white">
+                        {exp.role}
+                      </h4>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {exp.company}
+                      </p>
+                    </div>
+                    <time className="text-xs text-zinc-500 dark:text-zinc-500 font-medium">
+                      {exp.duration}
+                    </time>
                   </div>
                 </div>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                  {cert.issuer}
-                </p>
-              </article>
-            </a>
-          ))}
-        </div>
-      </section>
-
-      {/* LeetCode Stats */}
-      {leetcodeStats && (
-        <>
-          {/* Divider */}
-          <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
-          
-          <section className="mb-12">
-            <h3 className="text-lg font-medium mb-6 dark:text-white">LeetCode Stats</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div>
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.totalSolved}</p>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">Problems Solved</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.easySolved}</p>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">Easy</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.mediumSolved}</p>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">Medium</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{leetcodeStats.hardSolved}</p>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">Hard</p>
-              </div>
+              ))}
             </div>
           </section>
-        </>
-      )}
 
-      {/* Divider */}
-      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
+          {/* Education Section */}
+          <section>
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+              EDUCATION
+            </h3>
 
-      {/* Action Buttons */}
-      <div className="flex gap-6">
-        <a
-          href="https://drive.google.com/file/d/136cRqYTuEn55Yjge6dgyliQMT9XNZFF7/view"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors border-b border-transparent hover:border-zinc-300 dark:hover:border-zinc-600"
-        >
-          Download →
-        </a>
-        <a
-          href="mailto:hi@rohanpothuru.com"
-          className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors border-b border-transparent hover:border-zinc-300 dark:hover:border-zinc-600"
-        >
-          Contact →
-        </a>
+            <div className="space-y-4">
+              {education.map((edu, index) => (
+                <div key={index}>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-zinc-900 dark:text-white">
+                        {edu.degree}
+                      </h4>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {edu.school}
+                      </p>
+                    </div>
+                    <time className="text-xs text-zinc-500 dark:text-zinc-500 font-medium">
+                      {edu.duration}
+                    </time>
+                  </div>
+                  <div className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                    <strong>Relevant Coursework:</strong> {edu.coursework.join(', ')}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Skills Section */}
+          <section>
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+              TECHNICAL SKILLS
+            </h3>
+
+            <div className="space-y-3">
+              {Object.entries(skills).map(([category, items]) => (
+                <div key={category} className="flex items-start gap-4">
+                  <div className="w-24 flex-shrink-0">
+                    <h4 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 uppercase tracking-wide">
+                      {category}
+                    </h4>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      {items.join(', ')}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Certifications Section */}
+          <section>
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+              CERTIFICATIONS
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {certifications.map((cert, index) => (
+                <a
+                  key={index}
+                  href={cert.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group cursor-pointer block hover:bg-zinc-50 dark:hover:bg-zinc-800/50 p-2 -m-2 rounded transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {cert.name}
+                      </h4>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-500">
+                        {cert.issuer}
+                      </p>
+                    </div>
+                    <div className="text-xs text-zinc-400 dark:text-zinc-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      ↗
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+
+          {/* LeetCode Stats */}
+          {leetcodeStats && (
+            <section>
+              <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+                CODING STATISTICS
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
+                  <p className="text-lg font-bold text-zinc-900 dark:text-white">{leetcodeStats.totalSolved}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Total Solved</p>
+                </div>
+                <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
+                  <p className="text-lg font-bold text-green-600 dark:text-green-400">{leetcodeStats.easySolved}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Easy</p>
+                </div>
+                <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
+                  <p className="text-lg font-bold text-yellow-600 dark:text-yellow-400">{leetcodeStats.mediumSolved}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Medium</p>
+                </div>
+                <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
+                  <p className="text-lg font-bold text-red-600 dark:text-red-400">{leetcodeStats.hardSolved}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Hard</p>
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
+
+        {/* Resume Footer */}
+        <div className="p-6 pt-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/30">
+          <div className="flex justify-center gap-8">
+            <a
+              href="https://drive.google.com/file/d/136cRqYTuEn55Yjge6dgyliQMT9XNZFF7/view"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+            >
+              Download PDF
+              <span className="text-xs">↓</span>
+            </a>
+            <a
+              href="mailto:hi@rohanpothuru.com"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-zinc-900 dark:bg-white dark:text-zinc-900 rounded-md hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
+            >
+              Get in Touch
+              <span className="text-xs">→</span>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
