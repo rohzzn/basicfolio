@@ -85,57 +85,6 @@ const WhiteboardPage: React.FC = () => {
     }
   }, []);
 
-  // Redraw entire canvas with zoom support
-  const redrawCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Clear canvas with transparent background
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Save context and apply transformations
-    ctx.save();
-    ctx.translate(canvasOffset.x, canvasOffset.y);
-    ctx.scale(zoom, zoom);
-
-    // Draw all strokes
-    strokes.forEach(stroke => {
-      if (stroke.points.length < 2) return;
-
-      if (stroke.color === 'ERASER') {
-        // Eraser mode - completely remove pixels
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.strokeStyle = 'rgba(0,0,0,1)';
-      } else {
-        // Normal drawing mode
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = stroke.color;
-      }
-      
-      ctx.lineWidth = stroke.size;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      ctx.beginPath();
-      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-      
-      for (let i = 1; i < stroke.points.length; i++) {
-        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
-      }
-      
-      ctx.stroke();
-    });
-
-    // Restore context
-    ctx.restore();
-    
-    // Update mini-map
-    updateMiniMap();
-  }, [strokes, canvasOffset, zoom]);
-
   // Update mini-map
   const updateMiniMap = useCallback(() => {
     const miniMapCanvas = miniMapRef.current;
@@ -214,6 +163,57 @@ const WhiteboardPage: React.FC = () => {
     ctx.lineWidth = 2;
     ctx.strokeRect(viewportX, viewportY, viewportWidth, viewportHeight);
   }, [strokes, canvasOffset, zoom, canvasSize]);
+
+  // Redraw entire canvas with zoom support
+  const redrawCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear canvas with transparent background
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Save context and apply transformations
+    ctx.save();
+    ctx.translate(canvasOffset.x, canvasOffset.y);
+    ctx.scale(zoom, zoom);
+
+    // Draw all strokes
+    strokes.forEach(stroke => {
+      if (stroke.points.length < 2) return;
+
+      if (stroke.color === 'ERASER') {
+        // Eraser mode - completely remove pixels
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.strokeStyle = 'rgba(0,0,0,1)';
+      } else {
+        // Normal drawing mode
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = stroke.color;
+      }
+      
+      ctx.lineWidth = stroke.size;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+      
+      for (let i = 1; i < stroke.points.length; i++) {
+        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+      }
+      
+      ctx.stroke();
+    });
+
+    // Restore context
+    ctx.restore();
+    
+    // Update mini-map
+    updateMiniMap();
+  }, [strokes, canvasOffset, zoom, updateMiniMap]);
 
   // Initialize canvas and load existing drawings
   useEffect(() => {
