@@ -42,6 +42,7 @@ const ERASER_SIZE = 8;
 
 const WhiteboardPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const miniMapRef = useRef<HTMLCanvasElement>(null);
   
   const [isDrawing, setIsDrawing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -53,6 +54,8 @@ const WhiteboardPage: React.FC = () => {
   const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [showMiniMap, setShowMiniMap] = useState(false);
 
   // Load existing drawings from API
   const loadDrawings = useCallback(async () => {
@@ -82,7 +85,7 @@ const WhiteboardPage: React.FC = () => {
     }
   }, []);
 
-  // Redraw entire canvas
+  // Redraw entire canvas with zoom support
   const redrawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -93,9 +96,10 @@ const WhiteboardPage: React.FC = () => {
     // Clear canvas with transparent background
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Save context and apply offset
+    // Save context and apply transformations
     ctx.save();
     ctx.translate(canvasOffset.x, canvasOffset.y);
+    ctx.scale(zoom, zoom);
 
     // Draw all strokes
     strokes.forEach(stroke => {
@@ -127,11 +131,94 @@ const WhiteboardPage: React.FC = () => {
 
     // Restore context
     ctx.restore();
-  }, [strokes, canvasOffset]);
+    
+    // Update mini-map
+    updateMiniMap();
+  }, [strokes, canvasOffset, zoom]);
+
+  // Update mini-map
+  const updateMiniMap = useCallback(() => {
+    const miniMapCanvas = miniMapRef.current;
+    if (!miniMapCanvas || strokes.length === 0) return;
+
+    const ctx = miniMapCanvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear mini-map
+    ctx.clearRect(0, 0, miniMapCanvas.width, miniMapCanvas.height);
+
+    // Calculate bounds of all strokes
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    strokes.forEach(stroke => {
+      stroke.points.forEach(point => {
+        minX = Math.min(minX, point.x);
+        minY = Math.min(minY, point.y);
+        maxX = Math.max(maxX, point.x);
+        maxY = Math.max(maxY, point.y);
+      });
+    });
+
+    if (minX === Infinity) return; // No strokes to draw
+
+    // Add padding
+    const padding = 50;
+    minX -= padding;
+    minY -= padding;
+    maxX += padding;
+    maxY += padding;
+
+    // Calculate scale to fit in mini-map
+    const contentWidth = maxX - minX;
+    const contentHeight = maxY - minY;
+    const scaleX = miniMapCanvas.width / contentWidth;
+    const scaleY = miniMapCanvas.height / contentHeight;
+    const scale = Math.min(scaleX, scaleY, 0.1); // Max scale of 0.1
+
+    // Center the content
+    const offsetX = (miniMapCanvas.width - contentWidth * scale) / 2 - minX * scale;
+    const offsetY = (miniMapCanvas.height - contentHeight * scale) / 2 - minY * scale;
+
+    ctx.save();
+    ctx.translate(offsetX, offsetY);
+    ctx.scale(scale, scale);
+
+    // Draw strokes on mini-map
+    strokes.forEach(stroke => {
+      if (stroke.points.length < 2 || stroke.color === 'ERASER') return;
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = stroke.color;
+      ctx.lineWidth = Math.max(stroke.size * 0.5, 1); // Thinner lines for mini-map
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+      
+      for (let i = 1; i < stroke.points.length; i++) {
+        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+      }
+      
+      ctx.stroke();
+    });
+
+    ctx.restore();
+
+    // Draw viewport indicator
+    const viewportX = (-canvasOffset.x / zoom) * scale + offsetX;
+    const viewportY = (-canvasOffset.y / zoom) * scale + offsetY;
+    const viewportWidth = (canvasSize.width / zoom) * scale;
+    const viewportHeight = (canvasSize.height / zoom) * scale;
+
+    ctx.strokeStyle = '#3B82F6';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(viewportX, viewportY, viewportWidth, viewportHeight);
+  }, [strokes, canvasOffset, zoom, canvasSize]);
 
   // Initialize canvas and load existing drawings
   useEffect(() => {
     const canvas = canvasRef.current;
+    const miniMapCanvas = miniMapRef.current;
     if (!canvas) return;
 
     const updateCanvasSize = () => {
@@ -141,6 +228,12 @@ const WhiteboardPage: React.FC = () => {
       setCanvasSize({ width, height });
       canvas.width = width;
       canvas.height = height;
+      
+      // Setup mini-map
+      if (miniMapCanvas) {
+        miniMapCanvas.width = 200;
+        miniMapCanvas.height = 150;
+      }
       
       // Redraw all strokes after resize
       redrawCanvas();
@@ -164,7 +257,7 @@ const WhiteboardPage: React.FC = () => {
     return () => clearTimeout(timeoutId);
   }, [strokes, redrawCanvas, canvasSize]);
 
-  // Get mouse/touch position relative to canvas
+  // Get mouse/touch position relative to canvas with zoom support
   const getCanvasPosition = useCallback((e: MouseEvent | TouchEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -174,10 +267,33 @@ const WhiteboardPage: React.FC = () => {
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
 
     return {
-      x: clientX - rect.left - canvasOffset.x,
-      y: clientY - rect.top - canvasOffset.y,
+      x: (clientX - rect.left - canvasOffset.x) / zoom,
+      y: (clientY - rect.top - canvasOffset.y) / zoom,
     };
-  }, [canvasOffset]);
+  }, [canvasOffset, zoom]);
+
+  // Handle zoom
+  const handleZoom = useCallback((delta: number, centerX?: number, centerY?: number) => {
+    const newZoom = Math.max(0.1, Math.min(5, zoom + delta));
+    
+    if (centerX !== undefined && centerY !== undefined) {
+      // Zoom towards the specified point
+      const zoomFactor = newZoom / zoom;
+      setCanvasOffset(prev => ({
+        x: centerX - (centerX - prev.x) * zoomFactor,
+        y: centerY - (centerY - prev.y) * zoomFactor,
+      }));
+    }
+    
+    setZoom(newZoom);
+  }, [zoom]);
+
+  // Handle wheel events for zooming
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    const delta = -e.deltaY * 0.001;
+    handleZoom(delta, e.clientX, e.clientY);
+  }, [handleZoom]);
 
   // Start drawing or dragging
   const startInteraction = useCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -207,7 +323,7 @@ const WhiteboardPage: React.FC = () => {
     }
   }, [getCanvasPosition, currentColor, currentSize, isEraser]);
 
-  // Handle mouse/touch move
+  // Handle mouse/touch move with improved performance
   const handleMove = useCallback((e: MouseEvent | TouchEvent) => {
     e.preventDefault();
     
@@ -225,8 +341,9 @@ const WhiteboardPage: React.FC = () => {
       }));
       
       setDragStart({ x: clientX, y: clientY });
+      setShowMiniMap(true); // Show mini-map when dragging
     } else if (isDrawing) {
-      // Handle drawing with optimized performance
+      // Handle drawing with immediate feedback - NO LAG
       const pos = getCanvasPosition(e);
       const point: DrawingPoint = {
         x: pos.x,
@@ -236,17 +353,18 @@ const WhiteboardPage: React.FC = () => {
         timestamp: Date.now(),
       };
 
-      // Add point to current stroke
+      // Update current stroke state
       setCurrentStroke(prev => {
         const newStroke = [...prev, point];
         
-        // Draw immediately on canvas for instant feedback
+        // IMMEDIATE canvas drawing for zero lag
         const canvas = canvasRef.current;
         if (canvas && prev.length > 0) {
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.save();
             ctx.translate(canvasOffset.x, canvasOffset.y);
+            ctx.scale(zoom, zoom);
 
             if (isEraser) {
               ctx.globalCompositeOperation = 'destination-out';
@@ -274,12 +392,14 @@ const WhiteboardPage: React.FC = () => {
         return newStroke;
       });
     }
-  }, [isDragging, isDrawing, dragStart, getCanvasPosition, currentColor, currentSize, isEraser, canvasOffset]);
+  }, [isDragging, isDrawing, dragStart, getCanvasPosition, currentColor, currentSize, isEraser, canvasOffset, zoom]);
 
   // Stop interaction
   const stopInteraction = useCallback(async () => {
     if (isDragging) {
       setIsDragging(false);
+      // Hide mini-map after a delay
+      setTimeout(() => setShowMiniMap(false), 2000);
     }
     
     if (isDrawing && currentStroke.length > 0) {
@@ -324,10 +444,22 @@ const WhiteboardPage: React.FC = () => {
     }
   }, [isDrawing, isDragging, handleMove, stopInteraction]);
 
+  // Add wheel event listener for zooming
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    canvas.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
+
   return (
     <div className="fixed inset-0 overflow-hidden">
       {/* Controls - Top Left */}
-      <div className="fixed top-4 left-4 lg:left-72 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-xl px-4 py-3 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+      <div className="fixed top-4 left-4 lg:left-72 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-xl px-4 py-3 border border-zinc-200 dark:border-zinc-800">
         <div className="flex flex-wrap items-center gap-3">
           {/* Color Palette */}
           <div className="flex gap-1">
@@ -386,8 +518,55 @@ const WhiteboardPage: React.FC = () => {
           >
             Eraser
           </button>
+
+          {/* Zoom Controls */}
+          <div className="flex gap-1 border-l border-zinc-300 dark:border-zinc-600 pl-3 ml-3">
+            <button
+              className="w-8 h-8 rounded-lg border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              onClick={() => handleZoom(-0.2)}
+              title="Zoom Out"
+            >
+              −
+            </button>
+            <div className="px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 min-w-[3rem] text-center flex items-center justify-center">
+              {Math.round(zoom * 100)}%
+            </div>
+            <button
+              className="w-8 h-8 rounded-lg border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              onClick={() => handleZoom(0.2)}
+              title="Zoom In"
+            >
+              +
+            </button>
+            <button
+              className="px-2 py-1 rounded-lg border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              onClick={() => {
+                setZoom(1);
+                setCanvasOffset({ x: 0, y: 0 });
+              }}
+              title="Reset View"
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mini-Map - Top Right */}
+      {showMiniMap && strokes.length > 0 && (
+        <div className="fixed top-4 right-4 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-xl p-3 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+          <div className="text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-2">Mini Map</div>
+          <canvas
+            ref={miniMapRef}
+            className="border border-zinc-200 dark:border-zinc-700 rounded-lg"
+            style={{
+              width: '200px',
+              height: '150px',
+              imageRendering: 'pixelated'
+            }}
+          />
+        </div>
+      )}
 
 
       {/* Canvas Container with White Background */}
@@ -406,6 +585,7 @@ const WhiteboardPage: React.FC = () => {
           }}
         />
       </div>
+
     </div>
   );
 };
