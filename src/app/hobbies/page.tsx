@@ -68,6 +68,11 @@ const hobbies: Hobby[] = [
     title: "Whiteboard",
     description: "Collaborative drawing canvas where anyone can contribute and create together.",
     href: "/hobbies/whiteboard"
+  },
+  {
+    title: "Archive",
+    description: "Visual collection of personal moments captured in time.",
+    href: "/hobbies/archive"
   }
 ];
 
