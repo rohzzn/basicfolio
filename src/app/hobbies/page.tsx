@@ -16,7 +16,7 @@ const hobbies: Hobby[] = [
   },
   {
     title: "Archive",
-    description: "Visual collection of personal moments captured in time.",
+    description: "Visual collection of recent moments.",
     href: "/hobbies/archive"
   },
   {
