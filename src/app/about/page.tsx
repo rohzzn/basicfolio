@@ -106,18 +106,7 @@ const Home: React.FC = () => {
             </article>
           </Link>
           
-          <Link href="/hobbies/archive" className="group cursor-pointer block">
-            <article className="p-6 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 hover:shadow-sm">
-              <h3 className="text-sm font-medium text-zinc-900 dark:text-white mb-2">
-                Archive
-              </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                Visual collection
-              </p>
-            </article>
-          </Link>
-          
-          <a href="mailto:rohzzn@gmail.com" className="group cursor-pointer block">
+          <a href="mailto:hi@rohanpothuru.com" className="group cursor-pointer block">
             <article className="p-6 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 hover:shadow-sm">
               <h3 className="text-sm font-medium text-zinc-900 dark:text-white mb-2">
                 Let&apos;s connect

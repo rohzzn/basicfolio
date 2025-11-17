@@ -155,9 +155,13 @@ const WhiteboardPage: React.FC = () => {
     };
   }, [loadDrawings, redrawCanvas]);
 
-  // Redraw canvas when strokes change
+  // Redraw canvas when strokes change (debounced for performance)
   useEffect(() => {
-    redrawCanvas();
+    const timeoutId = setTimeout(() => {
+      redrawCanvas();
+    }, 100); // Small delay to batch redraws
+
+    return () => clearTimeout(timeoutId);
   }, [strokes, redrawCanvas, canvasSize]);
 
   // Get mouse/touch position relative to canvas
@@ -222,7 +226,7 @@ const WhiteboardPage: React.FC = () => {
       
       setDragStart({ x: clientX, y: clientY });
     } else if (isDrawing) {
-      // Handle drawing
+      // Handle drawing with optimized performance
       const pos = getCanvasPosition(e);
       const point: DrawingPoint = {
         x: pos.x,
@@ -232,42 +236,45 @@ const WhiteboardPage: React.FC = () => {
         timestamp: Date.now(),
       };
 
-      setCurrentStroke(prev => [...prev, point]);
+      // Add point to current stroke
+      setCurrentStroke(prev => {
+        const newStroke = [...prev, point];
+        
+        // Draw immediately on canvas for instant feedback
+        const canvas = canvasRef.current;
+        if (canvas && prev.length > 0) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.save();
+            ctx.translate(canvasOffset.x, canvasOffset.y);
 
-      // Draw current stroke in real-time
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+            if (isEraser) {
+              ctx.globalCompositeOperation = 'destination-out';
+              ctx.strokeStyle = 'rgba(0,0,0,1)';
+              ctx.lineWidth = ERASER_SIZE;
+            } else {
+              ctx.globalCompositeOperation = 'source-over';
+              ctx.strokeStyle = currentColor;
+              ctx.lineWidth = currentSize;
+            }
+            
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+            const lastPoint = prev[prev.length - 1];
+            ctx.beginPath();
+            ctx.moveTo(lastPoint.x, lastPoint.y);
+            ctx.lineTo(point.x, point.y);
+            ctx.stroke();
 
-      ctx.save();
-      ctx.translate(canvasOffset.x, canvasOffset.y);
-
-      if (isEraser) {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.strokeStyle = 'rgba(0,0,0,1)';
-        ctx.lineWidth = ERASER_SIZE;
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = currentColor;
-        ctx.lineWidth = currentSize;
-      }
-      
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      if (currentStroke.length > 0) {
-        const lastPoint = currentStroke[currentStroke.length - 1];
-        ctx.beginPath();
-        ctx.moveTo(lastPoint.x, lastPoint.y);
-        ctx.lineTo(point.x, point.y);
-        ctx.stroke();
-      }
-
-      ctx.restore();
+            ctx.restore();
+          }
+        }
+        
+        return newStroke;
+      });
     }
-  }, [isDragging, isDrawing, dragStart, getCanvasPosition, currentColor, currentSize, isEraser, currentStroke, canvasOffset]);
+  }, [isDragging, isDrawing, dragStart, getCanvasPosition, currentColor, currentSize, isEraser, canvasOffset]);
 
   // Stop interaction
   const stopInteraction = useCallback(async () => {
@@ -287,10 +294,15 @@ const WhiteboardPage: React.FC = () => {
         timestamp: Date.now(),
       };
 
-      // Add to strokes and save
+      // Add to strokes immediately for UI responsiveness
       setStrokes(prev => [...prev, stroke]);
-      await saveStroke(stroke);
       setCurrentStroke([]);
+      
+      // Save to server asynchronously (don't await to avoid blocking)
+      saveStroke(stroke).catch(error => {
+        console.error('Failed to save stroke:', error);
+        // Could implement retry logic here if needed
+      });
     }
   }, [isDragging, isDrawing, currentStroke, currentColor, currentSize, isEraser, saveStroke]);
 
@@ -377,18 +389,6 @@ const WhiteboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Instructions */}
-      <div className="fixed bottom-4 left-4 lg:left-72 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-xl px-4 py-3 border border-zinc-200 dark:border-zinc-800 shadow-lg max-w-sm">
-        <div className="text-sm text-zinc-700 dark:text-zinc-300">
-          <div className="font-medium mb-1">🎨 Infinite Canvas</div>
-          <div className="text-xs text-zinc-500 dark:text-zinc-400">
-            • Click and drag to draw<br/>
-            • Middle-click and drag to move canvas<br/>
-            • Use eraser to remove strokes<br/>
-            • All drawings are saved automatically
-          </div>
-        </div>
-      </div>
 
       {/* Canvas Container with White Background */}
       <div className="absolute inset-0 bg-white">
@@ -400,7 +400,9 @@ const WhiteboardPage: React.FC = () => {
           style={{
             width: canvasSize.width,
             height: canvasSize.height,
-            cursor: isDragging ? 'grabbing' : isEraser ? 'crosshair' : 'crosshair'
+            cursor: isDragging ? 'grabbing' : isEraser ? 'crosshair' : 'crosshair',
+            imageRendering: 'pixelated', // Optimize rendering
+            willChange: 'transform' // Hint for GPU acceleration
           }}
         />
       </div>

@@ -15,6 +15,11 @@ const hobbies: Hobby[] = [
     href: "/hobbies/strava"
   },
   {
+    title: "Archive",
+    description: "Visual collection of personal moments captured in time.",
+    href: "/hobbies/archive"
+  },
+  {
     title: "Anime",
     description: "My curated collection of watched series and personal ratings.",
     href: "/hobbies/myanimelist"
@@ -68,11 +73,6 @@ const hobbies: Hobby[] = [
     title: "Whiteboard",
     description: "Collaborative drawing canvas where anyone can contribute and create together.",
     href: "/hobbies/whiteboard"
-  },
-  {
-    title: "Archive",
-    description: "Visual collection of personal moments captured in time.",
-    href: "/hobbies/archive"
   }
 ];
 
