@@ -23,12 +23,6 @@ interface HeartAnimation {
   timestamp: number;
 }
 
-interface RippleAnimation {
-  id: string;
-  x: number;
-  y: number;
-  timestamp: number;
-}
 
 // Available images from playground folder - will maintain natural aspect ratios
 const PLAYGROUND_IMAGES = [
@@ -90,7 +84,6 @@ const PlaygroundPage: React.FC = () => {
   const [, setLikes] = useState<PhotoLikes>({});
   const [totalLikes, setTotalLikes] = useState<number>(0);
   const [heartAnimations, setHeartAnimations] = useState<HeartAnimation[]>([]);
-  const [rippleAnimations, setRippleAnimations] = useState<RippleAnimation[]>([]);
   const [maxZIndex, setMaxZIndex] = useState<number>(10);
 
   // Fetch likes from API
@@ -144,21 +137,6 @@ const PlaygroundPage: React.FC = () => {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    // Create ripple animation immediately
-    const rippleId = `ripple-${Date.now()}-${Math.random()}`;
-    const newRipple: RippleAnimation = {
-      id: rippleId,
-      x: centerX,
-      y: centerY,
-      timestamp: Date.now()
-    };
-
-    setRippleAnimations(prev => [...prev, newRipple]);
-
-    // Remove ripple animation after 1 second
-    setTimeout(() => {
-      setRippleAnimations(prev => prev.filter(ripple => ripple.id !== rippleId));
-    }, 1000);
 
     // Add like
     const success = await addLike(itemId);
@@ -350,20 +328,6 @@ const PlaygroundPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ripple Animations */}
-      {rippleAnimations.map((ripple) => (
-        <div
-          key={ripple.id}
-          className="fixed pointer-events-none z-40"
-          style={{
-            left: ripple.x - 30,
-            top: ripple.y - 30,
-            animation: 'rippleExpand 1s ease-out forwards'
-          }}
-        >
-          <div className="w-16 h-16 border-2 border-pink-400 rounded-full opacity-70"></div>
-        </div>
-      ))}
 
       {/* Heart Animations */}
       {heartAnimations.map((heart) => (

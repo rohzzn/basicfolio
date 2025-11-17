@@ -42,21 +42,6 @@ body {
   }
 }
 
-/* Ripple Animation for Double-Click */
-@keyframes rippleExpand {
-  0% {
-    transform: scale(0.5);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.4;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
 
 /* Original 3D Book Animation from techprep-gh */
 .perspective-900 {
