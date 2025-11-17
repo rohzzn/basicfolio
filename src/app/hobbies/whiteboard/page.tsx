@@ -42,7 +42,6 @@ const ERASER_SIZE = 8;
 
 const WhiteboardPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const miniMapRef = useRef<HTMLCanvasElement>(null);
   
   const [isDrawing, setIsDrawing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -55,7 +54,6 @@ const WhiteboardPage: React.FC = () => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [zoom, setZoom] = useState(1);
-  const [showMiniMap, setShowMiniMap] = useState(false);
 
   // Load existing drawings from API
   const loadDrawings = useCallback(async () => {
@@ -85,86 +83,6 @@ const WhiteboardPage: React.FC = () => {
     }
   }, []);
 
-  // Simplified mini-map update - only for completed strokes
-  const updateMiniMap = useCallback(() => {
-    const miniMapCanvas = miniMapRef.current;
-    if (!miniMapCanvas || strokes.length === 0) return;
-
-    const ctx = miniMapCanvas.getContext('2d');
-    if (!ctx) return;
-
-    // Clear mini-map with white background
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, miniMapCanvas.width, miniMapCanvas.height);
-
-    // Calculate bounds of completed strokes only
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    
-    strokes.forEach(stroke => {
-      stroke.points.forEach(point => {
-        minX = Math.min(minX, point.x);
-        minY = Math.min(minY, point.y);
-        maxX = Math.max(maxX, point.x);
-        maxY = Math.max(maxY, point.y);
-      });
-    });
-
-    if (minX === Infinity) return;
-
-    // Simple padding
-    const padding = 100;
-    minX -= padding;
-    minY -= padding;
-    maxX += padding;
-    maxY += padding;
-
-    // Calculate scale
-    const contentWidth = maxX - minX;
-    const contentHeight = maxY - minY;
-    const scaleX = miniMapCanvas.width / contentWidth;
-    const scaleY = miniMapCanvas.height / contentHeight;
-    const scale = Math.min(scaleX, scaleY, 0.1);
-
-    // Center content
-    const offsetX = (miniMapCanvas.width - contentWidth * scale) / 2 - minX * scale;
-    const offsetY = (miniMapCanvas.height - contentHeight * scale) / 2 - minY * scale;
-
-    ctx.save();
-    ctx.translate(offsetX, offsetY);
-    ctx.scale(scale, scale);
-
-    // Draw completed strokes only
-    strokes.forEach(stroke => {
-      if (stroke.points.length < 2 || stroke.color === 'ERASER') return;
-
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = stroke.color;
-      ctx.lineWidth = Math.max(stroke.size * 0.5, 1);
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      ctx.beginPath();
-      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-      
-      for (let i = 1; i < stroke.points.length; i++) {
-        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
-      }
-      
-      ctx.stroke();
-    });
-
-    ctx.restore();
-
-    // Simple viewport indicator
-    const viewportX = (-canvasOffset.x / zoom) * scale + offsetX;
-    const viewportY = (-canvasOffset.y / zoom) * scale + offsetY;
-    const viewportWidth = (canvasSize.width / zoom) * scale;
-    const viewportHeight = (canvasSize.height / zoom) * scale;
-
-    ctx.strokeStyle = '#3B82F6';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(viewportX, viewportY, viewportWidth, viewportHeight);
-  }, [strokes, canvasOffset, zoom, canvasSize]);
 
   // Redraw entire canvas with zoom support
   const redrawCanvas = useCallback(() => {
@@ -212,15 +130,11 @@ const WhiteboardPage: React.FC = () => {
 
     // Restore context
     ctx.restore();
-    
-    // Update mini-map
-    updateMiniMap();
-  }, [strokes, canvasOffset, zoom, updateMiniMap]);
+  }, [strokes, canvasOffset, zoom]);
 
   // Initialize canvas and load existing drawings
   useEffect(() => {
     const canvas = canvasRef.current;
-    const miniMapCanvas = miniMapRef.current;
     if (!canvas) return;
 
     const updateCanvasSize = () => {
@@ -230,12 +144,6 @@ const WhiteboardPage: React.FC = () => {
       setCanvasSize({ width, height });
       canvas.width = width;
       canvas.height = height;
-      
-      // Setup mini-map
-      if (miniMapCanvas) {
-        miniMapCanvas.width = 200;
-        miniMapCanvas.height = 150;
-      }
       
       // Redraw all strokes after resize
       redrawCanvas();
@@ -258,6 +166,7 @@ const WhiteboardPage: React.FC = () => {
 
     return () => clearTimeout(timeoutId);
   }, [strokes, redrawCanvas, canvasSize]);
+
 
   // Get mouse/touch position relative to canvas with zoom support
   const getCanvasPosition = useCallback((e: MouseEvent | TouchEvent) => {
@@ -343,7 +252,6 @@ const WhiteboardPage: React.FC = () => {
       }));
       
       setDragStart({ x: clientX, y: clientY });
-      setShowMiniMap(true); // Show mini-map when dragging
     } else if (isDrawing) {
       // Handle drawing with immediate feedback - NO LAG
       const pos = getCanvasPosition(e);
@@ -402,8 +310,6 @@ const WhiteboardPage: React.FC = () => {
   const stopInteraction = useCallback(async () => {
     if (isDragging) {
       setIsDragging(false);
-      // Hide mini-map after a delay
-      setTimeout(() => setShowMiniMap(false), 2000);
     }
     
     if (isDrawing && currentStroke.length > 0) {
@@ -556,23 +462,6 @@ const WhiteboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Mini-Map - Top Right */}
-      {showMiniMap && strokes.length > 0 && (
-        <div className="fixed top-4 right-4 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-xl p-3 border border-zinc-200 dark:border-zinc-800 shadow-lg">
-          <div className="text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-2">
-            Mini Map
-          </div>
-          <canvas
-            ref={miniMapRef}
-            className="border border-zinc-200 dark:border-zinc-700 rounded-lg"
-            style={{
-              width: '200px',
-              height: '150px',
-              imageRendering: 'pixelated'
-            }}
-          />
-        </div>
-      )}
 
 
       {/* Canvas Container with White Background */}
