@@ -1,29 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 
 interface PhotoLikes {
   [photoId: string]: number;
 }
 
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+});
+
 const LIKES_KEY = 'playground-likes';
 
-// Read likes from Vercel KV
+// Read likes from Redis
 const readLikes = async (): Promise<PhotoLikes> => {
   try {
-    const likes = await kv.get<PhotoLikes>(LIKES_KEY);
+    const likes = await redis.get<PhotoLikes>(LIKES_KEY);
     return likes || {};
   } catch (error) {
-    console.error('Error reading likes from KV:', error);
+    console.error('Error reading likes from Redis:', error);
     return {};
   }
 };
 
-// Write likes to Vercel KV
+// Write likes to Redis
 const writeLikes = async (likes: PhotoLikes): Promise<void> => {
   try {
-    await kv.set(LIKES_KEY, likes);
+    await redis.set(LIKES_KEY, likes);
   } catch (error) {
-    console.error('Error writing likes to KV:', error);
+    console.error('Error writing likes to Redis:', error);
   }
 };
 

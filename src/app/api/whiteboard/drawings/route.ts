@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 
 interface DrawingPoint {
   x: number;
@@ -22,25 +22,30 @@ interface WhiteboardData {
   lastUpdated: number;
 }
 
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+});
+
 const WHITEBOARD_KEY = 'whiteboard-drawings';
 
-// Read whiteboard data from Vercel KV
+// Read whiteboard data from Redis
 const readWhiteboardData = async (): Promise<WhiteboardData> => {
   try {
-    const data = await kv.get<WhiteboardData>(WHITEBOARD_KEY);
+    const data = await redis.get<WhiteboardData>(WHITEBOARD_KEY);
     return data || { strokes: [], lastUpdated: Date.now() };
   } catch (error) {
-    console.error('Error reading whiteboard data from KV:', error);
+    console.error('Error reading whiteboard data from Redis:', error);
     return { strokes: [], lastUpdated: Date.now() };
   }
 };
 
-// Write whiteboard data to Vercel KV
+// Write whiteboard data to Redis
 const writeWhiteboardData = async (data: WhiteboardData): Promise<void> => {
   try {
-    await kv.set(WHITEBOARD_KEY, data);
+    await redis.set(WHITEBOARD_KEY, data);
   } catch (error) {
-    console.error('Error writing whiteboard data to KV:', error);
+    console.error('Error writing whiteboard data to Redis:', error);
   }
 };
 
