@@ -1,49 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { kv } from '@vercel/kv';
 
 interface PhotoLikes {
   [photoId: string]: number;
 }
 
-const LIKES_FILE = path.join(process.cwd(), 'data', 'playground-likes.json');
+const LIKES_KEY = 'playground-likes';
 
-// Ensure data directory exists
-const ensureDataDir = () => {
-  const dataDir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+// Read likes from Vercel KV
+const readLikes = async (): Promise<PhotoLikes> => {
+  try {
+    const likes = await kv.get<PhotoLikes>(LIKES_KEY);
+    return likes || {};
+  } catch (error) {
+    console.error('Error reading likes from KV:', error);
+    return {};
   }
 };
 
-// Read likes from file
-const readLikes = (): PhotoLikes => {
-  ensureDataDir();
+// Write likes to Vercel KV
+const writeLikes = async (likes: PhotoLikes): Promise<void> => {
   try {
-    if (fs.existsSync(LIKES_FILE)) {
-      const data = fs.readFileSync(LIKES_FILE, 'utf8');
-      return JSON.parse(data);
-    }
+    await kv.set(LIKES_KEY, likes);
   } catch (error) {
-    console.error('Error reading likes file:', error);
-  }
-  return {};
-};
-
-// Write likes to file
-const writeLikes = (likes: PhotoLikes) => {
-  ensureDataDir();
-  try {
-    fs.writeFileSync(LIKES_FILE, JSON.stringify(likes, null, 2));
-  } catch (error) {
-    console.error('Error writing likes file:', error);
+    console.error('Error writing likes to KV:', error);
   }
 };
 
 // GET - Fetch all likes
 export async function GET() {
   try {
-    const likes = readLikes();
+    const likes = await readLikes();
     const totalLikes = Object.values(likes).reduce((sum, count) => sum + count, 0);
     
     return NextResponse.json({
@@ -72,9 +59,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const likes = readLikes();
+    const likes = await readLikes();
     likes[photoId] = (likes[photoId] || 0) + 1;
-    writeLikes(likes);
+    await writeLikes(likes);
 
     const totalLikes = Object.values(likes).reduce((sum, count) => sum + count, 0);
 

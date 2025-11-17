@@ -63,6 +63,11 @@ const hobbies: Hobby[] = [
     title: "Typing",
     description: "Test your typing speed and compare with my 115 WPM record.",
     href: "/hobbies/typing"
+  },
+  {
+    title: "Whiteboard",
+    description: "Collaborative drawing canvas where anyone can contribute and create together.",
+    href: "/hobbies/whiteboard"
   }
 ];
 

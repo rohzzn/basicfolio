@@ -9,6 +9,7 @@ interface DraggableItem {
   y: number;
   src: string;
   alt: string;
+  zIndex: number;
 }
 
 interface PhotoLikes {
@@ -86,10 +87,11 @@ const PlaygroundPage: React.FC = () => {
   }, []);
 
   const [items, setItems] = useState<DraggableItem[]>([]);
-  const [likes, setLikes] = useState<PhotoLikes>({});
+  const [, setLikes] = useState<PhotoLikes>({});
   const [totalLikes, setTotalLikes] = useState<number>(0);
   const [heartAnimations, setHeartAnimations] = useState<HeartAnimation[]>([]);
   const [rippleAnimations, setRippleAnimations] = useState<RippleAnimation[]>([]);
+  const [maxZIndex, setMaxZIndex] = useState<number>(10);
 
   // Fetch likes from API
   const fetchLikes = useCallback(async () => {
@@ -191,7 +193,8 @@ const PlaygroundPage: React.FC = () => {
         x: position.x,
         y: position.y,
         src: img.src,
-        alt: img.alt
+        alt: img.alt,
+        zIndex: 10 + index
       });
     });
     
@@ -208,6 +211,13 @@ const PlaygroundPage: React.FC = () => {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
 
+    // Bring clicked item to top
+    const newZIndex = maxZIndex + 1;
+    setMaxZIndex(newZIndex);
+    setItems(prev => prev.map(i => 
+      i.id === itemId ? { ...i, zIndex: newZIndex } : i
+    ));
+
     const rect = e.currentTarget.getBoundingClientRect();
     setDragOffset({
       x: e.clientX - rect.left,
@@ -220,6 +230,13 @@ const PlaygroundPage: React.FC = () => {
     e.preventDefault();
     const item = items.find(i => i.id === itemId);
     if (!item) return;
+
+    // Bring touched item to top
+    const newZIndex = maxZIndex + 1;
+    setMaxZIndex(newZIndex);
+    setItems(prev => prev.map(i => 
+      i.id === itemId ? { ...i, zIndex: newZIndex } : i
+    ));
 
     const touch = e.touches[0];
     const rect = e.currentTarget.getBoundingClientRect();
@@ -381,11 +398,12 @@ const PlaygroundPage: React.FC = () => {
             className={`
               absolute cursor-move rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-200
               border-2 border-white dark:border-zinc-800
-              ${draggedItem === item.id ? 'z-50 shadow-2xl' : 'z-10'}
+              ${draggedItem === item.id ? 'shadow-2xl' : ''}
             `}
             style={{
               left: item.x,
               top: item.y,
+              zIndex: item.zIndex,
               userSelect: 'none'
             }}
             onMouseDown={(e) => handleMouseDown(e, item.id)}
