@@ -11,6 +11,24 @@ interface DraggableItem {
   alt: string;
 }
 
+interface PhotoLikes {
+  [photoId: string]: number;
+}
+
+interface HeartAnimation {
+  id: string;
+  x: number;
+  y: number;
+  timestamp: number;
+}
+
+interface RippleAnimation {
+  id: string;
+  x: number;
+  y: number;
+  timestamp: number;
+}
+
 // Available images from playground folder - will maintain natural aspect ratios
 const PLAYGROUND_IMAGES = [
   { src: '/images/playground/1.png', alt: 'Personal moment 1' },
@@ -68,6 +86,99 @@ const PlaygroundPage: React.FC = () => {
   }, []);
 
   const [items, setItems] = useState<DraggableItem[]>([]);
+  const [likes, setLikes] = useState<PhotoLikes>({});
+  const [totalLikes, setTotalLikes] = useState<number>(0);
+  const [heartAnimations, setHeartAnimations] = useState<HeartAnimation[]>([]);
+  const [rippleAnimations, setRippleAnimations] = useState<RippleAnimation[]>([]);
+
+  // Fetch likes from API
+  const fetchLikes = useCallback(async () => {
+    try {
+      const response = await fetch('/api/playground/likes');
+      if (response.ok) {
+        const data = await response.json();
+        setLikes(data.likes || {});
+        setTotalLikes(data.totalLikes || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching likes:', error);
+    }
+  }, []);
+
+  // Add a like to a photo
+  const addLike = useCallback(async (photoId: string) => {
+    try {
+      const response = await fetch('/api/playground/likes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ photoId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setLikes(data.likes || {});
+        setTotalLikes(data.totalLikes || 0);
+        return true;
+      }
+    } catch (error) {
+      console.error('Error adding like:', error);
+    }
+    return false;
+  }, []);
+
+  // Handle double click to like
+  const handleDoubleClick = useCallback(async (e: React.MouseEvent, itemId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Prevent dragging when double-clicking
+    setDraggedItem(null);
+    setDragOffset({ x: 0, y: 0 });
+
+    // Get click position relative to the image
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Create ripple animation immediately
+    const rippleId = `ripple-${Date.now()}-${Math.random()}`;
+    const newRipple: RippleAnimation = {
+      id: rippleId,
+      x: centerX,
+      y: centerY,
+      timestamp: Date.now()
+    };
+
+    setRippleAnimations(prev => [...prev, newRipple]);
+
+    // Remove ripple animation after 1 second
+    setTimeout(() => {
+      setRippleAnimations(prev => prev.filter(ripple => ripple.id !== rippleId));
+    }, 1000);
+
+    // Add like
+    const success = await addLike(itemId);
+    
+    if (success) {
+      // Create heart animation
+      const heartId = `heart-${Date.now()}-${Math.random()}`;
+      const newHeart: HeartAnimation = {
+        id: heartId,
+        x: centerX,
+        y: centerY,
+        timestamp: Date.now()
+      };
+
+      setHeartAnimations(prev => [...prev, newHeart]);
+
+      // Remove heart animation after 2 seconds
+      setTimeout(() => {
+        setHeartAnimations(prev => prev.filter(heart => heart.id !== heartId));
+      }, 2000);
+    }
+  }, [addLike]);
 
   // Initialize items with distributed positions on mount
   useEffect(() => {
@@ -85,7 +196,8 @@ const PlaygroundPage: React.FC = () => {
     });
     
     setItems(initialItems);
-  }, [getDistributedPosition]);
+    fetchLikes(); // Fetch likes when component mounts
+  }, [getDistributedPosition, fetchLikes]);
 
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -197,6 +309,60 @@ const PlaygroundPage: React.FC = () => {
         }}
       />
       
+      {/* Heart Counter */}
+      <div className="fixed top-4 right-4 z-50 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-full px-4 py-2 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+        <div className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="text-red-500 text-lg">❤️</span>
+          <span>{totalLikes.toLocaleString()}</span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">total loves</span>
+        </div>
+      </div>
+
+      {/* Instructions */}
+      <div className="fixed bottom-4 left-4 lg:left-72 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-xl px-4 py-3 border border-zinc-200 dark:border-zinc-800 shadow-lg max-w-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm">❤️</span>
+            </div>
+          </div>
+          <div className="text-sm text-zinc-700 dark:text-zinc-300">
+            <div className="font-medium">Double-click any photo</div>
+            <div className="text-xs text-zinc-500 dark:text-zinc-400">to show some love</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Ripple Animations */}
+      {rippleAnimations.map((ripple) => (
+        <div
+          key={ripple.id}
+          className="fixed pointer-events-none z-40"
+          style={{
+            left: ripple.x - 30,
+            top: ripple.y - 30,
+            animation: 'rippleExpand 1s ease-out forwards'
+          }}
+        >
+          <div className="w-16 h-16 border-2 border-pink-400 rounded-full opacity-70"></div>
+        </div>
+      ))}
+
+      {/* Heart Animations */}
+      {heartAnimations.map((heart) => (
+        <div
+          key={heart.id}
+          className="fixed pointer-events-none z-50"
+          style={{
+            left: heart.x - 16,
+            top: heart.y - 16,
+            animation: 'heartFloat 2s ease-out forwards'
+          }}
+        >
+          <div className="text-3xl drop-shadow-lg animate-pulse">❤️</div>
+        </div>
+      ))}
+
       {/* Content Container */}
       <div 
         ref={containerRef}
@@ -224,6 +390,7 @@ const PlaygroundPage: React.FC = () => {
             }}
             onMouseDown={(e) => handleMouseDown(e, item.id)}
             onTouchStart={(e) => handleTouchStart(e, item.id)}
+            onDoubleClick={(e) => handleDoubleClick(e, item.id)}
           >
             <Image
               src={item.src}
@@ -243,6 +410,7 @@ const PlaygroundPage: React.FC = () => {
               priority
               unoptimized
             />
+            
           </div>
         ))}
 

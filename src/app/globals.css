@@ -26,6 +26,38 @@ body {
 
 /* Default cursor styles restored */
 
+/* Heart Animation for Playground */
+@keyframes heartFloat {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.8);
+  }
+}
+
+/* Ripple Animation for Double-Click */
+@keyframes rippleExpand {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
 /* Original 3D Book Animation from techprep-gh */
 .perspective-900 {
   perspective: 900px;
