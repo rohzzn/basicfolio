@@ -60,6 +60,16 @@ const ProjectCard = ({ project }: { project: Project }) => {
               src
             </button>
           )}
+          
+          {/* Pre-AI indicator - appears similar to src */}
+          {project.metrics?.preAI && (
+            <span
+              className="text-zinc-400 transition-all text-xs opacity-0 group-hover:opacity-100 ml-2"
+              title="Made before AI was a thing"
+            >
+              I MADE THIS BEFORE AI WAS A THING
+            </span>
+          )}
         </div>
         
         <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
@@ -83,6 +93,9 @@ const Projects = () => {
         { label: "GitHub", url: "https://github.com/rohzzn/wordle" },
         { label: "Live", url: "https://rohzzn.github.io/wordle/" },
       ],
+      metrics: {
+        preAI: true
+      },
       image: "/projects/wordle.png"
     },
     {
@@ -237,6 +250,7 @@ const Projects = () => {
       ],
       metrics: {
         users: 20,
+        preAI: true
       },
       image: "/projects/scrapetron.png"
     },
@@ -454,6 +468,7 @@ const Projects = () => {
       ],
       metrics: {
         visits: 2200,
+        preAI: true
       },
       image: "/projects/thumbnail_downloader.png"
     },
@@ -468,6 +483,7 @@ const Projects = () => {
       ],
       metrics: {
         visits: 4000,
+        preAI: true
       },
       image: "/projects/mcutimeline.png"
     },
@@ -507,7 +523,8 @@ const Projects = () => {
         { label: "Live Demo", url: "https://portfolio-calatops-projects.vercel.app/" },
       ],
       metrics: {
-        visits: 2300
+        visits: 2300,
+        preAI: true
       },
       image: "/projects/portfolio-v5.png"
     },
@@ -521,7 +538,8 @@ const Projects = () => {
         { label: "Live Demo", url: "https://rohzzn.github.io/windows95/" },
       ],
       metrics: {
-        visits: 1200
+        visits: 1200,
+        preAI: true
       },
       image: "/projects/portfolio-v4.png"
     },
@@ -535,7 +553,8 @@ const Projects = () => {
         { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v3/" },
       ],
       metrics: {
-        visits: 1300
+        visits: 1300,
+        preAI: true
       },
       image: "/projects/portfolio-v3.png"
     },
@@ -549,7 +568,8 @@ const Projects = () => {
         { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v2/" },
       ],
       metrics: {
-        visits: 7000
+        visits: 7000,
+        preAI: true
       },
       image: "/projects/portfolio-v2.png"
     },
@@ -563,7 +583,8 @@ const Projects = () => {
         { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v1/" },
       ],
       metrics: {
-        visits: 500
+        visits: 500,
+        preAI: true
       },
       image: "/projects/portfolio-v1.png"
     }
