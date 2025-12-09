@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Command } from 'cmdk';
 import { useRouter } from 'next/navigation';
 import './CommandPalette.css';
@@ -31,38 +31,48 @@ import {
   History
 } from 'lucide-react';
 
-interface CommandPaletteProps {
-  links?: {
-    title: string;
-    href: string;
-    icon?: React.ReactNode;
-    keywords?: string[];
-    shortcut?: string;
-  }[];
+interface BaseItem {
+  title: string;
+  href?: string;
+  icon?: React.ReactNode;
+  keywords?: string[];
+  shortcut?: string;
 }
 
-const defaultLinks = [
+interface CommandPaletteProps {
+  links?: BaseItem[];
+}
+
+const mainLinks: BaseItem[] = [
   { title: 'Home', href: '/', icon: <Home className="w-4 h-4" />, keywords: ['about', 'main', 'index'] },
   { title: 'Projects', href: '/projects', icon: <Code className="w-4 h-4" />, keywords: ['work', 'portfolio', 'code'] },
   { title: 'Writing', href: '/writing', icon: <FileText className="w-4 h-4" />, keywords: ['blog', 'articles', 'posts'] },
+  { title: 'Hobbies', href: '/hobbies', icon: <Sparkles className="w-4 h-4" />, keywords: ['interests', 'fun', 'activities'] },
   { title: 'Links', href: '/links', icon: <Link2 className="w-4 h-4" />, keywords: ['social', 'contact', 'networks'] },
   { title: 'Timeline', href: '/timeline', icon: <Clock className="w-4 h-4" />, keywords: ['history', 'experience'] },
   { title: 'Resume', href: '/stack', icon: <Laptop className="w-4 h-4" />, keywords: ['technology', 'tools'] },
   { title: 'Focus', href: '/focus', icon: <Clock className="w-4 h-4" />, keywords: ['pomodoro', 'timer'], shortcut: 'F' },
-  // Hobby pages
+  { title: 'About', href: '/about', icon: <User className="w-4 h-4" />, keywords: ['profile', 'bio', 'personal'] },
+  { title: 'Guestbook', href: '/guestbook', icon: <Bookmark className="w-4 h-4" />, keywords: ['comments', 'visitor', 'messages'] },
+];
+
+const hobbyLinks: BaseItem[] = [
   { title: 'Activities', href: '/hobbies/strava', icon: <Activity className="w-4 h-4" />, keywords: ['strava', 'workout', 'running'] },
+  { title: 'Archive', href: '/hobbies/archive', icon: <FileText className="w-4 h-4" />, keywords: ['photos', 'gallery', 'memories'] },
   { title: 'Anime', href: '/hobbies/myanimelist', icon: <Film className="w-4 h-4" />, keywords: ['myanimelist', 'anime', 'shows'] },
   { title: 'Books', href: '/hobbies/readings', icon: <BookOpen className="w-4 h-4" />, keywords: ['reading', 'books', 'literature'] },
   { title: 'Content', href: '/hobbies/content', icon: <Youtube className="w-4 h-4" />, keywords: ['youtube', 'videos', 'content'] },
   { title: 'Designs', href: '/hobbies/art', icon: <PenTool className="w-4 h-4" />, keywords: ['art', 'design', 'creative'] },
   { title: 'Gaming', href: '/hobbies/games', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['games', 'gaming', 'steam'] },
+  { title: 'Gaming Clips', href: '/hobbies/clips', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['clips', 'highlights', 'videos'] },
   { title: 'Hackathons', href: '/hobbies/hackathons', icon: <Code className="w-4 h-4" />, keywords: ['hackathon', 'competition', 'coding'] },
   { title: 'Music', href: '/hobbies/music', icon: <Music className="w-4 h-4" />, keywords: ['songs', 'playlist', 'spotify'] },
   { title: 'Setup', href: '/hobbies/uses', icon: <Laptop className="w-4 h-4" />, keywords: ['setup', 'workspace', 'tools'] },
   { title: 'Typing', href: '/hobbies/typing', icon: <Keyboard className="w-4 h-4" />, keywords: ['typing', 'speed', 'test'] },
-  { title: 'About', href: '/about', icon: <User className="w-4 h-4" />, keywords: ['profile', 'bio', 'personal'] },
-  { title: 'Guestbook', href: '/guestbook', icon: <Bookmark className="w-4 h-4" />, keywords: ['comments', 'visitor', 'messages'] },
+  { title: 'Whiteboard', href: '/hobbies/whiteboard', icon: <PenTool className="w-4 h-4" />, keywords: ['drawing', 'canvas', 'collaborative'] },
 ];
+
+const defaultLinks: BaseItem[] = [...mainLinks, ...hobbyLinks];
 
 interface QuickLink {
   title: string;
@@ -125,6 +135,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
   const [pages, setPages] = useState<string[]>([]);
   const [recentCommands, setRecentCommands] = useState<RecentCommand[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   
   const allItems = useMemo(() => {
     return [...links, ...quickLinks];
@@ -241,6 +252,13 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
     }
   }, [open]);
 
+  // Focus the search input when the palette opens for smooth keyboard navigation
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [open]);
+
   const isMac = useMemo(() => {
     if (typeof window === 'undefined' || !isMounted) return false;
     return navigator.platform.toLowerCase().includes('mac');
@@ -347,13 +365,13 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
         />
       )}
 
-      <Command.Dialog
-        open={open}
-        onOpenChange={setOpen}
-        label="Command Menu"
-        filter={customFilter}
-        className="fixed top-[20%] left-1/2 transform -translate-x-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-50 transition-all"
-      >
+      {open && (
+        <Command
+          label="Command Menu"
+          filter={customFilter}
+          loop
+          className="fixed top-[20%] left-1/2 transform -translate-x-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-50 transition-all"
+        >
         {/* Hidden title for accessibility */}
         <div className="sr-only">
           <h2>Command Menu</h2>
@@ -369,6 +387,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
           )}
           <Search className="w-4 h-4 mr-2 text-zinc-500 dark:text-zinc-400" />
           <Command.Input
+            ref={inputRef}
             value={inputValue}
             onValueChange={setInputValue}
             placeholder={currentPageTitle ? `Search in ${currentPageTitle}...` : "Search pages, features, navigation..."}
@@ -405,8 +424,8 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
                 </>
               )}
 
-              <Command.Group heading="Pages" className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
-                {links.map((link) => (
+              <Command.Group heading="Go to" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+                {mainLinks.map((link) => (
                   <Command.Item
                     key={link.href}
                     value={`${link.title} ${link.keywords?.join(' ')}`}
@@ -427,9 +446,25 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
                 ))}
               </Command.Group>
 
+              <Command.Group heading="Hobbies" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2 mt-1">
+                {hobbyLinks.map((link) => (
+                  <Command.Item
+                    key={link.href}
+                    value={`${link.title} ${link.keywords?.join(' ')}`}
+                    onSelect={() => handleSelect(link.title)}
+                    className="flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
+                  >
+                    <div className="flex items-center gap-2">
+                      {link.icon || <div className="w-4 h-4" />}
+                      <span>{link.title}</span>
+                    </div>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+
               <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
 
-              <Command.Group heading="Actions" className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+              <Command.Group heading="Quick actions & socials" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
                 {quickLinks.map((item, index) => (
                   <Command.Item
                     key={index}
@@ -491,7 +526,8 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
             </div>
           </div>
         </Command.List>
-      </Command.Dialog>
+      </Command>
+      )}
     </>
   );
 } 

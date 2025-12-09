@@ -764,7 +764,7 @@ const MusicPage: React.FC = () => {
     } else if (lowerName.includes('desi')) {
       return 'telugu / tamil / hindi';
     } else if (lowerName.includes('her') && trackCount < 50) {
-      return 'lil romantic / lil sad';
+      return 'lil romantic';
     } else if (lowerName.includes('low fidelity') || lowerName.includes('lo-fi') || lowerName.includes('lofi')) {
       return 'chill / study / ambient';
     } else if (lowerName.includes('adrenaline') || lowerName.includes('energy') || lowerName.includes('pump')) {
