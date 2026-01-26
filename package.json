@@ -20,7 +20,7 @@
     "framer-motion": "^12.14.0",
     "googleapis": "^149.0.0",
     "lucide-react": "^0.468.0",
-    "next": "15.1.0",
+    "next": "15.1.11",
     "next-auth": "^4.24.11",
     "prisma": "^6.1.0",
     "react": "^19.0.0",
