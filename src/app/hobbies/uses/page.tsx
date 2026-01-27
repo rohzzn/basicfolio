@@ -13,20 +13,40 @@ interface Setup {
 
 const setup: Setup[] = [
   {
-    category: "Desk & Devices",
+    category: "On the Desk",
     items: [
-      { name: 'MacBook Air 13" ', description: 'M2, 8GB RAM, 128GB SSD', url: 'https://www.apple.com/macbook-air-m2/' },
-      { name: 'MacBook Pro 14" M3 Pro', description: 'Work Laptop', url: 'https://www.apple.com/macbook-pro-14-and-16/' },    
-      { name: "Koorui 27\" 300Hz", description: "Gaming Monitor", url: "https://www.amazon.com/dp/B0BQJBQZQX" },
+      // Screens
+      { name: "Koorui 27\" 300Hz", description: "Main Monitor", url: "https://www.amazon.com/dp/B0BQJBQZQX" },
       { name: "BenQ Mobiuz 27\" 165Hz", description: "Old Monitor", url: "https://www.benq.com/en-us/monitor/gaming/ex270qm.html" },
-      { name: "GTRACING Gaming Chair", description: "Ergonomic Gaming Chair", url: "https://www.gtracingchair.com/" },
-      { name: "Insta360 Link 2", description: "4K PTZ Webcam with AI tracking", url: "https://www.amazon.com/Insta360-Link-Tracking-Noise-Canceling-Streaming/dp/B0FPR2G17Z?th=1" },
-      { name: "iPad 10th Gen", description: "Tablet for Design & Notes", url: "https://www.apple.com/ipad-10.9/" },
-      { name: "Steam Deck OLED", description: "Handheld Gaming", url: "https://store.steampowered.com/steamdeck" }
+
+      // Devices
+      { name: 'MacBook Air 13" M2 Air', description: "Personal Laptop", url: "https://www.apple.com/macbook-air-m2/" },
+      { name: 'MacBook Pro 14" M3 Pro', description: "Work Laptop", url: "https://www.apple.com/macbook-pro-14-and-16/" },
+      { name: "iPad 10th Gen", description: "Design & Notes", url: "https://www.apple.com/ipad-10.9/" },
+      { name: "Steam Deck OLED", description: "Handheld Gaming", url: "https://store.steampowered.com/steamdeck" },
+
+      // Desk gear
+      { name: "Insta360 Link 2", description: "4K Webcam", url: "https://www.amazon.com/Insta360-Link-Tracking-Noise-Canceling-Streaming/dp/B0FPR2G17Z?th=1" },
+
+      // Peripherals
+      { name: "Razer Viper V3 Pro", description: "Mouse", url: "https://www.razer.com/gaming-mice/razer-viper-v3-pro" },
+      { name: "Razer DeathAdder V2", description: "Mouse", url: "https://www.razer.com/gaming-mice/razer-deathadder-v2" },
+      { name: "Glorious Model O", description: "Wired Mouse", url: "https://www.gloriousgaming.com/products/glorious-model-o-black" },
+      { name: "Keychron K8", description: "Gateron Brown Wireless Keyboard", url: "https://www.keychron.com/products/keychron-k8-wireless-mechanical-keyboard" },
+      { name: "GK61", description: "Gateron Brown Keyboard", url: "https://www.amazon.com/dp/B07JBQZPX6" },
+
+      // Audio
+      { name: "HyperX Cloud 2", description: "Wireless Headset", url: "https://www.hyperxgaming.com/us/headsets/cloud-flight-wireless-gaming-headset" },
+      { name: "Apple EarPods", description: "Earphones", url: "https://www.apple.com/us/shop/product/MMTN2AM/A/earpods-with-35-mm-headphone-plug" },
+      { name: "HyperX SoloCast", description: "Microphone", url: "https://www.hyperxgaming.com/us/microphones/hyperx-solocast-usb-microphone" },
+
+      // Mousepads
+      { name: "Artisan FX Zero XSOFT", description: "Mousepad", url: "https://www.artisan-jp.com/fx-zero-eng.html" },
+      { name: "Razer Gigantus", description: "Mousepad", url: "https://www.razer.com/gaming-mouse-mats/razer-gigantus-v2" }
     ]
   },
   {
-    category: "Custom PC (Specs)",
+    category: "PC Specs",
     items: [
       {
         name: "Motherboard",
@@ -59,26 +79,7 @@ const setup: Setup[] = [
     ],
   },
   {
-    category: "Peripherals",
-    items: [
-      { name: "Razer Viper V3 Pro", description: "Primary Gaming Mouse", url: "https://www.razer.com/gaming-mice/razer-viper-v3-pro" },
-      { name: "Razer DeathAdder V2", description: "Secondary Mouse", url: "https://www.razer.com/gaming-mice/razer-deathadder-v2" },
-      { name: "Glorious Model O", description: "Old Gaming Mouse", url: "https://www.gloriousgaming.com/products/glorious-model-o-black" },
-      { name: "Logitech G102", description: "Budget Gaming Mouse", url: "https://www.logitechg.com/en-us/products/gaming-mice/g102-lightsync-rgb-gaming-mouse.html" },
-      { name: "Keychron K8", description: "Wireless Mechanical Keyboard", url: "https://www.keychron.com/products/keychron-k8-wireless-mechanical-keyboard" },
-      { name: "GK61 (Gateron Browns)", description: "Old 60% Mechanical Keyboard", url: "https://www.amazon.com/dp/B07JBQZPX6" },
-      { name: "HyperX Cloud 2 (Wireless)", description: "Primary Gaming Headset", url: "https://www.hyperxgaming.com/us/headsets/cloud-flight-wireless-gaming-headset" },
-      { name: "Apple EarPods", description: "Wired Earphones", url: "https://www.apple.com/us/shop/product/MMTN2AM/A/earpods-with-35-mm-headphone-plug" },
-      { name: "Razer Kraken", description: "Old Gaming Headset", url: "https://www.razer.com/gaming-headsets/razer-kraken" },
-      { name: "HyperX Cloud 2 (Wireless)", description: "Gaming Headset", url: "https://www.hyperxgaming.com/us/headsets/cloud-gaming-headset" },
-      { name: "HyperX SoloCast", description: "USB Microphone", url: "https://www.hyperxgaming.com/us/microphones/hyperx-solocast-usb-microphone" },
-      { name: "Blue Snowball", description: "Old USB Microphone", url: "https://www.bluemic.com/en-us/products/snowball/" },
-      { name: "Artisan FX Zero XSOFT", description: "Premium Gaming Mousepad", url: "https://www.artisan-jp.com/fx-zero-eng.html" },
-      { name: "Razer Gigantus", description: "Large Gaming Mousepad", url: "https://www.razer.com/gaming-mouse-mats/razer-gigantus-v2" }
-    ]
-  },
-  {
-    category: "Development Tools",
+    category: "Dev Tools",
     items: [
       { name: "Visual Studio Code", description: "Primary Editor", url: "https://code.visualstudio.com" },
       { name: "Warp", description: "Terminal", url: "https://www.warp.dev/" },
@@ -105,7 +106,7 @@ const setup: Setup[] = [
     ]
   },
   {
-    category: "Bookmarks (Cool Finds)",
+    category: "Bookmarks",
     items: [
       { name: "Shorts.so", description: "Screenshot Editor", url: "https://shorts.so/" },
       { name: "Globe Explorer", description: "Fun Visualizations", url: "https://explorer.globe.engineer/" },
