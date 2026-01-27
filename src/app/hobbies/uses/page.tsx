@@ -15,10 +15,10 @@ const setup: Setup[] = [
   {
     category: "Desk & Devices",
     items: [
-      { name: 'MacBook Air 13" (2022) (Home Server)', description: 'M2, 8GB RAM, 128GB SSD', url: 'https://www.apple.com/macbook-air-m2/' },
+      { name: 'MacBook Air 13" ', description: 'M2, 8GB RAM, 128GB SSD', url: 'https://www.apple.com/macbook-air-m2/' },
       { name: 'MacBook Pro 14" M3 Pro', description: 'Work Laptop', url: 'https://www.apple.com/macbook-pro-14-and-16/' },    
       { name: "Koorui 27\" 300Hz", description: "Gaming Monitor", url: "https://www.amazon.com/dp/B0BQJBQZQX" },
-      { name: "BenQ Mobiuz 27\" 165Hz", description: "Secondary Monitor", url: "https://www.benq.com/en-us/monitor/gaming/ex270qm.html" },
+      { name: "BenQ Mobiuz 27\" 165Hz", description: "Old Monitor", url: "https://www.benq.com/en-us/monitor/gaming/ex270qm.html" },
       { name: "GTRACING Gaming Chair", description: "Ergonomic Gaming Chair", url: "https://www.gtracingchair.com/" },
       { name: "Insta360 Link 2", description: "4K PTZ Webcam with AI tracking", url: "https://www.amazon.com/Insta360-Link-Tracking-Noise-Canceling-Streaming/dp/B0FPR2G17Z?th=1" },
       { name: "iPad 10th Gen", description: "Tablet for Design & Notes", url: "https://www.apple.com/ipad-10.9/" },
@@ -63,16 +63,16 @@ const setup: Setup[] = [
     items: [
       { name: "Razer Viper V3 Pro", description: "Primary Gaming Mouse", url: "https://www.razer.com/gaming-mice/razer-viper-v3-pro" },
       { name: "Razer DeathAdder V2", description: "Secondary Mouse", url: "https://www.razer.com/gaming-mice/razer-deathadder-v2" },
-      { name: "Glorious Model O", description: "Lightweight Gaming Mouse", url: "https://www.gloriousgaming.com/products/glorious-model-o-black" },
+      { name: "Glorious Model O", description: "Old Gaming Mouse", url: "https://www.gloriousgaming.com/products/glorious-model-o-black" },
       { name: "Logitech G102", description: "Budget Gaming Mouse", url: "https://www.logitechg.com/en-us/products/gaming-mice/g102-lightsync-rgb-gaming-mouse.html" },
       { name: "Keychron K8", description: "Wireless Mechanical Keyboard", url: "https://www.keychron.com/products/keychron-k8-wireless-mechanical-keyboard" },
-      { name: "GK61 (Gateron Browns)", description: "60% Mechanical Keyboard", url: "https://www.amazon.com/dp/B07JBQZPX6" },
+      { name: "GK61 (Gateron Browns)", description: "Old 60% Mechanical Keyboard", url: "https://www.amazon.com/dp/B07JBQZPX6" },
       { name: "HyperX Cloud 2 (Wireless)", description: "Primary Gaming Headset", url: "https://www.hyperxgaming.com/us/headsets/cloud-flight-wireless-gaming-headset" },
       { name: "Apple EarPods", description: "Wired Earphones", url: "https://www.apple.com/us/shop/product/MMTN2AM/A/earpods-with-35-mm-headphone-plug" },
-      { name: "Razer Kraken", description: "Gaming Headset", url: "https://www.razer.com/gaming-headsets/razer-kraken" },
-      { name: "HyperX Cloud", description: "Gaming Headset", url: "https://www.hyperxgaming.com/us/headsets/cloud-gaming-headset" },
+      { name: "Razer Kraken", description: "Old Gaming Headset", url: "https://www.razer.com/gaming-headsets/razer-kraken" },
+      { name: "HyperX Cloud 2 (Wireless)", description: "Gaming Headset", url: "https://www.hyperxgaming.com/us/headsets/cloud-gaming-headset" },
       { name: "HyperX SoloCast", description: "USB Microphone", url: "https://www.hyperxgaming.com/us/microphones/hyperx-solocast-usb-microphone" },
-      { name: "Blue Snowball", description: "USB Microphone", url: "https://www.bluemic.com/en-us/products/snowball/" },
+      { name: "Blue Snowball", description: "Old USB Microphone", url: "https://www.bluemic.com/en-us/products/snowball/" },
       { name: "Artisan FX Zero XSOFT", description: "Premium Gaming Mousepad", url: "https://www.artisan-jp.com/fx-zero-eng.html" },
       { name: "Razer Gigantus", description: "Large Gaming Mousepad", url: "https://www.razer.com/gaming-mouse-mats/razer-gigantus-v2" }
     ]
