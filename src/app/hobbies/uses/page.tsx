@@ -13,17 +13,50 @@ interface Setup {
 
 const setup: Setup[] = [
   {
-    category: "Workstation",
+    category: "Desk & Devices",
     items: [
       { name: 'MacBook Air 13" (2022) (Home Server)', description: 'M2, 8GB RAM, 128GB SSD', url: 'https://www.apple.com/macbook-air-m2/' },
       { name: 'MacBook Pro 14" M3 Pro', description: 'Work Laptop', url: 'https://www.apple.com/macbook-pro-14-and-16/' },    
       { name: "Koorui 27\" 300Hz", description: "Gaming Monitor", url: "https://www.amazon.com/dp/B0BQJBQZQX" },
       { name: "BenQ Mobiuz 27\" 165Hz", description: "Secondary Monitor", url: "https://www.benq.com/en-us/monitor/gaming/ex270qm.html" },
       { name: "GTRACING Gaming Chair", description: "Ergonomic Gaming Chair", url: "https://www.gtracingchair.com/" },
-      { name: "Logitech C920", description: "HD Webcam", url: "https://www.logitech.com/en-us/products/webcams/c920-pro-hd-webcam.html" },
+      { name: "Insta360 Link 2", description: "4K PTZ Webcam with AI tracking", url: "https://www.amazon.com/Insta360-Link-Tracking-Noise-Canceling-Streaming/dp/B0FPR2G17Z?th=1" },
       { name: "iPad 10th Gen", description: "Tablet for Design & Notes", url: "https://www.apple.com/ipad-10.9/" },
       { name: "Steam Deck OLED", description: "Handheld Gaming", url: "https://store.steampowered.com/steamdeck" }
     ]
+  },
+  {
+    category: "Custom PC (Specs)",
+    items: [
+      {
+        name: "Motherboard",
+        description: "Gigabyte B650 Gaming X AX V2 (ATX)",
+      },
+      {
+        name: "CPU",
+        description: "AMD Ryzen 7 7700X",
+      },
+      {
+        name: "GPU",
+        description: "NVIDIA GeForce RTX 3060 Ti",
+      },
+      {
+        name: "RAM",
+        description: "Crucial 32 GB (2×16 GB) DDR5-6000 CL36",
+      },
+      {
+        name: "Storage",
+        description: "Crucial 1 TB P3 NVMe Gen4 SSD",
+      },
+      {
+        name: "PSU",
+        description: "Lian Li RB650W 650 W 80+ Bronze (ATX 3.1)",
+      },
+      {
+        name: "Case",
+        description: "NZXT H5 Flow RGB ATX White (2024)",
+      },
+    ],
   },
   {
     category: "Peripherals",
@@ -45,7 +78,7 @@ const setup: Setup[] = [
     ]
   },
   {
-    category: "Development",
+    category: "Development Tools",
     items: [
       { name: "Visual Studio Code", description: "Primary Editor", url: "https://code.visualstudio.com" },
       { name: "Warp", description: "Terminal", url: "https://www.warp.dev/" },
@@ -55,7 +88,7 @@ const setup: Setup[] = [
     ]
   },
   {
-    category: "Apps I Like",
+    category: "Apps I Use",
     items: [
       { name: "Flighty", description: "Flight Tracker", url: "https://www.flightyapp.com/" },
       { name: "Balatro", description: "Poker Roguelike Game", url: "https://store.steampowered.com/app/2379780/Balatro/" },

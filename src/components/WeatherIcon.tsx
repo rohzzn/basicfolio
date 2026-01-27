@@ -20,6 +20,12 @@ const WeatherIcon: React.FC = () => {
     
     const fetchWeather = async () => {
       try {
+        // Skip fetching when offline to avoid noisy console errors
+        if (typeof navigator !== 'undefined' && navigator && navigator.onLine === false) {
+          setLoading(false);
+          return;
+        }
+
         // Get user's IP location first
         const locationResponse = await fetch('https://ipapi.co/json/', {
           method: 'GET',
@@ -71,7 +77,8 @@ const WeatherIcon: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error('Weather fetch failed:', error);
+        // Non-critical: if any of the external services fail, just hide the widget
+        console.warn('Weather fetch failed (non-critical):', error);
       } finally {
         setLoading(false);
       }
