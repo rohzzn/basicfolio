@@ -32,11 +32,11 @@ import {
 } from 'lucide-react';
 
 interface BaseItem {
-  title: string;
+    title: string;
   href?: string;
-  icon?: React.ReactNode;
-  keywords?: string[];
-  shortcut?: string;
+    icon?: React.ReactNode;
+    keywords?: string[];
+    shortcut?: string;
 }
 
 interface CommandPaletteProps {
@@ -367,11 +367,11 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
 
       {open && (
         <Command
-          label="Command Menu"
-          filter={customFilter}
+        label="Command Menu"
+        filter={customFilter}
           loop
-          className="fixed top-[20%] left-1/2 transform -translate-x-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-50 transition-all"
-        >
+        className="fixed top-[20%] left-1/2 transform -translate-x-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-50 transition-all"
+      >
         {/* Hidden title for accessibility */}
         <div className="sr-only">
           <h2>Command Menu</h2>
