@@ -143,7 +143,7 @@ const Stack = () => {
               Rohan Pothuru
             </h1>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
-              Software Engineer & Computer Science Graduate Student
+              Software Engineer
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-xs text-zinc-500 dark:text-zinc-500">
               <span>hi@rohanpothuru.com</span>
