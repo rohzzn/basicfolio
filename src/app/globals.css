@@ -24,6 +24,146 @@ body {
   overflow-x: hidden;
 }
 
+/* E‑reader mode (Konami easter egg) */
+html.e-reader-mode {
+  /* Readable, low-glare palette (WCAG-friendly) */
+  --ereader-bg: #fbf6ea;      /* warm backlight */
+  --ereader-surface: #f4eedf; /* panels/cards */
+  --ereader-fg: #1b1b1b;      /* ink */
+  --ereader-muted: #4b5563;   /* muted ink */
+  --ereader-border: rgba(29, 29, 29, 0.14);
+  --ereader-link: #0f766e;    /* calm teal */
+  --ereader-code-bg: #efe7d6;
+  --ereader-selection: rgba(15, 118, 110, 0.22);
+
+  color-scheme: light;
+  background: var(--ereader-bg);
+}
+
+html.e-reader-mode body {
+  background: var(--ereader-bg) !important;
+  color: var(--ereader-fg) !important;
+
+  /* Typography tuned for long-form reading */
+  font-family: ui-serif, "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, Cambria, "Times New Roman", Times, serif !important;
+  font-size: clamp(16px, 0.95rem + 0.35vw, 19px);
+  line-height: 1.75;
+  letter-spacing: 0.003em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Keep layout width normal (some pages need it), but constrain long text blocks */
+html.e-reader-mode main > div {
+  max-width: 100% !important;
+}
+
+html.e-reader-mode main :is(p, li, blockquote) {
+  max-inline-size: 75ch;
+}
+
+html.e-reader-mode main :is(h1, h2, h3, h4) {
+  max-inline-size: 75ch;
+  text-wrap: balance;
+}
+
+/* Force most hard-coded Tailwind zinc colors into e-reader palette */
+html.e-reader-mode [class*="bg-zinc-"],
+html.e-reader-mode [class*="bg-white"],
+html.e-reader-mode [class*="bg-black"] {
+  background-color: var(--ereader-surface) !important;
+}
+
+html.e-reader-mode [class*="border-zinc-"],
+html.e-reader-mode [class*="ring-zinc-"] {
+  border-color: var(--ereader-border) !important;
+  --tw-ring-color: var(--ereader-border) !important;
+}
+
+html.e-reader-mode [class*="text-zinc-"],
+html.e-reader-mode [class*="text-black"],
+html.e-reader-mode [class*="text-white"] {
+  color: var(--ereader-fg) !important;
+}
+
+/* Preserve “muted” intent for common zinc-muted text */
+html.e-reader-mode [class*="text-zinc-4"],
+html.e-reader-mode [class*="text-zinc-5"],
+html.e-reader-mode [class*="text-zinc-6"] {
+  color: var(--ereader-muted) !important;
+}
+
+html.e-reader-mode a,
+html.e-reader-mode a * {
+  color: var(--ereader-link) !important;
+  text-decoration-color: color-mix(in oklab, var(--ereader-link), transparent 45%);
+}
+
+html.e-reader-mode ::selection {
+  background: var(--ereader-selection);
+}
+
+html.e-reader-mode code,
+html.e-reader-mode pre {
+  background: var(--ereader-code-bg) !important;
+  color: #111827 !important;
+  border-radius: 8px;
+}
+
+html.e-reader-mode pre {
+  border: 1px solid var(--ereader-border);
+}
+
+/* E-reader lighting overlay (subtle top/bottom falloff) */
+.ereader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.ereader-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.00) 62%),
+    radial-gradient(circle at 50% 120%, rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.00) 58%);
+  mix-blend-mode: soft-light;
+  opacity: 0.75;
+}
+
+@media (prefers-contrast: more) {
+  html.e-reader-mode {
+    --ereader-fg: #111111;
+    --ereader-muted: #374151;
+    --ereader-border: rgba(17, 17, 17, 0.18);
+  }
+}
+
+@keyframes easteregg-toast-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -8px) scale(0.98);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0px) scale(1);
+  }
+  82% {
+    opacity: 1;
+    transform: translate(-50%, 0px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -6px) scale(0.99);
+  }
+}
+
+.easteregg-toast {
+  animation: easteregg-toast-pop 3.2s ease-in-out forwards;
+}
+
 /* Default cursor styles restored */
 
 /* Heart Animation for Playground */

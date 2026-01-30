@@ -9,6 +9,7 @@ import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
 import WeatherIcon from './WeatherIcon';
 import DigitalClock from './Clock';
+import EReaderEasterEgg from "./EReaderEasterEgg";
 
 interface NavLinkProps {
   href: string;
@@ -230,6 +231,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
       <CommandPalette />
       <CursorSound />
+      <EReaderEasterEgg />
       
       {isMenuOpen && (
         <div 
