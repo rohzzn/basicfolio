@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 type LeetifyProfile = {
   name?: string;
@@ -42,6 +43,53 @@ function formatSigned(n: number, digits = 2) {
   return n > 0 ? `+${fixed}` : fixed;
 }
 
+function getWingmanRankName(rank: number | null | undefined): string {
+  if (typeof rank !== "number") return "—";
+  const ranks = [
+    "Unranked",
+    "Silver I",
+    "Silver II",
+    "Silver III",
+    "Silver IV",
+    "Silver Elite",
+    "Silver Elite Master",
+    "Gold Nova I",
+    "Gold Nova II",
+    "Gold Nova III",
+    "Gold Nova Master",
+    "Master Guardian I",
+    "Master Guardian II",
+    "Master Guardian Elite",
+    "Distinguished Master Guardian",
+    "Legendary Eagle",
+    "Legendary Eagle Master",
+    "Supreme Master First Class",
+    "The Global Elite",
+  ];
+  if (rank < 0 || rank >= ranks.length) return "—";
+  return ranks[rank];
+}
+
+function getRoleAnalysis(rating: LeetifyProfile["rating"]): string {
+  if (!rating) return "—";
+  const aim = rating.aim ?? 0;
+  const clutch = rating.clutch ?? 0;
+  const opening = rating.opening ?? 0;
+  const utility = rating.utility ?? 0;
+  const positioning = rating.positioning ?? 0;
+
+  const scores = [
+    { role: "Entry Fragger", score: opening * 1.5 + aim },
+    { role: "Lurker", score: clutch * 1.3 + positioning },
+    { role: "Support", score: utility * 1.5 + positioning },
+    { role: "AWPer", score: aim * 1.2 + opening },
+    { role: "IGL", score: utility + positioning * 1.2 },
+  ];
+
+  const top = scores.sort((a, b) => b.score - a.score)[0];
+  return top ? top.role : "All-Rounder";
+}
+
 function asNumber(v: unknown): number | null {
   return typeof v === "number" && !Number.isNaN(v) ? v : null;
 }
@@ -65,26 +113,8 @@ function pickMatchId(m: LeetifyRecentMatch): string | null {
   );
 }
 
-function pickDataSource(m: LeetifyRecentMatch): string | null {
-  return asString(m.data_source) ?? asString(m.dataSource) ?? null;
-}
-
-function pickDataSourceId(m: LeetifyRecentMatch): string | null {
-  return asString(m.data_source_id) ?? asString(m.dataSourceId) ?? null;
-}
-
 function pickMapName(m: LeetifyRecentMatch): string {
   return asString(m.map_name) ?? asString(m.mapName) ?? "Unknown map";
-}
-
-function pickFinishedAt(m: LeetifyRecentMatch): string | null {
-  return (
-    asString(m.finished_at) ??
-    asString(m.finishedAt) ??
-    asString(m.ended_at) ??
-    asString(m.endedAt) ??
-    null
-  );
 }
 
 function getMyPlayerStats(details: MatchDetails, steam64Id: string | undefined) {
@@ -150,16 +180,30 @@ export default function LeetifyProfileCard() {
     };
   }, []);
 
-  const winrateText = useMemo(() => {
-    if (typeof data?.winrate !== "number") return "—";
-    return `${(data.winrate * 100).toFixed(1)}%`;
-  }, [data?.winrate]);
+  const mostPlayedMap = useMemo(() => {
+    if (!matches || matches.length === 0) return "—";
+    const mapCounts: Record<string, number> = {};
+    matches.forEach((m) => {
+      const mapName = pickMapName(m);
+      mapCounts[mapName] = (mapCounts[mapName] || 0) + 1;
+    });
+    const sorted = Object.entries(mapCounts).sort((a, b) => b[1] - a[1]);
+    if (sorted.length === 0) return "—";
+    return sorted[0][0].replace(/^de_/, "").replace(/^cs_/, "").replace(/_/g, " ");
+  }, [matches]);
 
+  // Load matches when user opens the section
+  useEffect(() => {
+    if (!matchesOpen) return;
+    if (matches !== null) return; // Already loaded
+    void loadRecentMatches();
+  }, [matchesOpen]);
+
+  // Auto-fetch match details for enriched cards
   useEffect(() => {
     if (!matchesOpen) return;
     if (!matches || matches.length === 0) return;
 
-    // Fetch details for the first N matches to enrich cards.
     const ids = matches
       .map((m) => pickMatchId(m))
       .filter((x): x is string => Boolean(x))
@@ -196,7 +240,7 @@ export default function LeetifyProfileCard() {
     return () => {
       cancelled = true;
     };
-  }, [matchesOpen, matches, detailsById]);
+  }, [matches, detailsById]);
 
   async function loadRecentMatches() {
     const steam64Id = data?.steam64_id;
@@ -247,6 +291,10 @@ export default function LeetifyProfileCard() {
           <>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Wingman</p>
+                <p className="text-sm font-medium dark:text-white">{getWingmanRankName(data?.ranks?.wingman)}</p>
+              </div>
+              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Premier</p>
                 <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.ranks?.premier)}</p>
               </div>
@@ -255,56 +303,60 @@ export default function LeetifyProfileCard() {
                 <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.ranks?.faceit)}</p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Winrate</p>
-                <p className="text-sm font-medium dark:text-white">{winrateText}</p>
-              </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Total Matches</p>
                 <p className="text-sm font-medium dark:text-white">
                   {typeof data?.total_matches === "number" ? new Intl.NumberFormat().format(data.total_matches) : "—"}
                 </p>
               </div>
 
-              <div className="col-span-2 sm:col-span-4 grid grid-cols-3 gap-3">
+              <div className="col-span-2 sm:col-span-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
                   <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Aim</p>
                   <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.rating?.aim)}</p>
                 </div>
                 <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Positioning</p>
-                  <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.rating?.positioning)}</p>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Most Played</p>
+                  <p className="text-sm font-medium dark:text-white capitalize">{mostPlayedMap}</p>
                 </div>
-                <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Utility</p>
-                  <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.rating?.utility)}</p>
-                </div>
+                <button
+                  onClick={() => setMatchesOpen(!matchesOpen)}
+                  className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3 hover:bg-white/80 dark:hover:bg-zinc-900/30 transition-colors cursor-pointer text-left"
+                >
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Recent Matches</p>
+                  <p className="text-sm font-medium dark:text-white">
+                    {matchesOpen ? "Hide ↑" : "View →"}
+                  </p>
+                </button>
               </div>
             </div>
 
-            <details
-              className="mt-4 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/40 dark:bg-zinc-900/10"
-              onToggle={(e) => {
-                const el = e.currentTarget;
-                setMatchesOpen(el.open);
-                if (el.open) void loadRecentMatches();
-              }}
-            >
-              <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-100">
-                Recent matches
-              </summary>
+            {matchesOpen && (
+              <>
+                {/* Subtle divider */}
+                <div className="mt-6 mb-4 flex items-center gap-3">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-300 dark:via-zinc-600 to-transparent" />
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
+                  </div>
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-300 dark:via-zinc-600 to-transparent" />
+                </div>
 
-              <div className="px-3 pb-3">
                 {matchesLoading ? (
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading recent matches…</p>
-                ) : matchesError ? (
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">Could not load recent matches.</p>
-                ) : !matches || matches.length === 0 ? (
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">No recent matches found.</p>
-                ) : (
-                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="flex items-center justify-center py-8">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-pulse animation-delay-200" />
+                  <div className="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-pulse animation-delay-400" />
+                </div>
+              </div>
+            ) : matchesError ? (
+              <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 py-4">Could not load match history.</p>
+            ) : !matches || matches.length === 0 ? null : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {matches.slice(0, 6).map((m, idx) => {
                       const map = pickMapName(m);
-                      const finishedAt = pickFinishedAt(m);
                       const matchId = pickMatchId(m);
 
                       const details = matchId ? detailsById[matchId] : null;
@@ -346,9 +398,16 @@ export default function LeetifyProfileCard() {
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <p className="text-sm font-semibold text-zinc-900 dark:text-white">{map}</p>
-                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                                {finishedAt ? new Date(finishedAt).toLocaleString() : " "}
-                              </p>
+                              {matchId ? (
+                                <Link
+                                  href={`https://leetify.com/app/match-details/${encodeURIComponent(matchId)}/overview`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[11px] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 underline underline-offset-2"
+                                >
+                                  View details →
+                                </Link>
+                              ) : null}
                             </div>
 
                             <div className="text-right">
@@ -409,10 +468,10 @@ export default function LeetifyProfileCard() {
                         </article>
                       );
                     })}
-                  </div>
-                )}
               </div>
-            </details>
+            )}
+              </>
+            )}
 
           </>
         )}
