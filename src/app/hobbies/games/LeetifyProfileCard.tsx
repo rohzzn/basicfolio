@@ -70,26 +70,6 @@ function getWingmanRankName(rank: number | null | undefined): string {
   return ranks[rank];
 }
 
-function getRoleAnalysis(rating: LeetifyProfile["rating"]): string {
-  if (!rating) return "—";
-  const aim = rating.aim ?? 0;
-  const clutch = rating.clutch ?? 0;
-  const opening = rating.opening ?? 0;
-  const utility = rating.utility ?? 0;
-  const positioning = rating.positioning ?? 0;
-
-  const scores = [
-    { role: "Entry Fragger", score: opening * 1.5 + aim },
-    { role: "Lurker", score: clutch * 1.3 + positioning },
-    { role: "Support", score: utility * 1.5 + positioning },
-    { role: "AWPer", score: aim * 1.2 + opening },
-    { role: "IGL", score: utility + positioning * 1.2 },
-  ];
-
-  const top = scores.sort((a, b) => b.score - a.score)[0];
-  return top ? top.role : "All-Rounder";
-}
-
 function asNumber(v: unknown): number | null {
   return typeof v === "number" && !Number.isNaN(v) ? v : null;
 }
@@ -197,6 +177,7 @@ export default function LeetifyProfileCard() {
     if (!matchesOpen) return;
     if (matches !== null) return; // Already loaded
     void loadRecentMatches();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchesOpen]);
 
   // Auto-fetch match details for enriched cards
@@ -240,7 +221,7 @@ export default function LeetifyProfileCard() {
     return () => {
       cancelled = true;
     };
-  }, [matches, detailsById]);
+  }, [matchesOpen, matches, detailsById]);
 
   async function loadRecentMatches() {
     const steam64Id = data?.steam64_id;
