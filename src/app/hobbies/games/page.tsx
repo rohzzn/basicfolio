@@ -194,11 +194,6 @@ const Games = () => {
         <Profile profile={profile} />
       </section>
 
-      {/* Leetify (CS2) */}
-      <section className="mb-8">
-        <LeetifyProfileCard />
-      </section>
-
       {/* Config Download Card */}
       <section className="mb-8">
         <div className="bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 flex items-center justify-between">
@@ -220,6 +215,11 @@ const Games = () => {
             Download
           </Link>
         </div>
+      </section>
+
+      {/* Leetify (CS2) */}
+      <section className="mb-8">
+        <LeetifyProfileCard />
       </section>
 
       {/* Gaming Content Layout */}
