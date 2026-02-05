@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Profile from './Profile';
+import LeetifyProfileCard from './LeetifyProfileCard';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -191,6 +192,11 @@ const Games = () => {
           </div>
         ) : null}
         <Profile profile={profile} />
+      </section>
+
+      {/* Leetify (CS2) */}
+      <section className="mb-8">
+        <LeetifyProfileCard />
       </section>
 
       {/* Config Download Card */}
