@@ -3,6 +3,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    minimumCacheTTL: 86400, // Cache optimized images for 24 hours to reduce data transfer
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.myanimelist.net' },
       { protocol: 'https', hostname: 'cdn.dribbble.com' },
@@ -19,6 +20,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'i.scdn.co' },
       { protocol: 'https', hostname: 'cdn.discordapp.com' },
       { protocol: 'https', hostname: 'media.discordapp.net' },
+      { protocol: 'https', hostname: 'dcdn.dstn.to' },
       { protocol: 'https', hostname: 'img.icons8.com' },
       { protocol: 'https', hostname: 'i.ytimg.com' },
       { protocol: 'https', hostname: 'yt3.ggpht.com' },

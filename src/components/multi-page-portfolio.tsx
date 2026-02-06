@@ -239,7 +239,6 @@ const ActivityIcon: React.FC<{
       width={40}
       height={40}
       className="rounded-md object-cover flex-shrink-0"
-      unoptimized
       onError={handleImageError}
     />
   );
