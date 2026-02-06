@@ -2,8 +2,16 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
   images: {
     minimumCacheTTL: 86400, // Cache optimized images for 24 hours to reduce data transfer
+    formats: ['image/webp', 'image/avif'],
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.myanimelist.net' },
       { protocol: 'https', hostname: 'cdn.dribbble.com' },

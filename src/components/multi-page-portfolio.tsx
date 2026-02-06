@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo, useCallback } from "react";
 import { Menu, X, Gamepad, Music, Loader2, Focus, Clock, VolumeX } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -61,7 +61,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ href, children }) => {
+const NavLink: React.FC<NavLinkProps> = memo(({ href, children }) => {
   const pathname = usePathname();
   const isActive = pathname === href;
 
@@ -77,7 +77,8 @@ const NavLink: React.FC<NavLinkProps> = ({ href, children }) => {
       {children}
     </Link>
   );
-};
+});
+NavLink.displayName = 'NavLink';
 
 const getStatusColor = (status: string): string => {
   switch (status) {
@@ -123,7 +124,7 @@ const formatElapsedTime = (startTimestamp: number): string => {
   }
 };
 
-const ActivityElapsedTime: React.FC<{ startTimestamp: number }> = ({ startTimestamp }) => {
+const ActivityElapsedTime: React.FC<{ startTimestamp: number }> = memo(({ startTimestamp }) => {
   const [elapsed, setElapsed] = useState(() => formatElapsedTime(startTimestamp));
 
   useEffect(() => {
@@ -138,11 +139,12 @@ const ActivityElapsedTime: React.FC<{ startTimestamp: number }> = ({ startTimest
   }, [startTimestamp]);
 
   return <span>{elapsed}</span>;
-};
+});
+ActivityElapsedTime.displayName = 'ActivityElapsedTime';
 
 const ActivityIcon: React.FC<{ 
   activity: DiscordActivity;
-}> = ({ activity }) => {
+}> = memo(({ activity }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [allImagesFailed, setAllImagesFailed] = useState(false);
   const [smallImageError, setSmallImageError] = useState(false);
@@ -261,7 +263,8 @@ const ActivityIcon: React.FC<{
       )}
     </div>
   );
-};
+});
+ActivityIcon.displayName = 'ActivityIcon';
 
 const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -327,7 +330,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
     };
 
     fetchLanyardData();
-    const interval = setInterval(fetchLanyardData, 30000);
+    const interval = setInterval(fetchLanyardData, 60000); // Poll every 60 seconds instead of 30
     return () => clearInterval(interval);
   }, [discordId]);
 
@@ -365,7 +368,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   }, []);
 
   // Toggle play/pause for background music
-  const togglePlay = async () => {
+  const togglePlay = useCallback(async () => {
     if (audioRef.current) {
       try {
         if (isPlaying) {
@@ -383,7 +386,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         console.error('Error toggling audio:', error);
       }
     }
-  };
+  }, [isPlaying]);
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
@@ -400,7 +403,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
       <button
         id="menu-button"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        onClick={useCallback(() => setIsMenuOpen(prev => !prev), [])}
         className="lg:hidden fixed top-4 right-4 z-50 p-2 text-zinc-600 dark:text-zinc-400 bg-zinc-50/90 dark:bg-zinc-800/90 rounded-md shadow-md backdrop-blur-sm"
         aria-label="Toggle Menu"
       >

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Command } from 'cmdk';
 import { useRouter } from 'next/navigation';
 import './CommandPalette.css';
@@ -202,7 +202,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
   };
 
   // Save a command to recent history
-  const saveToRecents = (title: string, type: 'link' | 'action') => {
+  const saveToRecents = useCallback((title: string, type: 'link' | 'action') => {
     const newRecent: RecentCommand = {
       title,
       type,
@@ -223,7 +223,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
       
       return updated;
     });
-  };
+  }, []);
 
   // Toggle the menu when ⌘K is pressed
   useEffect(() => {
@@ -266,7 +266,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
     return navigator.platform.toLowerCase().includes('mac');
   }, [isMounted]);
 
-  const handleSelect = (value: string) => {
+  const handleSelect = useCallback((value: string) => {
     const item = allItems.find((item) => 
       item.title === value || 
       (item.keywords && item.keywords.some(k => k === value))
@@ -289,24 +289,22 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
       item.action();
       setOpen(false);
     }
-  };
+  }, [allItems, router, saveToRecents]);
 
   // Get recent items with their full details
-  const getRecentItems = () => {
+  const recentItems = useMemo(() => {
     return recentCommands
       .map(recent => {
         const item = allItems.find(item => item.title === recent.title);
         return item ? { ...item, timestamp: recent.timestamp } : null;
       })
       .filter(Boolean) as Array<(typeof allItems[0] & { timestamp: number })>;
-  };
-
-  const recentItems = getRecentItems();
+  }, [recentCommands, allItems]);
   
-  const goBack = () => {
+  const goBack = useCallback(() => {
     setPages(prev => prev.slice(0, -1));
     setInputValue('');
-  };
+  }, []);
 
   return (
     <>
