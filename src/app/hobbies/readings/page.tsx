@@ -10,6 +10,8 @@ interface Book {
 }
 
 const books: Book[] = [
+  { title: "12 Rules for Life", review: "Practical wisdom on order and meaning.", score: 5, cover: "https://covers.openlibrary.org/b/isbn/9780345816023-L.jpg" },
+  { title: "Freakonomics", review: "Unconventional insights into hidden economic forces.", score: 5, cover: "https://covers.openlibrary.org/b/isbn/9780061234002-L.jpg" },
   { title: "The Subtle Art of Not Giving a F*ck", review: "Refreshing honesty about priorities.", score: 4, cover: "https://covers.openlibrary.org/b/isbn/9780062457714-L.jpg" },
   { title: "Shoe Dog", review: "A raw look into Nike's origin.", score: 5, cover: "https://covers.openlibrary.org/b/isbn/9781501135910-L.jpg" },
   { title: "Make Time by Jake Knapp", review: "Tactical tips for focusing on what matters.", score: 4, cover: "https://covers.openlibrary.org/b/isbn/9780525572428-L.jpg" },

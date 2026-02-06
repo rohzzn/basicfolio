@@ -273,7 +273,7 @@ const FocusPage: React.FC = () => {
   useEffect(() => {
     const audio = new Audio('/lofi-background.mp3');
     audio.loop = true;
-    audio.volume = 0.2;
+    audio.volume = 0.74;
     studyMusicRef.current = audio;
     
     return () => {

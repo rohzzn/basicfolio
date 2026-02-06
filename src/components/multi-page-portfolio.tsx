@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, Gamepad, Music, Loader2, Volume2, VolumeX, Focus, Clock } from "lucide-react";
+import { Menu, X, Gamepad, Music, Loader2, Focus, Clock, VolumeX } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -532,7 +532,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
         >
           {isPlaying ? (
-            <Volume2 className="w-3.5 h-3.5" />
+            <Music className="w-3.5 h-3.5" />
           ) : (
             <VolumeX className="w-3.5 h-3.5" />
           )}

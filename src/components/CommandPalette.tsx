@@ -26,9 +26,13 @@ import {
   Instagram,
   Moon,
   Sparkles,
-  ChevronRight,
   ArrowLeft,
-  History
+  History,
+  Mail,
+  Award,
+  Briefcase,
+  TrendingUp,
+  Target
 } from 'lucide-react';
 
 interface BaseItem {
@@ -37,6 +41,7 @@ interface BaseItem {
     icon?: React.ReactNode;
     keywords?: string[];
     shortcut?: string;
+    action?: () => void;
 }
 
 interface CommandPaletteProps {
@@ -63,7 +68,7 @@ const hobbyLinks: BaseItem[] = [
   { title: 'Books', href: '/hobbies/readings', icon: <BookOpen className="w-4 h-4" />, keywords: ['reading', 'books', 'literature'] },
   { title: 'Content', href: '/hobbies/content', icon: <Youtube className="w-4 h-4" />, keywords: ['youtube', 'videos', 'content'] },
   { title: 'Designs', href: '/hobbies/art', icon: <PenTool className="w-4 h-4" />, keywords: ['art', 'design', 'creative'] },
-  { title: 'Gaming', href: '/hobbies/games', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['games', 'gaming', 'steam'] },
+  { title: 'Gaming', href: '/hobbies/games', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['games', 'gaming', 'steam', 'cs2', 'csgo', 'leetify', 'stats', 'premier', 'faceit'] },
   { title: 'Gaming Clips', href: '/hobbies/clips', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['clips', 'highlights', 'videos'] },
   { title: 'Hackathons', href: '/hobbies/hackathons', icon: <Code className="w-4 h-4" />, keywords: ['hackathon', 'competition', 'coding'] },
   { title: 'Music', href: '/hobbies/music', icon: <Music className="w-4 h-4" />, keywords: ['songs', 'playlist', 'spotify'] },
@@ -72,54 +77,51 @@ const hobbyLinks: BaseItem[] = [
   { title: 'Whiteboard', href: '/hobbies/whiteboard', icon: <PenTool className="w-4 h-4" />, keywords: ['drawing', 'canvas', 'collaborative'] },
 ];
 
-const defaultLinks: BaseItem[] = [...mainLinks, ...hobbyLinks];
+const writingArticles: BaseItem[] = [
+  { title: 'First Spring', href: '/writing/first-spring', icon: <FileText className="w-4 h-4" />, keywords: ['article', 'spring', 'season', 'blog'] },
+  { title: 'Beginners Guide to Design', href: '/writing/beginners-guide-design', icon: <PenTool className="w-4 h-4" />, keywords: ['design', 'tutorial', 'ui', 'ux'] },
+  { title: 'Beginners Guide to Programming', href: '/writing/beginners-guide-programming', icon: <Code className="w-4 h-4" />, keywords: ['programming', 'coding', 'tutorial', 'learn'] },
+  { title: 'Boring Performance', href: '/writing/boring-performance', icon: <TrendingUp className="w-4 h-4" />, keywords: ['performance', 'optimization', 'web'] },
+  { title: 'ChatGPT Interface', href: '/writing/chatgpt-interface', icon: <Sparkles className="w-4 h-4" />, keywords: ['ai', 'chatgpt', 'interface', 'design'] },
+  { title: 'Discord Article', href: '/writing/discord-article', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['discord', 'community', 'platform'] },
+  { title: 'Esports Journey', href: '/writing/esports-journey', icon: <Award className="w-4 h-4" />, keywords: ['esports', 'gaming', 'competitive', 'journey'] },
+  { title: 'iXigo Experience', href: '/writing/ixigo-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['ixigo', 'internship', 'work', 'experience'] },
+  { title: 'Modern Tech Stacks', href: '/writing/modern-tech-stacks', icon: <Code className="w-4 h-4" />, keywords: ['tech', 'stack', 'tools', 'modern'] },
+  { title: 'Performance Article', href: '/writing/performance-article', icon: <TrendingUp className="w-4 h-4" />, keywords: ['performance', 'web', 'speed'] },
+  { title: 'Security Article', href: '/writing/security-article', icon: <Target className="w-4 h-4" />, keywords: ['security', 'privacy', 'protection'] },
+  { title: 'UC Experience', href: '/writing/uc-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['uc', 'university', 'experience'] },
+  { title: 'Variables Exposure', href: '/writing/variables-exposure', icon: <Code className="w-4 h-4" />, keywords: ['variables', 'security', 'environment'] },
+];
 
-interface QuickLink {
-  title: string;
-  keywords?: string[];
-  icon?: React.ReactNode;
-  href?: string;
-  action?: () => void;
-  children?: QuickLink[];
-}
+const externalLinks: BaseItem[] = [
+  { title: 'GitHub', keywords: ['code', 'repo', 'git', 'source'], icon: <Github className="w-4 h-4" />, href: 'https://github.com/rohzzn' },
+  { title: 'Twitter', keywords: ['social', 'tweet', 'x'], icon: <Twitter className="w-4 h-4" />, href: 'https://twitter.com/rohzzn' },
+  { title: 'LinkedIn', keywords: ['job', 'work', 'professional', 'career'], icon: <Linkedin className="w-4 h-4" />, href: 'https://linkedin.com/in/rohzzn' },
+  { title: 'Instagram', keywords: ['social', 'photos', 'pictures'], icon: <Instagram className="w-4 h-4" />, href: 'https://instagram.com/rohzzn' },
+  { title: 'Email', keywords: ['contact', 'mail', 'reach', 'message'], icon: <Mail className="w-4 h-4" />, href: 'mailto:contact@rohzzn.com' },
+  { title: 'Steam Profile', keywords: ['steam', 'gaming', 'games', 'valve'], icon: <Gamepad2 className="w-4 h-4" />, href: 'https://steamcommunity.com/id/rohzzn' },
+  { title: 'Spotify', keywords: ['music', 'spotify', 'playlist', 'songs'], icon: <Music className="w-4 h-4" />, href: 'https://open.spotify.com/user/rohzzn' },
+  { title: 'Leetify Profile', keywords: ['leetify', 'cs2', 'csgo', 'stats'], icon: <Target className="w-4 h-4" />, href: 'https://leetify.com/@rohzzn' },
+  { title: 'Medal.tv', keywords: ['medal', 'clips', 'gaming', 'highlights'], icon: <Film className="w-4 h-4" />, href: 'https://medal.tv/u/rohzzn' },
+  { title: 'YouTube', keywords: ['youtube', 'videos', 'channel'], icon: <Youtube className="w-4 h-4" />, href: 'https://youtube.com/@rohzzn' },
+  { title: 'MyAnimeList', keywords: ['anime', 'mal', 'myanimelist', 'shows'], icon: <Film className="w-4 h-4" />, href: 'https://myanimelist.net/profile/rohzzn' },
+  { title: 'Settings.gg', keywords: ['settings', 'config', 'csgo', 'valorant'], icon: <Laptop className="w-4 h-4" />, href: 'https://settings.gg/rohzzn' },
+];
 
-const quickLinks: QuickLink[] = [
+const quickActions: BaseItem[] = [
   { 
     title: 'Toggle Dark Mode', 
     keywords: ['theme', 'light', 'dark', 'switch'],
     icon: <Moon className="w-4 h-4" />, 
     action: () => {
       document.documentElement.classList.toggle('dark');
-      // Save preference
       const isDark = document.documentElement.classList.contains('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
     }
   },
-  { 
-    title: 'GitHub', 
-    keywords: ['code', 'repo', 'git', 'source'],
-    icon: <Github className="w-4 h-4" />, 
-    href: 'https://github.com/rohzzn' 
-  },
-  { 
-    title: 'Twitter', 
-    keywords: ['social', 'tweet', 'x'],
-    icon: <Twitter className="w-4 h-4" />, 
-    href: 'https://twitter.com/rohzzn' 
-  },
-  { 
-    title: 'LinkedIn', 
-    keywords: ['job', 'work', 'professional', 'career'],
-    icon: <Linkedin className="w-4 h-4" />, 
-    href: 'https://linkedin.com/in/rohzzn' 
-  },
-  { 
-    title: 'Instagram', 
-    keywords: ['social', 'photos', 'pictures'],
-    icon: <Instagram className="w-4 h-4" />, 
-    href: 'https://instagram.com/rohzzn' 
-  }
 ];
+
+const defaultLinks: BaseItem[] = [...mainLinks, ...hobbyLinks, ...writingArticles, ...externalLinks, ...quickActions];
 
 // Create a new type for recent commands
 interface RecentCommand {
@@ -138,7 +140,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
   const inputRef = useRef<HTMLInputElement | null>(null);
   
   const allItems = useMemo(() => {
-    return [...links, ...quickLinks];
+    return [...links];
   }, [links]);
 
   // Track mounted state to prevent hydration issues
@@ -272,13 +274,6 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
     
     if (!item) return;
     
-    // If item has children, navigate to that page
-    if ('children' in item && item.children && item.children.length > 0) {
-      setPages([...pages, item.title]);
-      setInputValue('');
-      return;
-    }
-    
     // Save to recent commands
     const commandType = 'href' in item ? 'link' : 'action';
     saveToRecents(item.title, commandType);
@@ -296,26 +291,6 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
     }
   };
 
-  const getCurrentItems = () => {
-    if (pages.length === 0) {
-      return allItems;
-    }
-
-    // Navigate through the pages
-    let current = [...allItems];
-    
-    for (const page of pages) {
-      const parentItem = current.find(item => item.title === page);
-      if (parentItem && 'children' in parentItem && parentItem.children) {
-        current = parentItem.children;
-      } else {
-        return [];
-      }
-    }
-    
-    return current;
-  };
-
   // Get recent items with their full details
   const getRecentItems = () => {
     return recentCommands
@@ -326,9 +301,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
       .filter(Boolean) as Array<(typeof allItems[0] & { timestamp: number })>;
   };
 
-  const currentItems = getCurrentItems();
   const recentItems = getRecentItems();
-  const currentPageTitle = pages.length > 0 ? pages[pages.length - 1] : null;
   
   const goBack = () => {
     setPages(prev => prev.slice(0, -1));
@@ -359,7 +332,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
 
       {open && (
         <div
-          className="fixed inset-0 bg-zinc-900/30 backdrop-blur-[1px] z-40"
+          className="fixed inset-0 bg-zinc-900/40 backdrop-blur-md z-[9999]"
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />
@@ -370,7 +343,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
         label="Command Menu"
         filter={customFilter}
           loop
-        className="fixed top-[20%] left-1/2 transform -translate-x-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-50 transition-all"
+        className="fixed top-[20%] left-1/2 transform -translate-x-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-[10000] transition-all"
       >
         {/* Hidden title for accessibility */}
         <div className="sr-only">
@@ -390,7 +363,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
             ref={inputRef}
             value={inputValue}
             onValueChange={setInputValue}
-            placeholder={currentPageTitle ? `Search in ${currentPageTitle}...` : "Search pages, features, navigation..."}
+            placeholder="Search pages, articles, hobbies, links..."
             className="w-full h-12 bg-transparent text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 outline-none"
           />
         </div>
@@ -401,11 +374,9 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
             <p>No results found for &ldquo;{inputValue}&rdquo;</p>
           </Command.Empty>
 
-          {pages.length === 0 ? (
+          {recentItems.length > 0 && !inputValue && (
             <>
-              {recentItems.length > 0 && !inputValue && (
-                <>
-                  <Command.Group heading="Recent" className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+              <Command.Group heading="Recent" className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
                     {recentItems.map((item, index) => (
                       <Command.Item
                         key={`recent-${index}`}
@@ -417,14 +388,14 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
                           {item.icon || <History className="w-4 h-4" />}
                           <span>{item.title}</span>
                         </div>
-                      </Command.Item>
-                    ))}
-                  </Command.Group>
-                  <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
-                </>
-              )}
+                </Command.Item>
+              ))}
+            </Command.Group>
+            <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
+          </>
+        )}
 
-              <Command.Group heading="Go to" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+        <Command.Group heading="Go to" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
                 {mainLinks.map((link) => (
                   <Command.Item
                     key={link.href}
@@ -464,8 +435,44 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
 
               <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
 
-              <Command.Group heading="Quick actions & socials" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
-                {quickLinks.map((item, index) => (
+              <Command.Group heading="Writing" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+                {writingArticles.map((article) => (
+                  <Command.Item
+                    key={article.href}
+                    value={`${article.title} ${article.keywords?.join(' ')}`}
+                    onSelect={() => handleSelect(article.title)}
+                    className="flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
+                  >
+                    <div className="flex items-center gap-2">
+                      {article.icon || <div className="w-4 h-4" />}
+                      <span>{article.title}</span>
+                    </div>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+
+              <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
+
+              <Command.Group heading="External links" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+                {externalLinks.map((link) => (
+                  <Command.Item
+                    key={link.href}
+                    value={`${link.title} ${link.keywords?.join(' ')}`}
+                    onSelect={() => handleSelect(link.title)}
+                    className="flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
+                  >
+                    <div className="flex items-center gap-2">
+                      {link.icon || <div className="w-4 h-4" />}
+                      <span>{link.title}</span>
+                    </div>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+
+              <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
+
+              <Command.Group heading="Quick actions" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+                {quickActions.map((item, index) => (
                   <Command.Item
                     key={index}
                     value={`${item.title} ${item.keywords?.join(' ')}`}
@@ -476,35 +483,9 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
                       {item.icon || <div className="w-4 h-4" />}
                       <span>{item.title}</span>
                     </div>
-                    
-                    {item.children && item.children.length > 0 && (
-                      <ChevronRight className="w-3 h-3 text-zinc-400" />
-                    )}
-                  </Command.Item>
-                ))}
-              </Command.Group>
-            </>
-          ) : (
-            <Command.Group heading={currentPageTitle || 'Items'} className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
-              {currentItems.map((item, index) => (
-                <Command.Item
-                  key={index}
-                  value={`${item.title} ${item.keywords?.join(' ')}`}
-                  onSelect={() => handleSelect(item.title)}
-                  className="flex items-center justify-between gap-2 px-2 py-2 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
-                >
-                  <div className="flex items-center gap-2">
-                    {item.icon || <div className="w-4 h-4" />}
-                    <span>{item.title}</span>
-                  </div>
-                  
-                  {('children' in item && item.children && item.children.length > 0) && (
-                    <ChevronRight className="w-3 h-3 text-zinc-400" />
-                  )}
                 </Command.Item>
               ))}
             </Command.Group>
-          )}
 
           <div className="py-2 px-2 text-xs border-t border-zinc-200 dark:border-zinc-700 mt-2 text-zinc-500 dark:text-zinc-400 flex justify-between">
             <div className="flex gap-2">
