@@ -145,57 +145,62 @@ const ActivityIcon: React.FC<{
 }> = ({ activity }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [allImagesFailed, setAllImagesFailed] = useState(false);
+  const [smallImageError, setSmallImageError] = useState(false);
 
-  // Build fallback image URLs in priority order
+  // Helper to parse image URL with fallbacks
+  const parseImageUrl = (imageHash: string): string[] => {
+    const urls: string[] = [];
+    
+    if (imageHash.startsWith("mp:")) {
+      urls.push(`https://media.discordapp.net/${imageHash.replace('mp:', '')}`);
+    } else if (imageHash.startsWith("spotify:")) {
+      urls.push(`https://i.scdn.co/image/${imageHash.replace('spotify:', '')}`);
+    } else if (imageHash.startsWith("attachments://")) {
+      urls.push(imageHash.replace("attachments://", "https://cdn.discordapp.com/attachments/"));
+    } else if (imageHash.startsWith("external:")) {
+      const externalUrl = imageHash.replace("external:", "");
+      if (externalUrl.startsWith("//")) {
+        urls.push(`https:${externalUrl}`);
+      } else if (!externalUrl.startsWith("http")) {
+        urls.push(`https://${externalUrl}`);
+      } else {
+        urls.push(externalUrl);
+      }
+    } else if (imageHash.startsWith("http://") || imageHash.startsWith("https://")) {
+      urls.push(imageHash);
+    } else if (activity.application_id) {
+      const hasExtension = /\.(png|jpg|jpeg|gif|webp)$/i.test(imageHash);
+      if (hasExtension) {
+        urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${imageHash}`);
+      } else {
+        urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${imageHash}.png`);
+        urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${imageHash}.webp`);
+      }
+    }
+    return urls;
+  };
+
+  // Get small image URL
+  const getSmallImageUrl = (): string | null => {
+    if (!activity.assets?.small_image) return null;
+    const urls = parseImageUrl(activity.assets.small_image);
+    return urls[0] || null;
+  };
+
+  // Build fallback image URLs for large image
   const getImageUrls = (): string[] => {
     const urls: string[] = [];
     
-    // Priority 1: Large image from assets
     if (activity.assets?.large_image) {
-      const largeImg = activity.assets.large_image;
-      
-      if (largeImg.startsWith("mp:")) {
-        urls.push(`https://media.discordapp.net/${largeImg.replace('mp:', '')}`);
-      } else if (largeImg.startsWith("spotify:")) {
-        urls.push(`https://i.scdn.co/image/${largeImg.replace('spotify:', '')}`);
-      } else if (largeImg.startsWith("attachments://")) {
-        urls.push(largeImg.replace("attachments://", "https://cdn.discordapp.com/attachments/"));
-      } else if (largeImg.startsWith("external:")) {
-        const externalUrl = largeImg.replace("external:", "");
-        // Ensure it has a protocol
-        if (externalUrl.startsWith("//")) {
-          urls.push(`https:${externalUrl}`);
-        } else if (!externalUrl.startsWith("http")) {
-          urls.push(`https://${externalUrl}`);
-        } else {
-          urls.push(externalUrl);
-        }
-      } else if (largeImg.startsWith("http://") || largeImg.startsWith("https://")) {
-        urls.push(largeImg);
-      } else if (activity.application_id) {
-        const hasExtension = /\.(png|jpg|jpeg|gif|webp)$/i.test(largeImg);
-        
-        if (hasExtension) {
-          // Already has extension, use as-is
-          urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImg}`);
-        } else {
-          // Try different extensions
-          urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImg}.png`);
-          urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImg}.webp`);
-          urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImg}.jpg`);
-        }
-      }
+      urls.push(...parseImageUrl(activity.assets.large_image));
     }
     
-    // Priority 2: Small image from assets as backup
-    if (activity.assets?.small_image && activity.application_id) {
-      const smallImg = activity.assets.small_image;
-      if (!smallImg.startsWith("mp:") && !smallImg.startsWith("spotify:") && !smallImg.startsWith("external:")) {
-        urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${smallImg}.png`);
-      }
+    // Fallback to small image
+    if (activity.assets?.small_image) {
+      urls.push(...parseImageUrl(activity.assets.small_image));
     }
     
-    // Priority 3: Application icon from Discord
+    // Fallback to application icon
     if (activity.application_id) {
       urls.push(`https://dcdn.dstn.to/app-icons/${activity.application_id}`);
       urls.push(`https://cdn.discordapp.com/app-icons/${activity.application_id}/icon.png`);
@@ -206,13 +211,12 @@ const ActivityIcon: React.FC<{
 
   const imageUrls = getImageUrls();
   const currentImageUrl = imageUrls[currentImageIndex];
+  const smallImageUrl = getSmallImageUrl();
 
   const handleImageError = () => {
     if (currentImageIndex < imageUrls.length - 1) {
-      // Try next fallback URL
       setCurrentImageIndex(prev => prev + 1);
     } else {
-      // All images failed, show icon fallback
       setAllImagesFailed(true);
     }
   };
@@ -221,7 +225,8 @@ const ActivityIcon: React.FC<{
   useEffect(() => {
     setCurrentImageIndex(0);
     setAllImagesFailed(false);
-  }, [activity.name, activity.application_id, activity.assets?.large_image]);
+    setSmallImageError(false);
+  }, [activity.name, activity.application_id, activity.assets?.large_image, activity.assets?.small_image]);
 
   if (!currentImageUrl || allImagesFailed || imageUrls.length === 0) {
     return (
@@ -232,15 +237,29 @@ const ActivityIcon: React.FC<{
   }
 
   return (
-    <Image 
-      key={currentImageUrl} // Force remount on URL change
-      src={currentImageUrl}
-      alt={activity.assets?.large_text || activity.name}
-      width={40}
-      height={40}
-      className="rounded-md object-cover flex-shrink-0"
-      onError={handleImageError}
-    />
+    <div className="relative w-10 h-10 flex-shrink-0">
+      <Image 
+        key={currentImageUrl}
+        src={currentImageUrl}
+        alt={activity.assets?.large_text || activity.name}
+        width={40}
+        height={40}
+        className="rounded-md object-cover"
+        onError={handleImageError}
+      />
+      {smallImageUrl && !smallImageError && (
+        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center ring-2 ring-white dark:ring-zinc-900">
+          <Image 
+            src={smallImageUrl}
+            alt={activity.assets?.small_text || ""}
+            width={16}
+            height={16}
+            className="rounded-full object-cover"
+            onError={() => setSmallImageError(true)}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 
