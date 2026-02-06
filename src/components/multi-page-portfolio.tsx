@@ -105,6 +105,146 @@ const getActivityIcon = (type: number) => {
   }
 };
 
+const formatElapsedTime = (startTimestamp: number): string => {
+  const now = Date.now();
+  const elapsed = now - startTimestamp;
+  const seconds = Math.floor(elapsed / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  if (hours > 0) {
+    const mins = minutes % 60;
+    return `${hours}:${mins.toString().padStart(2, '0')} elapsed`;
+  } else if (minutes > 0) {
+    const secs = seconds % 60;
+    return `${minutes}:${secs.toString().padStart(2, '0')} elapsed`;
+  } else {
+    return `${seconds}s elapsed`;
+  }
+};
+
+const ActivityElapsedTime: React.FC<{ startTimestamp: number }> = ({ startTimestamp }) => {
+  const [elapsed, setElapsed] = useState(() => formatElapsedTime(startTimestamp));
+
+  useEffect(() => {
+    // Update immediately on mount to ensure sync
+    setElapsed(formatElapsedTime(startTimestamp));
+    
+    const interval = setInterval(() => {
+      setElapsed(formatElapsedTime(startTimestamp));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [startTimestamp]);
+
+  return <span>{elapsed}</span>;
+};
+
+const ActivityIcon: React.FC<{ 
+  activity: DiscordActivity;
+}> = ({ activity }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [allImagesFailed, setAllImagesFailed] = useState(false);
+
+  // Build fallback image URLs in priority order
+  const getImageUrls = (): string[] => {
+    const urls: string[] = [];
+    
+    // Priority 1: Large image from assets
+    if (activity.assets?.large_image) {
+      const largeImg = activity.assets.large_image;
+      
+      if (largeImg.startsWith("mp:")) {
+        urls.push(`https://media.discordapp.net/${largeImg.replace('mp:', '')}`);
+      } else if (largeImg.startsWith("spotify:")) {
+        urls.push(`https://i.scdn.co/image/${largeImg.replace('spotify:', '')}`);
+      } else if (largeImg.startsWith("attachments://")) {
+        urls.push(largeImg.replace("attachments://", "https://cdn.discordapp.com/attachments/"));
+      } else if (largeImg.startsWith("external:")) {
+        const externalUrl = largeImg.replace("external:", "");
+        // Ensure it has a protocol
+        if (externalUrl.startsWith("//")) {
+          urls.push(`https:${externalUrl}`);
+        } else if (!externalUrl.startsWith("http")) {
+          urls.push(`https://${externalUrl}`);
+        } else {
+          urls.push(externalUrl);
+        }
+      } else if (largeImg.startsWith("http://") || largeImg.startsWith("https://")) {
+        urls.push(largeImg);
+      } else if (activity.application_id) {
+        const hasExtension = /\.(png|jpg|jpeg|gif|webp)$/i.test(largeImg);
+        
+        if (hasExtension) {
+          // Already has extension, use as-is
+          urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImg}`);
+        } else {
+          // Try different extensions
+          urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImg}.png`);
+          urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImg}.webp`);
+          urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImg}.jpg`);
+        }
+      }
+    }
+    
+    // Priority 2: Small image from assets as backup
+    if (activity.assets?.small_image && activity.application_id) {
+      const smallImg = activity.assets.small_image;
+      if (!smallImg.startsWith("mp:") && !smallImg.startsWith("spotify:") && !smallImg.startsWith("external:")) {
+        urls.push(`https://cdn.discordapp.com/app-assets/${activity.application_id}/${smallImg}.png`);
+      }
+    }
+    
+    // Priority 3: Application icon from Discord
+    if (activity.application_id) {
+      urls.push(`https://dcdn.dstn.to/app-icons/${activity.application_id}`);
+      urls.push(`https://cdn.discordapp.com/app-icons/${activity.application_id}/icon.png`);
+    }
+    
+    return urls.filter(url => url && url.length > 0);
+  };
+
+  const imageUrls = getImageUrls();
+  const currentImageUrl = imageUrls[currentImageIndex];
+
+  const handleImageError = () => {
+    if (currentImageIndex < imageUrls.length - 1) {
+      // Try next fallback URL
+      setCurrentImageIndex(prev => prev + 1);
+    } else {
+      // All images failed, show icon fallback
+      setAllImagesFailed(true);
+    }
+  };
+
+  // Reset when activity changes
+  useEffect(() => {
+    setCurrentImageIndex(0);
+    setAllImagesFailed(false);
+  }, [activity.name, activity.application_id, activity.assets?.large_image]);
+
+  if (!currentImageUrl || allImagesFailed || imageUrls.length === 0) {
+    return (
+      <div className="w-10 h-10 rounded-md bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0">
+        {getActivityIcon(activity.type)}
+      </div>
+    );
+  }
+
+  return (
+    <Image 
+      key={currentImageUrl} // Force remount on URL change
+      src={currentImageUrl}
+      alt={activity.assets?.large_text || activity.name}
+      width={40}
+      height={40}
+      className="rounded-md object-cover flex-shrink-0"
+      unoptimized
+      onError={handleImageError}
+    />
+  );
+};
+
 const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
@@ -309,38 +449,18 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
                 {lanyardData.activities?.length > 0 && 
                  lanyardData.activities.filter(activity => activity.name !== "Spotify").length > 0 && (
-                  <div className="space-y-2 w-full mt-1">
+                  <div className="space-y-3 w-full mt-2">
                     {lanyardData.activities
                       .filter(activity => activity.name !== "Spotify")
                       .slice(0, 2)
                       .map((activity, index) => (
                       <div
                         key={index}
-                          className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 w-full"
+                          className="w-full"
                       >
-                        <div className="flex items-center gap-2 mb-1">
-                            {activity.assets?.large_image ? (
-                              <Image 
-                                src={
-                                  activity.assets.large_image.startsWith("mp:") 
-                                    ? `https://media.discordapp.net/${activity.assets.large_image.replace('mp:', '')}`
-                                    : activity.assets.large_image.startsWith("spotify:") 
-                                      ? `https://i.scdn.co/image/${activity.assets.large_image.replace('spotify:', '')}`
-                                      : activity.assets.large_image.startsWith("external:")
-                                        ? activity.assets.large_image.replace("external:", "https://")
-                                        : activity.application_id 
-                                          ? `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`
-                                          : activity.assets.large_image
-                                }
-                                alt={activity.assets.large_text || activity.name}
-                                width={40}
-                                height={40}
-                                className="rounded-md object-cover"
-                              />
-                            ) : (
-                              getActivityIcon(activity.type)
-                            )}
-                            <div>
+                        <div className="flex items-center gap-2">
+                            <ActivityIcon activity={activity} />
+                            <div className="flex-1">
                           <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
                             {activity.name}
                           </span>
@@ -352,6 +472,11 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                         {activity.details && (
                                 <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
                             {activity.details}
+                          </p>
+                        )}
+                        {activity.timestamps?.start && (
+                                <p className="text-[10px] text-zinc-500 dark:text-zinc-500 mt-0.5">
+                                  <ActivityElapsedTime startTimestamp={activity.timestamps.start} />
                           </p>
                         )}
                             </div>

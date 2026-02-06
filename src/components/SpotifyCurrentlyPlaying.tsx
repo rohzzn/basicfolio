@@ -177,13 +177,13 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
   }
 
   return (
-    <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-md p-2">
+    <div className="w-full">
       <div className="flex items-center gap-2">
-        <div className="relative min-w-[40px] w-10 h-10">
+        <div className="relative min-w-[40px] w-10 h-10 flex-shrink-0">
           <Image
             src={getSafeImageUrl(currentlyPlaying.track.album.images)}
             alt={currentlyPlaying.track.album.name}
-            className="rounded object-cover"
+            className="rounded-md object-cover"
             fill
             sizes="40px"
           />
