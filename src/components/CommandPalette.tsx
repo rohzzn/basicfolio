@@ -74,7 +74,6 @@ const hobbyLinks: BaseItem[] = [
   { title: 'Music', href: '/hobbies/music', icon: <Music className="w-4 h-4" />, keywords: ['songs', 'playlist', 'spotify'] },
   { title: 'Setup', href: '/hobbies/uses', icon: <Laptop className="w-4 h-4" />, keywords: ['setup', 'workspace', 'tools'] },
   { title: 'Typing', href: '/hobbies/typing', icon: <Keyboard className="w-4 h-4" />, keywords: ['typing', 'speed', 'test'] },
-  { title: 'Whiteboard', href: '/hobbies/whiteboard', icon: <PenTool className="w-4 h-4" />, keywords: ['drawing', 'canvas', 'collaborative'] },
 ];
 
 const writingArticles: BaseItem[] = [
