@@ -69,7 +69,7 @@ const Home: React.FC = () => {
 
       {/* Navigation Links */}
       <div className="max-w-3xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="space-y-6">
           <Link href="/links" className="group cursor-pointer block">
             <article>
               <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1">
