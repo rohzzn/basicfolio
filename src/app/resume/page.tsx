@@ -39,14 +39,9 @@ const Stack = () => {
       isSubRole: true,
     },
     {
-      company: 'Abhibus (Ixigo)',
+      company: 'Abhibus',
       role: 'Software Development Engineer',
       duration: 'June 2023 - June 2024',
-    },
-    {
-      company: 'Fiverr (Freelance)',
-      role: 'Frontend Developer & Designer',
-      duration: 'November 2021 - June 2023',
     },
   ];
 
@@ -145,8 +140,7 @@ const Stack = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-3 text-xs text-zinc-500 dark:text-zinc-500">
               <span>hi@rohanpothuru.com</span>
-              <span>•</span>
-              <span>Cincinnati, OH</span>
+
               <span>•</span>
               <span>github.com/rohzzn</span>
               <span>•</span>
@@ -275,7 +269,7 @@ const Stack = () => {
           {leetcodeStats && (
             <section>
               <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
-                CODING STATISTICS
+                LEETCODE STATS
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
@@ -309,14 +303,12 @@ const Stack = () => {
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
             >
               Download PDF
-              <span className="text-xs">↓</span>
             </a>
             <a
               href="mailto:hi@rohanpothuru.com"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-zinc-900 dark:bg-white dark:text-zinc-900 rounded-md hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
             >
               Get in Touch
-              <span className="text-xs">→</span>
             </a>
           </div>
         </div>
