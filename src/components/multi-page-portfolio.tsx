@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, memo, useCallback } from "react";
-import { Menu, X, Gamepad, Music, Loader2, Focus, VolumeX } from "lucide-react";
+import { Menu, X, Gamepad, Music, Loader2, Focus, VolumeX, FileText, PenTool } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -514,6 +514,22 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       
       {/* Bottom Controls - Hidden on mobile */}
       <div className="hidden md:flex fixed bottom-4 right-4 z-40 flex-row items-center space-x-3">
+        <Link 
+          href="/stack"
+          className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"
+          aria-label="Resume"
+        >
+          <FileText className="w-3.5 h-3.5" />
+        </Link>
+        
+        <Link 
+          href="/guestbook"
+          className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"
+          aria-label="Guest Book"
+        >
+          <PenTool className="w-3.5 h-3.5" />
+        </Link>
+        
         <Link 
           href="/focus"
           className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"
