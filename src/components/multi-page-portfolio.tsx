@@ -416,12 +416,12 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           flex flex-col h-screen backdrop-blur-sm
           transform transition-transform duration-300 ease-in-out
           ${isMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-          z-40 overflow-y-auto overflow-x-hidden
+          z-40 overflow-x-hidden
           safe-area-inset
         `}
       >
-        <div className="flex flex-col h-full">
-          <nav className="flex-1 px-4 sm:px-5 lg:px-6 overflow-y-auto pb-4 pt-16 sm:pt-20 lg:pt-8">
+        <div className="flex flex-col h-full min-h-0">
+          <nav className="flex-1 px-4 sm:px-5 lg:px-6 overflow-y-auto overflow-x-hidden pb-4 pt-16 sm:pt-20 lg:pt-8 min-h-0">
             <div className="space-y-1">
               {              [
                 { path: "/", label: "About" },
@@ -436,7 +436,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </nav>
 
-          <div className="p-4 sm:p-5 lg:p-6 border-t border-zinc-200 dark:border-zinc-800 mt-auto">
+          <div className="p-4 sm:p-5 lg:p-6 border-t border-zinc-200 dark:border-zinc-800 flex-shrink-0">
             {isLoading ? (
               <div className="flex items-center justify-center py-2">
                 <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
