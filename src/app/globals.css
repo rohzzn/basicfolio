@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #f5f5dc; /* Old paper color */
+  --background: #f2f2f2;
   --foreground: #333333; /* Darker text for better contrast */
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: "Apple Garamond", serif;
@@ -280,4 +280,30 @@ html.e-reader-mode pre {
 
 .shadow-back-cover-shadow {
   box-shadow: -10px 0 25px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Fade In Animation for Profile Image */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in forwards;
+}
+
+/* Handwritten text style */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&display=swap');
+
+.handwritten-text {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transform: rotate(-2deg);
+  opacity: 0.85;
+  letter-spacing: 0.5px;
 }

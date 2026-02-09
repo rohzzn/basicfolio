@@ -21,7 +21,20 @@ module.exports = {
         serif: ['"Apple Garamond"', 'serif'],
       },
       colors: {
-        paper: '#f5f5dc',
+        paper: '#f2f2f2',
+      },
+      keyframes: {
+        fadeIn: {
+          'from': {
+            opacity: '0',
+          },
+          'to': {
+            opacity: '1',
+          },
+        },
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in forwards',
       },
     },
   },

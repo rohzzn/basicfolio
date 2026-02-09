@@ -1,12 +1,12 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
 import GitHubCalendar from 'react-github-calendar';
+import Image from 'next/image';
 
 const Home: React.FC = () => {
+  const [isDark, setIsDark] = React.useState(false);
   const [showImage, setShowImage] = useState(false);
-  const [emoji, setEmoji] = useState('👋');
-  const [isDark, setIsDark] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   
   useEffect(() => {
     // Check initial dark mode
@@ -23,18 +23,24 @@ const Home: React.FC = () => {
       attributeFilter: ['class'],
     });
     
-    return () => observer.disconnect();
+    // Check if desktop
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', checkDesktop);
+    };
   }, []);
   
-  // Function to get a random emoji for visitor greeting
-  const getRandomEmoji = () => {
-    const emojis = ['👋', '👀', '✨', '🎉', '🚀', '🔥', '😊', '🙌', '💯', '🌟'];
-    return emojis[Math.floor(Math.random() * emojis.length)];
-  };
-  
-  const handleMouseEnter = () => {
-    setEmoji(getRandomEmoji());
-    setShowImage(true);
+  const handleNameClick = () => {
+    if (isDesktop) {
+      setShowImage(!showImage);
+    }
   };
   
   return (
@@ -43,20 +49,39 @@ const Home: React.FC = () => {
       <div className="mb-12">
         <div style={{ maxWidth: '75ch' }}>
           <h1 
-            className="text-lg font-medium mb-6 dark:text-white inline-block"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={() => setShowImage(false)}
+            className={`text-lg font-medium mb-6 dark:text-white ${isDesktop ? 'cursor-pointer hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors' : ''}`}
+            onClick={handleNameClick}
           >
             Rohan Pothuru
           </h1>
           
-          <p className="text-base text-zinc-600 dark:text-zinc-400 mb-4">
-            I&apos;m a software engineer and computer science graduate student who loves building things that matter. Currently pursuing my Masters at the University of Cincinnati while working part-time as a developer, where I contribute to healthcare tech.
-          </p>
-          
-          <p className="text-base text-zinc-600 dark:text-zinc-400 mb-8">
-            When I&apos;m not coding, you&apos;ll find me taking photos, gaming with friends, or working on random design projects that catch my interest. I also spend way too much time tweaking my setup and discovering new tools that probably don&apos;t make me more productive but are fun to play with.
-          </p>
+          <div className="flex gap-6 items-start">
+            <div className="flex-1">
+              <p className="text-base text-zinc-600 dark:text-zinc-400 mb-4">
+                I&apos;m a software engineer and computer science graduate student who loves building things that matter. Currently pursuing my Masters at the University of Cincinnati while working part-time as a developer, where I contribute to healthcare tech.
+              </p>
+              
+              <p className="text-base text-zinc-600 dark:text-zinc-400 mb-8">
+                When I&apos;m not coding, you&apos;ll find me taking photos, gaming with friends, or working on random design projects that catch my interest. I also spend way too much time tweaking my setup and discovering new tools that probably don&apos;t make me more productive but are fun to play with.
+              </p>
+            </div>
+            
+            {/* Image appears beside paragraphs */}
+            {showImage && isDesktop && (
+              <div className="animate-fade-in flex-shrink-0 flex flex-col items-center">
+                <Image
+                  src="/images/profile/rohan.png"
+                  alt="Rohan Pothuru"
+                  width={180}
+                  height={180}
+                  className="rounded-lg"
+                />
+                <div className="handwritten-text mt-2 text-zinc-500 dark:text-zinc-400">
+                  ↑ you found me
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         
         {/* GitHub Calendar */}
@@ -85,32 +110,6 @@ const Home: React.FC = () => {
               width: '100%',
             }}
           />
-        </div>
-      </div>
-
-      {/* Secret image that appears on hover */}
-      <div 
-        className={`fixed right-0 top-1/4 transform transition-all duration-300 ease-in-out ${
-          showImage 
-            ? 'translate-x-0 opacity-100 -rotate-12' 
-            : 'translate-x-full opacity-0 rotate-12'
-        }`}
-        style={{ zIndex: 50, transformOrigin: 'bottom right' }}
-      >
-        <div className="relative w-64 h-80 overflow-hidden rounded-lg shadow-xl">
-          <Image 
-            src="/images/profile/profile-photo.JPG" 
-            alt="Rohan's photo" 
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          {showImage && (
-            <div className="absolute bottom-4 left-0 right-0 text-center text-white text-sm font-medium px-3 py-1 bg-black/40 backdrop-blur-sm">
-              You found me! {emoji}
-            </div>
-          )}
         </div>
       </div>
 
