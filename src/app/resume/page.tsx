@@ -131,21 +131,19 @@ const Stack = () => {
   };
 
   return (
-    <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-8 dark:text-white">Resume</h2>
-
+    <div className="max-w-4xl">
       {/* Resume PDF Container */}
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm">
         {/* Resume Header */}
-        <div className="p-8 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="p-5 pb-4 border-b border-zinc-200 dark:border-zinc-800">
           <div className="text-center">
-            <h1 className="text-lg font-medium text-zinc-900 dark:text-white mb-2">
+            <h1 className="text-lg font-medium text-zinc-900 dark:text-white mb-1">
               Rohan Pothuru
             </h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
               Software Engineer
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-xs text-zinc-500 dark:text-zinc-500">
+            <div className="flex flex-wrap justify-center gap-3 text-xs text-zinc-500 dark:text-zinc-500">
               <span>hi@rohanpothuru.com</span>
               <span>•</span>
               <span>Cincinnati, OH</span>
@@ -158,14 +156,14 @@ const Stack = () => {
         </div>
 
         {/* Resume Content */}
-        <div className="p-8 space-y-8">
+        <div className="p-5 space-y-5">
           {/* Experience Section */}
           <section>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
               EXPERIENCE
             </h3>
             
-            <div className="space-y-4">
+            <div className="space-y-2">
               {experience.map((exp, index) => (
                 <div key={index}>
                   <div className="flex items-start justify-between mb-1">
@@ -188,11 +186,11 @@ const Stack = () => {
 
           {/* Education Section */}
           <section>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
               EDUCATION
             </h3>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {education.map((edu, index) => (
                 <div key={index}>
                   <div className="flex items-start justify-between mb-2">
@@ -218,11 +216,11 @@ const Stack = () => {
 
           {/* Skills Section */}
           <section>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
               TECHNICAL SKILLS
             </h3>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {Object.entries(skills).map(([category, items]) => (
                 <div key={category} className="flex items-start gap-4">
                   <div className="w-24 flex-shrink-0">
@@ -242,11 +240,11 @@ const Stack = () => {
 
           {/* Certifications Section */}
           <section>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
               CERTIFICATIONS
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {certifications.map((cert, index) => (
                 <a
                   key={index}
@@ -276,10 +274,10 @@ const Stack = () => {
           {/* LeetCode Stats */}
           {leetcodeStats && (
             <section>
-              <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-4 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+              <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
                 CODING STATISTICS
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
                   <p className="text-lg font-bold text-zinc-900 dark:text-white">{leetcodeStats.totalSolved}</p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Total Solved</p>
@@ -302,7 +300,7 @@ const Stack = () => {
         </div>
 
         {/* Resume Footer */}
-        <div className="p-6 pt-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/30">
+        <div className="p-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/30">
           <div className="flex justify-center gap-8">
             <a
               href="https://drive.google.com/file/d/136cRqYTuEn55Yjge6dgyliQMT9XNZFF7/view"

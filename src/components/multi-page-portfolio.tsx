@@ -515,7 +515,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       {/* Bottom Controls - Hidden on mobile */}
       <div className="hidden md:flex fixed bottom-4 right-4 z-40 flex-row items-center space-x-3">
         <Link 
-          href="/stack"
+          href="/resume"
           className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"
           aria-label="Resume"
         >
