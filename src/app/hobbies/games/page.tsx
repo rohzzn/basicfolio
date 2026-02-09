@@ -150,26 +150,18 @@ const Games = () => {
     fetchData();
   }, []);
 
-  // Sort games by recent playtime for recent games section
-  const recentlySortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
-    if (a.playtime_2weeks && b.playtime_2weeks) {
-      return b.playtime_2weeks - a.playtime_2weeks;
-    }
-    if (a.playtime_2weeks) return -1;
-    if (b.playtime_2weeks) return 1;
-    return b.playtime_forever - a.playtime_forever;
-  });
-
   // Sort games by total playtime for top games section
   const totalPlaytimeSortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
     return b.playtime_forever - a.playtime_forever;
   });
 
-  // Get recently played and top games
-  const recentGames = recentlySortedGames.filter((game: SteamGame) => 
-    game.playtime_2weeks && game.playtime_2weeks > 0
-  ).slice(0, 4);
+  // Get top games
   const allGames = totalPlaytimeSortedGames.slice(0, 12);
+  
+  // Calculate total Steam hours
+  const totalSteamHours = Math.floor(
+    ownedGames.reduce((total, game) => total + game.playtime_forever, 0) / 60
+  );
 
   if (loading) {
     return (
@@ -217,9 +209,9 @@ const Games = () => {
         </div>
       </section>
 
-      {/* Leetify (CS2) */}
+      {/* Leetify (CS2) & Valorant */}
       <section className="mb-8">
-        <LeetifyProfileCard />
+        <LeetifyProfileCard totalSteamHours={totalSteamHours} />
       </section>
 
       {/* Gaming Content Layout */}
@@ -230,57 +222,7 @@ const Games = () => {
           </div>
         )}
         
-        <div className="space-y-8">
-          {/* Recent Games */}
-          {recentGames.length > 0 && (
-            <div>
-              <h3 className="text-base font-medium mb-6 dark:text-white">Recent Games</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {recentGames.map((game) => (
-                  <Link
-                    key={game.appid}
-                    href={`https://store.steampowered.com/app/${game.appid}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group cursor-pointer block"
-                  >
-                    <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-                      <div className="w-full aspect-[460/215] bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-2">
-                        <Image
-                          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
-                          alt={`${game.name} Header`}
-                          width={460}
-                          height={215}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            // Fallback to capsule image if header fails
-                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`;
-                            target.onerror = () => {
-                              target.style.display = 'none';
-                              const parent = target.parentElement;
-                              if (parent) {
-                                parent.innerHTML = '<span class="text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center w-full h-full">No IMG</span>';
-                              }
-                            };
-                          }}
-                        />
-                      </div>
-                      <h4 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1 line-clamp-2">
-                        {game.name}
-                      </h4>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                        {game.playtime_2weeks && game.playtime_2weeks > 0 
-                          ? `${Math.floor(game.playtime_2weeks / 60)}h recently` 
-                          : `${Math.floor(game.playtime_forever / 60)}h total`}
-                      </p>
-                    </article>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-          
+        <div>
           {/* Top Games */}
           <div>
             <h3 className="text-base font-medium mb-6 dark:text-white">Top Games</h3>
