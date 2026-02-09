@@ -60,16 +60,6 @@ const ProjectCard = ({ project }: { project: Project }) => {
               src
             </button>
           )}
-          
-          {/* Pre-AI indicator - appears similar to src */}
-          {project.metrics?.preAI && (
-            <span
-              className="text-zinc-400 transition-all text-xs opacity-0 group-hover:opacity-100 ml-2"
-              title="Made before AI was a thing"
-            >
-              I MADE THIS BEFORE AI WAS A THING
-            </span>
-          )}
         </div>
         
         <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">

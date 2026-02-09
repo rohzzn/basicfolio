@@ -1,21 +1,9 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
-import IxigoExperience from './ixigo-experience';
-import BeginnersGuideDesign from './beginners-guide-design';
-import BeginnersGuideProgramming from './beginners-guide-programming';
-import EsportsJourney from './esports-journey';
-import VariablesExposure from './variables-exposure';
-import SecurityArticle from './security-article';
-import BoringPerformance from './boring-performance';
-import ModernTechStacks from './modern-tech-stacks';
-import ChatGPTInterface from './chatgpt-interface';
-import DiscordArticle from './discord-article';
-import UCExperience from './uc-experience';
-import FirstSpring from './first-spring';
+import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 
 const WritingPage = () => {
-  const [selectedPost, setSelectedPost] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const posts = useMemo(() => [
@@ -124,52 +112,6 @@ const WritingPage = () => {
     return posts.filter(post => post.category === selectedCategory);
   }, [posts, selectedCategory]);
 
-  // Use effect to handle URL parameters
-  useEffect(() => {
-    // Check if there's a post parameter in the URL
-    const params = new URLSearchParams(window.location.search);
-    const postSlug = params.get('post');
-    
-    if (postSlug) {
-      setSelectedPost(postSlug);
-    }
-  }, []);
-
-  const renderPost = () => {
-    switch(selectedPost) {
-      case 'ixigo-experience':
-        return <IxigoExperience onBack={() => setSelectedPost(null)} />;
-      case 'beginners-guide-programming':
-        return <BeginnersGuideProgramming onBack={() => setSelectedPost(null)} />;
-      case 'beginners-guide-design':
-        return <BeginnersGuideDesign onBack={() => setSelectedPost(null)} />;
-      case 'esports-journey':
-        return <EsportsJourney onBack={() => setSelectedPost(null)} />;
-      case 'variables-exposure':
-        return <VariablesExposure onBack={() => setSelectedPost(null)} />;
-      case 'security-article':
-        return <SecurityArticle onBack={() => setSelectedPost(null)} />;
-      case 'boring-performance':
-        return <BoringPerformance onBack={() => setSelectedPost(null)} />;
-      case 'modern-tech-stacks':
-        return <ModernTechStacks onBack={() => setSelectedPost(null)} />;
-      case 'chatgpt-interface':
-        return <ChatGPTInterface onBack={() => setSelectedPost(null)} />;
-      case 'discord-article':
-        return <DiscordArticle onBack={() => setSelectedPost(null)} />;
-      case 'uc-experience':
-        return <UCExperience onBack={() => setSelectedPost(null)} />;
-      case 'first-spring':
-        return <FirstSpring onBack={() => setSelectedPost(null)} />;
-      default:
-        return null;
-    }
-  };
-
-  if (selectedPost) {
-    return renderPost();
-  }
-
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Writing</h2>
@@ -192,25 +134,18 @@ const WritingPage = () => {
       </div>
       
       {/* Posts List */}
-      <div className="space-y-3">
+      <div className="space-y-6">
         {filteredPosts.map((post) => (
-          <article 
+          <Link 
             key={post.slug}
-            onClick={() => setSelectedPost(post.slug)}
-            className="cursor-pointer group"
+            href={`/writing/${post.slug}`}
           >
-            <div className="flex items-start justify-between gap-4">
-              <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
+            <article className="cursor-pointer group mb-2">
+              <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
                 {post.title}
               </h3>
-              <time 
-                dateTime={post.date}
-                className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0 mt-0.5"
-              >
-                {post.displayDate}
-              </time>
-            </div>
-          </article>
+            </article>
+          </Link>
         ))}
       </div>
     </div>

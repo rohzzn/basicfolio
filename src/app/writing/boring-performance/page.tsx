@@ -1,36 +1,34 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-interface ArticleProps {
-  onBack?: () => void;
-}
 
-const BoringPerformance: React.FC<ArticleProps> = ({ onBack }) => {
+
+const BoringPerformance: React.FC = () => {
   return (
-    <article className="max-w-7xl py-8 px-4 sm:px-0">
-      <button 
-        onClick={onBack}
+    <article className="max-w-3xl py-8 px-4 sm:px-0">
+      <Link href="/writing"
         className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors"
       >
         <ArrowLeft size={16} />
         <span>Back to writing</span>
-      </button>
+      </Link>
 
       <header className="mb-8 max-w-3xl">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
+        <h1 className="text-lg font-medium mb-4 dark:text-white">
           Boring Performance: The Forgotten Art of Optimization
         </h1>
-        <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
+        <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2023-11-15">November 15, 2023</time>
         </div>
       </header>
 
-      <div className="prose dark:prose-invert prose-zinc max-w-3xl">
+      <div className="text-sm max-w-3xl">
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h2 className="text-lg font-semibold mb-4 dark:text-white">TLDR:</h2>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
+          <h2 className="text-sm font-medium mb-4 dark:text-white">TLDR:</h2>
+          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
             <li>50 production apps analyzed: unused code accounts for 40% of bundle size</li>
             <li>Memory leaks in React apps reduced by 35% through systematic testing</li>
             <li>Custom webpack plugin cut bundle sizes by 47% (code below)</li>
@@ -39,12 +37,12 @@ const BoringPerformance: React.FC<ArticleProps> = ({ onBack }) => {
           </ul>
         </div>
 
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-lg font-medium">
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
           When Tesla&#39;s frontend team moved to The Boring Company, they brought their performance obsession with them. But after six months of studying 50 production apps, we discovered something unexpected: the most impactful performance gains came from the most mundane optimizations. Here&#39;s everything we learned.
         </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">1. The Bundle Size Crisis</h3>
+          <h3 className="text-sm font-medium mb-4 dark:text-white">1. The Bundle Size Crisis</h3>
           <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
 {`// Our optimized webpack configuration
 const BoringWebpackPlugin = require('@boring/webpack-strip');
@@ -97,7 +95,7 @@ module.exports = {
         </div>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">2. Memory Management in React</h3>
+          <h3 className="text-sm font-medium mb-4 dark:text-white">2. Memory Management in React</h3>
           <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
 {`// Common memory leak pattern
 function LeakyComponent() {
@@ -134,8 +132,8 @@ function OptimizedComponent() {
           </pre>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">3. Network Layer Optimization</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">3. Network Layer Optimization</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Our biggest surprise came from network optimization. Simple CDN configuration changes outperformed weeks of JavaScript optimization. Here&#39;s our production CDN setup that reduced latency by 65%:
         </p>
 
@@ -184,8 +182,8 @@ function OptimizedComponent() {
           </pre>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">4. Paint Performance Tools</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">4. Paint Performance Tools</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           We built a custom paint profiling tool that revealed surprising bottlenecks. Here&#39;s a snippet showing how to use it:
         </p>
 
@@ -225,8 +223,8 @@ function Component() {
           </pre>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Real-World Impact</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Real-World Impact</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           After implementing these changes across our test applications:
         </p>
 
@@ -259,8 +257,8 @@ const metrics = {
         </div>
 
         <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">Essential Resources</h3>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
+          <h3 className="text-sm font-medium mb-4 dark:text-white">Essential Resources</h3>
+          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
             <li><strong>Performance Profiling Tool:</strong> github.com/boring-company/perf-profiler</li>
             <li><strong>Bundle Analysis Plugin:</strong> github.com/boring-company/webpack-strip</li>
             <li><strong>CDN Configuration Guide:</strong> boring-company.com/cdn-guide</li>
@@ -268,8 +266,8 @@ const metrics = {
           </ul>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Next Steps</h2>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Next Steps</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 text-sm">
           We&#39;re open-sourcing our entire performance toolkit. You can find all the tools mentioned above on our GitHub, along with detailed implementation guides. The most important lesson we learned? Don&#39;t optimize what you haven&#39;t measured, and don&#39;t complicate what could be simple.
         </p>
       </div>

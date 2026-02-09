@@ -1,14 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef, memo, useCallback } from "react";
-import { Menu, X, Gamepad, Music, Loader2, Focus, Clock, VolumeX } from "lucide-react";
+import { Menu, X, Gamepad, Music, Loader2, Focus, VolumeX } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
-import WeatherIcon from './WeatherIcon';
-import DigitalClock from './Clock';
 import EReaderEasterEgg from "./EReaderEasterEgg";
 
 interface NavLinkProps {
@@ -68,7 +66,7 @@ const NavLink: React.FC<NavLinkProps> = memo(({ href, children }) => {
   return (
     <Link
       href={href}
-      className={`block px-3 py-2.5 text-sm font-medium rounded-md transition-colors capitalize w-full text-left
+      className={`block px-4 py-3 text-sm sm:text-sm font-medium rounded-md transition-colors capitalize w-full text-left
         ${isActive
           ? "bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white"
           : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
@@ -404,7 +402,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       <button
         id="menu-button"
         onClick={useCallback(() => setIsMenuOpen(prev => !prev), [])}
-        className="lg:hidden fixed top-4 right-4 z-50 p-2 text-zinc-600 dark:text-zinc-400 bg-zinc-50/90 dark:bg-zinc-800/90 rounded-md shadow-md backdrop-blur-sm"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 text-zinc-600 dark:text-zinc-400 bg-zinc-50/90 dark:bg-zinc-800/90 rounded-md shadow-md backdrop-blur-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
         aria-label="Toggle Menu"
       >
         {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -413,21 +411,17 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       <div
         id="sidebar"
         className={`
-          fixed lg:fixed top-0 bottom-0 w-[85vw] max-w-[260px] sm:w-64 bg-zinc-50/95 dark:bg-zinc-900/95
+          fixed top-0 bottom-0 left-0 w-[280px] sm:w-[300px] lg:w-64 bg-zinc-50/95 dark:bg-zinc-900/95
           border-r border-zinc-200 dark:border-zinc-800 
           flex flex-col h-screen backdrop-blur-sm
           transform transition-transform duration-300 ease-in-out
           ${isMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-          z-40 overflow-y-auto
+          z-40 overflow-y-auto overflow-x-hidden
+          safe-area-inset
         `}
       >
         <div className="flex flex-col h-full">
-          <div className="p-4 sm:p-6 lg:p-8">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold dark:text-white">Rohan</h1>
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1">Software Engineer</p>
-          </div>
-
-          <nav className="flex-1 px-4 sm:px-6 lg:px-8 overflow-y-auto pb-4">
+          <nav className="flex-1 px-4 sm:px-5 lg:px-6 overflow-y-auto pb-4 pt-16 sm:pt-20 lg:pt-8">
             <div className="space-y-1">
               {              [
                 { path: "/", label: "About" },
@@ -442,7 +436,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </nav>
 
-          <div className="p-4 sm:p-6 lg:p-8 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="p-4 sm:p-5 lg:p-6 border-t border-zinc-200 dark:border-zinc-800 mt-auto">
             {isLoading ? (
               <div className="flex items-center justify-center py-2">
                 <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
@@ -513,13 +507,13 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       <main className="flex-1 lg:pl-64 w-full">
-        <div className="max-w-full w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8">
+        <div className="max-w-full w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 pt-16 lg:pt-6 sm:pt-16 lg:py-8">
           {children}
         </div>
       </main>
       
-      {/* Bottom Controls */}
-      <div className="fixed bottom-4 right-4 z-40 flex flex-row items-center space-x-3">
+      {/* Bottom Controls - Hidden on mobile */}
+      <div className="hidden md:flex fixed bottom-4 right-4 z-40 flex-row items-center space-x-3">
         <Link 
           href="/focus"
           className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"
@@ -540,14 +534,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             <VolumeX className="w-3.5 h-3.5" />
           )}
         </button>
-        
-        <div className="pl-2 border-l border-zinc-200 dark:border-zinc-700">
-          <WeatherIcon />
-        </div>
-        
-        <div>
-          <DigitalClock />
-        </div>
       </div>
       
 

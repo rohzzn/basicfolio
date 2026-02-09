@@ -1,36 +1,33 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-interface ArticleProps {
-  onBack?: () => void;
-}
-
-const UCExperience: React.FC<ArticleProps> = ({ onBack }) => {
+const UCExperience: React.FC = () => {
   return (
-    <article className="max-w-7xl py-8 px-4 sm:px-0">
-      <button 
-        onClick={onBack}
+    <article className="max-w-3xl py-8 px-4 sm:px-0">
+      <Link 
+        href="/writing"
         className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors"
       >
         <ArrowLeft size={16} />
         <span>Back to writing</span>
-      </button>
+      </Link>
 
       <header className="mb-8 max-w-3xl">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
+        <h1 className="text-lg font-medium mb-4 dark:text-white">
           My First Semester at UC: New Beginnings, Technical Challenges, and Campus Exploration
         </h1>
-        <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
+        <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2024-12-29">December 31, 2024</time>
         </div>
       </header>
 
-      <div className="prose dark:prose-invert prose-zinc max-w-3xl">
+      <div className="text-sm max-w-3xl">
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h2 className="text-lg font-semibold mb-4 dark:text-white">TLDR:</h2>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
+          <h2 className="text-sm font-medium mb-4 dark:text-white">TLDR:</h2>
+          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
             <li>Successfully completed first semester of MENG CS with rigorous technical curriculum</li>
             <li>Discovered UC&apos;s impressive 1819 Innovation Hub and state-of-the-art esports lab</li>
             <li>Balanced academics with rewarding part-time work at Bearcats Package Center</li>
@@ -39,18 +36,18 @@ const UCExperience: React.FC<ArticleProps> = ({ onBack }) => {
           </ul>
         </div>
 
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-lg font-medium">
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
           Fall 2024 marked the beginning of my UC journey as an F1 student in the Master of Engineering program. From intensive algorithm courses to exploring campus facilities, this semester has been filled with growth and discovery. Balancing academics, work, and campus life has created an incredible introduction to life as a Bearcat.
         </p>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Academic Deep Dive: Fall 2024 Curriculum</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Academic Deep Dive: Fall 2024 Curriculum</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           My first semester presented me with a robust set of courses that established a strong foundation in advanced computing and problem-solving methodologies:
         </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">Core Courses</h3>
-          <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400">
+          <h3 className="text-sm font-medium mb-4 dark:text-white">Core Courses</h3>
+          <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400 text-sm">
             <li>
               <strong>Advanced Algorithms 1:</strong>
               <p className="mt-1">An intense exploration of algorithmic complexity and optimization techniques. We tackled challenging problem-solving scenarios that pushed our computational thinking to new levels, providing critical foundations for advanced software development.</p>
@@ -70,18 +67,18 @@ const UCExperience: React.FC<ArticleProps> = ({ onBack }) => {
           </ul>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Campus Discovery: UC&apos;s Impressive Facilities</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Campus Discovery: UC&apos;s Impressive Facilities</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           My exploration of UC&apos;s campus revealed impressive facilities that enhance both academic and recreational aspects of student life. Among these, the 1819 Innovation Hub stands in a league of its own – an architectural masterpiece that feels like a blend of Silicon Valley tech campus and next-gen gaming arena.
         </p>
 
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           The Innovation Hub&apos;s esports arena quickly became my campus sanctuary. With professional-grade gaming setups, a passionate community, and an atmosphere that balances competitive spirit with casual fun, it&apos;s the perfect place to unwind after intensive coursework or connect with fellow tech enthusiasts.
         </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">Campus Highlights</h3>
-          <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400">
+          <h3 className="text-sm font-medium mb-4 dark:text-white">Campus Highlights</h3>
+          <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400 text-sm">
             <li>
               <strong>1819 Innovation Hub:</strong>
               <p className="mt-1">UC&apos;s crown jewel of innovation, offering collaborative spaces, cutting-edge technology, and an environment that transforms theoretical knowledge into practical application.</p>
@@ -101,14 +98,14 @@ const UCExperience: React.FC<ArticleProps> = ({ onBack }) => {
           </ul>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Professional Development: Bearcats Package Center</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Professional Development: Bearcats Package Center</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Balancing academics with practical work experience, my part-time position at the Bearcats Package Center has become a valuable component of my UC journey. Under the exceptional leadership of Tyler and Terrance, what could have been just a job has transformed into an enriching experience that complements my academic pursuits.
         </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">Work Experience Highlights</h3>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
+          <h3 className="text-sm font-medium mb-4 dark:text-white">Work Experience Highlights</h3>
+          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
             <li>Developed efficient package handling and tracking skills with real-world applications</li>
             <li>Built strong customer service abilities through interactions with the diverse campus community</li>
             <li>Learned practical inventory management techniques that complement theoretical coursework</li>
@@ -117,8 +114,8 @@ const UCExperience: React.FC<ArticleProps> = ({ onBack }) => {
           </ul>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Looking Forward</h2>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Looking Forward</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 text-sm">
           This first semester at UC has laid a strong foundation for my graduate journey. The combination of rigorous academics, cutting-edge facilities, and valuable work experience has exceeded my expectations for the MENG program. The knowledge gained through courses like Advanced Algorithms and Distributed Systems has prepared me for more advanced coursework, while connections made in the Innovation Hub and Package Center have enriched my campus experience. As I look toward spring semester, I&apos;m eager to build on this foundation, take on new challenges, and continue exploring everything UC has to offer.
         </p>
       </div>

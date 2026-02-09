@@ -1,36 +1,34 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-interface ArticleProps {
-  onBack?: () => void;
-}
 
-const ChatGPTInterface: React.FC<ArticleProps> = ({ onBack }) => {
+
+const ChatGPTInterface: React.FC = () => {
   return (
-    <article className="max-w-7xl py-8 px-4 sm:px-0">
-      <button 
-        onClick={onBack}
+    <article className="max-w-3xl py-8 px-4 sm:px-0">
+      <Link href="/writing"
         className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors"
       >
         <ArrowLeft size={16} />
         <span>Back to writing</span>
-      </button>
+      </Link>
 
       <header className="mb-8 max-w-3xl">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
+        <h1 className="text-lg font-medium mb-4 dark:text-white">
           I Built My Own ChatGPT UI and Learned Why UI/UX Engineers Still Have Jobs
         </h1>
-        <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
+        <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2024-01-20">January 20, 2024</time>
         </div>
       </header>
 
-      <div className="prose dark:prose-invert prose-zinc max-w-3xl">
+      <div className="text-sm max-w-3xl">
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h2 className="text-lg font-semibold mb-4 dark:text-white">TLDR:</h2>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400">
+          <h2 className="text-sm font-medium mb-4 dark:text-white">TLDR:</h2>
+          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
             <li>Spent 3 months building a ChatGPT-style interface from scratch</li>
             <li>Discovered 7 non-obvious UX patterns that affect user trust</li>
             <li>Built error handling system that increased user retention by 40%</li>
@@ -39,22 +37,19 @@ const ChatGPTInterface: React.FC<ArticleProps> = ({ onBack }) => {
           </ul>
         </div>
 
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-lg font-medium">
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
           How hard could it be? That&#39;s what I thought when I started building my own ChatGPT interface. Three months and 15,000 lines of code later, I&#39;ve learned that AI interfaces aren&#39;t just about pretty chat bubbles — they&#39;re about managing human expectations, trust, and anxiety in real-time.
         </p>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">The Trust Patterns</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Trust Patterns</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Here&#39;s the most surprising discovery: tiny UI details directly impact how much users trust the AI. Let&#39;s look at some code:
         </p>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">1. The Thinking State</h3>
+          <h3 className="text-sm font-medium mb-4 dark:text-white">1. The Thinking State</h3>
           <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
-{`interface ThinkingIndicatorProps {
-  responseTime: number;
-  confidence: number;
-}
+{`
 
 // Dynamic thinking indicator that adapts to response time
 function ThinkingIndicator({ responseTime, confidence }: ThinkingIndicatorProps) {
@@ -95,7 +90,7 @@ function ThinkingIndicator({ responseTime, confidence }: ThinkingIndicatorProps)
         </div>
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-lg font-semibold mb-4 dark:text-white">2. The Error Recovery System</h3>
+          <h3 className="text-sm font-medium mb-4 dark:text-white">2. The Error Recovery System</h3>
           <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
 {`// Error boundary that maintains conversation context
 class AIErrorBoundary extends React.Component {
@@ -157,17 +152,13 @@ class AIErrorBoundary extends React.Component {
           </pre>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">The Streaming Message Component</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Streaming Message Component</h2>
         
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
 {`import { useState, useEffect, useRef } from 'react';
 
-interface StreamingMessageProps {
-  content: string;
-  streamingSpeed?: number;
-  onComplete?: () => void;
-}
+
 
 export function StreamingMessage({
   content,
@@ -232,7 +223,7 @@ export function StreamingMessage({
           </pre>
         </div>
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">The Results</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Results</h2>
         
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
@@ -258,8 +249,8 @@ const userMetrics = {
         </div>
 
 
-        <h2 className="text-xl font-semibold mt-8 mb-4 dark:text-white">Future Work</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Future Work</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           The code is open source and I&#39;d love to see what others build with it. The most important lesson? UX engineers aren&#39;t just making things pretty — they&#39;re building trust interfaces between humans and increasingly complex AI systems. That&#39;s a job that won&#39;t be replaced by AI anytime soon.
         </p>
       </div>

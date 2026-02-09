@@ -78,19 +78,18 @@ const hobbyLinks: BaseItem[] = [
 ];
 
 const writingArticles: BaseItem[] = [
-  { title: 'First Spring', href: '/writing/first-spring', icon: <FileText className="w-4 h-4" />, keywords: ['article', 'spring', 'season', 'blog'] },
-  { title: 'Beginners Guide to Design', href: '/writing/beginners-guide-design', icon: <PenTool className="w-4 h-4" />, keywords: ['design', 'tutorial', 'ui', 'ux'] },
-  { title: 'Beginners Guide to Programming', href: '/writing/beginners-guide-programming', icon: <Code className="w-4 h-4" />, keywords: ['programming', 'coding', 'tutorial', 'learn'] },
-  { title: 'Boring Performance', href: '/writing/boring-performance', icon: <TrendingUp className="w-4 h-4" />, keywords: ['performance', 'optimization', 'web'] },
-  { title: 'ChatGPT Interface', href: '/writing/chatgpt-interface', icon: <Sparkles className="w-4 h-4" />, keywords: ['ai', 'chatgpt', 'interface', 'design'] },
-  { title: 'Discord Article', href: '/writing/discord-article', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['discord', 'community', 'platform'] },
-  { title: 'Esports Journey', href: '/writing/esports-journey', icon: <Award className="w-4 h-4" />, keywords: ['esports', 'gaming', 'competitive', 'journey'] },
+  { title: 'First Spring', href: '/writing/first-spring', icon: <FileText className="w-4 h-4" />, keywords: ['article', 'spring', 'season', 'blog', 'uc', 'cincinnati'] },
+  { title: 'UC Experience', href: '/writing/uc-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['uc', 'university', 'experience', 'cincinnati', 'semester'] },
+  { title: 'Variables Exposure', href: '/writing/variables-exposure', icon: <Code className="w-4 h-4" />, keywords: ['variables', 'security', 'environment', 'env'] },
+  { title: 'Modern Tech Stacks', href: '/writing/modern-tech-stacks', icon: <Code className="w-4 h-4" />, keywords: ['tech', 'stack', 'tools', 'modern', 'php'] },
+  { title: 'Security Article', href: '/writing/security-article', icon: <Target className="w-4 h-4" />, keywords: ['security', 'privacy', 'protection', '2fa'] },
+  { title: 'Boring Performance', href: '/writing/boring-performance', icon: <TrendingUp className="w-4 h-4" />, keywords: ['performance', 'optimization', 'web', 'speed'] },
+  { title: 'Discord Article', href: '/writing/discord-article', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['discord', 'community', 'platform', 'api'] },
+  { title: 'Esports Journey', href: '/writing/esports-journey', icon: <Award className="w-4 h-4" />, keywords: ['esports', 'gaming', 'competitive', 'journey', 'valorant'] },
+  { title: 'ChatGPT Interface', href: '/writing/chatgpt-interface', icon: <Sparkles className="w-4 h-4" />, keywords: ['ai', 'chatgpt', 'interface', 'design', 'ux'] },
   { title: 'iXigo Experience', href: '/writing/ixigo-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['ixigo', 'internship', 'work', 'experience'] },
-  { title: 'Modern Tech Stacks', href: '/writing/modern-tech-stacks', icon: <Code className="w-4 h-4" />, keywords: ['tech', 'stack', 'tools', 'modern'] },
-  { title: 'Performance Article', href: '/writing/performance-article', icon: <TrendingUp className="w-4 h-4" />, keywords: ['performance', 'web', 'speed'] },
-  { title: 'Security Article', href: '/writing/security-article', icon: <Target className="w-4 h-4" />, keywords: ['security', 'privacy', 'protection'] },
-  { title: 'UC Experience', href: '/writing/uc-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['uc', 'university', 'experience'] },
-  { title: 'Variables Exposure', href: '/writing/variables-exposure', icon: <Code className="w-4 h-4" />, keywords: ['variables', 'security', 'environment'] },
+  { title: 'Beginners Guide to Programming', href: '/writing/beginners-guide-programming', icon: <Code className="w-4 h-4" />, keywords: ['programming', 'coding', 'tutorial', 'learn'] },
+  { title: 'Beginners Guide to Design', href: '/writing/beginners-guide-design', icon: <PenTool className="w-4 h-4" />, keywords: ['design', 'tutorial', 'ui', 'ux'] },
 ];
 
 const externalLinks: BaseItem[] = [
@@ -341,7 +340,8 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
         label="Command Menu"
         filter={customFilter}
           loop
-        className="fixed top-[20%] left-1/2 transform -translate-x-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-[10000] transition-all"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-[10000]"
+        style={{ transform: 'translate(-50%, -50%)' }}
       >
         {/* Hidden title for accessibility */}
         <div className="sr-only">
