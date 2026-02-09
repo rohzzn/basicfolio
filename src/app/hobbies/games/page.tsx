@@ -263,13 +263,13 @@ const Games = () => {
                     className="group cursor-pointer block"
                   >
                     <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-                      <div className="w-full h-20 bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-2">
+                      <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-2">
                         <Image
                           src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
                           alt={`${game.name} Header`}
                           width={460}
                           height={215}
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`;
