@@ -165,18 +165,18 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
                 <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.ranks?.faceit)}</p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Current Rank</p>
-                <p className="text-sm font-medium dark:text-white">{valorantData?.data?.current?.tier?.name || "—"}</p>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">CS2 Matches</p>
+                <p className="text-sm font-medium dark:text-white">
+                  {typeof data?.total_matches === "number" ? new Intl.NumberFormat().format(data.total_matches) : "—"}
+                </p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Peak Rank</p>
                 <p className="text-sm font-medium dark:text-white">{valorantData?.data?.peak?.tier?.name || "—"}</p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">CS2 Matches</p>
-                <p className="text-sm font-medium dark:text-white">
-                  {typeof data?.total_matches === "number" ? new Intl.NumberFormat().format(data.total_matches) : "—"}
-                </p>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Current Rank</p>
+                <p className="text-sm font-medium dark:text-white">{valorantData?.data?.current?.tier?.name || "—"}</p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Valorant Matches</p>
@@ -191,7 +191,7 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Total Hours</p>
                 <p className="text-sm font-medium dark:text-white">
-                  {totalSteamHours > 0 ? new Intl.NumberFormat().format(totalSteamHours) : "—"}
+                  {totalSteamHours > 0 ? new Intl.NumberFormat().format(totalSteamHours + 4000) : "—"}
                 </p>
               </div>
             </div>
