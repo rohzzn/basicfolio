@@ -62,7 +62,7 @@ const Home: React.FC = () => {
     }
   };
 
-  const copyEmail = async (e: React.MouseEvent) => {
+  const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText('hi@rohanpothuru.com');
       setEmailCopied(true);
