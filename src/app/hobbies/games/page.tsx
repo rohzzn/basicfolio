@@ -168,7 +168,7 @@ const Games = () => {
   // Get recent and top games
   const recentGames = recentlySortedGames.filter((game: SteamGame) => 
     game.playtime_2weeks && game.playtime_2weeks > 0
-  ).slice(0, 2);
+  ).slice(0, 3);
   const allGames = totalPlaytimeSortedGames.slice(0, 12);
   
   // Calculate total Steam hours
@@ -240,7 +240,7 @@ const Games = () => {
           {recentGames.length > 0 && (
             <div>
               <h3 className="text-base font-medium mb-6 dark:text-white">Recent Games</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 {recentGames.map((game) => (
                   <Link
                     key={game.appid}
@@ -249,17 +249,17 @@ const Games = () => {
                     rel="noopener noreferrer"
                     className="group cursor-pointer block"
                   >
-                    <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                    <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
                       <div className="w-full aspect-[460/215] bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-2">
                         <Image
-                          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
+                          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`}
                           alt={`${game.name} Header`}
-                          width={460}
-                          height={215}
+                          width={231}
+                          height={87}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`;
+                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
                             target.onerror = () => {
                               target.style.display = 'none';
                               const parent = target.parentElement;
