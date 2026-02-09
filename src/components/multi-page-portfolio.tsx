@@ -100,7 +100,7 @@ const getActivityIcon = (type: number) => {
     case 2:
       return <Music className="w-3 h-3" />;
     default:
-      return <Clock className="w-3 h-3" />;
+      return <Focus className="w-3 h-3" />;
   }
 };
 
