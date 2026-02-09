@@ -446,7 +446,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
                 Unable to load status
               </div>
             ) : lanyardData && (
-              <div className="flex flex-col items-start gap-2 w-full">
+              <div className="flex flex-col items-start gap-4 w-full">
                 <div className="flex items-center gap-2">
                   <div
                     className="w-2 h-2 rounded-full"
@@ -464,7 +464,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
 
                 {lanyardData.activities?.length > 0 && 
                  lanyardData.activities.filter(activity => activity.name !== "Spotify").length > 0 && (
-                  <div className="space-y-3 w-full mt-2">
+                  <div className="space-y-3 w-full">
                     {lanyardData.activities
                       .filter(activity => activity.name !== "Spotify")
                       .slice(0, 2)
