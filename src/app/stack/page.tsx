@@ -139,7 +139,7 @@ const Stack = () => {
         {/* Resume Header */}
         <div className="p-8 pb-6 border-b border-zinc-200 dark:border-zinc-800">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+            <h1 className="text-lg font-medium text-zinc-900 dark:text-white mb-2">
               Rohan Pothuru
             </h1>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
