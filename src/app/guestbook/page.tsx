@@ -172,15 +172,9 @@ export default function GuestbookPage() {
 
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Guestbook</h2>
-      
       <div className="max-w-2xl">
-        <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-          Leave a message! It can be anything – appreciation, suggestions, or just a friendly hello.
-        </p>
-
         {/* Message Form */}
-        <form onSubmit={handleSubmit} className="mb-12">
+        <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex flex-col gap-4">
             <input
               type="text"
@@ -208,6 +202,10 @@ export default function GuestbookPage() {
             </button>
           </div>
         </form>
+        
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-12 italic">
+          Leave a message! It can be anything – appreciation, suggestions, or just a friendly hello.
+        </p>
 
         {/* Error Message */}
         {error && (
