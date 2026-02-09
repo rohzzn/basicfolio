@@ -7,6 +7,8 @@ const Home: React.FC = () => {
   const [isDark, setIsDark] = React.useState(false);
   const [showImage, setShowImage] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [tapCount, setTapCount] = useState(0);
+  const [imageType, setImageType] = useState<'normal' | 'gif'>('normal');
   
   useEffect(() => {
     // Check initial dark mode
@@ -39,7 +41,23 @@ const Home: React.FC = () => {
   
   const handleNameClick = () => {
     if (isDesktop) {
-      setShowImage(!showImage);
+      const newCount = tapCount + 1;
+      
+      if (newCount === 1) {
+        setShowImage(true);
+        setImageType('normal');
+        setTapCount(1);
+      } else if (newCount === 2) {
+        setShowImage(false);
+        setTapCount(2);
+      } else if (newCount === 3) {
+        setShowImage(true);
+        setImageType('gif');
+        setTapCount(3);
+      } else {
+        setShowImage(false);
+        setTapCount(0);
+      }
     }
   };
   
@@ -69,13 +87,24 @@ const Home: React.FC = () => {
             {/* Image appears beside paragraphs */}
             {showImage && isDesktop && (
               <div className="animate-fade-in flex-shrink-0 flex flex-col items-center">
-                <Image
-                  src="/images/profile/rohan.png"
-                  alt="Rohan Pothuru"
-                  width={180}
-                  height={180}
-                  className="rounded-lg"
-                />
+                {imageType === 'normal' ? (
+                  <Image
+                    src="/images/profile/rohan.png"
+                    alt="Rohan Pothuru"
+                    width={180}
+                    height={180}
+                    className="rounded-lg"
+                  />
+                ) : (
+                  <Image
+                    src="/images/profile/rohan_gif.gif"
+                    alt="Rohan Pothuru"
+                    width={180}
+                    height={180}
+                    className="rounded-lg"
+                    unoptimized
+                  />
+                )}
                 <div className="handwritten-text mt-2 text-zinc-500 dark:text-zinc-400">
                   ↑ you found me
                 </div>
