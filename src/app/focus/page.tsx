@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle2, Circle, Play, Pause, RotateCcw, Bell, Clock, ZapOff, Zap, ListChecks, BellOff, Music, VolumeX } from 'lucide-react';
+import { CheckCircle2, Circle, Play, Pause, RotateCcw, Bell, Clock, ZapOff, BellOff } from 'lucide-react';
 
 // Type for todo items
 interface TodoItem {
@@ -32,7 +32,6 @@ const FocusPage: React.FC = () => {
   const [timerMode, setTimerMode] = useState<'short' | 'long' | 'break'>('short');
   const [sessionsCompleted, setSessionsCompleted] = useState<number>(0);
   const [sessionHistory, setSessionHistory] = useState<FocusSession[]>([]);
-  const [showSessionHistory, setShowSessionHistory] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -47,9 +46,6 @@ const FocusPage: React.FC = () => {
     break: TIMER_DURATIONS.break * 60
   });
   
-  // Study music states
-  const [isStudyMusicPlaying, setIsStudyMusicPlaying] = useState<boolean>(false);
-  const studyMusicRef = useRef<HTMLAudioElement | null>(null);
   
   // Todo states
   const [todos, setTodos] = useState<TodoItem[]>([]);
@@ -253,50 +249,11 @@ const FocusPage: React.FC = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
-  // Format date for session history
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  };
-  
   // Toggle sound
   const toggleSound = () => {
     setSoundEnabled(!soundEnabled);
   };
   
-  // Initialize and control study music
-  useEffect(() => {
-    const audio = new Audio('/lofi-background.mp3');
-    audio.loop = true;
-    audio.volume = 0.74;
-    studyMusicRef.current = audio;
-    
-    return () => {
-      if (studyMusicRef.current) {
-        studyMusicRef.current.pause();
-        studyMusicRef.current = null;
-      }
-    };
-  }, []);
-  
-  // Toggle study music
-  const toggleStudyMusic = () => {
-    if (studyMusicRef.current) {
-      if (isStudyMusicPlaying) {
-        studyMusicRef.current.pause();
-      } else {
-        studyMusicRef.current.play().catch(err => 
-          console.error('Failed to play study music:', err)
-        );
-      }
-      setIsStudyMusicPlaying(!isStudyMusicPlaying);
-    }
-  };
   
   // Add new todo - with immediate localStorage update
   const addTodo = (e: React.FormEvent) => {
@@ -384,7 +341,6 @@ const FocusPage: React.FC = () => {
       const savedSessionHistory = localStorage.getItem('focusSessionHistory');
       const savedSessionsCompleted = localStorage.getItem('focusSessionsCompleted');
       const savedSoundEnabled = localStorage.getItem('focusSoundEnabled');
-      const savedStudyMusicPlaying = localStorage.getItem('focusStudyMusicPlaying');
       
       // Timer persistence
       const savedTimerActive = localStorage.getItem('focusTimerActive');
@@ -438,17 +394,6 @@ const FocusPage: React.FC = () => {
       
       if (savedSoundEnabled) {
         setSoundEnabled(JSON.parse(savedSoundEnabled));
-      }
-      
-      if (savedStudyMusicPlaying) {
-        const isPlaying = JSON.parse(savedStudyMusicPlaying);
-        setIsStudyMusicPlaying(isPlaying);
-        if (isPlaying && studyMusicRef.current) {
-          studyMusicRef.current.play().catch(() => {
-            // Auto-play might be blocked, we'll reset the state
-            setIsStudyMusicPlaying(false);
-          });
-        }
       }
       
       // Restore timer state
@@ -539,12 +484,11 @@ const FocusPage: React.FC = () => {
       localStorage.setItem('focusSessionHistory', JSON.stringify(sessionHistory));
       localStorage.setItem('focusSessionsCompleted', sessionsCompleted.toString());
       localStorage.setItem('focusSoundEnabled', JSON.stringify(soundEnabled));
-      localStorage.setItem('focusStudyMusicPlaying', JSON.stringify(isStudyMusicPlaying));
       
     } catch (error) {
       console.error('Error saving to localStorage:', error);
     }
-  }, [todos, sessionHistory, sessionsCompleted, soundEnabled, isStudyMusicPlaying]);
+  }, [todos, sessionHistory, sessionsCompleted, soundEnabled]);
   
   // Check localStorage availability on mount
   useEffect(() => {
