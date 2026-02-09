@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Software Engineer, Designer, and CS student. Building digital experiences and exploring the future of technology through code and creativity.',
   metadataBase: new URL('https://rohan.run'),
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.svg",
   },
   openGraph: {
     title: "Rohan",

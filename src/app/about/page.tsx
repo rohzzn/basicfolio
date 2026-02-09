@@ -1,11 +1,31 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import GitHubCalendar from 'react-github-calendar';
 
 const Home: React.FC = () => {
   const [showImage, setShowImage] = useState(false);
   const [emoji, setEmoji] = useState('👋');
+  const [isDark, setIsDark] = useState(false);
+  
+  useEffect(() => {
+    // Check initial dark mode
+    const checkDarkMode = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    
+    checkDarkMode();
+    
+    // Watch for theme changes
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    
+    return () => observer.disconnect();
+  }, []);
   
   // Function to get a random emoji for visitor greeting
   const getRandomEmoji = () => {
@@ -38,6 +58,34 @@ const Home: React.FC = () => {
           <p className="text-base text-zinc-600 dark:text-zinc-400 mb-8">
             When I&apos;m not coding, you&apos;ll find me taking photos, gaming with friends, or working on random design projects that catch my interest. I also spend way too much time tweaking my setup and discovering new tools that probably don&apos;t make me more productive but are fun to play with.
           </p>
+        </div>
+        
+        {/* GitHub Calendar */}
+        <div style={{ maxWidth: '75ch' }} className="mt-16 overflow-hidden">
+          <GitHubCalendar 
+            username="rohzzn"
+            colorScheme={isDark ? 'dark' : 'light'}
+            theme={{
+              light: ['#e4e4e7', '#a1a1aa', '#71717a', '#52525b', '#3f3f46'],
+              dark: ['#3f3f46', '#52525b', '#71717a', '#a1a1aa', '#d4d4d8'],
+            }}
+            blockSize={14}
+            blockMargin={4}
+            fontSize={12}
+            hideColorLegend
+            hideMonthLabels
+            hideTotalCount
+            showWeekdayLabels={false}
+            transformData={(data) => {
+              const now = new Date();
+              const eightMonthsAgo = new Date(now);
+              eightMonthsAgo.setMonth(now.getMonth() - 8);
+              return data.filter(day => new Date(day.date) >= eightMonthsAgo);
+            }}
+            style={{
+              width: '100%',
+            }}
+          />
         </div>
       </div>
 
