@@ -142,7 +142,8 @@ const Home: React.FC = () => {
             >
               X
             </a>
-            , or by <span className="relative">
+            ,{' '}
+            <span className="relative">
               <span
                 onClick={copyEmail}
                 className="text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors cursor-pointer"
@@ -154,7 +155,14 @@ const Home: React.FC = () => {
                   Email copied to clipboard
                 </span>
               )}
-            </span>.
+            </span>
+            , or view my{' '}
+            <a 
+              href="/resume" 
+              className="text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+            >
+              resume
+            </a>.
           </p>
         </div>
         
