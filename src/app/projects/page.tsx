@@ -42,29 +42,25 @@ const ProjectCard = ({ project }: { project: Project }) => {
       className="group cursor-pointer block"
     >
       <article>
-        <div className="mb-2 flex items-center gap-2">
-          <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-            {project.title}
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
+            {project.title}, <span className="text-xs text-zinc-500 dark:text-zinc-500 font-normal">{project.description}</span>
           </h3>
           
-          {/* Subtle source indicator - only appears on hover, right beside title */}
+          {/* Subtle source indicator - only appears on hover */}
           {githubLink && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 window.open(githubLink.url, '_blank', 'noopener,noreferrer');
               }}
-              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-all text-xs opacity-0 group-hover:opacity-100"
+              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-all text-xs opacity-0 group-hover:opacity-100 flex-shrink-0"
               title="View source code"
             >
               src
             </button>
           )}
         </div>
-        
-        <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
-          {project.description}
-        </p>
       </article>
     </Link>
   );
@@ -76,7 +72,7 @@ const Projects = () => {
   const projects: Project[] = [
     {
       title: "Wordle Clone",
-      description: "A web application that creates word clouds based on the user's input text. This application is a clone of the popular word cloud generator, Wordle, built using JavaScript.",
+      description: "Word cloud generator game",
       tech: ["JavaScript", "HTML", "CSS"],
       category: 'game',
       links: [
@@ -90,7 +86,7 @@ const Projects = () => {
     },
     {
       title: "Interactions",
-      description: "Interaction Design Challenge - Take on the 7-day challenge and craft beautiful UI interactions daily. Make your designs come alive!",
+      description: "7-day UI interaction design challenge",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'other',
       links: [
@@ -101,7 +97,7 @@ const Projects = () => {
     },
     {
       title: "Contests",
-      description: "Discover programming contests and hackathons from around the world. Track your favorites, export to calendar, and stay ahead of the competition.",
+      description: "Programming contests & hackathon tracker",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
       links: [
@@ -115,7 +111,7 @@ const Projects = () => {
     },
     {
       title: "ShutTab",
-      description: "A Chrome extension that allows you to block websites for a specified time.",
+      description: "Website blocker Chrome extension",
       tech: ["JavaScript", "Chrome Extensions", "CSS"],
       category: 'application',
       links: [
@@ -129,7 +125,7 @@ const Projects = () => {
     },
     {
       title: "API Clinic",
-      description: "A powerful API testing tool with real-time response validation and environment management.",
+      description: "API testing tool with validation",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
       links: [
@@ -143,7 +139,7 @@ const Projects = () => {
     },
     {
       title: "DSA Roadmap",
-      description: "Path for learning Data Structures and Algorithms with resources and contest updates.",
+      description: "Learning path for Data Structures & Algorithms",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
       links: [
@@ -158,7 +154,7 @@ const Projects = () => {
     },
     {
       title: "CodeChef MREC",
-      description: "Official CodeChef chapter platform for managing coding competitions, resources, and community events.",
+      description: "Official chapter website for CodeChef",
       tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
       category: 'web',
       links: [
@@ -173,7 +169,7 @@ const Projects = () => {
     },
     {
       title: "Git Time Machine",
-      description: "CLI tool that provides elegant visualization of git history with intuitive time-based navigation.",
+      description: "CLI tool for git history visualization",
       tech: ["Node.js", "Commander.js", "Inquirer", "Chalk"],
       category: 'application',
       links: [
@@ -187,7 +183,7 @@ const Projects = () => {
     },
     {
       title: "Pages",
-      description: "Figma plugin that streamlines page creation and layout management with smart templates.",
+      description: "Figma plugin for page management",
       tech: ["Figma API", "TypeScript", "React"],
       category: 'application',
       links: [
@@ -202,7 +198,7 @@ const Projects = () => {
     },
     {
       title: "Meet",
-      description: "Video conferencing app with screen sharing, session recording, and real-time chat features.",
+      description: "Video conferencing with screen sharing",
       tech: ["React", "Node.js", "Socket.io"],
       category: 'application',
       links: [
@@ -217,7 +213,7 @@ const Projects = () => {
     },
     {
       title: "Ipynb Image Extractor",
-      description: "Python utility for batch extracting and organizing images from Jupyter notebooks.",
+      description: "Extract images from Jupyter notebooks",
       tech: ["Python", "Nbformat", "Pillow"],
       category: 'application',
       links: [
@@ -231,7 +227,7 @@ const Projects = () => {
     },
     {
       title: "Scrapetron",
-      description: "Powerful web scraping framework with built-in data processing and export capabilities.",
+      description: "Web scraping framework",
       tech: ["Python", "BeautifulSoup", "Scrapy"],
       category: 'application',
       links: [
@@ -246,7 +242,7 @@ const Projects = () => {
     },
     {
       title: "Todo iOS App",
-      description: "Native iOS task manager with cloud sync, reminders, and smart categorization.",
+      description: "Native task manager with cloud sync",
       tech: ["Swift", "UIKit", "CoreData"],
       category: 'application',
       links: [
@@ -260,7 +256,7 @@ const Projects = () => {
     },
     {
       title: "Zenitsu Bot",
-      description: "Feature-rich Discord bot with moderation tools, mini-games, and server management utilities.",
+      description: "Discord bot with moderation & games",
       tech: ["JavaScript", "Discord.js", "Node.js"],
       category: 'application',
       links: [
@@ -275,7 +271,7 @@ const Projects = () => {
     },
     {
       title: "Tanoshi",
-      description: "Eye-friendly VS Code theme with carefully crafted color palette for reduced strain.",
+      description: "Eye-friendly VS Code theme",
       tech: ["CSS", "JSON"],
       category: 'application',
       links: [
@@ -291,7 +287,7 @@ const Projects = () => {
     },
     {
       title: "Hexr",
-      description: "Chrome extension for color picking, palette generation, and color code conversion.",
+      description: "Color picker Chrome extension",
       tech: ["JavaScript", "Chrome Extensions", "CSS"],
       category: 'application',
       links: [
@@ -306,7 +302,7 @@ const Projects = () => {
     },
     {
       title: "Dekho Car",
-      description: "Modern car rental platform with real-time booking, reviews, and payment integration.",
+      description: "Car rental platform with booking",
       tech: ["React", "Node.js", "MongoDB"],
       category: 'web',
       links: [
@@ -321,7 +317,7 @@ const Projects = () => {
     },
     {
       title: "QR Generator",
-      description: "QR code generator with custom styling, logo embedding, and batch processing capabilities.",
+      description: "Custom QR code generator",
       tech: ["JavaScript", "HTML5", "CSS3"],
       category: 'web',
       links: [
@@ -336,7 +332,7 @@ const Projects = () => {
     },
     {
       title: "Pokemon 2d Platformer",
-      description: "Explore a vibrant and interactive world filled with detailed maps and smooth gameplay.",
+      description: "Interactive Pokemon world game",
       tech: ["JavaScript", "Tiled"],
       category: 'game',
       links: [
@@ -351,7 +347,7 @@ const Projects = () => {
     },
     {
       title: "Pokedex",
-      description: "Interactive Pokémon catalog with game mechanics, stats tracking, and collection features.",
+      description: "Pokemon catalog with stats tracking",
       tech: ["JavaScript", "PokéAPI"],
       category: 'game',
       links: [
@@ -366,7 +362,7 @@ const Projects = () => {
     },
     {
       title: "Automobile Analytics",
-      description: "Data-driven marketing strategy analyzer for automotive industry with predictive insights.",
+      description: "Marketing strategy analyzer for automotive",
       tech: ["Python", "Pandas", "Matplotlib"],
       category: 'other',
       links: [
@@ -380,7 +376,7 @@ const Projects = () => {
     },
     {
       title: "Smart Agriculture",
-      description: "IoT-based farming system with automated irrigation, monitoring, and yield optimization.",
+      description: "IoT-based automated farming system",
       tech: ["Arduino", "C++", "Sensors"],
       category: 'other',
       links: [
@@ -394,7 +390,7 @@ const Projects = () => {
     },
     {
       title: "Block-Steam-Invites",
-      description: "Script to block Steam invites with options for filtering users by private profiles, VAC bans, or trading bans.",
+      description: "Block unwanted Steam friend requests",
       tech: ["JavaScript", "Tampermonkey/Greasemonkey"],
       category: "other",
       links: [
@@ -408,7 +404,7 @@ const Projects = () => {
     },
     {
       title: "OverTheWire Challenges",
-      description: "I solved OTW challenges and wrote down solutions for Bandit (Level 23-24) and Natas (up to Level 5).",
+      description: "Security challenges & writeups",
       tech: ["Command-line scripting"], 
       category: "other",
       links: [
@@ -422,7 +418,7 @@ const Projects = () => {
     },
     {
       title: "Discord Mirror",
-      description: "Mirror messages from any server to any channel in Discord.",
+      description: "Cross-server message mirroring",
       tech: ["Node.js"],
       category: "other",
       links: [
@@ -435,7 +431,7 @@ const Projects = () => {
     },
     {
       title: "GitHub Repo Any Year Any Day",
-      description: "Script to create GitHub repositories with backdated commits.",
+      description: "Create repos with backdated commits",
       tech: ["Shell Script"],
       category: "other",
       links: [
@@ -449,7 +445,7 @@ const Projects = () => {
     },
     {
       title: "YouTube Thumbnail Downloader",
-      description: "Web app to fetch and download YouTube video thumbnails in various resolutions.",
+      description: "Download thumbnails in any resolution",
       tech: ["JavaScript", "HTML", "CSS"],
       category: "web",
       links: [
@@ -464,7 +460,7 @@ const Projects = () => {
     },
     {
       title: "Marvel Cinematic Universe Timeline",
-      description: "Interactive Marvel Cinematic Universe timeline with CSS animations and responsive design.",
+      description: "Interactive MCU timeline",
       tech: ["HTML", "CSS", "JavaScript"],
       category: "web",
       links: [
@@ -479,7 +475,7 @@ const Projects = () => {
     },
     {
       title: "Customer Management App",
-      description: "React and Node.js-based customer management app with PostgreSQL backend.",
+      description: "CRM with PostgreSQL backend",
       tech: ["React", "Node.js", "Express", "PostgreSQL"],
       category: "application",
       links: [
@@ -492,7 +488,7 @@ const Projects = () => {
     },
     {
       title: "Anomaly Detection in Wireless Networks",
-      description: "Proposed AS-CNN model using ADASYN and Split-Convolution CNN for enhanced anomaly detection.",
+      description: "ML model for network anomaly detection",
       tech: ["Python", "Machine Learning", "TensorFlow"],
       category: "other",
       links: [
@@ -505,7 +501,7 @@ const Projects = () => {
     },
     {
       title: "Portfolio V5",
-      description: "Current portfolio featuring dark mode, responsive design, and modern UI interactions.",
+      description: "Current portfolio with dark mode",
       tech: ["Next.js", "TypeScript", "Tailwind CSS"],
       category: 'web',
       links: [
@@ -520,7 +516,7 @@ const Projects = () => {
     },
     {
       title: "Portfolio V4",
-      description: "Windows 95-inspired portfolio with authentic retro UI elements and animations.",
+      description: "Windows 95-inspired portfolio",
       tech: ["React", "Styled Components", "95.css"],
       category: 'web',
       links: [
@@ -535,7 +531,7 @@ const Projects = () => {
     },
     {
       title: "Portfolio V3",
-      description: "Clean, minimalist portfolio focused on typography and smooth transitions.",
+      description: "Minimalist portfolio with typography focus",
       tech: ["React", "CSS3", "JavaScript"],
       category: 'web',
       links: [
@@ -550,7 +546,7 @@ const Projects = () => {
     },
     {
       title: "Portfolio V2",
-      description: "Dynamic portfolio with GSAP animations and interactive project showcases.",
+      description: "Dynamic portfolio with GSAP animations",
       tech: ["React", "GSAP", "Sass"],
       category: 'web',
       links: [
@@ -565,7 +561,7 @@ const Projects = () => {
     },
     {
       title: "Portfolio V1",
-      description: "Anime-inspired portfolio with unique visual effects and creative transitions.",
+      description: "Anime-inspired creative portfolio",
       tech: ["HTML5", "CSS3", "JavaScript"],
       category: 'web',
       links: [
@@ -616,7 +612,7 @@ const Projects = () => {
       </div>
 
       {/* Projects List */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {categories[activeTab]?.length ? (
           categories[activeTab].map((project, index) => (
             <ProjectCard key={index} project={project} />

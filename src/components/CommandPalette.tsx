@@ -76,18 +76,18 @@ const hobbyLinks: BaseItem[] = [
 ];
 
 const writingArticles: BaseItem[] = [
-  { title: 'First Spring', href: '/writing/first-spring', icon: <FileText className="w-4 h-4" />, keywords: ['article', 'spring', 'season', 'blog', 'uc', 'cincinnati'] },
-  { title: 'UC Experience', href: '/writing/uc-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['uc', 'university', 'experience', 'cincinnati', 'semester'] },
-  { title: 'Variables Exposure', href: '/writing/variables-exposure', icon: <Code className="w-4 h-4" />, keywords: ['variables', 'security', 'environment', 'env'] },
-  { title: 'Modern Tech Stacks', href: '/writing/modern-tech-stacks', icon: <Code className="w-4 h-4" />, keywords: ['tech', 'stack', 'tools', 'modern', 'php'] },
-  { title: 'Security Article', href: '/writing/security-article', icon: <Target className="w-4 h-4" />, keywords: ['security', 'privacy', 'protection', '2fa'] },
-  { title: 'Boring Performance', href: '/writing/boring-performance', icon: <TrendingUp className="w-4 h-4" />, keywords: ['performance', 'optimization', 'web', 'speed'] },
-  { title: 'Discord Article', href: '/writing/discord-article', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['discord', 'community', 'platform', 'api'] },
-  { title: 'Esports Journey', href: '/writing/esports-journey', icon: <Award className="w-4 h-4" />, keywords: ['esports', 'gaming', 'competitive', 'journey', 'valorant'] },
-  { title: 'ChatGPT Interface', href: '/writing/chatgpt-interface', icon: <Sparkles className="w-4 h-4" />, keywords: ['ai', 'chatgpt', 'interface', 'design', 'ux'] },
-  { title: 'iXigo Experience', href: '/writing/ixigo-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['ixigo', 'internship', 'work', 'experience'] },
-  { title: 'Beginners Guide to Programming', href: '/writing/beginners-guide-programming', icon: <Code className="w-4 h-4" />, keywords: ['programming', 'coding', 'tutorial', 'learn'] },
-  { title: 'Beginners Guide to Design', href: '/writing/beginners-guide-design', icon: <PenTool className="w-4 h-4" />, keywords: ['design', 'tutorial', 'ui', 'ux'] },
+  { title: 'Second Semester at UC', href: '/writing/first-spring', icon: <FileText className="w-4 h-4" />, keywords: ['article', 'spring', 'season', 'blog', 'uc', 'cincinnati'] },
+  { title: 'First Semester at UC', href: '/writing/uc-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['uc', 'university', 'experience', 'cincinnati', 'semester'] },
+  { title: 'Environment Variables Dont Hide Data', href: '/writing/variables-exposure', icon: <Code className="w-4 h-4" />, keywords: ['variables', 'security', 'environment', 'env'] },
+  { title: 'Modern Tech Stacks Kill Startups', href: '/writing/modern-tech-stacks', icon: <Code className="w-4 h-4" />, keywords: ['tech', 'stack', 'tools', 'modern', 'php'] },
+  { title: 'Your 2FA Is Broken', href: '/writing/security-article', icon: <Target className="w-4 h-4" />, keywords: ['security', 'privacy', 'protection', '2fa'] },
+  { title: 'Boring Guide to 10x Frontend Performance', href: '/writing/boring-performance', icon: <TrendingUp className="w-4 h-4" />, keywords: ['performance', 'optimization', 'web', 'speed'] },
+  { title: 'How Discord Survived 2024s Biggest Launch', href: '/writing/discord-article', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['discord', 'community', 'platform', 'api'] },
+  { title: 'My Time in Esports', href: '/writing/esports-journey', icon: <Award className="w-4 h-4" />, keywords: ['esports', 'gaming', 'competitive', 'journey', 'valorant'] },
+  { title: 'Building My Own ChatGPT UI', href: '/writing/chatgpt-interface', icon: <Sparkles className="w-4 h-4" />, keywords: ['ai', 'chatgpt', 'interface', 'design', 'ux'] },
+  { title: 'SDE Intern at Abhibus (Ixigo)', href: '/writing/ixigo-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['ixigo', 'internship', 'work', 'experience'] },
+  { title: 'Beginners Guide for Programming', href: '/writing/beginners-guide-programming', icon: <Code className="w-4 h-4" />, keywords: ['programming', 'coding', 'tutorial', 'learn'] },
+  { title: 'Beginners Guide for Design', href: '/writing/beginners-guide-design', icon: <PenTool className="w-4 h-4" />, keywords: ['design', 'tutorial', 'ui', 'ux'] },
 ];
 
 const externalLinks: BaseItem[] = [

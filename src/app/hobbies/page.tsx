@@ -11,57 +11,57 @@ interface Hobby {
 const hobbies: Hobby[] = [
   {
     title: "Activities",
-    description: "Tracking workouts and daily activities with personal stats.",
+    description: "Workouts & daily stats",
     href: "/hobbies/strava"
   },
   {
     title: "Anime",
-    description: "My curated collection of watched series and personal ratings.",
+    description: "Watched series & ratings",
     href: "/hobbies/myanimelist"
   },
   {
     title: "Books",
-    description: "A growing library of books that have shaped my perspective.",
+    description: "Reading list & reviews",
     href: "/hobbies/readings"
   },
   {
     title: "Content",
-    description: "My YouTube videos, tutorials, and creative content.",
+    description: "Videos & tutorials",
     href: "/hobbies/content"
   },
   {
     title: "Designs",
-    description: "Portfolio of UI/UX designs and creative projects.",
+    description: "UI/UX & creative work",
     href: "/hobbies/art"
   },
   {
     title: "Gaming",
-    description: "My gaming journey, achievements, and Steam library.",
+    description: "Stats & achievements",
     href: "/hobbies/games"
   },
   {
     title: "Gaming Clips",
-    description: "Latest gaming clips from CS, Valorant, and more.",
+    description: "CS2, Valorant & more",
     href: "/hobbies/clips"
   },
   {
     title: "Hackathons",
-    description: "Events I've participated in, projects built, and achievements.",
+    description: "Projects & achievements",
     href: "/hobbies/hackathons"
   },
   {
     title: "Music",
-    description: "Music that resonates with me, from playlists to favorite tracks.",
+    description: "Playlists & favorites",
     href: "/hobbies/music"
   },
   {
     title: "Setup",
-    description: "My workstation, development environment, and daily tools.",
+    description: "Gear & tools",
     href: "/hobbies/uses"
   },
   {
     title: "Typing",
-    description: "Test your typing speed and compare with my 115 WPM record.",
+    description: "Speed test (115 WPM)",
     href: "/hobbies/typing"
   }
 ];
@@ -70,7 +70,7 @@ const Hobbies: React.FC = () => (
   <div className="max-w-7xl">
     <h2 className="text-lg font-medium mb-6 dark:text-white">Hobbies</h2>
 
-    <div className="space-y-6">
+    <div className="space-y-4">
       {hobbies.map((hobby) => (
         <Link
           key={hobby.href}
@@ -78,15 +78,9 @@ const Hobbies: React.FC = () => (
           className="group cursor-pointer block"
         >
           <article>
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-1">
-                {hobby.title}
-              </h3>
-            </div>
-            
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
-              {hobby.description}
-            </p>
+            <h3 className="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
+              {hobby.title}, <span className="text-xs text-zinc-500 dark:text-zinc-500 font-normal">{hobby.description}</span>
+            </h3>
           </article>
         </Link>
       ))}
