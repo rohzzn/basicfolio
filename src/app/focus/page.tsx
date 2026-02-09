@@ -584,46 +584,16 @@ const FocusPage: React.FC = () => {
   }, []);
   
   return (
-    <div className="max-w-7xl">
-      {/* Header */}
-      <div className="mb-6 flex items-center">
-        <h1 className="text-lg sm:text-xl font-medium dark:text-white">Focus Mode</h1>
-        <div className="ml-auto flex items-center gap-3">
-          <button
-            onClick={toggleSound}
-            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
-            aria-label={soundEnabled ? "Disable sound" : "Enable sound"}
-          >
-            {soundEnabled ? <Bell size={18} /> : <BellOff size={18} />}
-          </button>
-          <button
-            onClick={toggleStudyMusic}
-            className={`text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 ${
-              isStudyMusicPlaying ? 'text-amber-500 dark:text-amber-400' : ''
-            }`}
-            aria-label={isStudyMusicPlaying ? "Pause study music" : "Play study music"}
-          >
-            {isStudyMusicPlaying ? <Music size={18} /> : <VolumeX size={18} />}
-          </button>
-          <button
-            onClick={() => setShowSessionHistory(!showSessionHistory)}
-            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
-            aria-label="Session history"
-          >
-            <ListChecks size={18} />
-          </button>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="w-full max-w-7xl">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
         {/* Timer Section */}
-        <div className="lg:col-span-7 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg p-6 relative">
+        <div className="lg:col-span-7 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg p-4 md:p-6 relative">
           {/* Timer mode tabs and info bar */}
-          <div className="mb-6 flex justify-between items-center">
-            <div className="flex gap-2">
+          <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex gap-2 flex-wrap">
               <button 
                 onClick={() => handleTimerModeChange('short')}
-                className={`px-4 py-2 rounded-md transition-colors text-sm ${
+                className={`px-3 md:px-4 py-2 rounded-md transition-colors text-sm ${
                   timerMode === 'short' 
                     ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
                     : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
@@ -636,7 +606,7 @@ const FocusPage: React.FC = () => {
               </button>
               <button 
                 onClick={() => handleTimerModeChange('long')}
-                className={`px-4 py-2 rounded-md transition-colors text-sm ${
+                className={`px-3 md:px-4 py-2 rounded-md transition-colors text-sm ${
                   timerMode === 'long' 
                     ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
                     : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
@@ -649,7 +619,7 @@ const FocusPage: React.FC = () => {
               </button>
               <button 
                 onClick={() => handleTimerModeChange('break')}
-                className={`px-4 py-2 rounded-md transition-colors text-sm ${
+                className={`px-3 md:px-4 py-2 rounded-md transition-colors text-sm ${
                   timerMode === 'break' 
                     ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
                     : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
@@ -660,16 +630,24 @@ const FocusPage: React.FC = () => {
                   <span>Break</span>
                 </div>
               </button>
+              
+              <button
+                onClick={toggleSound}
+                className={`px-3 md:px-4 py-2 rounded-md transition-colors text-sm ${
+                  soundEnabled 
+                    ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white' 
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
+                }`}
+                aria-label={soundEnabled ? "Disable sound" : "Enable sound"}
+              >
+                <div className="flex items-center gap-1.5">
+                  {soundEnabled ? <Bell size={16} /> : <BellOff size={16} />}
+                  <span>Sound</span>
+                </div>
+              </button>
             </div>
             
             <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
-              <div className="flex items-center gap-1.5">
-                <Zap size={16} className="text-amber-500" />
-                <span>{sessionsCompleted} session{sessionsCompleted !== 1 ? 's' : ''}</span>
-              </div>
-              
-              <div className="h-3.5 border-l border-zinc-300 dark:border-zinc-600"></div>
-              
               <div className="flex items-center gap-1.5">
                 <Clock size={16} className="text-zinc-500" />
                 <span className="font-medium tabular-nums">{currentTime}</span>
@@ -677,9 +655,9 @@ const FocusPage: React.FC = () => {
             </div>
           </div>
           
-          <div className="mb-8 relative w-full h-2 bg-zinc-100 dark:bg-zinc-700/50 rounded-full overflow-hidden">
+          <div className="mb-6 md:mb-8 relative w-full h-2 bg-zinc-100 dark:bg-zinc-700/50 rounded-full overflow-hidden">
             <div 
-              className={`absolute top-0 left-0 h-full ${
+              className={`absolute top-0 left-0 h-full transition-all duration-300 ${
                 timerMode === 'break' ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-500'
               }`}
               style={{ width: `${progress}%` }}
@@ -687,26 +665,26 @@ const FocusPage: React.FC = () => {
           </div>
           
           <div className="flex flex-col items-center">
-            <div className="text-7xl md:text-8xl font-bold tracking-tight tabular-nums dark:text-white mb-8">
+            <div className="text-6xl sm:text-7xl md:text-8xl font-bold tracking-tight tabular-nums dark:text-white mb-6 md:mb-8">
               {formatTime(timeRemaining)}
             </div>
             
-            <div className="flex justify-center space-x-6">
+            <div className="flex justify-center space-x-4 md:space-x-6">
               <button 
                 onClick={toggleTimer}
-                className="p-5 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors transform hover:scale-105 active:scale-95"
+                className="p-4 md:p-5 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors transform hover:scale-105 active:scale-95"
               >
-                {isActive ? <Pause size={28} strokeWidth={2.5} /> : <Play size={28} strokeWidth={2.5} />}
+                {isActive ? <Pause size={24} className="md:w-7 md:h-7" strokeWidth={2.5} /> : <Play size={24} className="md:w-7 md:h-7" strokeWidth={2.5} />}
               </button>
               <button 
                 onClick={resetTimer}
-                className="p-5 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors transform hover:scale-105 active:scale-95"
+                className="p-4 md:p-5 bg-zinc-200 dark:bg-zinc-700 rounded-full text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors transform hover:scale-105 active:scale-95"
               >
-                <RotateCcw size={28} strokeWidth={2.5} />
+                <RotateCcw size={24} className="md:w-7 md:h-7" strokeWidth={2.5} />
               </button>
             </div>
             
-            <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-6">
+            <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-4 md:mt-6 text-center">
               {isActive ? (
                 <p>
                   {timerMode === 'break' 
@@ -720,73 +698,20 @@ const FocusPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Todo Section or Session History */}
+        {/* Todo Section */}
         <div className="lg:col-span-5">
-          {showSessionHistory ? (
-            <div className="bg-zinc-50 dark:bg-zinc-800/40 rounded-lg p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-base font-medium dark:text-white">Session History</h2>
-                <button 
-                  onClick={() => setShowSessionHistory(false)}
-                  className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
-                >
-                  Show todo list
-                </button>
-              </div>
-              
-              {sessionHistory.length === 0 ? (
-                <p className="text-zinc-500 dark:text-zinc-400 text-center py-4 text-sm">No sessions completed yet. Start your first focus session!</p>
-              ) : (
-                <div className="space-y-3 max-h-[450px] overflow-y-auto">
-                  {sessionHistory.map(session => (
-                    <div 
-                      key={session.id} 
-                      className="flex items-center justify-between bg-zinc-100 dark:bg-zinc-700/60 p-3 rounded-md"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="bg-zinc-200 dark:bg-zinc-600 rounded-full p-1.5">
-                          <Clock size={16} className="text-zinc-700 dark:text-zinc-300" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-zinc-800 dark:text-zinc-200">
-                            {session.duration} minute session
-                          </p>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                            {formatDate(session.date)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
-                          Completed
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="bg-zinc-50 dark:bg-zinc-800/40 rounded-lg p-6">
+          <div className="bg-zinc-50 dark:bg-zinc-800/40 rounded-lg p-4 md:p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-base font-medium dark:text-white">Today&apos;s Tasks</h2>
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={clearCompletedTodos}
-                    className={`text-xs ${todos.some(t => t.completed) 
-                      ? 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200' 
-                      : 'text-zinc-300 dark:text-zinc-600 cursor-not-allowed'}`}
-                    disabled={!todos.some(t => t.completed)}
-                  >
-                    Clear completed
-                  </button>
-                  <button 
-                    onClick={() => setShowSessionHistory(true)}
-                    className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
-                  >
-                    Show history
-                  </button>
-                </div>
+                <button 
+                  onClick={clearCompletedTodos}
+                  className={`text-xs ${todos.some(t => t.completed) 
+                    ? 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200' 
+                    : 'text-zinc-300 dark:text-zinc-600 cursor-not-allowed'}`}
+                  disabled={!todos.some(t => t.completed)}
+                >
+                  Clear completed
+                </button>
               </div>
               
               <form onSubmit={addTodo} className="mb-4">
@@ -796,11 +721,11 @@ const FocusPage: React.FC = () => {
                     value={newTodo}
                     onChange={(e) => setNewTodo(e.target.value)}
                     placeholder="Add a task..."
-                    className="flex-1 bg-zinc-100 dark:bg-zinc-700 border-0 rounded-l-md py-2 px-4 text-zinc-800 dark:text-zinc-200 text-sm placeholder-zinc-500 dark:placeholder-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:focus:ring-zinc-600 outline-none"
+                    className="flex-1 bg-zinc-100 dark:bg-zinc-700 border-0 rounded-l-md py-2 px-3 md:px-4 text-zinc-800 dark:text-zinc-200 text-sm placeholder-zinc-500 dark:placeholder-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:focus:ring-zinc-600 outline-none"
                   />
                   <button 
                     type="submit"
-                    className="bg-zinc-200 dark:bg-zinc-600 rounded-r-md py-2 px-4 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-500 transition-colors text-sm"
+                    className="bg-zinc-200 dark:bg-zinc-600 rounded-r-md py-2 px-3 md:px-4 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-500 transition-colors text-sm"
                   >
                     Add
                   </button>
@@ -809,30 +734,30 @@ const FocusPage: React.FC = () => {
               
               {/* Task progress */}
               {todos.length > 0 && (
-                <div className="mb-4">
+                <div className="mb-3 md:mb-4">
                   <div className="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 mb-1">
                     <span>{completedTasks} of {todos.length} completed</span>
                     <span>{Math.round((completedTasks / todos.length) * 100)}%</span>
                   </div>
                   <div className="w-full h-1 bg-zinc-100 dark:bg-zinc-700 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-emerald-500 dark:bg-emerald-400"
+                      className="h-full bg-emerald-500 dark:bg-emerald-400 transition-all duration-300"
                       style={{ width: `${(completedTasks / todos.length) * 100}%` }}
                     ></div>
                   </div>
                 </div>
               )}
               
-              <div className="space-y-2 max-h-[350px] overflow-y-auto">
+              <div className="space-y-2 max-h-[300px] md:max-h-[350px] overflow-y-auto">
                 {todos.length === 0 ? (
                   <p className="text-zinc-500 dark:text-zinc-400 text-center py-4 text-sm">No tasks yet. Add some to get started!</p>
                 ) : (
                   todos.map(todo => (
                     <div 
                       key={todo.id} 
-                      className="flex items-center justify-between bg-zinc-100 dark:bg-zinc-700/60 p-3 rounded-md"
+                      className="flex items-center justify-between bg-zinc-100 dark:bg-zinc-700/60 p-2.5 md:p-3 rounded-md"
                     >
-                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 md:space-x-3 flex-1 min-w-0">
                         <button 
                           onClick={() => toggleTodo(todo.id)} 
                           className={`flex-shrink-0 ${todo.completed 
@@ -842,7 +767,7 @@ const FocusPage: React.FC = () => {
                           {todo.completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
                         </button>
                         <span 
-                          className={`truncate ${todo.completed 
+                          className={`text-sm truncate ${todo.completed 
                             ? 'line-through text-zinc-400 dark:text-zinc-500' 
                             : 'text-zinc-800 dark:text-zinc-200'}`}
                         >
@@ -851,7 +776,7 @@ const FocusPage: React.FC = () => {
                       </div>
                       <button 
                         onClick={() => deleteTodo(todo.id)}
-                        className="flex-shrink-0 ml-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                        className="flex-shrink-0 ml-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 text-lg"
                       >
                         ×
                       </button>
@@ -860,7 +785,6 @@ const FocusPage: React.FC = () => {
                 )}
               </div>
             </div>
-          )}
         </div>
       </div>
     </div>
