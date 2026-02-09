@@ -171,6 +171,19 @@ const Games = () => {
   ).slice(0, 3);
   const allGames = totalPlaytimeSortedGames.slice(0, 12);
   
+  // Debug: Log recent games
+  useEffect(() => {
+    if (recentGames.length > 0) {
+      console.log('Recent games (played in last 2 weeks):', recentGames.map(g => ({
+        name: g.name,
+        playtime_2weeks: g.playtime_2weeks,
+        playtime_2weeks_hours: Math.floor((g.playtime_2weeks || 0) / 60)
+      })));
+    } else {
+      console.log('No games with playtime_2weeks > 0 found');
+    }
+  }, [recentGames]);
+  
   // Calculate total Steam hours
   const totalSteamHours = Math.floor(
     ownedGames.reduce((total, game) => total + game.playtime_forever, 0) / 60
@@ -239,8 +252,8 @@ const Games = () => {
           {/* Recent Games */}
           {recentGames.length > 0 && (
             <div>
-              <h3 className="text-base font-medium mb-6 dark:text-white">Recent Games</h3>
-              <div className="grid grid-cols-3 gap-4">
+              <h3 className="text-base font-medium mb-6 dark:text-white">Recently Played Games</h3>
+              <div className="grid grid-cols-3 gap-3">
                 {recentGames.map((game) => (
                   <Link
                     key={game.appid}
@@ -250,16 +263,16 @@ const Games = () => {
                     className="group cursor-pointer block"
                   >
                     <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-                      <div className="w-full aspect-[460/215] bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-2">
+                      <div className="w-full h-20 bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-2">
                         <Image
-                          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`}
+                          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
                           alt={`${game.name} Header`}
-                          width={231}
-                          height={87}
+                          width={460}
+                          height={215}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
+                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`;
                             target.onerror = () => {
                               target.style.display = 'none';
                               const parent = target.parentElement;

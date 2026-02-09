@@ -11,7 +11,10 @@ export async function GET() {
   try {
     const response = await fetch(
       `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${apiKey}&steamid=${STEAM_ID}&include_appinfo=1&include_played_free_games=1`,
-      { cache: 'no-store' }
+      { 
+        cache: 'no-store',
+        next: { revalidate: 0 } // Force fresh data
+      }
     );
 
     if (!response.ok) {
@@ -19,6 +22,12 @@ export async function GET() {
     }
 
     const data = await response.json();
+    
+    // Log to verify playtime_2weeks data
+    console.log('Recent games with playtime_2weeks:', 
+      data.response?.games?.filter((g: any) => g.playtime_2weeks > 0).slice(0, 3)
+    );
+    
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching Steam games:', error);
