@@ -139,11 +139,11 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
     <div className="bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
       <div>
         {loading ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading CS2 stats…</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading stats…</p>
         ) : error ? (
           <div className="bg-yellow-50 dark:bg-zinc-800 p-3 rounded-md">
             <p className="text-sm text-yellow-800 dark:text-yellow-400">
-              Could not load CS2 stats ({error}). If your profile is private/hidden, the public API may not
+              Could not load stats ({error}). If your profile is private/hidden, the public API may not
               return data.
             </p>
           </div>
