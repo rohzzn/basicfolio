@@ -24,9 +24,12 @@ export async function GET() {
     const data = await response.json();
     
     // Log to verify playtime_2weeks data
-    console.log('Recent games with playtime_2weeks:', 
-      data.response?.games?.filter((g: any) => g.playtime_2weeks > 0).slice(0, 3)
-    );
+    if (data.response?.games) {
+      const recentGames = data.response.games.filter((g: { playtime_2weeks?: number }) => 
+        g.playtime_2weeks && g.playtime_2weeks > 0
+      ).slice(0, 3);
+      console.log('Recent games with playtime_2weeks:', recentGames);
+    }
     
     return NextResponse.json(data);
   } catch (error) {
