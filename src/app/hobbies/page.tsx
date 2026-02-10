@@ -11,7 +11,7 @@ interface Hobby {
 const hobbies: Hobby[] = [
   {
     title: "Activities",
-    description: "Workouts & daily stats",
+    description: "Cardio & gym sessions",
     href: "/hobbies/strava"
   },
   {

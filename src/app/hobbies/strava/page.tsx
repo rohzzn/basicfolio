@@ -37,6 +37,48 @@ interface StravaActivity {
   total_photo_count?: number;
 }
 
+interface ExerciseSet {
+  index: number;
+  set_type: string;
+  weight_kg?: number;
+  reps?: number;
+  distance_meters?: number;
+  duration_seconds?: number;
+}
+
+interface Exercise {
+  id: string;
+  title: string;
+  notes?: string;
+  exercise_template_id: string;
+  superset_id?: string | null;
+  sets: ExerciseSet[];
+}
+
+interface WorkoutImage {
+  id: string;
+  url: string;
+}
+
+interface Workout {
+  id: string;
+  title: string;
+  description?: string;
+  start_time: string;
+  end_time: string;
+  created_at: string;
+  updated_at: string;
+  exercises: Exercise[];
+  images?: WorkoutImage[];
+  image_urls?: string[];
+}
+
+interface HevyResponse {
+  page: number;
+  page_count: number;
+  workouts: Workout[];
+}
+
 const ActivityPolyline: React.FC<{ polyline: string }> = ({ polyline }) => {
   const points = decode(polyline);
   const minLat = Math.min(...points.map(p => p[0]));
@@ -71,33 +113,40 @@ const ActivityPolyline: React.FC<{ polyline: string }> = ({ polyline }) => {
   );
 };
 
-// Calculate calories based on activity type, time, and distance if not provided
 const calculateCalories = (activity: StravaActivity): number => {
   if (activity.calories) return activity.calories;
   
-  // Rough estimates
   const hours = activity.moving_time / 3600;
   
   switch(activity.type) {
     case 'Run':
-      return Math.round(hours * 600); // ~600 calories per hour running
+      return Math.round(hours * 600);
     case 'Ride':
-      return Math.round(hours * 500); // ~500 calories per hour cycling
+      return Math.round(hours * 500);
     case 'Swim':
-      return Math.round(hours * 550); // ~550 calories per hour swimming
+      return Math.round(hours * 550);
     case 'Walk':
-      return Math.round(hours * 300); // ~300 calories per hour walking
+      return Math.round(hours * 300);
     case 'Hike':
-      return Math.round(hours * 400); // ~400 calories per hour hiking
+      return Math.round(hours * 400);
     case 'Workout':
-      return Math.round(hours * 450); // ~450 calories per hour working out
+      return Math.round(hours * 450);
     default:
-      return Math.round(hours * 350); // Default estimate
+      return Math.round(hours * 350);
   }
 };
 
-const StravaPage: React.FC = () => {
+type CombinedActivity = {
+  id: string;
+  type: 'cardio' | 'gym';
+  date: string;
+  stravaActivity?: StravaActivity;
+  gymWorkout?: Workout;
+};
+
+const ActivitiesPage: React.FC = () => {
   const [activities, setActivities] = useState<StravaActivity[]>([]);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState(30);
@@ -105,7 +154,6 @@ const StravaPage: React.FC = () => {
 
   const fetchStravaData = async (daysAgo: number) => {
     try {
-      // Check if environment variables are available
       if (!process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID || 
           !process.env.NEXT_PUBLIC_STRAVA_CLIENT_SECRET || 
           !process.env.NEXT_PUBLIC_STRAVA_REFRESH_TOKEN) {
@@ -131,8 +179,6 @@ const StravaPage: React.FC = () => {
       }
 
       const timestamp = Math.floor((Date.now() - daysAgo * 24 * 60 * 60 * 1000) / 1000);
-      // Calculate how many activities to show based on time range
-      // Use a fixed large number for per_page to get all activities
       const activitiesRes = await fetch(
         `https://www.strava.com/api/v3/athlete/activities?per_page=200&after=${timestamp}`,
         {
@@ -142,17 +188,14 @@ const StravaPage: React.FC = () => {
 
       const activitiesData = await activitiesRes.json();
       
-      // Check if activitiesData is an array
       if (!Array.isArray(activitiesData)) {
         throw new Error('Invalid response from Strava API');
       }
       
-      // Sort all activities by date (newest first)
       const sortedActivities = [...activitiesData].sort((a: StravaActivity, b: StravaActivity) => 
         new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
       );
       
-      // For each activity, fetch detailed data including photos
       const activitiesWithPhotos = await Promise.all(
         sortedActivities.map(async (activity) => {
           try {
@@ -164,16 +207,10 @@ const StravaPage: React.FC = () => {
             );
             
             if (!detailedActivityRes.ok) {
-              console.warn(`Failed to fetch detailed data for activity ${activity.id}`);
               return activity;
             }
             
             const detailedActivity = await detailedActivityRes.json();
-            
-            // Log photo data for debugging
-            if (detailedActivity.photos && detailedActivity.total_photo_count > 0) {
-              console.log('Activity with photos:', activity.id, detailedActivity.photos);
-            }
             
             return {
               ...activity,
@@ -181,7 +218,6 @@ const StravaPage: React.FC = () => {
               total_photo_count: detailedActivity.total_photo_count
             };
           } catch (error) {
-            console.warn(`Error fetching detailed data for activity ${activity.id}:`, error);
             return activity;
           }
         })
@@ -191,30 +227,77 @@ const StravaPage: React.FC = () => {
     } catch (error) {
       console.error('Error:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch Strava data');
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const fetchHevyData = async (daysAgo: number) => {
+    try {
+      const response = await fetch('/api/hevy/workouts');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data: HevyResponse = await response.json();
+      
+      const now = new Date();
+      const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+      const filteredWorkouts = data.workouts.filter(workout => {
+        const workoutDate = new Date(workout.start_time);
+        return workoutDate >= cutoffDate;
+      });
+      
+      setWorkouts(filteredWorkouts);
+    } catch (err) {
+      console.error('Hevy error:', err);
     }
   };
 
   React.useEffect(() => {
     setActivities([]);
+    setWorkouts([]);
     setLoading(true);
-    fetchStravaData(timeRange);
+    Promise.all([
+      fetchStravaData(timeRange),
+      fetchHevyData(timeRange)
+    ]).finally(() => setLoading(false));
   }, [timeRange]);
 
-  const stats = React.useMemo(() => {
-    // Group activities by type
+  // Combine and sort activities
+  const combinedActivities = React.useMemo(() => {
+    const combined: CombinedActivity[] = [];
+    
+    activities.forEach(activity => {
+      combined.push({
+        id: `strava-${activity.id}`,
+        type: 'cardio',
+        date: activity.start_date,
+        stravaActivity: activity
+      });
+    });
+    
+    workouts.forEach(workout => {
+      combined.push({
+        id: `gym-${workout.id}`,
+        type: 'gym',
+        date: workout.start_time,
+        gymWorkout: workout
+      });
+    });
+    
+    return combined.sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [activities, workouts]);
+
+  const stravaStats = React.useMemo(() => {
     const typeGroups = activities.reduce((acc: {[key: string]: number}, activity) => {
       acc[activity.type] = (acc[activity.type] || 0) + 1;
       return acc;
     }, {});
 
-    // Get activity types sorted by count
     const sortedTypes = Object.entries(typeGroups)
       .sort(([, a], [, b]) => b - a)
       .map(([type]) => type);
 
-    // Weekly stats calculation
     const now = new Date();
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const lastWeekActivities = activities.filter(a => new Date(a.start_date) >= oneWeekAgo);
@@ -236,6 +319,47 @@ const StravaPage: React.FC = () => {
       totalCalories: activities.reduce((sum, activity) => sum + calculateCalories(activity), 0)
     };
   }, [activities]);
+
+  const gymStats = React.useMemo(() => {
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const lastWeekWorkouts = workouts.filter(w => new Date(w.start_time) >= oneWeekAgo);
+
+    let totalVolume = 0;
+    let totalReps = 0;
+    let totalDuration = 0;
+    const exerciseCount = new Map<string, number>();
+
+    workouts.forEach(workout => {
+      const duration = new Date(workout.end_time).getTime() - new Date(workout.start_time).getTime();
+      totalDuration += duration;
+
+      workout.exercises.forEach(exercise => {
+        exerciseCount.set(exercise.title, (exerciseCount.get(exercise.title) || 0) + 1);
+        
+        exercise.sets.forEach(set => {
+          if (set.weight_kg && set.reps) {
+            totalVolume += set.weight_kg * set.reps;
+            totalReps += set.reps;
+          }
+        });
+      });
+    });
+
+    const topExercises = Array.from(exerciseCount.entries())
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5);
+
+    return {
+      totalWorkouts: workouts.length,
+      weeklyWorkouts: lastWeekWorkouts.length,
+      totalVolume: Math.ceil(totalVolume),
+      totalReps: Math.ceil(totalReps),
+      totalDuration: Math.ceil(totalDuration / 1000 / 60),
+      topExercises,
+      avgDuration: workouts.length > 0 ? Math.ceil(totalDuration / workouts.length / 1000 / 60) : 0,
+    };
+  }, [workouts]);
 
   const formatDistance = (meters: number): string => {
     const km = meters / 1000;
@@ -262,6 +386,14 @@ const StravaPage: React.FC = () => {
       : `${minutes}m`;
   };
 
+  const formatDuration = (startTime: string, endTime: string): string => {
+    const duration = new Date(endTime).getTime() - new Date(startTime).getTime();
+    const minutes = Math.ceil(duration / 1000 / 60);
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return hours > 0 ? `${hours}h ${remainingMinutes}m` : `${minutes}m`;
+  };
+
   const formatDate = (dateStr: string): string => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       weekday: 'short',
@@ -275,7 +407,7 @@ const StravaPage: React.FC = () => {
   if (error) {
     return (
       <div className="max-w-7xl">
-        <h2 className="text-lg font-medium mb-6 dark:text-white">Activity Statistics</h2>
+        <h2 className="text-lg font-medium mb-6 dark:text-white">Activities</h2>
         <div className="bg-red-100 dark:bg-red-900 p-4 rounded-lg">
           <p className="text-red-700 dark:text-red-200">{error}</p>
         </div>
@@ -283,14 +415,33 @@ const StravaPage: React.FC = () => {
     );
   }
 
+  // Combined stats
+  const combinedStats = React.useMemo(() => {
+    const totalActivities = activities.length + workouts.length;
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const weeklyCount = combinedActivities.filter(a => new Date(a.date) >= oneWeekAgo).length;
+    
+    return {
+      total: totalActivities,
+      weekly: weeklyCount,
+      cardioCount: activities.length,
+      gymCount: workouts.length,
+      totalDistance: stravaStats.totalDistance,
+      totalVolume: gymStats.totalVolume,
+      totalCalories: stravaStats.totalCalories,
+      totalTime: stravaStats.totalTime + gymStats.totalDuration * 60
+    };
+  }, [combinedActivities, activities, workouts, stravaStats, gymStats]);
+
   return (
     <div className="max-w-7xl">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-medium dark:text-white">Activity Statistics</h2>
+        <h2 className="text-lg font-medium dark:text-white">Activities</h2>
         <select
           value={timeRange}
           onChange={(e) => setTimeRange(Number(e.target.value))}
-          className="bg-zinc-100 dark:bg-zinc-800 p-2 rounded-lg border border-zinc-200 dark:border-zinc-700"
+          className="bg-zinc-100 dark:bg-zinc-800 p-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm"
         >
           <option value={30}>Last 30 Days</option>
           <option value={60}>Last 60 Days</option>
@@ -300,64 +451,45 @@ const StravaPage: React.FC = () => {
         </select>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <article>
-          <div className="flex items-start justify-between gap-4 mb-2">
-            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Activities</h3>
-          </div>
-          <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-            {stats.totalActivities}
+      {/* Stats Overview - Hevy Focused */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Volume</p>
+          <p className="text-xl font-medium dark:text-white mt-1">{gymStats.totalVolume.toLocaleString()}</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            kg lifted
           </p>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">
-            {stats.weeklyActivities} in the last week
-          </p>
-        </article>
+        </div>
 
-        <article>
-          <div className="flex items-start justify-between gap-4 mb-2">
-            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Distance</h3>
-          </div>
-          <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-            {formatDistance(stats.totalDistance)}
+        <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Distance</p>
+          <p className="text-xl font-medium dark:text-white mt-1">{formatDistance(combinedStats.totalDistance)}</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            traveled
           </p>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">
-            {formatDistance(stats.weeklyDistance)} in the last week
-          </p>
-        </article>
+        </div>
 
-        <article>
-          <div className="flex items-start justify-between gap-4 mb-2">
-            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Active Time</h3>
-          </div>
-          <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-            {formatTime(stats.totalTime)}
+        <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Workouts</p>
+          <p className="text-xl font-medium dark:text-white mt-1">{gymStats.totalWorkouts}</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            gym sessions
           </p>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">
-            {Math.round(stats.totalTime / 3600)} hours total
-          </p>
-        </article>
+        </div>
 
-        <article>
-          <div className="flex items-start justify-between gap-4 mb-2">
-            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-1">Calories</h3>
-          </div>
-          <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-            {stats.totalCalories.toLocaleString()}
+        <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Reps</p>
+          <p className="text-xl font-medium dark:text-white mt-1">{gymStats.totalReps.toLocaleString()}</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            total reps
           </p>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">
-            Estimated calories burned
-          </p>
-        </article>
+        </div>
       </div>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 my-12"></div>
-
-      {/* Recent Activities */}
+      {/* View Mode Toggle */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-medium dark:text-white">Recent Activities</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-medium dark:text-white">Recent Activities</h3>
           <div className="flex gap-2">
             <button
               onClick={() => setViewMode('cards')}
@@ -367,7 +499,7 @@ const StravaPage: React.FC = () => {
                   : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
               }`}
             >
-              Cards
+              List
             </button>
             <button
               onClick={() => setViewMode('calendar')}
@@ -391,23 +523,22 @@ const StravaPage: React.FC = () => {
               </p>
             </div>
             
-            {/* Calendar heatmap */}
-            <div className="p-6">
-              <div className="grid grid-cols-7 gap-1 mb-4">
+            <div className="bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg p-6">
+              <div className="grid grid-cols-7 gap-2 mb-4">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-xs text-zinc-500 dark:text-zinc-400 text-center py-2">
+                  <div key={day} className="text-xs font-medium text-zinc-500 dark:text-zinc-400 text-center py-2">
                     {day}
                   </div>
                 ))}
               </div>
               
-              <div className="grid grid-cols-7 gap-1">
+              <div className="grid grid-cols-7 gap-2">
                 {Array.from({ length: Math.ceil(timeRange / 7) * 7 }, (_, i) => {
                   const date = new Date();
                   date.setDate(date.getDate() - (timeRange - i));
                   
-                  const dayActivities = activities.filter(activity => {
-                    const activityDate = new Date(activity.start_date);
+                  const dayActivities = combinedActivities.filter(activity => {
+                    const activityDate = new Date(activity.date);
                     return activityDate.toDateString() === date.toDateString();
                   });
                   
@@ -423,12 +554,12 @@ const StravaPage: React.FC = () => {
                   return (
                     <div
                       key={i}
-                      className={`aspect-square rounded-sm ${intensityColors[intensity]} border border-zinc-200 dark:border-zinc-700 hover:ring-2 hover:ring-zinc-400 transition-all cursor-pointer group relative`}
-                      title={`${date.toDateString()}: ${dayActivities.length} activities`}
+                      className={`aspect-square rounded ${intensityColors[intensity]} border border-zinc-200 dark:border-zinc-700 hover:ring-2 hover:ring-zinc-400 dark:hover:ring-zinc-500 transition-all cursor-pointer group relative`}
+                      title={`${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: ${dayActivities.length} ${dayActivities.length === 1 ? 'activity' : 'activities'}`}
                     >
                       {dayActivities.length > 0 && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                          <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                             {dayActivities.length}
                           </span>
                         </div>
@@ -438,127 +569,241 @@ const StravaPage: React.FC = () => {
                 })}
               </div>
               
-              <div className="flex items-center justify-between mt-4 text-xs text-zinc-500 dark:text-zinc-400">
-                <span>Less</span>
-                <div className="flex gap-1">
+              <div className="flex items-center justify-between mt-6 text-xs text-zinc-500 dark:text-zinc-400">
+                <span>Less active</span>
+                <div className="flex gap-1.5">
                   {[0, 1, 2, 3, 4].map(level => (
                     <div
                       key={level}
-                      className={`w-3 h-3 rounded-sm ${
+                      className={`w-4 h-4 rounded ${
                         level === 0 ? 'bg-zinc-100 dark:bg-zinc-800' :
                         level === 1 ? 'bg-zinc-200 dark:bg-zinc-700' :
                         level === 2 ? 'bg-zinc-300 dark:bg-zinc-600' :
                         level === 3 ? 'bg-zinc-400 dark:bg-zinc-500' :
                         'bg-zinc-500 dark:bg-zinc-400'
-                      }`}
+                      } border border-zinc-200 dark:border-zinc-700`}
                     />
                   ))}
                 </div>
-                <span>More</span>
+                <span>More active</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Cards View */}
+        {/* Unified Timeline View - 3 Column Grid */}
         {viewMode === 'cards' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activities.map((activity) => (
-              <article key={activity.id} className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-6 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group cursor-pointer">
-                {/* Header */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-2 line-clamp-2">
-                    {activity.name}
-                  </h4>
-                  <time className="text-xs text-zinc-500 dark:text-zinc-400">
-                    {formatDate(activity.start_date)}
-                  </time>
-                  {activity.distance > 0 && (
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
-                      {formatDistance(activity.distance)}
-                    </p>
-                  )}
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {combinedActivities.map((item) => {
+              if (item.type === 'cardio' && item.stravaActivity) {
+                const activity = item.stravaActivity;
+                const hasVisuals = activity.photos?.primary?.urls || activity.map?.summary_polyline;
+                
+                return (
+                  <article key={item.id} className="bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
+                    <div className="mb-2">
+                      <h4 className="text-sm font-medium text-zinc-900 dark:text-white mb-1">
+                        {activity.name}
+                      </h4>
+                      <time className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {formatDate(activity.start_date)}
+                      </time>
+                    </div>
 
-                {/* Visual Content */}
-                {(activity.photos?.primary?.urls || activity.map?.summary_polyline || (activity.photos && !activity.photos.primary?.urls && activity.photos.primary)) && (
-                  <div className="mb-4">
-                    {/* Display photos if available */}
-                    {activity.photos?.primary?.urls && (
-                      <Image 
-                        src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
-                        alt={`Photo from ${activity.name}`}
-                        className="rounded-lg w-full h-48 object-cover"
-                        width={300}
-                        height={200}
-                        onError={(e) => console.error('Image failed to load:', e)}
-                      />
-                    )}
-
-                    {/* If no photo but there's a map polyline, show the map */}
-                    {!activity.photos?.primary?.urls && activity.map?.summary_polyline && (
-                      <div className="w-full h-48 bg-zinc-100 dark:bg-zinc-700 rounded-lg overflow-hidden flex items-center justify-center">
-                        <ActivityPolyline polyline={activity.map.summary_polyline} />
+                    {hasVisuals ? (
+                      <div className="mb-3">
+                        {activity.photos?.primary?.urls ? (
+                          <div className="w-full rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-700">
+                            <Image 
+                              src={activity.photos.primary.urls['600'] || activity.photos.primary.urls['100']} 
+                              alt={`Photo from ${activity.name}`}
+                              className="w-full h-auto"
+                              width={600}
+                              height={400}
+                              style={{ objectFit: 'contain' }}
+                            />
+                          </div>
+                        ) : activity.map?.summary_polyline ? (
+                          <div className="w-full h-48 bg-zinc-100 dark:bg-zinc-700 rounded-lg overflow-hidden flex items-center justify-center">
+                            <ActivityPolyline polyline={activity.map.summary_polyline} />
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="mb-3 p-4 bg-white/60 dark:bg-zinc-900/20 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                        <div className="grid grid-cols-2 gap-3">
+                          {activity.distance > 0 && (
+                            <div>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Distance</p>
+                              <p className="text-lg font-medium text-zinc-900 dark:text-white">{formatDistance(activity.distance)}</p>
+                            </div>
+                          )}
+                          {activity.moving_time > 0 && (
+                            <div>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Duration</p>
+                              <p className="text-lg font-medium text-zinc-900 dark:text-white">{formatTime(activity.moving_time)}</p>
+                            </div>
+                          )}
+                          {activity.average_speed > 0 && (
+                            <div>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+                                {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}
+                              </p>
+                              <p className="text-lg font-medium text-zinc-900 dark:text-white">
+                                {activity.type === 'Run' || activity.type === 'Walk' 
+                                  ? formatPace(activity.average_speed)
+                                  : formatSpeed(activity.average_speed)
+                                }
+                              </p>
+                            </div>
+                          )}
+                          {calculateCalories(activity) > 0 && (
+                            <div>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Calories</p>
+                              <p className="text-lg font-medium text-zinc-900 dark:text-white">{calculateCalories(activity)}</p>
+                            </div>
+                          )}
+                          {activity.total_elevation_gain > 0 && (
+                            <div>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Elevation</p>
+                              <p className="text-lg font-medium text-zinc-900 dark:text-white">{Math.ceil(activity.total_elevation_gain)}m</p>
+                            </div>
+                          )}
+                          {activity.average_heartrate && activity.average_heartrate > 0 && (
+                            <div>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Avg HR</p>
+                              <p className="text-lg font-medium text-zinc-900 dark:text-white">{Math.round(activity.average_heartrate)} bpm</p>
+                            </div>
+                          )}
+                          {activity.max_heartrate && activity.max_heartrate > 0 && (
+                            <div>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Max HR</p>
+                              <p className="text-lg font-medium text-zinc-900 dark:text-white">{Math.round(activity.max_heartrate)} bpm</p>
+                            </div>
+                          )}
+                          {activity.max_speed > 0 && (
+                            <div>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Max Speed</p>
+                              <p className="text-lg font-medium text-zinc-900 dark:text-white">{formatSpeed(activity.max_speed)}</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
 
-                    {/* Fallback approach for different photo structures */}
-                    {activity.photos && !activity.photos.primary?.urls && activity.photos.primary && (
-                      <Image 
-                        src={
-                          typeof activity.photos.primary === 'object' && 
-                          'source' in activity.photos.primary && 
-                          'unique_id' in activity.photos.primary && 
-                          activity.photos.primary.source === 1 && 
-                          typeof activity.photos.primary.unique_id === 'string'
-                            ? `https://dgtzuqphqg23d.cloudfront.net/${activity.photos.primary.unique_id}-768x576.jpg`
-                            : (activity.photos.primary as { urls?: { [key: string]: string } }).urls?.['600'] || ''
-                        } 
-                        alt={`Photo from ${activity.name}`}
-                        className="rounded-lg w-full h-48 object-cover"
-                        width={300}
-                        height={200}
-                        onError={(e) => {
-                          console.error('Fallback image failed to load:', e);
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
+                    {hasVisuals && (
+                      <div className="flex flex-wrap gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+                        {activity.distance > 0 && (
+                          <span>{formatDistance(activity.distance)}</span>
+                        )}
+                        {activity.moving_time > 0 && (
+                          <span>{formatTime(activity.moving_time)}</span>
+                        )}
+                        {activity.average_speed > 0 && (
+                          <span>
+                            {activity.type === 'Run' || activity.type === 'Walk' 
+                              ? formatPace(activity.average_speed)
+                              : formatSpeed(activity.average_speed)
+                            }
+                          </span>
+                        )}
+                        {activity.total_elevation_gain > 0 && (
+                          <span>{Math.ceil(activity.total_elevation_gain)}m</span>
+                        )}
+                        {calculateCalories(activity) > 0 && (
+                          <span>{calculateCalories(activity)} kcal</span>
+                        )}
+                      </div>
                     )}
-                  </div>
-                )}
-
-                {/* Activity Details */}
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
-                  {activity.moving_time > 0 && (
-                    <div>Duration: {formatTime(activity.moving_time)}</div>
-                  )}
-                  {activity.average_speed > 0 && (
-                    <div>
-                      {activity.type === 'Run' || activity.type === 'Walk' ? 'Pace' : 'Speed'}: {' '}
-                      {activity.type === 'Run' || activity.type === 'Walk' 
-                        ? formatPace(activity.average_speed)
-                        : formatSpeed(activity.average_speed)
-                      }
+                  </article>
+                );
+              } else if (item.type === 'gym' && item.gymWorkout) {
+                const workout = item.gymWorkout;
+                return (
+                  <article key={item.id} className="bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 flex flex-col">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h4 className="text-sm font-medium text-zinc-900 dark:text-white">
+                        {workout.title}
+                      </h4>
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                        {formatDuration(workout.start_time, workout.end_time)}
+                      </span>
                     </div>
-                  )}
-                  {activity.total_elevation_gain > 0 && (
-                    <div>Elevation: {activity.total_elevation_gain.toFixed(0)}m</div>
-                  )}
-                  {calculateCalories(activity) > 0 && (
-                    <div>Calories: {calculateCalories(activity)} kcal</div>
-                  )}
-                  {activity.average_heartrate && activity.average_heartrate > 0 && (
-                    <div>Heart Rate: {Math.round(activity.average_heartrate)} bpm avg</div>
-                  )}
-                  {(activity.total_photo_count ?? 0) > 1 && (
-                    <div>{activity.total_photo_count} photos</div>
-                  )}
-                </div>
-              </article>
-            ))}
+                    <time className="text-xs text-zinc-500 dark:text-zinc-400 block mb-3">
+                      {formatDate(workout.start_time)}
+                    </time>
+
+                    {(workout.images && workout.images.length > 0 || workout.image_urls && workout.image_urls.length > 0) && (
+                      <div className="mb-3">
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {(workout.images || workout.image_urls?.map((url, idx) => ({ id: idx.toString(), url })) || []).slice(0, 3).map((img) => (
+                            <div key={img.id} className="relative aspect-square rounded overflow-hidden bg-zinc-200 dark:bg-zinc-700">
+                              <Image
+                                src={img.url}
+                                alt="Workout"
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 33vw, (max-width: 1024px) 16vw, 11vw"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-1.5 overflow-y-auto max-h-80 pr-1">
+                      {workout.exercises.map((exercise) => {
+                        const totalVolume = exercise.sets.reduce((sum, set) => {
+                          if (set.weight_kg && set.reps) {
+                            return sum + set.weight_kg * set.reps;
+                          }
+                          return sum;
+                        }, 0);
+
+                        return (
+                          <div
+                            key={exercise.id}
+                            className="bg-white/60 dark:bg-zinc-900/20 rounded border border-zinc-200 dark:border-zinc-700 p-2"
+                          >
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <h5 className="text-xs font-medium text-zinc-800 dark:text-zinc-200 truncate">
+                                {exercise.title}
+                              </h5>
+                              {totalVolume > 0 && (
+                                <span className="text-xs text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                                  {Math.ceil(totalVolume)} kg
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {exercise.sets.map((set) => (
+                                <span
+                                  key={set.index}
+                                  className="text-xs px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-zinc-700 dark:text-zinc-300"
+                                >
+                                  {set.weight_kg && set.reps ? (
+                                    `${Math.ceil(set.weight_kg)}×${set.reps}`
+                                  ) : set.distance_meters ? (
+                                    `${Math.ceil(set.distance_meters)}m`
+                                  ) : set.duration_seconds ? (
+                                    `${Math.ceil(set.duration_seconds / 60)}m`
+                                  ) : (
+                                    'W'
+                                  )}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </article>
+                );
+              }
+              return null;
+            })}
           </div>
         )}
-
 
         {loading && (
           <div className="flex items-center justify-center py-8">
@@ -567,14 +812,14 @@ const StravaPage: React.FC = () => {
         )}
       </div>
 
-      {/* No Activities Message */}
-      {!loading && activities.length === 0 && (
+      {!loading && combinedActivities.length === 0 && (
         <div className="text-center py-12">
           <p className="text-zinc-600 dark:text-zinc-400">No activities found in the selected time range</p>
         </div>
       )}
+
     </div>
   );
 };
 
-export default StravaPage;
+export default ActivitiesPage;
