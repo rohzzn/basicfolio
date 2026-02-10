@@ -217,7 +217,7 @@ const ActivitiesPage: React.FC = () => {
               photos: detailedActivity.photos,
               total_photo_count: detailedActivity.total_photo_count
             };
-          } catch (error) {
+          } catch {
             return activity;
           }
         })
@@ -404,18 +404,7 @@ const ActivitiesPage: React.FC = () => {
     });
   };
 
-  if (error) {
-    return (
-      <div className="max-w-7xl">
-        <h2 className="text-lg font-medium mb-6 dark:text-white">Activities</h2>
-        <div className="bg-red-100 dark:bg-red-900 p-4 rounded-lg">
-          <p className="text-red-700 dark:text-red-200">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Combined stats
+  // Combined stats - must be before any returns
   const combinedStats = React.useMemo(() => {
     const totalActivities = activities.length + workouts.length;
     const now = new Date();
@@ -433,6 +422,17 @@ const ActivitiesPage: React.FC = () => {
       totalTime: stravaStats.totalTime + gymStats.totalDuration * 60
     };
   }, [combinedActivities, activities, workouts, stravaStats, gymStats]);
+
+  if (error) {
+    return (
+      <div className="max-w-7xl">
+        <h2 className="text-lg font-medium mb-6 dark:text-white">Activities</h2>
+        <div className="bg-red-100 dark:bg-red-900 p-4 rounded-lg">
+          <p className="text-red-700 dark:text-red-200">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl">
