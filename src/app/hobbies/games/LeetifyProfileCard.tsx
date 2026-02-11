@@ -161,14 +161,14 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
                 <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.ranks?.premier)}</p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">FACEIT Level</p>
-                <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.ranks?.faceit)}</p>
-              </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400">CS2 Matches</p>
                 <p className="text-sm font-medium dark:text-white">
                   {typeof data?.total_matches === "number" ? new Intl.NumberFormat().format(data.total_matches) : "—"}
                 </p>
+              </div>
+              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">FACEIT Level</p>
+                <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.ranks?.faceit)}</p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Peak Rank</p>

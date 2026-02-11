@@ -13,7 +13,7 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      'https://api.henrikdev.xyz/valorant/v3/mmr/na/pc/calatop/000',
+      'https://api.henrikdev.xyz/valorant/v3/mmr/ap/pc/rohan/000',
       {
         headers: {
           'Authorization': apiKey,
