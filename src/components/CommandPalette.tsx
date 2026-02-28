@@ -63,6 +63,7 @@ const mainLinks: BaseItem[] = [
 
 const hobbyLinks: BaseItem[] = [
   { title: 'Activities', href: '/hobbies/strava', icon: <Activity className="w-4 h-4" />, keywords: ['strava', 'workout', 'running'] },
+  { title: 'Ben 10', href: '/hobbies/ben10', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['ben 10', 'savage pursuit', 'flash game', 'childhood'] },
   { title: 'Anime', href: '/hobbies/myanimelist', icon: <Film className="w-4 h-4" />, keywords: ['myanimelist', 'anime', 'shows'] },
   { title: 'Books', href: '/hobbies/readings', icon: <BookOpen className="w-4 h-4" />, keywords: ['reading', 'books', 'literature'] },
   { title: 'Content', href: '/hobbies/content', icon: <Youtube className="w-4 h-4" />, keywords: ['youtube', 'videos', 'content'] },

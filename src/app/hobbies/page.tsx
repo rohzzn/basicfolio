@@ -15,6 +15,11 @@ const hobbies: Hobby[] = [
     href: "/hobbies/strava"
   },
   {
+    title: "Ben 10",
+    description: "Childhood game archived",
+    href: "/hobbies/ben10"
+  },
+  {
     title: "Anime",
     description: "Watched series & ratings",
     href: "/hobbies/myanimelist"
