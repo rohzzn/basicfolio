@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Maximize2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 
 const WASD_TO_ARROW: Record<string, string> = {
   w: "ArrowUp",
@@ -240,45 +240,41 @@ export default function Ben10Page() {
 
         <div className="flex items-center justify-between gap-4 bg-zinc-100 dark:bg-zinc-800 rounded-b-lg px-4 py-3 border border-t-0 border-zinc-200 dark:border-zinc-700">
           <div className="flex items-center gap-3">
-            <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <div
-                className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${
+                className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
                   pressedKeys.up
                     ? "bg-blue-500 text-white shadow-inner"
                     : "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
                 }`}
               >
-                <ArrowUp className="w-4 h-4" />
+                W
               </div>
-              <div className="flex gap-1">
-                <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${
-                    pressedKeys.left
-                      ? "bg-blue-500 text-white shadow-inner"
-                      : "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                  }`}
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </div>
-                <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${
-                    pressedKeys.down
-                      ? "bg-blue-500 text-white shadow-inner"
-                      : "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                  }`}
-                >
-                  <ArrowDown className="w-4 h-4" />
-                </div>
-                <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${
-                    pressedKeys.right
-                      ? "bg-blue-500 text-white shadow-inner"
-                      : "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                  }`}
-                >
-                  <ArrowRight className="w-4 h-4" />
-                </div>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">Jump</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div
+                className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
+                  pressedKeys.left
+                    ? "bg-blue-500 text-white shadow-inner"
+                    : "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                }`}
+              >
+                A
               </div>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">Left</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div
+                className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
+                  pressedKeys.right
+                    ? "bg-blue-500 text-white shadow-inner"
+                    : "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                }`}
+              >
+                D
+              </div>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">Right</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div
@@ -290,7 +286,7 @@ export default function Ben10Page() {
               >
                 J
               </div>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">attack</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">Attack</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div
@@ -302,7 +298,7 @@ export default function Ben10Page() {
               >
                 K
               </div>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">transform</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">Transform</span>
             </div>
           </div>
           <button
