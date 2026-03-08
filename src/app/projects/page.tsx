@@ -71,6 +71,28 @@ const Projects = () => {
   
   const projects: Project[] = [
     {
+      title: "Keel",
+      description: "Subscription tracking app",
+      tech: ["Swift", "SwiftUI", "iOS"],
+      category: 'application',
+      links: [
+        { label: "GitHub", url: "https://github.com/rohzzn/keel-site" },
+        { label: "Live", url: "https://usekeel.co" },
+      ],
+      image: "/projects/keel.png"
+    },
+    {
+      title: "Dock Poker",
+      description: "Texas Hold'em for private games with friends",
+      tech: ["React", "Node.js", "Socket.IO", "Express"],
+      category: 'game',
+      links: [
+        { label: "GitHub", url: "https://github.com/rohzzn/dock.poker" },
+        { label: "Live", url: "https://dock.poker" },
+      ],
+      image: "/projects/poker.png"
+    },
+    {
       title: "Wordle Clone",
       description: "Word cloud generator game",
       tech: ["JavaScript", "HTML", "CSS"],
