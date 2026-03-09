@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
 import { Search, RefreshCw } from 'lucide-react';
 
 interface Anime {
@@ -168,12 +167,12 @@ const MyAnimeList: React.FC = () => {
                     >
                       <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded overflow-hidden shadow-lg">
                         {anime.image ? (
-                          <Image
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
                             src={anime.image}
                             alt={anime.title}
-                            fill
-                            className="object-cover"
-                            sizes="128px"
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
@@ -268,12 +267,12 @@ const MyAnimeList: React.FC = () => {
                 >
                   <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded overflow-hidden shadow-lg">
                     {anime.image ? (
-                      <Image
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
                         src={anime.image}
                         alt={anime.title}
-                        fill
-                        className="object-cover"
-                        sizes="128px"
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
