@@ -12,81 +12,87 @@ const hobbies: Hobby[] = [
   {
     title: "Activities",
     description: "Cardio & gym sessions",
-    href: "/hobbies/strava"
-  },
-  {
-    title: "Ben 10",
-    description: "Childhood game archived",
-    href: "/hobbies/ben10"
+    href: "/hobbies/strava",
   },
   {
     title: "Anime",
     description: "Watched series & ratings",
-    href: "/hobbies/myanimelist"
+    href: "/hobbies/myanimelist",
+  },
+  {
+    title: "Ben 10",
+    description: "Childhood game archived",
+    href: "/hobbies/ben10",
   },
   {
     title: "Books",
     description: "Reading list & reviews",
-    href: "/hobbies/readings"
+    href: "/hobbies/readings",
   },
   {
     title: "Content",
     description: "Videos & tutorials",
-    href: "/hobbies/content"
+    href: "/hobbies/content",
   },
   {
     title: "Designs",
     description: "UI/UX & creative work",
-    href: "/hobbies/art"
+    href: "/hobbies/art",
   },
   {
     title: "Gaming",
     description: "Stats & achievements",
-    href: "/hobbies/games"
+    href: "/hobbies/games",
   },
   {
     title: "Gaming Clips",
     description: "CS2, Valorant & more",
-    href: "/hobbies/clips"
+    href: "/hobbies/clips",
   },
   {
     title: "Hackathons",
     description: "Projects & achievements",
-    href: "/hobbies/hackathons"
+    href: "/hobbies/hackathons",
   },
   {
     title: "Music",
     description: "Playlists & favorites",
-    href: "/hobbies/music"
+    href: "/hobbies/music",
   },
   {
     title: "Setup",
     description: "Gear & tools",
-    href: "/hobbies/uses"
+    href: "/hobbies/uses",
   },
   {
     title: "Typing",
     description: "Speed test (115 WPM)",
-    href: "/hobbies/typing"
-  }
-];
+    href: "/hobbies/typing",
+  },
+].sort((a, b) => a.title.localeCompare(b.title));
 
 const Hobbies: React.FC = () => (
-  <div className="max-w-7xl">
-    <h2 className="text-lg font-medium mb-6 dark:text-white">Hobbies</h2>
+  <div style={{ maxWidth: '75ch' }}>
+    <h2 className="text-lg font-medium mb-8 dark:text-white">Hobbies</h2>
 
-    <div className="space-y-4">
+    <div>
       {hobbies.map((hobby) => (
         <Link
           key={hobby.href}
           href={hobby.href}
-          className="group cursor-pointer block"
+          className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
         >
-          <article>
-            <h3 className="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-              {hobby.title}, <span className="text-xs text-zinc-500 dark:text-zinc-500 font-normal">{hobby.description}</span>
-            </h3>
-          </article>
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-shrink-0">
+              {hobby.title}
+            </span>
+            <span className="text-sm text-zinc-400 dark:text-zinc-500 truncate hidden sm:block">
+              {hobby.description}
+            </span>
+          </div>
+          <span className="text-xs text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transition-colors flex-shrink-0 ml-4">
+            →
+          </span>
         </Link>
       ))}
     </div>
