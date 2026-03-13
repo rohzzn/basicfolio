@@ -140,14 +140,9 @@ const WritingPage = () => {
             href={`/writing/${post.slug}`}
             className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-shrink-0">
-                {post.title}
-              </span>
-              <span className="text-sm text-zinc-400 dark:text-zinc-500 truncate hidden sm:block">
-                {post.description}
-              </span>
-            </div>
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+              {post.title}
+            </span>
             <span className="text-xs text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-400 dark:group-hover:text-zinc-500 transition-colors flex-shrink-0 ml-4">
               {post.displayDate}
             </span>
