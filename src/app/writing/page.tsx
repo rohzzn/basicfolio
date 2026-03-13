@@ -143,7 +143,7 @@ const WritingPage = () => {
             <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
               {post.title}
             </span>
-            <span className="text-xs text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-400 dark:group-hover:text-zinc-500 transition-colors flex-shrink-0 ml-4">
+            <span className="text-xs text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors flex-shrink-0 ml-4">
               {post.displayDate}
             </span>
           </Link>
