@@ -1,21 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
-const GithubIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor" aria-hidden="true">
-    <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-  </svg>
-);
-
-const ExternalIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-    <polyline points="15 3 21 3 21 9" />
-    <line x1="10" y1="14" x2="21" y2="3" />
-  </svg>
-);
 
 interface Project {
   title: string;
@@ -468,13 +454,6 @@ const projects: Project[] = [
   },
 ];
 
-function formatMetric(metrics: Project["metrics"]): string | null {
-  if (!metrics) return null;
-  if (metrics.downloads) return `${metrics.downloads.toLocaleString()} downloads`;
-  if (metrics.users) return `${metrics.users.toLocaleString()} users`;
-  if (metrics.visits) return `${metrics.visits.toLocaleString()} visits`;
-  return null;
-}
 
 const displayCategories = [
   { id: "application" as const, label: "apps" },
@@ -485,12 +464,11 @@ const displayCategories = [
 
 const Projects = () => {
   const [activeTab, setActiveTab] = useState<Project["category"]>("application");
-  const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
 
   const activeProjects = projects.filter((p) => p.category === activeTab);
 
   return (
-    <div className="max-w-5xl">
+    <div style={{ maxWidth: "75ch" }}>
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-lg font-medium dark:text-white">Projects</h2>
         <div className="flex gap-4">
@@ -510,7 +488,7 @@ const Projects = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
         {activeProjects.map((project) => {
           const githubLink = project.links.find((l) => l.label === "GitHub");
           const liveLink = project.links.find(
@@ -529,79 +507,37 @@ const Projects = () => {
                 l.label === "OverTheWire" ||
                 l.label === "YouTube Tutorial")
           );
-          const metric = formatMetric(project.metrics);
-          const hasImgError = imgErrors.has(project.image);
-
           const cardUrl = liveLink?.url || githubLink?.url || "#";
 
           return (
-            <article
+            <div
               key={project.title}
-              className="group flex flex-col rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+              className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
             >
-              {/* Thumbnail */}
-              <Link href={cardUrl} target="_blank" rel="noopener noreferrer" className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden block">
-                {hasImgError ? (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-600 text-xs">
-                    no preview
-                  </div>
-                ) : (
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                    sizes="(max-width: 640px) 100vw, 50vw"
-                    onError={() =>
-                      setImgErrors((prev) => new Set(prev).add(project.image))
-                    }
-                  />
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <Link
+                  href={cardUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                >
+                  {project.title}
+                </Link>
+                {githubLink && (
+                  <Link
+                    href={githubLink.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    src
+                  </Link>
                 )}
-              </Link>
-
-              {/* Content */}
-              <div className="flex flex-col flex-1 px-4 py-3 gap-2">
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium text-zinc-800 dark:text-zinc-200 leading-snug">
-                    {project.title}
-                  </h3>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
-                    {project.description}
-                  </p>
-                </div>
-
-                {/* Footer: metric + icons */}
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                    {metric ?? ""}
-                  </span>
-                  <div className="flex items-center gap-2.5">
-                    {githubLink && (
-                      <Link
-                        href={githubLink.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-                        aria-label="Source code"
-                      >
-                        <GithubIcon />
-                      </Link>
-                    )}
-                    {liveLink && (
-                      <Link
-                        href={liveLink.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-                        aria-label="Live link"
-                      >
-                        <ExternalIcon />
-                      </Link>
-                    )}
-                  </div>
-                </div>
               </div>
-            </article>
+              <span className="text-sm text-zinc-400 dark:text-zinc-500 flex-shrink-0 ml-4 hidden sm:block">
+                {project.description}
+              </span>
+            </div>
           );
         })}
       </div>

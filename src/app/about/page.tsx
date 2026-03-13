@@ -77,8 +77,8 @@ const Home: React.FC = () => {
 
       {/* Bio */}
       <div className="mb-10">
-        <div className="flex gap-6 items-start mb-6">
-          <div className="flex-1">
+        <div className="mb-6 flex items-start gap-6">
+          <div className="flex-1 min-w-0">
             <h1
               className={`text-lg font-medium mb-5 dark:text-white ${isDesktop ? 'cursor-pointer hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors' : ''}`}
               onClick={handleNameClick}
@@ -94,28 +94,25 @@ const Home: React.FC = () => {
           </div>
 
           {showImage && isDesktop && (
-            <div className="animate-fade-in flex-shrink-0 flex flex-col items-center">
+            <div className="animate-fade-in flex-shrink-0">
               {imageType === 'normal' ? (
                 <Image
                   src="/images/profile/rohan.png"
                   alt="Rohan Pothuru"
-                  width={120}
-                  height={120}
+                  width={160}
+                  height={160}
                   className="rounded-lg"
                 />
               ) : (
                 <Image
                   src="/images/profile/rohan_gif.gif"
                   alt="Rohan Pothuru"
-                  width={120}
-                  height={120}
+                  width={160}
+                  height={160}
                   className="rounded-lg"
                   unoptimized
                 />
               )}
-              <span className="handwritten-text mt-1.5 text-xs text-zinc-400 dark:text-zinc-500">
-                ↑ you found me
-              </span>
             </div>
           )}
         </div>
