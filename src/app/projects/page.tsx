@@ -510,7 +510,7 @@ const Projects = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {activeProjects.map((project) => {
           const githubLink = project.links.find((l) => l.label === "GitHub");
           const liveLink = project.links.find(
@@ -532,13 +532,15 @@ const Projects = () => {
           const metric = formatMetric(project.metrics);
           const hasImgError = imgErrors.has(project.image);
 
+          const cardUrl = liveLink?.url || githubLink?.url || "#";
+
           return (
             <article
               key={project.title}
               className="group flex flex-col rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
             >
               {/* Thumbnail */}
-              <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+              <Link href={cardUrl} target="_blank" rel="noopener noreferrer" className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden block">
                 {hasImgError ? (
                   <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-600 text-xs">
                     no preview
@@ -549,13 +551,13 @@ const Projects = () => {
                     alt={project.title}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, 50vw"
                     onError={() =>
                       setImgErrors((prev) => new Set(prev).add(project.image))
                     }
                   />
                 )}
-              </div>
+              </Link>
 
               {/* Content */}
               <div className="flex flex-col flex-1 px-4 py-3 gap-2">
