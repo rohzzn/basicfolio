@@ -5,8 +5,9 @@
 @tailwind utilities;
 
 :root {
-  --background: #f2f2f2;
+  --background: #F5F1EC;
   --foreground: #333333; /* Darker text for better contrast */
+  --font-heading: "PP Mori", "PPMori", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: "Apple Garamond", serif;
 }
@@ -16,12 +17,20 @@
   --foreground: #ededed;
 }
 
+html {
+  background: var(--background);
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-sans);
   position: relative;
   overflow-x: hidden;
+}
+
+:is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-heading);
 }
 
 /* Performance optimizations */
@@ -131,6 +140,10 @@ html.e-reader-mode main :is(p, li, blockquote) {
 html.e-reader-mode main :is(h1, h2, h3, h4) {
   max-inline-size: 75ch;
   text-wrap: balance;
+}
+
+html.e-reader-mode :is(h1, h2, h3, h4, h5, h6) {
+  font-family: inherit !important;
 }
 
 /* Force most hard-coded Tailwind zinc colors into e-reader palette */

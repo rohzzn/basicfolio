@@ -18,10 +18,11 @@ module.exports = {
       },
       fontFamily: {
         sans: ['ui-sans-serif', 'system-ui', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
+        heading: ['"PP Mori"', '"PPMori"', 'ui-sans-serif', 'system-ui', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
         serif: ['"Apple Garamond"', 'serif'],
       },
       colors: {
-        paper: '#f2f2f2',
+        paper: '#F5F1EC',
       },
       keyframes: {
         fadeIn: {
