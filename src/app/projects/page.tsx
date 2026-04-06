@@ -31,6 +31,7 @@ const projects: Project[] = [
     ],
     image: "/projects/keel.png",
   },
+  
   {
     title: "Dock Poker",
     description: "Texas Hold'em for private games with friends",
@@ -41,6 +42,17 @@ const projects: Project[] = [
       { label: "Live", url: "https://dock.poker" },
     ],
     image: "/projects/poker.png",
+  },
+  {
+    title: "Greed Island Dex",
+    description: "Hunter x Hunter Greed Island card dex",
+    tech: ["React", "TypeScript", "Vite"],
+    category: "game",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/hxh" },
+      { label: "Live", url: "https://hxh.rohan.my/" },
+    ],
+    image: "/projects/hxh.png",
   },
   {
     title: "Wordle Clone",
@@ -64,6 +76,17 @@ const projects: Project[] = [
       { label: "Live", url: "https://interactions.rohan.host/" },
     ],
     image: "/projects/interactions.png",
+  },
+  {
+    title: "Margin",
+    description: "Minimal online EPUB reader",
+    tech: ["React", "TypeScript", "Vite"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/margin" },
+      { label: "Live", url: "https://marginreader.com/" },
+    ],
+    image: "/projects/margin.png",
   },
   {
     title: "Contests",
