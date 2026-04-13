@@ -113,16 +113,6 @@ const fetchWatchlistCatalog = async (): Promise<WatchlistCatalog> => {
   };
 };
 
-const formatRating = (ratingValue: number | null): string => {
-  if (ratingValue === null) {
-    return 'Unrated';
-  }
-
-  const fullStars = Math.floor(ratingValue);
-  const hasHalfStar = ratingValue % 1 !== 0;
-
-  return `${'\u2605'.repeat(fullStars)}${hasHalfStar ? '\u00BD' : ''}`;
-};
 
 const PosterSkeleton: React.FC = () => (
   <div className="animate-pulse">
@@ -144,18 +134,6 @@ const mediaLabels: Record<MediaTypeId, string> = {
   anime: 'Anime',
 };
 
-const mediaSearchPlaceholders: Record<MediaTypeId, string> = {
-  movies: 'Search movies...',
-  shows: 'Search TV shows...',
-  anime: 'Search anime...',
-};
-
-const sortOptions: Array<{ id: SortOptionId; label: string }> = [
-  { id: 'newest', label: 'Year' },
-  { id: 'oldest', label: 'Year' },
-  { id: 'highest-rated', label: 'Rating' },
-  { id: 'lowest-rated', label: 'Rating' },
-];
 
 const filterMediaEntries = (
   entries: MediaEntry[],
