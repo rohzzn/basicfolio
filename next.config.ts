@@ -1,8 +1,9 @@
-// next.config.js
+const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: path.resolve(__dirname),
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
@@ -39,6 +40,9 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images-na.ssl-images-amazon.com' },
       { protocol: 'https', hostname: 'm.media-amazon.com' },
       { protocol: 'https', hostname: 'covers.openlibrary.org' },
+      { protocol: 'https', hostname: 'media.themoviedb.org' },
+      { protocol: 'https', hostname: 'a.ltrbxd.com' },
+      { protocol: 'https', hostname: 's.ltrbxd.com' },
     ],
   },
   async headers() {

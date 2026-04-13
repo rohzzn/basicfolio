@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
-export default function MyAnimeListRedirectPage() {
+export default function WatchRedirectPage() {
   redirect('/hobbies/watchlist');
 }
