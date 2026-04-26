@@ -17,8 +17,8 @@ module.exports = {
         '10': '0.10',
       },
       fontFamily: {
-        sans: ['ui-sans-serif', 'system-ui', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
-        heading: ['"PP Mori"', '"PPMori"', 'ui-sans-serif', 'system-ui', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
+        sans: ['"Satoshi"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['"Satoshi"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         serif: ['"Apple Garamond"', 'serif'],
       },
       colors: {

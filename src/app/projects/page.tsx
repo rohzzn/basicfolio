@@ -113,6 +113,18 @@ const projects: Project[] = [
     image: "/projects/shuttab.png",
   },
   {
+    title: "CS Stats",
+    description: "CS2 Stats on Steam",
+    tech: ["JavaScript", "Chrome Extensions", "CSS"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/csstats" },
+      { label: "Marketplace", url: "https://chromewebstore.google.com/detail/cs-stats/fdnhgmlohooaabloinhbgmkhpebckapp" },
+    ],
+    metrics: { users: 100 },
+    image: "/projects/csstats.png",
+  },
+  {
     title: "API Clinic",
     description: "API testing tool with validation",
     tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],

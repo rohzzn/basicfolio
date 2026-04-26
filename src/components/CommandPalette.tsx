@@ -25,6 +25,7 @@ import {
   Linkedin,
   Instagram,
   Moon,
+  Sun,
   Sparkles,
   ArrowLeft,
   History,
@@ -115,6 +116,16 @@ const quickActions: BaseItem[] = [
       document.documentElement.classList.toggle('dark');
       const isDark = document.documentElement.classList.contains('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+  },
+  {
+    title: 'Toggle Sun Rays',
+    keywords: ['sun', 'rays', 'shadow', 'light', 'overlay', 'effect'],
+    icon: <Sun className="w-4 h-4" />,
+    action: () => {
+      document.documentElement.classList.toggle('sun-rays-on');
+      const isOn = document.documentElement.classList.contains('sun-rays-on');
+      localStorage.setItem('sunRays', isOn ? 'on' : 'off');
     }
   },
 ];

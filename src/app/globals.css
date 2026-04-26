@@ -4,11 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Satoshi Variable Font ─────────────────────────────────────── */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/font/WEB/fonts/Satoshi-Variable.woff2') format('woff2'),
+       url('/font/WEB/fonts/Satoshi-Variable.woff') format('woff'),
+       url('/font/WEB/fonts/Satoshi-Variable.ttf') format('truetype');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/font/WEB/fonts/Satoshi-VariableItalic.woff2') format('woff2'),
+       url('/font/WEB/fonts/Satoshi-VariableItalic.woff') format('woff'),
+       url('/font/WEB/fonts/Satoshi-VariableItalic.ttf') format('truetype');
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --background: #F5F1EC;
-  --foreground: #333333; /* Darker text for better contrast */
-  --font-heading: "PP Mori", "PPMori", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --foreground: #333333;
+  --font-heading: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Apple Garamond", serif;
 }
 
@@ -25,8 +46,18 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   position: relative;
   overflow-x: hidden;
+}
+
+
+/* ─── GitHub calendar fill ───────────────────────────────────────── */
+.react-activity-calendar,
+.react-activity-calendar svg {
+  width: 100% !important;
+  height: auto !important;
 }
 
 :is(h1, h2, h3, h4, h5, h6) {

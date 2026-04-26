@@ -276,6 +276,13 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const discordId = "407922731645009932";
   const pathname = usePathname();
 
+  // Restore sun rays preference from localStorage
+  useEffect(() => {
+    if (localStorage.getItem('sunRays') === 'on') {
+      document.documentElement.classList.add('sun-rays-on');
+    }
+  }, []);
+
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
@@ -391,6 +398,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       <CommandPalette />
       <CursorSound />
       <EReaderEasterEgg />
+
       
       {isMenuOpen && (
         <div 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import GitHubCalendar from 'react-github-calendar';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,6 +34,8 @@ const Home: React.FC = () => {
   const [tapCount, setTapCount] = useState(0);
   const [imageType, setImageType] = useState<'normal' | 'gif'>('normal');
   const [emailCopied, setEmailCopied] = useState(false);
+  const ageRef = useRef<HTMLSpanElement>(null);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -62,6 +64,22 @@ const Home: React.FC = () => {
     else { setShowImage(false); setTapCount(0); }
   };
 
+  useEffect(() => {
+    const birthday = new Date(2001, 10, 12, 5, 30, 0); // Nov 12 2001, 5:30 AM
+
+    const tick = () => {
+      if (ageRef.current) {
+        const diff = Date.now() - birthday.getTime();
+        const years = diff / (1000 * 60 * 60 * 24 * 365.25);
+        ageRef.current.textContent = years.toFixed(10);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText('hi@rohanpothuru.com');
@@ -73,7 +91,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '75ch' }}>
+    <div style={{ maxWidth: '52ch' }}>
 
       {/* Bio */}
       <div className="mb-10">
@@ -86,7 +104,7 @@ const Home: React.FC = () => {
               Rohan Pothuru
             </h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-3">
-              Software engineer and CS grad student who loves building things that matter. Currently pursuing my Masters at the University of Cincinnati while working part-time in healthcare tech.
+              Software engineer and CS grad student who loves building things that matter. <span ref={ageRef} style={{ fontVariantNumeric: 'tabular-nums' }} /> years old, currently pursuing my Masters at the University of Cincinnati while working part-time in healthcare tech.
             </p>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
               When I&apos;m not coding, you&apos;ll find me taking photos, gaming with friends, or working on random design projects. I also spend way too much time tweaking my setup.
@@ -150,7 +168,7 @@ const Home: React.FC = () => {
       </div>
 
       {/* GitHub Contributions */}
-      <div className="mb-10 overflow-hidden">
+      <div className="mb-10">
         <GitHubCalendar
           username="rohzzn"
           colorScheme={isDark ? 'dark' : 'light'}
@@ -158,20 +176,20 @@ const Home: React.FC = () => {
             light: ['#e4e4e7', '#a1a1aa', '#71717a', '#52525b', '#3f3f46'],
             dark: ['#3f3f46', '#52525b', '#71717a', '#a1a1aa', '#d4d4d8'],
           }}
-          blockSize={13}
-          blockMargin={4}
-          fontSize={11}
+          blockSize={9}
+          blockMargin={3}
+          fontSize={10}
           hideColorLegend
           hideMonthLabels
           hideTotalCount
           showWeekdayLabels={false}
           transformData={(data) => {
             const now = new Date();
-            const eightMonthsAgo = new Date(now);
-            eightMonthsAgo.setMonth(now.getMonth() - 8);
-            return data.filter((day) => new Date(day.date) >= eightMonthsAgo);
+            const nineMonthsAgo = new Date(now);
+            nineMonthsAgo.setMonth(now.getMonth() - 9);
+            return data.filter((day) => new Date(day.date) >= nineMonthsAgo);
           }}
-          style={{ width: '100%' }}
+          style={{ width: '100%', maxWidth: '52ch' }}
         />
       </div>
 
