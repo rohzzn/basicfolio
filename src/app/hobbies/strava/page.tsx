@@ -146,13 +146,8 @@ const ACTIVITY_LABEL: Record<string, string> = {
   WeightTraining: 'gym', Workout: 'gym',
 };
 
-const TIME_RANGES = [
-  { value: 30, label: '30d' },
-  { value: 60, label: '60d' },
-  { value: 90, label: '90d' },
-  { value: 180, label: '6mo' },
-  { value: 365, label: '1yr' },
-];
+/** Strava list/detail flow is reliable for ~30d; wider windows hit limits and bad responses. */
+const ACTIVITIES_LOOKBACK_DAYS = 30;
 
 /** Full-width activity media: natural aspect, no crop; scales only with card width. */
 const ACTIVITY_MEDIA_IMG = 'block h-auto w-full max-w-full object-contain';
@@ -162,7 +157,6 @@ const ActivitiesPage: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timeRange, setTimeRange] = useState(30);
 
   const fetchStravaData = async (daysAgo: number) => {
     try {
@@ -242,10 +236,11 @@ const ActivitiesPage: React.FC = () => {
     setActivities([]);
     setWorkouts([]);
     setLoading(true);
-    Promise.all([fetchStravaData(timeRange), fetchHevyData(timeRange)]).finally(() =>
-      setLoading(false)
-    );
-  }, [timeRange]);
+    Promise.all([
+      fetchStravaData(ACTIVITIES_LOOKBACK_DAYS),
+      fetchHevyData(ACTIVITIES_LOOKBACK_DAYS),
+    ]).finally(() => setLoading(false));
+  }, []);
 
   const combinedActivities = React.useMemo(() => {
     const combined: CombinedActivity[] = [
@@ -303,23 +298,9 @@ const ActivitiesPage: React.FC = () => {
   return (
     <div style={{ maxWidth: '75ch' }}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-8">
         <h2 className="text-lg font-medium dark:text-white">Activities</h2>
-        <div className="flex gap-4">
-          {TIME_RANGES.map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => setTimeRange(value)}
-              className={`text-sm transition-colors ${
-                timeRange === value
-                  ? 'text-zinc-900 dark:text-white font-medium'
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Last {ACTIVITIES_LOOKBACK_DAYS} days</p>
       </div>
 
       {/* Stats strip */}
@@ -359,7 +340,7 @@ const ActivitiesPage: React.FC = () => {
           </div>
         ) : combinedActivities.length === 0 ? (
           <p className="text-sm text-zinc-500 dark:text-zinc-400 py-6">
-            No activities in the last {timeRange} days.
+            No activities in the last {ACTIVITIES_LOOKBACK_DAYS} days.
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
