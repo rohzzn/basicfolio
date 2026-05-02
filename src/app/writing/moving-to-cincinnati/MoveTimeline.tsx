@@ -6,7 +6,7 @@ const MILESTONES = [
     date: 'Nov 2023',
     emoji: '📝',
     title: 'Started applications',
-    detail: 'Submitted to 8 universities. GRE, TOEFL, LORs, SOP — the full stack of grad school paperwork.',
+    detail: 'Submitted to 3 universities. GRE, IELTS, LORs, SOP — the full stack of grad school paperwork.',
   },
   {
     date: 'Jan 2024',
@@ -24,7 +24,7 @@ const MILESTONES = [
     date: 'Jun 2024',
     emoji: '🎓',
     title: 'Graduated from MREC',
-    detail: 'Bachelor of Technology in Computer Science. Four years in Hyderabad, done.',
+    detail: 'Bachelor of Technology in Computer Science. Four years in Hell, done.',
   },
   {
     date: 'Jul 2024',
@@ -36,7 +36,7 @@ const MILESTONES = [
     date: 'Aug 1, 2024',
     emoji: '✈️',
     title: 'Hyderabad → Cincinnati',
-    detail: 'HYD → DXB → JFK → CVG. 26 hours of travel. Landed at midnight in the wrong time zone.',
+    detail: 'HYD → DOH → PHI → CVG. 26 hours of travel. Landed at midnight in the wrong time zone.',
   },
   {
     date: 'Aug 2024',

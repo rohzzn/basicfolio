@@ -23,7 +23,7 @@ export default function MovingToCincinnati() {
           <Link href="/writing" className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex-shrink-0 mt-1">writing</Link>
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
-          <time dateTime="2024-08-05">August 5, 2024</time>
+          <time dateTime="2024-08-05">August 24, 2024</time>
         </div>
       </header>
 
@@ -37,10 +37,10 @@ export default function MovingToCincinnati() {
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">The application process</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-          I started applications in November 2023, toward the end of my final year at MREC. The process has a lot of moving parts that all need to happen in the right order. GRE first, then TOEFL, then transcripts, then letters of recommendation, then the statement of purpose. The SOP is the part nobody warns you about properly. You write a few hundred words about who you are and why you want to study at this specific school, and everything sounds both too humble and too arrogant at the same time. I rewrote mine four times.
+          I started applications in November 2023, toward the end of my final year at MREC. The process has a lot of moving parts that all need to happen in the right order. GRE first, then IELTS, then transcripts, then letters of recommendation, then the statement of purpose. The SOP is the part nobody warns you about properly. You write a few hundred words about who you are and why you want to study at this specific school, and everything sounds both too humble and too arrogant at the same time. I rewrote mine two times.
         </p>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-          I applied to eight schools. UC came back with an acceptance in January. The Master of Engineering in Computer Science program had the right mix of what I wanted: strong algorithms curriculum, research opportunities, and a location that was not too expensive to live in relative to the coastal cities. I accepted and started the visa process.
+          I applied to three schools. UC came back with an acceptance in January. The Master of Engineering in Computer Science program had the right mix of what I wanted: strong algorithms curriculum, research opportunities, and a location that was not too expensive to live in relative to the coastal cities. I accepted and started the visa process.
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">The visa interview</h2>
