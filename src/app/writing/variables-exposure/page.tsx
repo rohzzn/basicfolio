@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import EnvVarDemo from './EnvVarDemo';
 
 export const metadata: Metadata = {
   title: 'Environment Variables Don\'t Hide Data — Rohan',
@@ -41,6 +42,8 @@ const VariablesExposure: React.FC = () => {
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Let&#39;s be real: we&#39;ve all been there. You&#39;ve got some sensitive API keys, maybe a webhook URL or two, and you do the responsible thing — you throw them in environment variables. No more hardcoded secrets in your Git repository, right? Except here&#39;s the thing: that might be the digital equivalent of hiding your house key under a doormat that&#39;s made of clear plastic.
         </p>
+
+        <EnvVarDemo />
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The False Promise of .env Files</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">

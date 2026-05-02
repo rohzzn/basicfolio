@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import TournamentTimeline from './TournamentTimeline';
 
 export const metadata: Metadata = {
   title: 'My Time in Esports — Rohan',
@@ -37,6 +38,8 @@ const EsportsJourney: React.FC = () => {
       </header>
 
       <div className="text-sm max-w-3xl">
+        <TournamentTimeline />
+
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Beginning: Falling in Love with Counter-Strike</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           It all started in 2014 when I first encountered Counter-Strike. From the moment I witnessed its raw and beautiful gameplay, 

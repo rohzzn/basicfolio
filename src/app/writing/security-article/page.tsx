@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import TOTPDemo from './TOTPDemo';
 
 export const metadata: Metadata = {
   title: 'Your 2FA Is Broken — Rohan',
@@ -48,6 +49,8 @@ const SecurityArticle: React.FC = () => {
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
           Last month, I discovered three critical vulnerabilities in widely-used 2FA implementations. Don&#39;t worry — they&#39;ve been patched. But the story of how these flaws survived code reviews and security audits reveals a deeper problem with how we&#39;re approaching time-based authentication.
         </p>
+
+        <TOTPDemo />
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Discovery</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">

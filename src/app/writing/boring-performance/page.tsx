@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import PerfMetrics from './PerfMetrics';
 
 export const metadata: Metadata = {
   title: 'Boring Guide to 10x Frontend Performance — Rohan',
@@ -236,33 +237,7 @@ function Component() {
           After implementing these changes across our test applications:
         </p>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
-{`// Performance improvements
-const metrics = {
-  bundleSize: {
-    before: '2.1MB',
-    after: '1.1MB',
-    improvement: '47%'
-  },
-  memoryUsage: {
-    before: '180MB',
-    after: '117MB',
-    improvement: '35%'
-  },
-  timeToInteractive: {
-    before: '4.2s',
-    after: '1.8s',
-    improvement: '57%'
-  },
-  userRetention: {
-    before: '68%',
-    after: '82%',
-    improvement: '14%'
-  }
-};`}
-          </pre>
-        </div>
+        <PerfMetrics />
 
         <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">Essential Resources</h3>

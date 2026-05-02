@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import WorkTimeline from './WorkTimeline';
 
 export const metadata: Metadata = {
   title: 'SDE Intern at Abhibus (Ixigo) — Rohan',
@@ -53,6 +54,8 @@ const IxigoExperience: React.FC = () => {
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Versatility in Projects</h2>
+
+        <WorkTimeline />
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           One of the unique aspects of my internship was the variety of projects I got to work on. 
           Since I was the only intern on the team, I had the opportunity to explore different domains:

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import ChatDemo from './ChatDemo';
 
 export const metadata: Metadata = {
   title: 'Building My Own ChatGPT UI — Rohan',
@@ -48,6 +49,8 @@ const ChatGPTInterface: React.FC = () => {
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
           How hard could it be? That&#39;s what I thought when I started building my own ChatGPT interface. Three months and 15,000 lines of code later, I&#39;ve learned that AI interfaces aren&#39;t just about pretty chat bubbles — they&#39;re about managing human expectations, trust, and anxiety in real-time.
         </p>
+
+        <ChatDemo />
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Trust Patterns</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">

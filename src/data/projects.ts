@@ -41,6 +41,17 @@ export const projects: Project[] = [
     image: "/projects/poker.png",
   },
   {
+    title: "Catan Online",
+    description: "Full-featured multiplayer Settlers of Catan in the browser",
+    tech: ["React", "Node.js", "Socket.IO", "Express", "Vite"],
+    category: "game",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/catan" },
+      { label: "Live", url: "https://catan.rohan.my" },
+    ],
+    image: "/projects/catan.png",
+  },
+  {
     title: "Greed Island Dex",
     description: "Hunter x Hunter Greed Island card dex",
     tech: ["React", "TypeScript", "Vite"],

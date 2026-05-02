@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import TrafficGraph from './TrafficGraph';
 
 export const metadata: Metadata = {
   title: "How Discord Survived 2024's Biggest Launch — Rohan",
@@ -163,6 +164,8 @@ pub fn check_rate_limit(ctx: &Context, args: Vec<RedisString>) -> RedisResult {
 }`}
           </pre>
         </div>
+
+        <TrafficGraph />
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Results</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">

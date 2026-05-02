@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import ProgRoadmap from './ProgRoadmap';
 
 export const metadata: Metadata = {
   title: 'Beginners Guide for Programming — Rohan',
@@ -34,6 +35,8 @@ const BeginnersGuideProgramming: React.FC = () => {
       </header>
 
       <div className="text-sm max-w-3xl">
+        <ProgRoadmap />
+
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Understanding Programming</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Before we can introduce you to some key concepts, we need to understand what programming really is. 

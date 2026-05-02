@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import CourseCards from './CourseCards';
 
 export const metadata: Metadata = {
   title: 'Second Semester at UC — Rohan',
@@ -49,6 +50,8 @@ const FirstSpring: React.FC = () => {
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
           Spring 2025 built upon the foundation of my first semester at UC, bringing new challenges, opportunities, and the beautiful awakening of Cincinnati from winter&apos;s grip. Between leading a large software team, tackling demanding coursework, and beginning a research position at CCHMC, this semester has been a remarkable chapter in my graduate journey.
         </p>
+
+        <CourseCards />
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Academic Deep Dive: Spring 2025 Curriculum</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">

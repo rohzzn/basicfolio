@@ -16,6 +16,14 @@ export type Thought = {
 
 export const posts: Post[] = [
   {
+    slug: 'catan-coop',
+    title: 'Building Multiplayer Catan From Scratch',
+    description: 'How I built a full-featured online Settlers of Catan — hex grid geometry, server-authoritative game state, Socket.IO rooms, and Web Audio all from scratch.',
+    date: '2026-05-01',
+    displayDate: 'May 2026',
+    category: 'tech',
+  },
+  {
     slug: 'first-spring',
     title: 'Second Semester at UC',
     description: 'Reflecting on challenging academics, leadership, and life in Cincinnati during my second semester at the University of Cincinnati.',

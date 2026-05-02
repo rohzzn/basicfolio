@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import DesignShowcase from './DesignShowcase';
 
 export const metadata: Metadata = {
   title: 'Beginners Guide for Design — Rohan',
@@ -34,6 +35,8 @@ const BeginnersGuideDesign: React.FC = () => {
       </header>
 
       <div className="text-sm max-w-3xl">
+        <DesignShowcase />
+
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Getting Started in Design</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           There are different reasons for getting into graphic design. Maybe you want to create a logo for your website, 

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import CostComparison from './CostComparison';
 
 export const metadata: Metadata = {
   title: 'Modern Tech Stacks Kill Startups — Rohan',
@@ -53,6 +54,8 @@ const ModernTechStacks: React.FC = () => {
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Every startup faces the same pressure: pick the newest, shiniest tech stack. We interviewed 30 failed startups and found a pattern: 80% spent their first six months building infrastructure instead of product. So we made a different choice: PHP, MySQL, and a single server.
         </p>
+
+        <CostComparison />
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Results That Shocked Us</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">

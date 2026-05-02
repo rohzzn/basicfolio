@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import CourseCards from './CourseCards';
 
 export const metadata: Metadata = {
   title: 'First Semester at UC — Rohan',
@@ -49,6 +50,8 @@ const UCExperience: React.FC = () => {
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
           Fall 2024 marked the beginning of my UC journey as an F1 student in the Master of Engineering program. From intensive algorithm courses to exploring campus facilities, this semester has been filled with growth and discovery. Balancing academics, work, and campus life has created an incredible introduction to life as a Bearcat.
         </p>
+
+        <CourseCards />
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Academic Deep Dive: Fall 2024 Curriculum</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
