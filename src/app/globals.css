@@ -52,14 +52,6 @@ body {
   overflow-x: hidden;
 }
 
-
-/* ─── GitHub calendar fill ───────────────────────────────────────── */
-.react-activity-calendar,
-.react-activity-calendar svg {
-  width: 100% !important;
-  height: auto !important;
-}
-
 :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-heading);
 }

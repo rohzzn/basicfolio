@@ -1,15 +1,126 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import GitHubCalendar from 'react-github-calendar';
 import Image from 'next/image';
 import Link from 'next/link';
-import { featuredProjects } from '@/data/projects';
+import { projects, type Project } from '@/data/projects';
+import { posts } from '@/data/writing';
 
-const recentProjects = featuredProjects.map((p) => ({
-  slug: p.slug,
-  title: p.title,
-  description: p.description,
-}));
+const recentWritings = [...posts]
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  .slice(0, 2);
+
+const recentProjectsPinned = ['dock-poker', 'contests']
+  .map((slug) => projects.find((x) => x.slug === slug))
+  .filter((p): p is Project => p != null);
+
+const recentItems = [
+  ...recentWritings.map((p) => ({
+    type: 'writing' as const,
+    slug: p.slug,
+    title: p.title,
+  })),
+  ...recentProjectsPinned.map((p) => ({
+    type: 'project' as const,
+    slug: p.slug,
+    title: p.title,
+  })),
+];
+
+const CAL_MARGIN = 3;
+const MAX_BLOCK = 28;
+
+/** Largest block size so n columns fit in targetPx (grid width = n*(bs+m)-m). */
+function blockSizeForWeeks(targetPx: number, weekColumns: number, m: number): number {
+  if (targetPx < 16 || weekColumns < 1) return 9;
+  const bs = Math.floor((targetPx - (weekColumns - 1) * m) / weekColumns);
+  return Math.max(4, Math.min(MAX_BLOCK, bs));
+}
+
+function ProseGitHubCalendar({ isDark }: { isDark: boolean }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [blockSize, setBlockSize] = useState(10);
+  const blockSizeRef = useRef(blockSize);
+  const containerWidthRef = useRef(containerWidth);
+  blockSizeRef.current = blockSize;
+  containerWidthRef.current = containerWidth;
+
+  const refit = useCallback(() => {
+    const wrap = wrapRef.current;
+    const cw = containerWidthRef.current;
+    if (!wrap || cw < 24) return;
+    const svg = wrap.querySelector<SVGSVGElement>('.react-activity-calendar svg');
+    if (!svg) return;
+    const gridW = svg.viewBox?.baseVal?.width;
+    if (!gridW || gridW < 12) return;
+
+    const m = CAL_MARGIN;
+    const bs = blockSizeRef.current;
+    const n = Math.max(1, Math.round((gridW + m) / (bs + m)));
+    const next = blockSizeForWeeks(cw, n, m);
+    if (next !== bs) setBlockSize(next);
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const syncWidth = () => {
+      const w = el.getBoundingClientRect().width;
+      containerWidthRef.current = w;
+      setContainerWidth(w);
+    };
+    syncWidth();
+    const ro = new ResizeObserver(syncWidth);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    refit();
+  }, [blockSize, containerWidth, refit]);
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const mo = new MutationObserver(() => {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => refit(), 60);
+    });
+    mo.observe(wrap, { childList: true, subtree: true });
+    return () => {
+      mo.disconnect();
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [refit]);
+
+  return (
+    <div ref={wrapRef} className="mb-10 w-full min-w-0">
+      <GitHubCalendar
+        username="rohzzn"
+        colorScheme={isDark ? 'dark' : 'light'}
+        theme={{
+          light: ['#e4e4e7', '#a1a1aa', '#71717a', '#52525b', '#3f3f46'],
+          dark: ['#3f3f46', '#52525b', '#71717a', '#a1a1aa', '#d4d4d8'],
+        }}
+        blockSize={blockSize}
+        blockMargin={CAL_MARGIN}
+        fontSize={10}
+        hideColorLegend
+        hideMonthLabels
+        hideTotalCount
+        showWeekdayLabels={false}
+        transformData={(data) => {
+          const now = new Date();
+          const nineMonthsAgo = new Date(now);
+          nineMonthsAgo.setMonth(now.getMonth() - 9);
+          return data.filter((day) => new Date(day.date) >= nineMonthsAgo);
+        }}
+      />
+    </div>
+  );
+}
 
 const Home: React.FC = () => {
   const [isDark, setIsDark] = React.useState(false);
@@ -151,54 +262,27 @@ const Home: React.FC = () => {
       </div>
 
       {/* GitHub Contributions */}
-      <div className="mb-10">
-        <GitHubCalendar
-          username="rohzzn"
-          colorScheme={isDark ? 'dark' : 'light'}
-          theme={{
-            light: ['#e4e4e7', '#a1a1aa', '#71717a', '#52525b', '#3f3f46'],
-            dark: ['#3f3f46', '#52525b', '#71717a', '#a1a1aa', '#d4d4d8'],
-          }}
-          blockSize={9}
-          blockMargin={3}
-          fontSize={10}
-          hideColorLegend
-          hideMonthLabels
-          hideTotalCount
-          showWeekdayLabels={false}
-          transformData={(data) => {
-            const now = new Date();
-            const nineMonthsAgo = new Date(now);
-            nineMonthsAgo.setMonth(now.getMonth() - 9);
-            return data.filter((day) => new Date(day.date) >= nineMonthsAgo);
-          }}
-          style={{ width: '100%', maxWidth: '52ch' }}
-        />
-      </div>
+      <ProseGitHubCalendar isDark={isDark} />
 
-      {/* Recent Projects */}
+      {/* Recent */}
       <div className="mb-10">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4">
           <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-            Recent Projects
+            Recent
           </span>
-          <Link href="/projects"
-            className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
-            all →
-          </Link>
         </div>
         <div>
-          {recentProjects.map((project) => (
+          {recentItems.map((item) => (
             <Link
-              key={project.slug}
-              href={`/projects/${project.slug}`}
-              className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
+              key={`${item.type}-${item.slug}`}
+              href={item.type === 'writing' ? `/writing/${item.slug}` : `/projects/${item.slug}`}
+              className="group flex items-center justify-between gap-3 py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
             >
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-shrink-0">
-                {project.title}
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors min-w-0 truncate">
+                {item.title}
               </span>
-              <span className="text-sm text-zinc-400 dark:text-zinc-500 truncate ml-4 text-right hidden sm:block">
-                {project.description}
+              <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex-shrink-0">
+                {item.type === 'writing' ? 'Writing' : 'Project'}
               </span>
             </Link>
           ))}
