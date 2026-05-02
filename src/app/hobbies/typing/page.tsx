@@ -71,11 +71,13 @@ export default function TypingTest() {
   const [phase, setPhase]       = useState<Phase>('idle');
   const [capsLock, setCapsLock] = useState(false);
   const [slideY, setSlideY]     = useState(0);
+  const [activeKey, setActiveKey] = useState('');
 
-  const inputRef   = useRef<HTMLInputElement>(null);
-  const timerRef   = useRef<number | null>(null);
-  const wordRefs   = useRef<(HTMLSpanElement | null)[]>([]);
-  const timeOptRef = useRef<TimeOpt>(15);
+  const inputRef    = useRef<HTMLInputElement>(null);
+  const timerRef    = useRef<number | null>(null);
+  const wordRefs    = useRef<(HTMLSpanElement | null)[]>([]);
+  const timeOptRef  = useRef<TimeOpt>(15);
+  const keyTimerRef = useRef<number | null>(null);
 
   useEffect(() => { timeOptRef.current = timeOpt; }, [timeOpt]);
 
@@ -158,7 +160,13 @@ export default function TypingTest() {
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     setCapsLock(e.getModifierState('CapsLock'));
-    if (e.key === 'Tab') { e.preventDefault(); restart(); }
+    if (e.key === 'Tab') { e.preventDefault(); restart(); return; }
+    const k = e.key === ' ' ? ' ' : e.key.length === 1 ? e.key.toLowerCase() : '';
+    if (k) {
+      setActiveKey(k);
+      if (keyTimerRef.current) clearTimeout(keyTimerRef.current);
+      keyTimerRef.current = window.setTimeout(() => setActiveKey(''), 130);
+    }
   }, [restart]);
 
   const switchTime = (t: TimeOpt) => {
@@ -312,16 +320,52 @@ export default function TypingTest() {
           {capsLock && (
             <p className="text-xs text-amber-500 mb-2">caps lock is on</p>
           )}
-          <p className="text-xs text-zinc-400 dark:text-zinc-600">
+          <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-6">
             tab — reset · space — next word
           </p>
+
+          {/* Keyboard */}
+          <div className="select-none" onClick={() => inputRef.current?.focus()}>
+            {([
+              ['q','w','e','r','t','y','u','i','o','p'],
+              ['a','s','d','f','g','h','j','k','l'],
+              ['z','x','c','v','b','n','m'],
+            ] as const).map((row, ri) => (
+              <div
+                key={ri}
+                className="flex justify-center gap-1 mb-1"
+                style={{ paddingLeft: ['0rem','0.9rem','1.65rem'][ri] }}
+              >
+                {row.map(key => (
+                  <div
+                    key={key}
+                    className={`w-8 sm:w-9 h-8 sm:h-9 flex items-center justify-center rounded font-mono text-xs transition-all duration-75 ${
+                      activeKey === key
+                        ? 'bg-zinc-800 dark:bg-zinc-100 text-white dark:text-zinc-900 scale-95 shadow-sm'
+                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+                    }`}
+                  >
+                    {key}
+                  </div>
+                ))}
+              </div>
+            ))}
+            <div className="flex justify-center mt-1">
+              <div
+                className={`h-8 sm:h-9 w-44 sm:w-56 rounded font-mono text-xs transition-all duration-75 ${
+                  activeKey === ' '
+                    ? 'bg-zinc-800 dark:bg-zinc-100 scale-95 shadow-sm'
+                    : 'bg-zinc-100 dark:bg-zinc-800'
+                }`}
+              />
+            </div>
+          </div>
 
           <input
             ref={inputRef}
             value={typed}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            disabled={phase === 'done'}
             style={{ position: 'fixed', top: '-200px', left: 0, opacity: 0, width: '1px', height: '1px' }}
             autoComplete="off"
             autoCorrect="off"
