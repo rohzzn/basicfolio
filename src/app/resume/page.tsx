@@ -20,7 +20,7 @@ const Stack = () => {
   const [leetcodeStats, setLeetcodeStats] = useState<LeetCodeStats | null>(null);
 
   useEffect(() => {
-    fetch('https://leetcode-stats-api.herokuapp.com/rohzzn')
+    fetch('/api/leetcode')
       .then(res => res.json())
       .then(data => setLeetcodeStats(data))
       .catch(error => console.error('Error fetching LeetCode stats:', error));

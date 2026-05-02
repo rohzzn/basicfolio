@@ -66,6 +66,7 @@ const NavLink: React.FC<NavLinkProps> = memo(({ href, children }) => {
   return (
     <Link
       href={href}
+      aria-current={isActive ? "page" : undefined}
       className={`block px-4 py-3 text-sm sm:text-sm font-medium rounded-md transition-colors capitalize w-full text-left
         ${isActive
           ? "bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white"

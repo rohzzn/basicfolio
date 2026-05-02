@@ -1,10 +1,18 @@
-"use client";
-
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-
+export const metadata: Metadata = {
+  title: 'Your 2FA Is Broken — Rohan',
+  description: 'Two-factor authentication feels safe, but most implementations have critical weaknesses that attackers exploit every day.',
+  openGraph: {
+    title: 'Your 2FA Is Broken',
+    description: 'Two-factor authentication feels safe, but most implementations have critical weaknesses that attackers exploit every day.',
+    url: 'https://rohan.run/writing/security-article',
+  },
+  alternates: { canonical: 'https://rohan.run/writing/security-article' },
+};
 
 const SecurityArticle: React.FC = () => {
   return (

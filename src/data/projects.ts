@@ -1,0 +1,491 @@
+export interface Project {
+  title: string;
+  description: string;
+  tech: string[];
+  links: { label: string; url: string }[];
+  metrics?: {
+    visits?: number;
+    users?: number;
+    downloads?: number;
+    preAI?: boolean;
+    githubStars?: number;
+  };
+  category: "application" | "web" | "game" | "other";
+  image: string;
+  featured?: boolean;
+}
+
+export const projects: Project[] = [
+  {
+    title: "Keel",
+    description: "Subscription tracking app",
+    tech: ["Swift", "SwiftUI", "iOS"],
+    category: "application",
+    featured: true,
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/keel-site" },
+      { label: "Live", url: "https://usekeel.co" },
+    ],
+    image: "/projects/keel.png",
+  },
+  {
+    title: "Dock Poker",
+    description: "Texas Hold'em for private games with friends",
+    tech: ["React", "Node.js", "Socket.IO", "Express"],
+    category: "game",
+    featured: true,
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/dock.poker" },
+      { label: "Live", url: "https://dock.poker" },
+    ],
+    image: "/projects/poker.png",
+  },
+  {
+    title: "Greed Island Dex",
+    description: "Hunter x Hunter Greed Island card dex",
+    tech: ["React", "TypeScript", "Vite"],
+    category: "game",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/hxh" },
+      { label: "Live", url: "https://hxh.rohan.my/" },
+    ],
+    image: "/projects/hxh.png",
+  },
+  {
+    title: "Wordle Clone",
+    description: "Word cloud generator game",
+    tech: ["JavaScript", "HTML", "CSS"],
+    category: "game",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/wordle" },
+      { label: "Live", url: "https://rohzzn.github.io/wordle/" },
+    ],
+    metrics: { preAI: true },
+    image: "/projects/wordle.png",
+  },
+  {
+    title: "Interactions",
+    description: "7-day UI interaction design challenge",
+    tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/interactions" },
+      { label: "Live", url: "https://interactions.rohan.host/" },
+    ],
+    image: "/projects/interactions.png",
+  },
+  {
+    title: "Margin",
+    description: "Minimal online EPUB reader",
+    tech: ["React", "TypeScript", "Vite"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/margin" },
+      { label: "Live", url: "https://marginreader.com/" },
+    ],
+    image: "/projects/margin.png",
+  },
+  {
+    title: "Contests",
+    description: "Programming contests & hackathon tracker",
+    tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+    category: "web",
+    featured: true,
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/contests" },
+      { label: "Live", url: "http://contests.dev/" },
+    ],
+    metrics: { users: 200 },
+    image: "/projects/contests.png",
+  },
+  {
+    title: "ShutTab",
+    description: "Website blocker Chrome extension",
+    tech: ["JavaScript", "Chrome Extensions", "CSS"],
+    category: "application",
+    featured: true,
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/ShutTab" },
+      { label: "Marketplace", url: "https://chromewebstore.google.com/detail/shuttab-%E2%80%93-free-site-block/lmkjcljgmcbechfhpkpamniadalgjojc" },
+    ],
+    metrics: { users: 20 },
+    image: "/projects/shuttab.png",
+  },
+  {
+    title: "CS Stats",
+    description: "CS2 Stats on Steam",
+    tech: ["JavaScript", "Chrome Extensions", "CSS"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/csstats" },
+      { label: "Marketplace", url: "https://chromewebstore.google.com/detail/cs-stats/fdnhgmlohooaabloinhbgmkhpebckapp" },
+    ],
+    metrics: { users: 100 },
+    image: "/projects/csstats.png",
+  },
+  {
+    title: "API Clinic",
+    description: "API testing tool with validation",
+    tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/api-clinic" },
+      { label: "Live", url: "https://apiclinic.vercel.app/" },
+    ],
+    metrics: { users: 20 },
+    image: "/projects/api.png",
+  },
+  {
+    title: "DSA Roadmap",
+    description: "Learning path for Data Structures & Algorithms",
+    tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/dsa" },
+      { label: "Live", url: "https://dsa.gay" },
+    ],
+    metrics: { visits: 12305, preAI: true },
+    image: "/projects/dsa.png",
+  },
+  {
+    title: "CodeChef MREC",
+    description: "Official chapter website for CodeChef",
+    tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/mreccodechef/Website" },
+      { label: "Chapter", url: "https://github.com/mreccodechef" },
+    ],
+    metrics: { visits: 1200, preAI: true },
+    image: "/projects/codechef.png",
+  },
+  {
+    title: "Git Time Machine",
+    description: "CLI tool for git history visualization",
+    tech: ["Node.js", "Commander.js", "Inquirer", "Chalk"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/git-time-machine" },
+      { label: "Package", url: "https://www.npmjs.com/package/git-time-machine" },
+    ],
+    metrics: { downloads: 225 },
+    image: "/projects/git-time.png",
+  },
+  {
+    title: "Pages",
+    description: "Figma plugin for page management",
+    tech: ["Figma API", "TypeScript", "React"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/pages" },
+      { label: "Plugin", url: "https://www.figma.com/community/plugin/1106104074775818911/pages" },
+    ],
+    metrics: { users: 800, preAI: true },
+    image: "/projects/pages.png",
+  },
+  {
+    title: "Meet",
+    description: "Video conferencing with screen sharing",
+    tech: ["React", "Node.js", "Socket.io"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/meet" },
+      { label: "Live Demo", url: "https://ckvyqugj7184663idk0i811d0su-8rbb2fvau-calatop.vercel.app/authenticate" },
+    ],
+    metrics: { visits: 800, preAI: true },
+    image: "/projects/meet.png",
+  },
+  {
+    title: "Ipynb Image Extractor",
+    description: "Extract images from Jupyter notebooks",
+    tech: ["Python", "Nbformat", "Pillow"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/ipynb-image-extract" },
+      { label: "Package", url: "https://pypi.org/project/ipynb-image-extract/" },
+    ],
+    metrics: { users: 50 },
+    image: "/projects/ipynb.png",
+  },
+  {
+    title: "Scrapetron",
+    description: "Web scraping framework",
+    tech: ["Python", "BeautifulSoup", "Scrapy"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/scrapetron" },
+      { label: "Package", url: "https://pypi.org/project/scrapetron/" },
+    ],
+    metrics: { users: 20, preAI: true },
+    image: "/projects/scrapetron.png",
+  },
+  {
+    title: "Todo iOS App",
+    description: "Native task manager with cloud sync",
+    tech: ["Swift", "UIKit", "CoreData"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/todoapp" },
+      { label: "Demo", url: "https://github.com/rohzzn/todoapp" },
+    ],
+    metrics: { preAI: true },
+    image: "/projects/todo.png",
+  },
+  {
+    title: "Zenitsu Bot",
+    description: "Discord bot with moderation & games",
+    tech: ["JavaScript", "Discord.js", "Node.js"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/Zenitsu-bot" },
+      { label: "Invite", url: "https://discord.com/oauth2/authorize?client_id=766218598913146901" },
+    ],
+    metrics: { users: 200, preAI: true },
+    image: "/projects/zenitsu.png",
+  },
+  {
+    title: "Tanoshi",
+    description: "Eye-friendly VS Code theme",
+    tech: ["CSS", "JSON"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/tanoshi" },
+      { label: "Marketplace", url: "https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi" },
+    ],
+    metrics: { downloads: 1700, preAI: true, githubStars: 14 },
+    image: "/projects/tanoshi.png",
+  },
+  {
+    title: "Hexr",
+    description: "Color picker Chrome extension",
+    tech: ["JavaScript", "Chrome Extensions", "CSS"],
+    category: "application",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/hexpicker" },
+      { label: "Marketplace", url: "https://chrome.google.com/webstore/detail/hex-picker/jmnkgndafoldkblpnmmollbgkdfemmfc" },
+    ],
+    metrics: { users: 80, preAI: true },
+    image: "/projects/hexr.png",
+  },
+  {
+    title: "Dekho Car",
+    description: "Car rental platform with booking",
+    tech: ["React", "Node.js", "MongoDB"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/dekhocar" },
+      { label: "Live Demo", url: "https://dekhocar.vercel.app/" },
+    ],
+    metrics: { visits: 2000, preAI: true },
+    image: "/projects/dekhocar.png",
+  },
+  {
+    title: "QR Generator",
+    description: "Custom QR code generator",
+    tech: ["JavaScript", "HTML5", "CSS3"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/qr" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/qr/" },
+    ],
+    metrics: { visits: 3500, preAI: true },
+    image: "/projects/qr.png",
+  },
+  {
+    title: "Pokemon 2d Platformer",
+    description: "Interactive Pokemon world game",
+    tech: ["JavaScript", "Tiled"],
+    category: "game",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/pokemon" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/pokemon/" },
+    ],
+    metrics: { visits: 6800, preAI: true },
+    image: "/projects/pokemon.png",
+  },
+  {
+    title: "Pokedex",
+    description: "Pokemon catalog with stats tracking",
+    tech: ["JavaScript", "PokéAPI"],
+    category: "game",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/pokedex" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/pokedex/" },
+    ],
+    metrics: { visits: 1800, preAI: true },
+    image: "/projects/pokedex.png",
+  },
+  {
+    title: "Automobile Analytics",
+    description: "Marketing strategy analyzer for automotive",
+    tech: ["Python", "Pandas", "Matplotlib"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/automobile" },
+      { label: "Notes", url: "https://github.com/rohzzn/automobile/blob/main/colab.ipynb" },
+    ],
+    metrics: { preAI: true },
+    image: "/projects/auto.png",
+  },
+  {
+    title: "Smart Agriculture",
+    description: "IoT-based automated farming system",
+    tech: ["Arduino", "C++", "Sensors"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/smart_agriculture" },
+      { label: "Paper", url: "https://github.com/rohzzn/smart_agriculture/blob/main/Smart.pdf" },
+    ],
+    metrics: { preAI: true },
+    image: "/projects/agriculture.png",
+  },
+  {
+    title: "Block-Steam-Invites",
+    description: "Block unwanted Steam friend requests",
+    tech: ["JavaScript", "Tampermonkey/Greasemonkey"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/block-steam-invites" },
+      { label: "YouTube Tutorial", url: "https://www.youtube.com/watch?v=KhLYxv3iry0" },
+    ],
+    metrics: { preAI: true },
+    image: "/projects/block_steam_invites.png",
+  },
+  {
+    title: "OverTheWire Challenges",
+    description: "Security challenges & writeups",
+    tech: ["Command-line scripting"],
+    category: "other",
+    links: [
+      { label: "OverTheWire", url: "https://overthewire.org/wargames/" },
+      { label: "GitHub", url: "https://github.com/rohzzn/overthewire" },
+    ],
+    metrics: { preAI: true },
+    image: "/projects/overthewire.png",
+  },
+  {
+    title: "Discord Mirror",
+    description: "Cross-server message mirroring",
+    tech: ["Node.js"],
+    category: "other",
+    links: [{ label: "GitHub", url: "https://github.com/rohzzn/discordmirror" }],
+    metrics: { preAI: true },
+    image: "/projects/discord_mirror.png",
+  },
+  {
+    title: "GitHub Repo Any Year Any Day",
+    description: "Create repos with backdated commits",
+    tech: ["Shell Script"],
+    category: "other",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/2001-script" },
+      { label: "Script File", url: "https://github.com/rohzzn/2001-script/blob/main/index.sh" },
+    ],
+    metrics: { preAI: true },
+    image: "/projects/commitanyyear.png",
+  },
+  {
+    title: "YouTube Thumbnail Downloader",
+    description: "Download thumbnails in any resolution",
+    tech: ["JavaScript", "HTML", "CSS"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/thumbnails" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/thumbnails/" },
+    ],
+    metrics: { visits: 2200, preAI: true },
+    image: "/projects/thumbnail_downloader.png",
+  },
+  {
+    title: "Marvel Cinematic Universe Timeline",
+    description: "Interactive MCU timeline",
+    tech: ["HTML", "CSS", "JavaScript"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/mcu_timeline" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/mcu_timeline/" },
+    ],
+    metrics: { visits: 4000, preAI: true },
+    image: "/projects/mcutimeline.png",
+  },
+  {
+    title: "Customer Management App",
+    description: "CRM with PostgreSQL backend",
+    tech: ["React", "Node.js", "Express", "PostgreSQL"],
+    category: "application",
+    links: [{ label: "GitHub", url: "https://github.com/rohzzn/CustomerManagement" }],
+    metrics: { preAI: true },
+    image: "/projects/customer_management.png",
+  },
+  {
+    title: "Anomaly Detection in Wireless Networks",
+    description: "ML model for network anomaly detection",
+    tech: ["Python", "Machine Learning", "TensorFlow"],
+    category: "other",
+    links: [{ label: "GitHub", url: "https://github.com/rohzzn/nids" }],
+    metrics: { preAI: true },
+    image: "/projects/nids.png",
+  },
+  {
+    title: "Portfolio V5",
+    description: "Current portfolio with dark mode",
+    tech: ["Next.js", "TypeScript", "Tailwind CSS"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/portfolio" },
+      { label: "Live Demo", url: "https://portfolio-calatops-projects.vercel.app/" },
+    ],
+    metrics: { visits: 2300, preAI: true },
+    image: "/projects/portfolio-v5.png",
+  },
+  {
+    title: "Portfolio V4",
+    description: "Windows 95-inspired portfolio",
+    tech: ["React", "Styled Components", "95.css"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/windows95" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/windows95/" },
+    ],
+    metrics: { visits: 1200, preAI: true },
+    image: "/projects/portfolio-v4.png",
+  },
+  {
+    title: "Portfolio V3",
+    description: "Minimalist portfolio with typography focus",
+    tech: ["React", "CSS3", "JavaScript"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v3" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v3/" },
+    ],
+    metrics: { visits: 1300, preAI: true },
+    image: "/projects/portfolio-v3.png",
+  },
+  {
+    title: "Portfolio V2",
+    description: "Dynamic portfolio with GSAP animations",
+    tech: ["React", "GSAP", "Sass"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v2" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v2/" },
+    ],
+    metrics: { visits: 7000, preAI: true },
+    image: "/projects/portfolio-v2.png",
+  },
+  {
+    title: "Portfolio V1",
+    description: "Anime-inspired creative portfolio",
+    tech: ["HTML5", "CSS3", "JavaScript"],
+    category: "web",
+    links: [
+      { label: "GitHub", url: "https://github.com/rohzzn/portfolio_v1" },
+      { label: "Live Demo", url: "https://rohzzn.github.io/portfolio_v1/" },
+    ],
+    metrics: { visits: 500, preAI: true },
+    image: "/projects/portfolio-v1.png",
+  },
+];
+
+export const featuredProjects = projects.filter((p) => p.featured);

@@ -1,10 +1,18 @@
-"use client";
-
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-
+export const metadata: Metadata = {
+  title: 'Environment Variables Don\'t Hide Data — Rohan',
+  description: 'That super-secret API key tucked away in Vercel might not be as hidden as you think. A weekend with Burp Suite revealed every secret.',
+  openGraph: {
+    title: 'Environment Variables Don\'t Hide Data',
+    description: 'That super-secret API key tucked away in Vercel might not be as hidden as you think. A weekend with Burp Suite revealed every secret.',
+    url: 'https://rohan.run/writing/variables-exposure',
+  },
+  alternates: { canonical: 'https://rohan.run/writing/variables-exposure' },
+};
 
 const VariablesExposure: React.FC = () => {
   return (

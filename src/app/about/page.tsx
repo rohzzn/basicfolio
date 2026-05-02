@@ -3,29 +3,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import GitHubCalendar from 'react-github-calendar';
 import Image from 'next/image';
 import Link from 'next/link';
+import { featuredProjects } from '@/data/projects';
 
-const recentProjects = [
-  {
-    title: "Keel",
-    description: "Subscription tracking app",
-    url: "https://usekeel.co",
-  },
-  {
-    title: "Dock Poker",
-    description: "Texas Hold'em for private games",
-    url: "https://dock.poker",
-  },
-  {
-    title: "Contests",
-    description: "Programming contests & hackathon tracker",
-    url: "http://contests.dev/",
-  },
-  {
-    title: "ShutTab",
-    description: "Website blocker Chrome extension",
-    url: "https://chromewebstore.google.com/detail/shuttab-%E2%80%93-free-site-block/lmkjcljgmcbechfhpkpamniadalgjojc",
-  },
-];
+const recentProjects = featuredProjects.map((p) => ({
+  title: p.title,
+  description: p.description,
+  url: p.links.find((l) => l.label !== 'GitHub')?.url ?? p.links[0]?.url ?? '#',
+}));
 
 const Home: React.FC = () => {
   const [isDark, setIsDark] = React.useState(false);
@@ -35,7 +19,6 @@ const Home: React.FC = () => {
   const [imageType, setImageType] = useState<'normal' | 'gif'>('normal');
   const [emailCopied, setEmailCopied] = useState(false);
   const ageRef = useRef<HTMLSpanElement>(null);
-  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -73,11 +56,11 @@ const Home: React.FC = () => {
         const years = diff / (1000 * 60 * 60 * 24 * 365.25);
         ageRef.current.textContent = years.toFixed(10);
       }
-      rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, []);
 
   const copyEmail = async () => {

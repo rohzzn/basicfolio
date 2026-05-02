@@ -1,11 +1,18 @@
-// src/app/writing/beginners-guide-programming.tsx
-"use client";
-
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-
+export const metadata: Metadata = {
+  title: 'Beginners Guide for Programming — Rohan',
+  description: 'A practical, no-nonsense starting point for anyone who wants to learn to code but has no idea where to begin.',
+  openGraph: {
+    title: 'Beginners Guide for Programming',
+    description: 'A practical, no-nonsense starting point for anyone who wants to learn to code but has no idea where to begin.',
+    url: 'https://rohan.run/writing/beginners-guide-programming',
+  },
+  alternates: { canonical: 'https://rohan.run/writing/beginners-guide-programming' },
+};
 
 const BeginnersGuideProgramming: React.FC = () => {
   return (

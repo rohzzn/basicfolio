@@ -1,8 +1,18 @@
-"use client";
-
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Second Semester at UC — Rohan',
+  description: 'Reflecting on challenging academics, leading a team of 13, a research role at CCHMC, and Cincinnati in bloom during my second semester.',
+  openGraph: {
+    title: 'Second Semester at UC',
+    description: 'Reflecting on challenging academics, leading a team of 13, a research role at CCHMC, and Cincinnati in bloom during my second semester.',
+    url: 'https://rohan.run/writing/first-spring',
+  },
+  alternates: { canonical: 'https://rohan.run/writing/first-spring' },
+};
 
 const FirstSpring: React.FC = () => {
   return (

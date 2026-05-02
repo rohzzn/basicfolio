@@ -1,11 +1,18 @@
-// src/app/writing/beginners-guide-design.tsx
-"use client";
-
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-
+export const metadata: Metadata = {
+  title: 'Beginners Guide for Design — Rohan',
+  description: 'The core principles, tools, and resources that helped me go from zero design knowledge to building real products.',
+  openGraph: {
+    title: 'Beginners Guide for Design',
+    description: 'The core principles, tools, and resources that helped me go from zero design knowledge to building real products.',
+    url: 'https://rohan.run/writing/beginners-guide-design',
+  },
+  alternates: { canonical: 'https://rohan.run/writing/beginners-guide-design' },
+};
 
 const BeginnersGuideDesign: React.FC = () => {
   return (

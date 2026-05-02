@@ -1,10 +1,18 @@
-"use client";
-
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-
+export const metadata: Metadata = {
+  title: 'Modern Tech Stacks Kill Startups — Rohan',
+  description: 'We built a 500k-user product with PHP and MySQL in 4 months and saved $180k. Why chasing the latest stack is the wrong first move.',
+  openGraph: {
+    title: 'Modern Tech Stacks Kill Startups',
+    description: 'We built a 500k-user product with PHP and MySQL in 4 months and saved $180k. Why chasing the latest stack is the wrong first move.',
+    url: 'https://rohan.run/writing/modern-tech-stacks',
+  },
+  alternates: { canonical: 'https://rohan.run/writing/modern-tech-stacks' },
+};
 
 const ModernTechStacks: React.FC = () => {
   return (

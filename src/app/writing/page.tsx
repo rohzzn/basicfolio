@@ -2,49 +2,9 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-
-type Post = {
-  slug: string;
-  title: string;
-  date: string;
-  displayDate: string;
-  category: 'tech' | 'life';
-};
-
-type Thought = {
-  text: string;
-  date: string;
-  displayDate: string;
-  category: 'thoughts';
-};
+import { posts, thoughts, type Post, type Thought } from '@/data/writing';
 
 type Item = Post | Thought;
-
-const posts: Post[] = [
-  { slug: 'first-spring', title: 'Second Semester at UC', date: '2025-04-28', displayDate: 'Apr 2025', category: 'life' },
-  { slug: 'uc-experience', title: 'First Semester at UC', date: '2024-12-31', displayDate: 'Dec 2024', category: 'life' },
-  { slug: 'variables-exposure', title: 'Environment Variables Dont Hide Data', date: '2024-12-29', displayDate: 'Dec 2024', category: 'tech' },
-  { slug: 'modern-tech-stacks', title: 'Modern Tech Stacks Kill Startups', date: '2024-06-10', displayDate: 'Jun 2024', category: 'tech' },
-  { slug: 'security-article', title: 'Your 2FA Is Broken', date: '2024-05-15', displayDate: 'May 2024', category: 'tech' },
-  { slug: 'boring-performance', title: 'Boring Guide to 10x Frontend Performance', date: '2024-04-15', displayDate: 'Apr 2024', category: 'tech' },
-  { slug: 'discord-article', title: 'How Discord Survived 2024s Biggest Launch', date: '2024-03-20', displayDate: 'Mar 2024', category: 'tech' },
-  { slug: 'esports-journey', title: 'My Time in Esports', date: '2024-03-08', displayDate: 'Mar 2024', category: 'life' },
-  { slug: 'chatgpt-interface', title: 'Building My Own ChatGPT UI', date: '2024-01-20', displayDate: 'Jan 2024', category: 'tech' },
-  { slug: 'ixigo-experience', title: 'SDE Intern at Abhibus (Ixigo)', date: '2023-10-10', displayDate: 'Oct 2023', category: 'life' },
-  { slug: 'beginners-guide-programming', title: 'Beginners Guide for Programming', date: '2021-04-28', displayDate: 'Apr 2021', category: 'tech' },
-  { slug: 'beginners-guide-design', title: 'Beginners Guide for Design', date: '2021-04-28', displayDate: 'Apr 2021', category: 'tech' },
-];
-
-// ── Add your thoughts here ──────────────────────────────────────────────────
-const thoughts: Thought[] = [
-  {
-    text: "Less — Shortcuts, Overthinking, Fear, Adding, Postponing\nMore — Living by my principles, Doing, Risk, Subtracting, JUST GETTING S**T DONE",
-    date: '2026-03-11',
-    displayDate: 'Mar 2026',
-    category: 'thoughts',
-  },
-];
-// ────────────────────────────────────────────────────────────────────────────
 
 const WritingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

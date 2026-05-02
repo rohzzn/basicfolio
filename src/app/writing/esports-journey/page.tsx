@@ -1,11 +1,18 @@
-// src/app/writing/esports-journey.tsx
-"use client";
-
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-
+export const metadata: Metadata = {
+  title: 'My Time in Esports — Rohan',
+  description: 'From LAN cafes to online tournaments — my personal journey through competitive gaming and the esports scene.',
+  openGraph: {
+    title: 'My Time in Esports',
+    description: 'From LAN cafes to online tournaments — my personal journey through competitive gaming and the esports scene.',
+    url: 'https://rohan.run/writing/esports-journey',
+  },
+  alternates: { canonical: 'https://rohan.run/writing/esports-journey' },
+};
 
 const EsportsJourney: React.FC = () => {
   return (
