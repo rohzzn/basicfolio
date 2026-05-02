@@ -598,8 +598,17 @@ function ShutTabDemo() {
           {sites.map(s=>(
             <div key={s.domain} className="flex items-center justify-between px-4 py-2.5">
               <span className="text-xs font-mono text-zinc-700 dark:text-zinc-300">{s.domain}</span>
-              <button onClick={()=>toggle(s.domain)} className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${s.blocked?'bg-red-500':'bg-green-500'}`}>
-                <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${s.blocked?'translate-x-0.5':'translate-x-4'}`} />
+              <button
+                type="button"
+                role="switch"
+                aria-checked={s.blocked}
+                aria-label={s.blocked ? `Unblock ${s.domain}` : `Block ${s.domain}`}
+                onClick={() => toggle(s.domain)}
+                className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 ${s.blocked ? 'bg-red-500' : 'bg-green-500'}`}
+              >
+                <span
+                  className={`pointer-events-none absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ease-out will-change-transform ${s.blocked ? 'translate-x-0' : 'translate-x-4'}`}
+                />
               </button>
             </div>
           ))}
@@ -682,12 +691,13 @@ function ZenitsuBotDemo() {
 
 function TanoshiColorPalette({ colors }: { colors: NonNullable<Project['colors']> }) {
   const { copied, copy } = useCopy();
+  const unique = [...new Map(colors.map(c => [c.hex, c])).values()];
   return (
     <div className="my-8 not-prose">
       <p className={L}>Color Palette</p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {colors.map(c => (
-          <button key={c.hex} onClick={() => copy(c.hex, c.hex)}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {unique.map(c => (
+          <button key={c.hex + c.name} onClick={() => copy(c.hex, c.hex)}
             className="group flex items-center gap-3 p-3 border border-zinc-100 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors text-left">
             <div className="w-8 h-8 rounded-md flex-shrink-0 ring-1 ring-zinc-200 dark:ring-zinc-700 ring-offset-2 ring-offset-white dark:ring-offset-zinc-950 group-hover:ring-2 transition-all" style={{ backgroundColor: c.hex }} />
             <div className="min-w-0">
@@ -734,8 +744,8 @@ function TanoshiSyntaxPreview({ colors }:{ colors: NonNullable<Project['colors']
         <div className="flex gap-1">{(['ts','py'] as const).map(l=><button key={l} onClick={()=>setLang(l)} className={`px-2.5 py-1 text-xs font-mono rounded transition-colors ${lang===l?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>{l==='ts'?'TypeScript':'Python'}</button>)}</div>
       </div>
       <div className="rounded-lg overflow-hidden border border-zinc-800">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800" style={{backgroundColor:'#0D0D17'}}>
-          <div className="flex gap-1.5">{['#F38BA8','#F9E2AF','#A6E3A1'].map(c=><div key={c} className="w-2.5 h-2.5 rounded-full opacity-80" style={{backgroundColor:c}}/>)}</div>
+        <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800" style={{ backgroundColor: bg }}>
+          <div className="flex gap-1.5">{[p.str, p.kw, p.fg].map(c => <div key={c} className="h-2.5 w-2.5 rounded-full opacity-90 ring-1 ring-black/10" style={{ backgroundColor: c }} />)}</div>
           <span className="text-xs font-mono" style={{color:p.cm}}>{lang==='ts'?'utils.ts':'utils.py'}</span>
         </div>
         <pre className="p-4 overflow-x-auto text-xs leading-6 font-mono" style={{backgroundColor:bg}}>
