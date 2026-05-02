@@ -11,13 +11,32 @@ type EventType = {
   lengthInMinutesOptions?: number[];
 };
 
+type PublicBookingField = {
+  slug: string;
+  label: string;
+  type: string;
+  required: boolean;
+  placeholder?: string;
+  options?: { value: string; label: string }[];
+};
+
 type SlotsPayload = { ok: true; slotsByDate: Record<string, string[]>; timeZone: string };
+
+type Confirmation = {
+  eventTitle: string;
+  whenShort: string;
+  whenLong: string;
+  timeZone: string;
+  name: string;
+  email: string;
+  rows: { label: string; value: string }[];
+};
 
 function sortDates(dates: string[]): string[] {
   return [...dates].sort();
 }
 
-const CINCINNATI_TZ = 'America/New_York';
+const CINCINNATI_TZ = "America/New_York";
 
 function CincinnatiLocalTime() {
   const [tick, setTick] = useState(() => Date.now());
@@ -26,19 +45,19 @@ function CincinnatiLocalTime() {
     return () => clearInterval(id);
   }, []);
 
-  const dateLong = new Intl.DateTimeFormat('en-US', {
+  const dateLong = new Intl.DateTimeFormat("en-US", {
     timeZone: CINCINNATI_TZ,
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   }).format(tick);
 
-  const timeStr = new Intl.DateTimeFormat('en-US', {
+  const timeStr = new Intl.DateTimeFormat("en-US", {
     timeZone: CINCINNATI_TZ,
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
     hour12: true,
   }).format(tick);
 
@@ -55,8 +74,187 @@ function CincinnatiLocalTime() {
       </p>
       <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{dateLong}</p>
       <p className="mt-2 border-t border-zinc-200/80 pt-2 text-[11px] text-zinc-400 dark:border-zinc-800/80 dark:text-zinc-500">
-        Eastern Time · {CINCINNATI_TZ.replace(/_/g, ' ')}
+        Eastern Time · {CINCINNATI_TZ.replace(/_/g, " ")}
       </p>
+    </div>
+  );
+}
+
+const inputClass =
+  "w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-600";
+
+function BookingFieldControl({
+  field,
+  value,
+  onChange,
+}: {
+  field: PublicBookingField;
+  value: string;
+  onChange: (slug: string, v: string) => void;
+}) {
+  const id = `bf-${field.slug}`;
+  if (
+    field.options &&
+    field.options.length > 0 &&
+    (field.type === "radioInput" || field.type === "select" || field.type === "multiselect")
+  ) {
+    return (
+      <div>
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+          {field.label}
+          {field.required ? <span className="text-red-500"> *</span> : null}
+        </label>
+        <select
+          id={id}
+          required={field.required}
+          value={value}
+          onChange={(e) => onChange(field.slug, e.target.value)}
+          className={inputClass}
+        >
+          {!field.required ? <option value="">—</option> : null}
+          {field.options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
+  if (field.type === "textarea") {
+    return (
+      <div>
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+          {field.label}
+          {field.required ? <span className="text-red-500"> *</span> : null}
+        </label>
+        <textarea
+          id={id}
+          required={field.required}
+          rows={4}
+          placeholder={field.placeholder}
+          value={value}
+          onChange={(e) => onChange(field.slug, e.target.value)}
+          className={`${inputClass} resize-y min-h-[88px]`}
+        />
+      </div>
+    );
+  }
+
+  if (field.type === "boolean" || field.type === "checkbox") {
+    return (
+      <div className="flex items-start gap-2">
+        <input
+          id={id}
+          type="checkbox"
+          checked={value === "true"}
+          onChange={(e) => onChange(field.slug, e.target.checked ? "true" : "false")}
+          className="mt-1 h-3.5 w-3.5 rounded border-zinc-300 text-zinc-900 dark:border-zinc-600"
+        />
+        <label htmlFor={id} className="text-sm text-zinc-600 dark:text-zinc-300 leading-snug">
+          {field.label}
+          {field.required ? <span className="text-red-500"> *</span> : null}
+        </label>
+      </div>
+    );
+  }
+
+  if (field.type === "number") {
+    return (
+      <div>
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+          {field.label}
+          {field.required ? <span className="text-red-500"> *</span> : null}
+        </label>
+        <input
+          id={id}
+          type="number"
+          required={field.required}
+          placeholder={field.placeholder}
+          value={value}
+          onChange={(e) => onChange(field.slug, e.target.value)}
+          className={inputClass}
+        />
+      </div>
+    );
+  }
+
+  if (field.type === "phone" || field.slug === "attendeePhoneNumber") {
+    return (
+      <div>
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+          {field.label}
+          {field.required ? <span className="text-red-500"> *</span> : null}
+        </label>
+        <input
+          id={id}
+          type="tel"
+          required={field.required}
+          placeholder={field.placeholder}
+          value={value}
+          onChange={(e) => onChange(field.slug, e.target.value)}
+          className={inputClass}
+        />
+      </div>
+    );
+  }
+
+  if (field.type === "url") {
+    return (
+      <div>
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+          {field.label}
+          {field.required ? <span className="text-red-500"> *</span> : null}
+        </label>
+        <input
+          id={id}
+          type="url"
+          required={field.required}
+          placeholder={field.placeholder}
+          value={value}
+          onChange={(e) => onChange(field.slug, e.target.value)}
+          className={inputClass}
+        />
+      </div>
+    );
+  }
+
+  if (field.type === "multiemail") {
+    return (
+      <div>
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+          {field.label}
+          {field.required ? <span className="text-red-500"> *</span> : null}
+        </label>
+        <textarea
+          id={id}
+          required={field.required}
+          rows={2}
+          placeholder={field.placeholder ?? "email@one.com, email@two.com"}
+          value={value}
+          onChange={(e) => onChange(field.slug, e.target.value)}
+          className={`${inputClass} resize-y min-h-[64px]`}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+        {field.label}
+        {field.required ? <span className="text-red-500"> *</span> : null}
+      </label>
+      <input
+        id={id}
+        type="text"
+        required={field.required}
+        placeholder={field.placeholder}
+        value={value}
+        onChange={(e) => onChange(field.slug, e.target.value)}
+        className={inputClass}
+      />
     </div>
   );
 }
@@ -69,6 +267,9 @@ export default function MeetPage() {
   const [selectedStart, setSelectedStart] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [extraFields, setExtraFields] = useState<PublicBookingField[]>([]);
+  const [loadingExtraFields, setLoadingExtraFields] = useState(false);
+  const [bookingFieldValues, setBookingFieldValues] = useState<Record<string, string>>({});
   const [loadTypesError, setLoadTypesError] = useState<string | null>(null);
   const [slotsError, setSlotsError] = useState<string | null>(null);
   const [slotsErrorDetail, setSlotsErrorDetail] = useState<string | null>(null);
@@ -76,7 +277,8 @@ export default function MeetPage() {
   const [loadingTypes, setLoadingTypes] = useState(true);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [booking, setBooking] = useState(false);
-  const [booked, setBooked] = useState(false);
+  const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
+
   const [duration, setDuration] = useState<number | null>(null);
 
   useEffect(() => {
@@ -131,6 +333,46 @@ export default function MeetPage() {
       setDuration(selectedType.lengthInMinutes);
     }
   }, [selectedType]);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    let cancelled = false;
+    (async () => {
+      setLoadingExtraFields(true);
+      setExtraFields([]);
+      setBookingFieldValues({});
+      try {
+        const res = await fetch(`/api/cal/event-type?eventTypeId=${selectedId}`);
+        const data = await res.json();
+        if (!cancelled && res.ok && data.ok && Array.isArray(data.bookingFields)) {
+          setExtraFields(data.bookingFields as PublicBookingField[]);
+        }
+      } catch {
+        if (!cancelled) setExtraFields([]);
+      } finally {
+        if (!cancelled) setLoadingExtraFields(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedId]);
+
+  useEffect(() => {
+    if (!extraFields.length) return;
+    setBookingFieldValues((prev) => {
+      const next = { ...prev };
+      for (const f of extraFields) {
+        if (f.options && f.options.length > 0 && next[f.slug] === undefined) {
+          next[f.slug] = f.options[0].value;
+        }
+        if ((f.type === "boolean" || f.type === "checkbox") && f.required && next[f.slug] === undefined) {
+          next[f.slug] = "false";
+        }
+      }
+      return next;
+    });
+  }, [extraFields, selectedStart]);
 
   const fetchSlots = useCallback(async () => {
     if (!selectedId) return;
@@ -205,21 +447,66 @@ export default function MeetPage() {
     [tz]
   );
 
+  const longWhenFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        timeZone: tz,
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      }),
+    [tz]
+  );
+
+  const setField = useCallback((slug: string, v: string) => {
+    setBookingFieldValues((prev) => ({ ...prev, [slug]: v }));
+  }, []);
+
+  const clearSlotSelection = useCallback(() => {
+    setSelectedStart(null);
+    setBookingFieldValues((prev) => {
+      const next = { ...prev };
+      for (const f of extraFields) {
+        if (f.options && f.options.length > 0) {
+          next[f.slug] = f.options[0].value;
+        } else if ((f.type === "boolean" || f.type === "checkbox") && f.required) {
+          next[f.slug] = "false";
+        } else {
+          delete next[f.slug];
+        }
+      }
+      return next;
+    });
+    setBookError(null);
+  }, [extraFields]);
+
+  const pickSlot = useCallback((startIso: string) => {
+    setSelectedStart(startIso);
+    setBookError(null);
+  }, []);
+
   const handleBook = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStart || !selectedType) return;
     setBooking(true);
     setBookError(null);
     try {
+      const bookingFieldsResponses: Record<string, string> = {};
+      for (const [k, v] of Object.entries(bookingFieldValues)) {
+        if (typeof v === "string") bookingFieldsResponses[k] = v;
+      }
+
       const body: Record<string, unknown> = {
         start: selectedStart,
         eventTypeId: selectedType.id,
+        eventTypeSlug: selectedType.slug,
         attendee: { name: name.trim(), email: email.trim(), timeZone: tz },
+        bookingFieldsResponses,
       };
-      if (
-        selectedType.lengthInMinutesOptions?.length &&
-        duration != null
-      ) {
+      if (selectedType.lengthInMinutesOptions?.length && duration != null) {
         body.lengthInMinutes = duration;
       }
       const res = await fetch("/api/cal/book", {
@@ -229,16 +516,53 @@ export default function MeetPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        const msg =
+        const fromApi =
+          typeof data.calMessage === "string" && data.calMessage.trim()
+            ? data.calMessage.trim()
+            : null;
+        const fromDetails =
           typeof data.details === "object" &&
           data.details !== null &&
-          "message" in data.details
-            ? String((data.details as { message: unknown }).message)
+          "message" in data.details &&
+          typeof (data.details as { message: unknown }).message === "string"
+            ? String((data.details as { message: string }).message)
             : null;
-        setBookError(msg || "Could not complete booking. Check details and try again.");
+        const nestedErr =
+          typeof data.details === "object" &&
+          data.details !== null &&
+          "error" in data.details &&
+          typeof (data.details as { error?: { message?: string } }).error?.message === "string"
+            ? (data.details as { error: { message: string } }).error.message
+            : null;
+        setBookError(
+          fromApi ||
+            nestedErr ||
+            fromDetails ||
+            "Could not complete booking. Check details and try again."
+        );
         return;
       }
-      setBooked(true);
+
+      const rows: { label: string; value: string }[] = [];
+      for (const f of extraFields) {
+        const raw = bookingFieldValues[f.slug] ?? "";
+        if (f.type === "boolean" || f.type === "checkbox") {
+          rows.push({ label: f.label, value: raw === "true" ? "Yes" : "No" });
+          continue;
+        }
+        const t = raw.trim();
+        if (t.length > 0) rows.push({ label: f.label, value: t });
+      }
+
+      setConfirmation({
+        eventTitle: selectedType.title,
+        whenShort: slotFormatter.format(new Date(selectedStart)),
+        whenLong: longWhenFormatter.format(new Date(selectedStart)),
+        timeZone: tz,
+        name: name.trim(),
+        email: email.trim(),
+        rows,
+      });
     } catch {
       setBookError("Network error. Try again.");
     } finally {
@@ -305,14 +629,56 @@ export default function MeetPage() {
     );
   }
 
-  if (booked) {
+  if (confirmation) {
+    const c = confirmation;
     return (
-      <div style={{ maxWidth: "52ch" }} className="space-y-4">
-        <h1 className="text-lg font-medium dark:text-white">You&apos;re set</h1>
+      <div style={{ maxWidth: "52ch" }} className="space-y-8">
+        <h1 className="text-lg font-medium dark:text-white">Booking confirmed</h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-          The booking was created. You should get a confirmation email with the details and any video link.
+          Here is a summary of what you submitted. You should also receive a confirmation email.
         </p>
-        <Link href="/about" className="text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
+
+        <div className="rounded-lg border border-zinc-200/90 bg-zinc-50/90 px-4 py-4 dark:border-zinc-800/90 dark:bg-zinc-900/35 space-y-4">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+              Event
+            </p>
+            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{c.eventTitle}</p>
+          </div>
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+              Date & time
+            </p>
+            <p className="text-sm text-zinc-800 dark:text-zinc-200">{c.whenLong}</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+              {c.whenShort} · your timezone: {c.timeZone}
+            </p>
+          </div>
+          <div className="border-t border-zinc-200/80 pt-4 dark:border-zinc-800/80 space-y-3">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+                Name
+              </p>
+              <p className="text-sm text-zinc-800 dark:text-zinc-200">{c.name}</p>
+            </div>
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+                Email
+              </p>
+              <p className="text-sm text-zinc-800 dark:text-zinc-200 break-all">{c.email}</p>
+            </div>
+            {c.rows.map((row) => (
+              <div key={row.label}>
+                <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+                  {row.label}
+                </p>
+                <p className="text-sm text-zinc-800 dark:text-zinc-200 whitespace-pre-wrap break-words">{row.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Link href="/about" className="inline-block text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
           ← About
         </Link>
       </div>
@@ -378,7 +744,7 @@ export default function MeetPage() {
       <div>
         <div className="mb-3 flex items-baseline justify-between gap-2">
           <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-            Available times
+            {selectedStart ? "Your time" : "Available times"}
           </span>
           {loadingSlots ? (
             <span className="text-xs text-zinc-400 dark:text-zinc-500">Updating…</span>
@@ -393,6 +759,23 @@ export default function MeetPage() {
           </div>
         ) : totalSlots === 0 && !loadingSlots ? (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">No open slots in the next few weeks for this event.</p>
+        ) : selectedStart ? (
+          <div className="rounded-lg border border-zinc-200/90 bg-zinc-50/90 px-4 py-4 dark:border-zinc-800/90 dark:bg-zinc-900/35">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
+              Selected
+            </p>
+            <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
+              {slotFormatter.format(new Date(selectedStart))}
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Timezone: {tz}</p>
+            <button
+              type="button"
+              onClick={clearSlotSelection}
+              className="mt-3 text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              Choose a different time
+            </button>
+          </div>
         ) : (
           <div className="space-y-6 max-h-[min(420px,50vh)] overflow-y-auto pr-1">
             {dates.map((date) => (
@@ -418,12 +801,8 @@ export default function MeetPage() {
                     <button
                       key={startIso}
                       type="button"
-                      onClick={() => setSelectedStart(startIso)}
-                      className={`rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                        selectedStart === startIso
-                          ? "border-zinc-400 bg-zinc-100 text-zinc-900 dark:border-zinc-500 dark:bg-zinc-800 dark:text-white"
-                          : "border-zinc-200 text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700"
-                      }`}
+                      onClick={() => pickSlot(startIso)}
+                      className="rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/40"
                     >
                       {slotFormatter.format(new Date(startIso))}
                     </button>
@@ -436,27 +815,32 @@ export default function MeetPage() {
       </div>
 
       {selectedStart ? (
-        <form onSubmit={handleBook} className="space-y-4 border-t border-zinc-100 dark:border-zinc-800/60 pt-8">
+        <form onSubmit={handleBook} className="space-y-6 border-t border-zinc-100 dark:border-zinc-800/60 pt-8">
           <div className="mb-1">
             <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
               Your details
             </span>
           </div>
+
+          {loadingExtraFields ? (
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading form…</p>
+          ) : null}
+
           <div>
             <label htmlFor="meet-name" className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
-              Name
+              Name <span className="text-red-500">*</span>
             </label>
             <input
               id="meet-name"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-600"
+              className={inputClass}
             />
           </div>
           <div>
             <label htmlFor="meet-email" className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
-              Email
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               id="meet-email"
@@ -464,13 +848,24 @@ export default function MeetPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-600"
+              className={inputClass}
             />
           </div>
+
+          {!loadingExtraFields &&
+            extraFields.map((f) => (
+              <BookingFieldControl
+                key={f.slug}
+                field={f}
+                value={bookingFieldValues[f.slug] ?? ""}
+                onChange={setField}
+              />
+            ))}
+
           {bookError ? <p className="text-sm text-red-600 dark:text-red-400">{bookError}</p> : null}
           <button
             type="submit"
-            disabled={booking}
+            disabled={booking || loadingExtraFields}
             className="rounded-md border border-zinc-200 bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-800 transition-colors hover:border-zinc-300 hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/60"
           >
             {booking ? "Booking…" : "Confirm booking"}
