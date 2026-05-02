@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Copy, Check, ExternalLink, Github, RefreshCcw } from 'lucide-react';
+import { Copy, Check, ExternalLink, Github, RefreshCcw } from 'lucide-react';
 import type { Project } from '@/data/projects';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -17,7 +17,6 @@ function useCopy(ms = 1400) {
   return { copied: id, copy };
 }
 
-function fmt(n: number) { return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n); }
 const L = 'text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3';
 const CARD = 'border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hidden';
 
@@ -25,24 +24,6 @@ const CARD = 'border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hi
 // Layout widgets
 // ─────────────────────────────────────────────────────────────────────────────
 
-function MetricsRow({ metrics }: { metrics: Project['metrics'] }) {
-  const items: { l: string; v: string }[] = [];
-  if (metrics?.downloads) items.push({ l: 'downloads', v: fmt(metrics.downloads) });
-  if (metrics?.users)     items.push({ l: 'users',     v: fmt(metrics.users) });
-  if (metrics?.visits)    items.push({ l: 'visits',    v: fmt(metrics.visits) });
-  if (metrics?.githubStars) items.push({ l: 'stars',   v: String(metrics.githubStars) });
-  if (!items.length) return null;
-  return (
-    <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6">
-      {items.map(({ l, v }) => (
-        <div key={l}>
-          <p className="text-base font-medium tabular-nums dark:text-white">{v}</p>
-          <p className="text-xs text-zinc-400 dark:text-zinc-500">{l}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 function LinksSection({ links }: { links: Project['links'] }) {
   const gh = links.find(l => l.label === 'GitHub');
@@ -648,7 +629,7 @@ function CSStatsDemo() {
         </div>
         {show&&(
           <div className="p-4 bg-zinc-900 border-t border-zinc-700 grid grid-cols-2 gap-3">
-            {[['Hours played','2,847'],['K/D ratio','1.34'],['Win rate','53.2%'],['Headshot %','47.8%'],['Current rank','Gold Nova III'],['Matches','1,204']].map(([k,v])=>(
+            {[['Hours played','2,847'],['K/D ratio','2.34'],['Win rate','53.2%'],['Headshot %','47.8%'],['Current rank','Legendary Eagle Master'],['Matches','1,204']].map(([k,v])=>(
               <div key={k}><p className="text-xs text-zinc-500 mb-0.5">{k}</p><p className="text-sm font-medium text-white">{v}</p></div>
             ))}
           </div>
@@ -1716,16 +1697,14 @@ function getWidget(p: Project): React.ReactNode {
 export default function ProjectDetail({ project: p }: { project: Project }) {
   return (
     <article className="max-w-2xl py-8 px-4 sm:px-0">
-      <Link href="/projects" className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors">
-        <ArrowLeft size={16} /><span>All projects</span>
-      </Link>
-
       <header className="mb-6">
-        <h1 className="text-lg font-medium mb-2 dark:text-white">{p.title}</h1>
+        <div className="flex items-start justify-between gap-4 mb-2">
+          <h1 className="text-lg font-medium dark:text-white">{p.title}</h1>
+          <Link href="/projects" className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex-shrink-0 mt-1">projects</Link>
+        </div>
         <p className="text-sm text-zinc-500 dark:text-zinc-400">{p.description}</p>
       </header>
 
-      <MetricsRow metrics={p.metrics} />
       <LinksSection links={p.links} />
 
       {getWidget(p)}

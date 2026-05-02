@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import CourseCards from './CourseCards';
 
 export const metadata: Metadata = {
@@ -18,18 +17,11 @@ export const metadata: Metadata = {
 const UCExperience: React.FC = () => {
   return (
     <article className="max-w-3xl py-8 px-4 sm:px-0">
-      <Link
-        href="/writing"
-        className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors"
-      >
-        <ArrowLeft size={16} />
-        <span>Back to writing</span>
-      </Link>
-
       <header className="mb-8">
-        <h1 className="text-lg font-medium mb-4 dark:text-white">
-          First Semester at UC
-        </h1>
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <h1 className="text-lg font-medium dark:text-white">First Semester at UC</h1>
+          <Link href="/writing" className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex-shrink-0 mt-1">writing</Link>
+        </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2024-12-31">December 2024</time>
         </div>
