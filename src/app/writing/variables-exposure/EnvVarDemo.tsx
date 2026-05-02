@@ -12,7 +12,6 @@ const VARS = [
 
 export default function EnvVarDemo() {
   const [perspective, setPerspective] = useState<'browser' | 'server'>('browser');
-  const visible = VARS.filter(v => perspective === 'server' || v.client);
 
   return (
     <div className="my-8 not-prose">

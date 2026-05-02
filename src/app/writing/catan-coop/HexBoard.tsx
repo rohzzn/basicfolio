@@ -59,8 +59,9 @@ export default function HexBoard() {
         <svg viewBox="0 0 420 310" className="w-full max-w-xs sm:max-w-sm flex-shrink-0" style={{ overflow: 'visible' }}>
           {positions.map((pos, i) => {
             const tile = BOARD[i];
+            const roll = tile.num;
             const res = RESOURCES[tile.type];
-            const hot = tile.num === 6 || tile.num === 8;
+            const hot = roll === 6 || roll === 8;
             const isHov = hovered === i;
             return (
               <g key={i} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
@@ -73,16 +74,17 @@ export default function HexBoard() {
                   opacity={hovered !== null && !isHov ? 0.55 : 1}
                   style={{ transition: 'all 0.12s ease' }}
                 />
-                {tile.num && (
+                {roll != null && (
                   <g>
                     <circle cx={pos.x} cy={pos.y} r={11} fill="ivory" fillOpacity={0.92} />
-                    {Array.from({ length: PROB[tile.num] ?? 0 }).map((_, d) => {
-                      const dotAngle = (d * (360 / (PROB[tile.num] ?? 1)) - 90) * (Math.PI / 180);
+                    {Array.from({ length: PROB[roll] }).map((_, d) => {
+                      const pips = PROB[roll];
+                      const dotAngle = (d * (360 / pips) - 90) * (Math.PI / 180);
                       return <circle key={d} cx={pos.x + 7.5 * Math.cos(dotAngle)} cy={pos.y + 7.5 * Math.sin(dotAngle)} r={1.2} fill={hot ? '#b91c1c' : '#27272a'} />;
                     })}
                     <text x={pos.x} y={pos.y + 3.5} textAnchor="middle" fontSize="9.5" fontWeight="700"
                       fill={hot ? '#b91c1c' : '#27272a'} style={{ fontFamily: 'sans-serif' }}>
-                      {tile.num}
+                      {roll}
                     </text>
                   </g>
                 )}

@@ -13,7 +13,12 @@ export default function ProgRoadmap() {
   const [open, setOpen] = useState<string>('Foundation');
 
   const toggle = (id: string) =>
-    setDone(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+    setDone((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
 
   const total = STEPS.reduce((s, p) => s + p.items.length, 0);
   const completed = done.size;
