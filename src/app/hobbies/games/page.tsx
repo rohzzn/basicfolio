@@ -214,23 +214,21 @@ const Games = () => {
 
       {/* Config Download Card */}
       <section className="mb-8">
-        <div className="bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 flex items-center justify-between">
+        <div className="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-full">
-              <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            </div>
+            <Settings className="w-4 h-4 text-zinc-400 dark:text-zinc-500 flex-shrink-0" />
             <div>
-              <h3 className="text-sm font-medium dark:text-white">Game Configurations</h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">Download my CS:GO and Valorant settings</p>
+              <span className="text-sm font-medium dark:text-white">Game Configurations</span>
+              <span className="text-xs text-zinc-400 dark:text-zinc-500 ml-3">CS:GO &amp; Valorant settings</span>
             </div>
           </div>
           <Link
             href="https://settings.gg/rohzzn"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-medium px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-800 dark:text-zinc-200"
+            className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
           >
-            Download
+            settings.gg ↗
           </Link>
         </div>
       </section>
@@ -368,28 +366,20 @@ const Games = () => {
 
       {/* Tournament Achievements */}
       <section className="mb-8">
-        <h3 className="text-base font-medium mb-6 dark:text-white">Tournament Achievements</h3>
-        <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead className="bg-zinc-200 dark:bg-zinc-700">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Tournament</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Year</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Result</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-600">
-                {achievements.map((achievement, index) => (
-                  <tr key={index} className="bg-white dark:bg-zinc-800">
-                    <td className="px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200">{achievement.tournament}</td>
-                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">{achievement.year}</td>
-                    <td className="px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200">{achievement.result}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <h3 className="text-sm font-medium mb-4 dark:text-white">Tournament Achievements</h3>
+        <div>
+          {achievements.map((achievement, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
+            >
+              <span className="text-sm text-zinc-700 dark:text-zinc-300">{achievement.tournament}</span>
+              <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+                <span className="text-xs text-zinc-400 dark:text-zinc-500 tabular-nums">{achievement.year}</span>
+                <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{achievement.result}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>

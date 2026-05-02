@@ -105,7 +105,7 @@ export default function ContentPage() {
             onClick={() => setActiveTab('videos')}
             className={`pb-2 px-1 text-sm font-medium transition-colors ${
               activeTab === 'videos'
-                ? 'border-b-2 border-red-500 text-zinc-900 dark:text-white'
+                ? 'border-b-2 border-zinc-900 dark:border-white text-zinc-900 dark:text-white'
                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
             }`}
           >
@@ -115,7 +115,7 @@ export default function ContentPage() {
             onClick={() => setActiveTab('streams')}
             className={`pb-2 px-1 text-sm font-medium transition-colors flex items-center ${
               activeTab === 'streams'
-                ? 'border-b-2 border-red-500 text-zinc-900 dark:text-white'
+                ? 'border-b-2 border-zinc-900 dark:border-white text-zinc-900 dark:text-white'
                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
             }`}
           >
@@ -192,13 +192,13 @@ export default function ContentPage() {
                     <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <button 
                         onClick={() => playVideo(latestVideo.id)}
-                        className="bg-red-600 text-white rounded-full p-3 transform hover:scale-110 transition-transform"
+                        className="bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-full p-3 transform hover:scale-110 transition-transform"
                         aria-label={`Play ${latestVideo.title}`}
                       >
                         <Play className="h-5 w-5" />
                       </button>
                     </div>
-                    <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-medium px-2 py-0.5 rounded">
+                    <div className="absolute top-2 right-2 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 text-xs font-medium px-2 py-0.5 rounded">
                       Latest
                     </div>
                   </div>
@@ -230,7 +230,7 @@ export default function ContentPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => playVideo(latestVideo.id)}
-                        className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+                        className="inline-flex items-center bg-zinc-900 hover:bg-zinc-700 dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
                       >
                         <Play className="h-3 w-3 mr-1" />
                         Watch Here
@@ -277,7 +277,7 @@ export default function ContentPage() {
                     />
                     <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="bg-red-600 text-white rounded-full p-2">
+                      <div className="bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-full p-2">
                         <Play className="h-4 w-4" />
                       </div>
                     </div>
@@ -328,7 +328,7 @@ export default function ContentPage() {
                     rel="noopener noreferrer"
                     className="group"
                   >
-                    <div className="rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col md:flex-row shadow-md border-l-4 border-red-500">
+                    <div className="rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex flex-col md:flex-row shadow-md border-l-2 border-zinc-400 dark:border-zinc-500">
                       <div className="relative md:w-1/3">
                         <div className="aspect-video relative">
                           <Image
@@ -338,7 +338,7 @@ export default function ContentPage() {
                             className="object-cover"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                          <div className="absolute bottom-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                          <div className="absolute bottom-2 left-2 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 text-xs px-2 py-1 rounded-full flex items-center">
                             <span className="w-2 h-2 bg-white rounded-full mr-1 animate-ping"></span>
                             <span>LIVE</span>
                           </div>

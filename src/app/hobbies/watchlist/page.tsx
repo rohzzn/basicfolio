@@ -421,69 +421,72 @@ const WatchlistPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl">
-      <h2 className="mb-6 text-lg font-medium dark:text-white">Watchlist</h2>
+      {/* Header row: title + search */}
+      <div className="flex items-center justify-between mb-6 gap-4">
+        <h2 className="text-lg font-medium dark:text-white">Watchlist</h2>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+          placeholder="Search…"
+          className="w-32 sm:w-44 bg-transparent text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 border-b border-zinc-200 dark:border-zinc-700 pb-0.5 transition focus:border-zinc-500 dark:focus:border-zinc-400"
+        />
+      </div>
 
-      {/* Tab bar */}
-      <div className="mb-6 border-b border-zinc-200 dark:border-zinc-800">
-        <div className="flex items-center justify-between">
-          <div className="flex gap-6">
-            {mediaTypeFilters.map((filter) => {
-              const isActive = activeMediaType === filter.id;
-              return (
-                <button
-                  key={filter.id}
-                  type="button"
-                  onClick={() => { setActiveMediaType(filter.id); setSearchTerm(''); }}
-                  className={`relative pb-2.5 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'text-zinc-900 dark:text-white'
-                      : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
-                  }`}
-                >
-                  {filter.label}
-                  {!isLoading && counts[filter.id] > 0 && (
-                    <span className="ml-1.5 text-xs tabular-nums opacity-50">{counts[filter.id]}</span>
-                  )}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-zinc-900 dark:bg-white" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+      {/* Tab row */}
+      <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 mb-4">
+        <div className="flex gap-5 overflow-x-auto no-scrollbar">
+          {mediaTypeFilters.map((filter) => {
+            const isActive = activeMediaType === filter.id;
+            return (
+              <button
+                key={filter.id}
+                type="button"
+                onClick={() => { setActiveMediaType(filter.id); setSearchTerm(''); }}
+                className={`relative pb-2.5 text-sm font-medium transition-colors flex-shrink-0 ${
+                  isActive
+                    ? 'text-zinc-900 dark:text-white'
+                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                }`}
+              >
+                {filter.label}
+                {!isLoading && counts[filter.id] > 0 && (
+                  <span className="ml-1.5 text-xs tabular-nums opacity-50">{counts[filter.id]}</span>
+                )}
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-zinc-900 dark:bg-white" />
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Search + Sort */}
-          <div className="flex items-center gap-6 pb-2.5">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search..."
-              className="w-24 bg-transparent text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500"
-            />
-            <button
-              type="button"
-              onClick={() => setSortOption(sortOption === 'newest' ? 'oldest' : 'newest')}
-              className={`text-sm transition-colors ${
-                sortOption === 'newest' || sortOption === 'oldest'
-                  ? 'font-medium text-zinc-900 dark:text-white'
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
-              }`}
-            >
-              Year {sortOption === 'newest' ? '↓' : sortOption === 'oldest' ? '↑' : ''}
-            </button>
-            <button
-              type="button"
-              onClick={() => setSortOption(sortOption === 'highest-rated' ? 'lowest-rated' : 'highest-rated')}
-              className={`text-sm transition-colors ${
-                sortOption === 'highest-rated' || sortOption === 'lowest-rated'
-                  ? 'font-medium text-zinc-900 dark:text-white'
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
-              }`}
-            >
-              Rating {sortOption === 'highest-rated' ? '↓' : sortOption === 'lowest-rated' ? '↑' : ''}
-            </button>
-          </div>
+        {/* Sort controls */}
+        <div className="flex items-center gap-4 pb-2.5 flex-shrink-0 ml-4">
+          <button
+            type="button"
+            onClick={() => setSortOption(sortOption === 'newest' ? 'oldest' : 'newest')}
+            className={`text-sm transition-colors ${
+              sortOption === 'newest' || sortOption === 'oldest'
+                ? 'font-medium text-zinc-900 dark:text-white'
+                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+            }`}
+          >
+            Year {sortOption === 'newest' ? '↓' : sortOption === 'oldest' ? '↑' : ''}
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setSortOption(sortOption === 'highest-rated' ? 'lowest-rated' : 'highest-rated')
+            }
+            className={`text-sm transition-colors ${
+              sortOption === 'highest-rated' || sortOption === 'lowest-rated'
+                ? 'font-medium text-zinc-900 dark:text-white'
+                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+            }`}
+          >
+            Rating {sortOption === 'highest-rated' ? '↓' : sortOption === 'lowest-rated' ? '↑' : ''}
+          </button>
         </div>
       </div>
 

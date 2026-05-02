@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Video, Play, Calendar } from 'lucide-react';
 import Image from 'next/image';
 
 interface MedalClip {
@@ -17,231 +16,138 @@ interface MedalClip {
   videoLengthSeconds: number;
 }
 
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: '2k', label: '2K' },
+  { id: '3k', label: '3K' },
+  { id: '4k', label: '4K' },
+  { id: '5k', label: 'Ace' },
+  { id: 'other', label: 'Other' },
+];
+
+function matchesFilter(clip: MedalClip, id: string): boolean {
+  if (id === 'all') return true;
+  const t = clip.contentTitle.toLowerCase();
+  switch (id) {
+    case '2k': return t.includes('2k') || t.includes(' 2 ') || t.includes('double') || t.includes('2 kill');
+    case '3k': return t.includes('3k') || t.includes(' 3 ') || t.includes('triple') || t.includes('3 kill');
+    case '4k': return t.includes('4k') || t.includes(' 4 ') || t.includes('quad') || t.includes('4 kill');
+    case '5k': return t.includes('5k') || t.includes(' 5 ') || t.includes('penta') || t.includes('ace') || t.includes('5 kill') || t.includes('pentakill');
+    case 'other': return !/\b[1-5]k\b|\b[1-5] kill|\b[1-5]\b|single|double|triple|quad|penta|ace/.test(t);
+    default: return true;
+  }
+}
+
+function fmtDur(sec: number) {
+  return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+}
+
 export default function ClipsPage() {
   const [clips, setClips] = useState<MedalClip[]>([]);
-  const [filteredClips, setFilteredClips] = useState<MedalClip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>("all");
-
-  // Filter clips based on the active filter
-  useEffect(() => {
-    if (clips.length === 0) return;
-    
-    if (activeFilter === "all") {
-      setFilteredClips(clips);
-      return;
-    }
-    
-    const filtered = clips.filter(clip => {
-      const title = clip.contentTitle.toLowerCase();
-      
-      switch(activeFilter) {
-        case "2k":
-          return title.includes("2k") || title.includes(" 2 ") || title.includes("double") || title.includes("2 kill");
-        case "3k":
-          return title.includes("3k") || title.includes(" 3 ") || title.includes("triple") || title.includes("3 kill");
-        case "4k":
-          return title.includes("4k") || title.includes(" 4 ") || title.includes("quad") || title.includes("4 kill");
-        case "5k":
-          return title.includes("5k") || title.includes(" 5 ") || title.includes("penta") || 
-                 title.includes("ace") || title.includes("5 kill") || title.includes("pentakill");
-        case "other":
-          // Check if title doesn't contain any of the number patterns
-          const hasNumberPattern = /\b[1-5]k\b|\b[1-5] kill|\b[1-5]\b|single|double|triple|quad|penta|ace/.test(title);
-          return !hasNumberPattern;
-        default:
-          return true;
-      }
-    });
-    
-    setFilteredClips(filtered);
-  }, [activeFilter, clips]);
+  const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
-    const fetchClips = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/medal');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch clips');
-        }
-        
-        const data = await response.json();
-        setClips(data.clips);
-        setFilteredClips(data.clips);
-      } catch (err) {
-        setError('Failed to load clips. Please try again later.');
-        console.error('Error fetching clips:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClips();
+    fetch('/api/medal')
+      .then(r => r.json())
+      .then(data => setClips(data.clips ?? []))
+      .catch(() => setError('Failed to load clips.'))
+      .finally(() => setLoading(false));
   }, []);
 
-
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? '0' + secs : secs}`;
-  };
-
-
-  // Filter options
-  const filterOptions = [
-    { id: "all", label: "All Clips" },
-    { id: "2k", label: "2 Kills" },
-    { id: "3k", label: "3 Kills" },
-    { id: "4k", label: "4 Kills" },
-    { id: "5k", label: "Ace" },
-    { id: "other", label: "Others" }
-  ];
+  const filtered = clips.filter(c => matchesFilter(c, activeFilter));
 
   return (
     <div className="max-w-7xl">
-      <div className="mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <div>
-            <h2 className="text-lg font-medium dark:text-white mb-6">Gaming Clips</h2>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-            {filterOptions.map(option => (
-              <button
-                key={option.id}
-                onClick={() => setActiveFilter(option.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border ${
-                  activeFilter === option.id 
-                    ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-zinc-100' 
-                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400'
-                }`}
-              >
-                <span>{option.label}</span>
-                {option.id !== 'all' && activeFilter === option.id && (
-                  <span className="text-xs bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 px-2 py-0.5 rounded-full">
-                    {filteredClips.length}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-lg font-medium dark:text-white">Gaming Clips</h2>
+        <div className="flex gap-4">
+          {FILTERS.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setActiveFilter(id)}
+              className={`text-sm transition-colors ${
+                activeFilter === id
+                  ? 'text-zinc-900 dark:text-white font-medium'
+                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
-      
-      {loading && (
-        <div className="flex flex-col justify-center items-center h-64 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-zinc-600 dark:border-zinc-300"></div>
-          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">Loading clips...</p>
-        </div>
-      )}
-      
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-6 rounded-xl">
-          <div className="flex items-center gap-3 mb-3">
-            <Video className="w-5 h-5 text-red-600 dark:text-red-400" />
-            <h3 className="text-sm font-semibold text-red-800 dark:text-red-300">Unable to load clips</h3>
-          </div>
-          <p className="text-sm text-red-700 dark:text-red-400 mb-4">
-            There was an issue connecting to Medal.tv. This could be due to API rate limits or temporary server issues.
-          </p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="text-sm font-medium px-4 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      )}
-      
-      {!loading && !error && clips.length === 0 && (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-12 text-center">
-          <Video className="w-16 h-16 mx-auto mb-4 text-zinc-300 dark:text-zinc-600" />
-          <h3 className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-2">No clips found</h3>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Check back later for new gaming highlights!</p>
-        </div>
-      )}
-      
-      {!loading && !error && clips.length > 0 && filteredClips.length === 0 && (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-12 text-center">
-          <Video className="w-16 h-16 mx-auto mb-4 text-zinc-300 dark:text-zinc-600" />
-          <h3 className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-2">No clips match the selected filter</h3>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">Try a different filter or view all clips</p>
-          <button 
-            onClick={() => setActiveFilter('all')}
-            className="px-6 py-2.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg font-medium"
-          >
-            Show All Clips
-          </button>
-        </div>
-      )}
-      
-      {!loading && filteredClips.length > 0 && (
-        <div className="space-y-8">
-          
-          {/* Clips grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredClips.map((clip) => (
-              <div
-                key={clip.contentId}
-                onClick={() => {
-                  // Open video directly in new tab instead of modal
-                  const url = clip.directClipUrl || clip.embedIframeUrl;
-                  if (url) {
-                    window.open(url, '_blank', 'noopener,noreferrer');
-                  }
-                }}
-                className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden cursor-pointer transition-colors"
-              >
-                <div className="relative aspect-video w-full bg-zinc-100 dark:bg-zinc-800">
-                  <Image
-                    src={clip.contentThumbnail}
-                    alt={clip.contentTitle}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center group-hover:bg-black/20 transition-colors">
-                    <div className="bg-black/70 rounded-full p-4 group-hover:bg-black/90 transition-colors">
-                      <Play className="w-8 h-8 text-white fill-white" />
-                    </div>
-                  </div>
-                  <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-xs text-white font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    Open in Medal.tv
-                  </div>
-                  {clip.videoLengthSeconds > 0 && (
-                    <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-sm px-2.5 py-1 rounded-md text-xs text-white font-medium">
-                      {formatDuration(clip.videoLengthSeconds)}
-                    </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 line-clamp-2 leading-relaxed" title={clip.contentTitle}>
-                    {clip.contentTitle}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {new Date(clip.createdTimestamp).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </div>
-                    {clip.contentViews > 0 && (
-                      <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                        {clip.contentViews.toLocaleString()} views
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-video bg-zinc-200 dark:bg-zinc-800 rounded-lg mb-2.5" />
+              <div className="w-3/4 h-3.5 bg-zinc-200 dark:bg-zinc-800 rounded mb-2" />
+              <div className="w-1/2 h-3 bg-zinc-200 dark:bg-zinc-800 rounded" />
+            </div>
+          ))}
+        </div>
+      ) : error ? (
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 py-8">{error}</p>
+      ) : filtered.length === 0 ? (
+        <div className="py-8">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            No clips{activeFilter !== 'all' ? ' matching this filter' : ''}.
+          </p>
+          {activeFilter !== 'all' && (
+            <button
+              onClick={() => setActiveFilter('all')}
+              className="text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors mt-2 block"
+            >
+              Show all clips
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map(clip => (
+            <div
+              key={clip.contentId}
+              onClick={() => {
+                const url = clip.directClipUrl || clip.embedIframeUrl;
+                if (url) window.open(url, '_blank', 'noopener,noreferrer');
+              }}
+              className="group cursor-pointer"
+            >
+              <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-800 mb-2.5">
+                <Image
+                  src={clip.contentThumbnail}
+                  alt={clip.contentTitle}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                    <span className="text-zinc-900 text-sm ml-0.5">▶</span>
+                  </div>
+                </div>
+                {clip.videoLengthSeconds > 0 && (
+                  <div className="absolute bottom-2 right-2 bg-black/75 text-white text-xs px-1.5 py-0.5 rounded tabular-nums">
+                    {fmtDur(clip.videoLengthSeconds)}
+                  </div>
+                )}
+              </div>
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors line-clamp-1">
+                {clip.contentTitle}
+              </p>
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+                {new Date(clip.createdTimestamp).toLocaleDateString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric',
+                })}
+                {clip.contentViews > 0 && ` · ${clip.contentViews.toLocaleString()} views`}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
