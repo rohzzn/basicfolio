@@ -44,43 +44,58 @@ const Projects = () => {
               l.label !== "GitHub" &&
               (l.label.includes("Live") ||
                 l.label.includes("Demo") ||
+                l.label.includes("Store") ||
                 l.label.includes("Marketplace") ||
+                l.label.includes("Community") ||
                 l.label.includes("Plugin") ||
                 l.label.includes("Package") ||
-                l.label === "Chapter" ||
+                l.label === "npm" ||
+                l.label === "PyPI" ||
+                l.label === "App Store" ||
                 l.label === "Invite" ||
+                l.label === "Play" ||
                 l.label === "Paper" ||
-                l.label === "Notes" ||
-                l.label === "Script File" ||
+                l.label === "Notebook" ||
+                l.label === "Tutorial" ||
+                l.label === "Script" ||
                 l.label === "OverTheWire" ||
-                l.label === "YouTube Tutorial")
+                l.label === "Chapter")
           );
-          const cardUrl = liveLink?.url || githubLink?.url || "#";
 
           return (
             <div
               key={project.title}
               className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
             >
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex items-center gap-3 flex-shrink-0 min-w-0">
                 <Link
-                  href={cardUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                  href={`/projects/${project.slug}`}
+                  className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors truncate"
                 >
                   {project.title}
                 </Link>
-                {githubLink && (
-                  <Link
-                    href={githubLink.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100"
-                  >
-                    src
-                  </Link>
-                )}
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {githubLink && (
+                    <a
+                      href={githubLink.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                    >
+                      src
+                    </a>
+                  )}
+                  {liveLink && (
+                    <a
+                      href={liveLink.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                    >
+                      live ↗
+                    </a>
+                  )}
+                </div>
               </div>
               <span className="text-sm text-zinc-400 dark:text-zinc-500 flex-shrink-0 ml-4 hidden sm:block">
                 {project.description}
