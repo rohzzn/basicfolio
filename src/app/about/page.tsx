@@ -252,6 +252,13 @@ const Home: React.FC = () => {
               </span>
             )}
           </span>
+          ,{' '}
+          <Link
+            href="/meet"
+            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+          >
+            book a meet
+          </Link>
           , or view my{' '}
           <Link href="/resume"
             className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">

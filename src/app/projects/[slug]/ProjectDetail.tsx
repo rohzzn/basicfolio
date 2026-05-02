@@ -633,7 +633,7 @@ function CSStatsDemo() {
       <p className={L}>Extension Demo</p>
       <div className={`${CARD} max-w-sm`}>
         <div className="p-4 bg-gradient-to-b from-zinc-800 to-zinc-900">
-          <div className="flex items-center gap-3 mb-3"><div className="w-12 h-12 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">R</div><div><p className="text-sm font-semibold text-white">rohzzn</p><p className="text-xs text-zinc-400">Online · Playing CS2</p></div></div>
+          <div className="flex items-center gap-3 mb-3"><div className="w-12 h-12 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">R</div><div><p className="text-sm font-semibold text-white">Rohan P.</p><p className="text-xs text-zinc-400">Online · Playing CS2</p></div></div>
           <button onClick={()=>setShow(s=>!s)} className="w-full py-1.5 text-xs rounded border border-zinc-600 text-zinc-300 hover:bg-zinc-700 transition-colors">{show?'Hide CS2 Stats ↑':'Show CS2 Stats ↓'}</button>
         </div>
         {show&&(
@@ -795,7 +795,7 @@ function PagesReorderDemo() {
 // 17. Meet — video call room
 // ─────────────────────────────────────────────────────────────────────────────
 
-const PARTICIPANTS=[{n:'rohzzn',you:true},{n:'Sarah K.',you:false},{n:'Alex M.',you:false},{n:'Priya R.',you:false}];
+const PARTICIPANTS=[{n:'Rohan P.',you:true},{n:'Vanshita M.',you:false},{n:'Alex M.',you:false},{n:'Priya R.',you:false}];
 function MeetDemo() {
   const [muted,setMuted]=useState<Set<string>>(new Set());
   const [left,setLeft]=useState<Set<string>>(new Set());
@@ -816,9 +816,9 @@ function MeetDemo() {
           ))}
         </div>
         <div className="flex justify-center gap-2">
-          <button onClick={()=>setMuted(m=>{const n=new Set(m);if(n.has('rohzzn'))n.delete('rohzzn');else n.add('rohzzn');return n;})}
-            className={`px-3 py-1.5 rounded text-xs transition-colors ${muted.has('rohzzn')?'bg-red-500 text-white':'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'}`}>
-            {muted.has('rohzzn')?'Unmute':'Mute'}
+          <button onClick={()=>setMuted(m=>{const n=new Set(m);if(n.has('Rohan P.'))n.delete('Rohan P.');else n.add('Rohan P.');return n;})}
+            className={`px-3 py-1.5 rounded text-xs transition-colors ${muted.has('Rohan P.')?'bg-red-500 text-white':'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'}`}>
+            {muted.has('Rohan P.')?'Unmute':'Mute'}
           </button>
           {active.filter(p=>!p.you).map(p=>(
             <button key={p.n} onClick={()=>setLeft(l=>new Set([...l,p.n]))} className="px-3 py-1.5 rounded text-xs bg-zinc-700 text-zinc-300 hover:bg-red-600 hover:text-white transition-colors">Remove {p.n.split(' ')[0]}</button>
@@ -869,7 +869,7 @@ function GitTimeMachineDemo() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const API_PRESETS=[
-  {m:'GET', url:'https://api.github.com/users/rohzzn',res:'{\n  "login": "rohzzn",\n  "public_repos": 84,\n  "followers": 47\n}'},
+  {m:'GET', url:'https://api.github.com/users/Rohan P.',res:'{\n  "login": "Rohan P.",\n  "public_repos": 84,\n  "followers": 47\n}'},
   {m:'GET', url:'https://jsonplaceholder.typicode.com/posts/1',res:'{\n  "userId": 1,\n  "id": 1,\n  "title": "sunt aut facere..."\n}'},
   {m:'POST',url:'https://jsonplaceholder.typicode.com/posts',res:'{\n  "id": 101,\n  "title": "New post"\n}'},
 ];
@@ -1010,7 +1010,7 @@ function qrHash(text:string,idx:number):boolean {
 }
 const SZ=21;
 function QRDemo() {
-  const [text,setText]=useState('https://rohan.run');
+  const [text,setText]=useState('https://Rohan P..run');
   const cells=useMemo(()=>{
     const g=Array(SZ*SZ).fill(false);
     // finder patterns
@@ -1415,9 +1415,9 @@ function GitHubAnyYearDemo() {
 // 35. Scrapetron — URL scraper mock
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MOCK_SCRAPED=[{selector:'h1',count:1,sample:'Home — Rohan Pothuru'},{selector:'p',count:12,sample:'Software engineer and CS grad student...'},{selector:'a',count:47,sample:'LinkedIn, GitHub, Resume...'},{selector:'img',count:3,sample:'profile.png, project-keel.png...'}];
+const MOCK_SCRAPED=[{selector:'h1',count:1,sample:'Home — Rohan P. Pothuru'},{selector:'p',count:12,sample:'Software engineer and CS grad student...'},{selector:'a',count:47,sample:'LinkedIn, GitHub, Resume...'},{selector:'img',count:3,sample:'profile.png, project-keel.png...'}];
 function ScrapetronDemo() {
-  const [url,setUrl]=useState('https://rohan.run');
+  const [url,setUrl]=useState('https://Rohan P..run');
   const [loading,setLoading]=useState(false);
   const [done,setDone]=useState(false);
   const run=()=>{setLoading(true);setDone(false);setTimeout(()=>{setLoading(false);setDone(true);},900);};
