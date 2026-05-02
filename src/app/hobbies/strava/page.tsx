@@ -256,16 +256,19 @@ const ActivitiesPage: React.FC = () => {
   }, [activities, workouts]);
 
   const gymStats = React.useMemo(() => {
-    let totalVolume = 0, totalReps = 0, totalDuration = 0;
+    let totalDuration = 0;
+    let totalSets = 0;
     workouts.forEach(w => {
       totalDuration += new Date(w.end_time).getTime() - new Date(w.start_time).getTime();
-      w.exercises.forEach(ex =>
-        ex.sets.forEach(s => {
-          if (s.weight_kg && s.reps) { totalVolume += s.weight_kg * s.reps; totalReps += s.reps; }
-        })
-      );
+      w.exercises.forEach(ex => {
+        totalSets += ex.sets.length;
+      });
     });
-    return { totalWorkouts: workouts.length, totalVolume: Math.ceil(totalVolume), totalReps: Math.ceil(totalReps), totalDuration: Math.ceil(totalDuration / 60000) };
+    return {
+      totalWorkouts: workouts.length,
+      totalSets,
+      totalDuration: Math.ceil(totalDuration / 60000),
+    };
   }, [workouts]);
 
   const stravaStats = React.useMemo(() => ({
@@ -292,7 +295,7 @@ const ActivitiesPage: React.FC = () => {
 
   const stats = [
     { label: 'Gym sessions', value: gymStats.totalWorkouts.toString() },
-    { label: 'Volume lifted', value: `${gymStats.totalVolume.toLocaleString()} kg` },
+    { label: 'Sets', value: gymStats.totalSets.toLocaleString() },
     { label: 'Distance', value: fmtDist(stravaStats.totalDistance) },
     { label: 'Active time', value: fmtTime(stravaStats.totalTime + gymStats.totalDuration * 60) },
   ];
@@ -334,7 +337,7 @@ const ActivitiesPage: React.FC = () => {
       {/* Feed */}
       <div>
         {loading ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
@@ -359,7 +362,7 @@ const ActivitiesPage: React.FC = () => {
             No activities in the last {timeRange} days.
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {combinedActivities.map(item => {
               // ── CARDIO ──────────────────────────────────────────────
               if (item.type === 'cardio' && item.stravaActivity) {
@@ -367,7 +370,6 @@ const ActivitiesPage: React.FC = () => {
                 const label = ACTIVITY_LABEL[a.type] ?? a.type.toLowerCase();
                 const photoUrl = a.photos?.primary?.urls?.['600'] ?? a.photos?.primary?.urls?.['100'];
                 const hasRoute = !!a.map?.summary_polyline;
-                const hasVisual = !!photoUrl || hasRoute;
 
                 const statParts = [
                   a.distance > 0 && fmtDist(a.distance),
@@ -376,26 +378,31 @@ const ActivitiesPage: React.FC = () => {
                   a.total_elevation_gain > 0 && `${Math.ceil(a.total_elevation_gain)}m ↑`,
                 ].filter(Boolean).join(' · ');
 
-                if (hasVisual) {
+                if (photoUrl) {
+                  return (
+                    <div
+                      key={item.id}
+                      className="min-w-0 overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/50"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={photoUrl}
+                        alt={a.name}
+                        className={ACTIVITY_MEDIA_IMG}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                  );
+                }
+
+                if (hasRoute) {
                   return (
                     <div
                       key={item.id}
                       className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800"
                     >
-                      {photoUrl ? (
-                        <div className="w-full bg-zinc-100 dark:bg-zinc-900/50">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={photoUrl}
-                            alt={a.name}
-                            className={ACTIVITY_MEDIA_IMG}
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </div>
-                      ) : (
-                        hasRoute && <RouteMap polyline={a.map!.summary_polyline} />
-                      )}
+                      <RouteMap polyline={a.map!.summary_polyline} />
                       <div className="p-3">
                         <div className="flex items-baseline justify-between gap-2">
                           <div className="flex min-w-0 items-baseline gap-2">
@@ -444,10 +451,6 @@ const ActivitiesPage: React.FC = () => {
               // ── GYM ────────────────────────────────────────────────
               if (item.type === 'gym' && item.gymWorkout) {
                 const w = item.gymWorkout;
-                const totalVol = w.exercises.reduce(
-                  (sum, ex) => sum + ex.sets.reduce((s, set) => s + (set.weight_kg && set.reps ? set.weight_kg * set.reps : 0), 0),
-                  0
-                );
                 const gymImages = [
                   ...(w.images ?? []).map(img => img.url),
                   ...(w.image_urls ?? []),
@@ -456,28 +459,16 @@ const ActivitiesPage: React.FC = () => {
 
                 const exerciseBlock = (
                   <div className="mt-2 space-y-1.5 border-t border-zinc-100 pt-2 dark:border-zinc-800">
-                    {w.exercises.map(ex => {
-                      const sets = ex.sets
-                        .map(s =>
-                          s.weight_kg && s.reps
-                            ? `${s.weight_kg}×${s.reps}`
-                            : s.distance_meters
-                              ? `${s.distance_meters}m`
-                              : s.duration_seconds
-                                ? `${Math.ceil(s.duration_seconds / 60)}m`
-                                : ''
-                        )
-                        .filter(Boolean)
-                        .join('  ');
-                      return (
-                        <div key={ex.id} className="flex min-w-0 items-baseline gap-2">
-                          <span className="flex-shrink-0 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                            {ex.title}
-                          </span>
-                          <span className="truncate font-mono text-xs text-zinc-400 dark:text-zinc-600">{sets}</span>
-                        </div>
-                      );
-                    })}
+                    {w.exercises.map(ex => (
+                      <div key={ex.id} className="flex min-w-0 items-baseline justify-between gap-2">
+                        <span className="truncate text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                          {ex.title}
+                        </span>
+                        <span className="flex-shrink-0 tabular-nums text-xs text-zinc-400 dark:text-zinc-600">
+                          {ex.sets.length} {ex.sets.length === 1 ? 'set' : 'sets'}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 );
 
@@ -516,8 +507,7 @@ const ActivitiesPage: React.FC = () => {
                           </time>
                         </div>
                         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                          {fmtDur(w.start_time, w.end_time)}
-                          {totalVol > 0 ? ` · ${Math.ceil(totalVol).toLocaleString()} kg` : ''} · {w.exercises.length}{' '}
+                          {fmtDur(w.start_time, w.end_time)} · {w.exercises.length}{' '}
                           exercise{w.exercises.length !== 1 ? 's' : ''}
                         </p>
                         {exerciseBlock}
@@ -546,8 +536,7 @@ const ActivitiesPage: React.FC = () => {
                         </time>
                       </div>
                       <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                        {fmtDur(w.start_time, w.end_time)}
-                        {totalVol > 0 ? ` · ${Math.ceil(totalVol).toLocaleString()} kg` : ''} · {w.exercises.length}{' '}
+                        {fmtDur(w.start_time, w.end_time)} · {w.exercises.length}{' '}
                         exercise{w.exercises.length !== 1 ? 's' : ''}
                       </p>
                       {exerciseBlock}
