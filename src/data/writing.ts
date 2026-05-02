@@ -16,6 +16,30 @@ export type Thought = {
 
 export const posts: Post[] = [
   {
+    slug: 'forty-projects',
+    title: 'What I Learned Building 40 Side Projects',
+    description: 'Looking back at every side project I have shipped: what got users, what got abandoned, and what the pattern between them actually is.',
+    date: '2026-02-10',
+    displayDate: 'Feb 2026',
+    category: 'tech',
+  },
+  {
+    slug: 'satoshi-font',
+    title: 'Why I Use Satoshi on Everything I Build',
+    description: 'The font choices behind this site and why Satoshi specifically became my default for almost every project.',
+    date: '2024-10-15',
+    displayDate: 'Oct 2024',
+    category: 'tech',
+  },
+  {
+    slug: 'moving-to-cincinnati',
+    title: 'From Hyderabad to Cincinnati',
+    description: 'The whole process of finishing a degree in India, applying to grad school, getting a visa, and arriving alone in a city 14,000km away.',
+    date: '2024-08-05',
+    displayDate: 'Aug 2024',
+    category: 'life',
+  },
+  {
     slug: 'catan-coop',
     title: 'Building Multiplayer Catan From Scratch',
     description: 'How I built a full-featured online Settlers of Catan — hex grid geometry, server-authoritative game state, Socket.IO rooms, and Web Audio all from scratch.',

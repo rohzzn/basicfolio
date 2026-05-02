@@ -6,10 +6,10 @@ import CostComparison from './CostComparison';
 
 export const metadata: Metadata = {
   title: 'Modern Tech Stacks Kill Startups — Rohan',
-  description: 'We built a 500k-user product with PHP and MySQL in 4 months and saved $180k. Why chasing the latest stack is the wrong first move.',
+  description: 'Why chasing the latest frameworks and tools can kill a startup before it ever ships anything of value.',
   openGraph: {
     title: 'Modern Tech Stacks Kill Startups',
-    description: 'We built a 500k-user product with PHP and MySQL in 4 months and saved $180k. Why chasing the latest stack is the wrong first move.',
+    description: 'Why chasing the latest frameworks and tools can kill a startup before it ever ships anything of value.',
     url: 'https://rohan.run/writing/modern-tech-stacks',
   },
   alternates: { canonical: 'https://rohan.run/writing/modern-tech-stacks' },
@@ -27,114 +27,55 @@ const ModernTechStacks: React.FC = () => {
 
       <header className="mb-8 max-w-3xl">
         <h1 className="text-lg font-medium mb-4 dark:text-white">
-          Modern Tech Stacks: Making The Right Choice
+          Modern Tech Stacks Kill Startups
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
-          <time dateTime="2023-09-12">September 12, 2023</time>
+          <time dateTime="2024-06-10">June 10, 2024</time>
         </div>
       </header>
 
       <div className="text-sm max-w-3xl">
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h2 className="text-sm font-medium mb-4 dark:text-white">TLDR:</h2>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li>Built a 500k user product using PHP and MySQL in 4 months</li>
-            <li>Saved $180k in infrastructure costs compared to microservices</li>
-            <li>Deployment time cut from 45 minutes to 30 seconds</li>
-            <li>Zero downtime in 6 months of operation</li>
-            <li>Full tech stack costs under $50/month to run</li>
-          </ul>
-        </div>
 
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
-          When we started building our SaaS product in 2024, we made what seemed like a career-ending decision: we chose PHP and a monolith over a modern microservices architecture. Six months and 500,000 users later, that decision has saved our startup. Here&#39;s the story that would make any Silicon Valley architect cringe.
+          There is a specific kind of startup failure that nobody talks about because it does not look like failure from the outside. The team is talented, the idea is good, the GitHub organization is full of well-named repositories. But six months in there is no product. There is infrastructure. There is a Terraform setup, a Kubernetes cluster, a service mesh, an API gateway. There just is not anything a user can use. I have watched this happen. I have been adjacent to it in hackathons. And I have made the mistake myself on smaller side projects.
         </p>
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Decision That Saved Us</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Pattern</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Every startup faces the same pressure: pick the newest, shiniest tech stack. We interviewed 30 failed startups and found a pattern: 80% spent their first six months building infrastructure instead of product. So we made a different choice: PHP, MySQL, and a single server.
+          It starts with stack selection. A first-time founder reads about microservices on Hacker News, sees that the big companies use Kubernetes, and decides the MVP should be built that way so it can scale. A few weeks later they are debugging service discovery issues and writing YAML files for services that do not have a single user yet. The product never ships because the infrastructure became the product.
+        </p>
+
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
+          The counterintuitive insight is that boring technology often scales better in practice than the modern alternative, at least for the first few years. PHP and MySQL run <a href="https://www.facebook.com" className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">Facebook</a> at its beginning. Rails ran GitHub for a long time. The technology is not the constraint. The constraint is that you have not found product-market fit yet, which means you cannot predict what you need to scale.
         </p>
 
         <CostComparison />
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Results That Shocked Us</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Hidden Cost of Complexity</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Our entire infrastructure runs on a $50 DigitalOcean droplet. No Kubernetes. No microservices. No serverless functions. Just a battle-tested stack that has been solving business problems for decades. The numbers don&#39;t lie:
+          Kubernetes is a sophisticated piece of technology built by Google to solve problems Google has at Google&apos;s scale. If you have fewer than a million daily active users you almost certainly do not have those problems. But you do now have the operational overhead of running a distributed container orchestration system with a small team that is also supposed to be building product.
         </p>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li><strong>Development Speed:</strong> From idea to MVP in 4 weeks</li>
-            <li><strong>Infrastructure Costs:</strong> $50/month total</li>
-            <li><strong>Response Time:</strong> 80ms average</li>
-            <li><strong>Deployment Time:</strong> 30 seconds</li>
-            <li><strong>Team Size:</strong> 2 developers</li>
-            <li><strong>Lines of Code:</strong> 15,000</li>
-            <li><strong>Uptime:</strong> 99.99%</li>
-          </ul>
-        </div>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Modern Stack Tax</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Most startups are paying what we call the Modern Stack Tax - the hidden costs of choosing cutting-edge technology. Here&#39;s what we avoided:
+          The cost shows up in unexpected places. Every new engineer you hire needs to understand your entire infrastructure before they can ship a feature. Debugging a user-facing bug now requires understanding which of your twelve services is involved. Your deployment pipeline has five more failure modes than a simple git push to a server. Each of these is a small drag that compounds over time.
         </p>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li><strong>DevOps Engineer Salary:</strong> $150,000/year</li>
-            <li><strong>Kubernetes Infrastructure:</strong> $2,000/month minimum</li>
-            <li><strong>Microservices Complexity:</strong> 3x more code to maintain</li>
-            <li><strong>Testing Overhead:</strong> 40% more testing time</li>
-            <li><strong>Integration Challenges:</strong> 30% of development time</li>
-          </ul>
-        </div>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">But What About Scale?</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">What Actually Matters Early</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          The biggest surprise? PHP and MySQL scale better than you think. We handled a front-page Reddit surge (280,000 simultaneous users) without breaking a sweat. Our secret? We embraced boring technology:
+          The question to ask at the start of a project is not what stack will scale best. It is what stack lets you ship and change fastest. Early stage startups do not die from scaling too slowly. They die from not shipping, or from shipping the wrong thing and not being able to pivot fast enough. A monolith that deploys in 30 seconds is more valuable than a microservices architecture that deploys in 45 minutes when you are still figuring out what to build.
         </p>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li><strong>Redis Caching:</strong> 80% read request reduction</li>
-            <li><strong>CDN:</strong> Cloudflare&#39;s free tier handles 95% of traffic</li>
-            <li><strong>Database:</strong> Basic MySQL optimization delivers 10,000 qps</li>
-            <li><strong>Deployment:</strong> Git push to master, automatic deploy</li>
-          </ul>
-        </div>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Real Innovation Tax</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Every hour spent managing infrastructure is an hour not spent on your product. Every dollar spent on cutting-edge tech stacks is a dollar not spent on marketing. Every complexity added is technical debt acquired before you even have users.
+          The right time to introduce complexity is when the pain of not having it is greater than the cost of adding it. When your monolith genuinely becomes a bottleneck, split it. When you have a specific service that needs different scaling characteristics, extract it. Do not build for future problems you have not encountered yet.
         </p>
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">When You Should Ignore This Advice</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Exceptions</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Of course, there are exceptions. You should probably ignore everything I&#39;ve said if:
+          None of this applies if your core product is inherently distributed. Real-time collaborative tools, systems that process large volumes of streaming data, or products that need geographic distribution from day one have legitimate reasons for more complex stacks. The point is not that microservices are always wrong. It is that most startups adopt them as a status signal rather than a solution to an actual technical problem.
         </p>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li>You&#39;re building a real-time collaborative tool</li>
-            <li>Your core product requires distributed computing</li>
-            <li>You&#39;re processing massive amounts of data</li>
-            <li>You have venture funding specifically for building infrastructure</li>
-          </ul>
-        </div>
-
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg mb-8">
-          <h3 className="text-sm font-medium mb-4 dark:text-white">Key Takeaways</h3>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li>Choose boring technology for your first year</li>
-            <li>Invest in product before infrastructure</li>
-            <li>Embrace the monolith until it hurts</li>
-            <li>Use the simplest stack that could possibly work</li>
-          </ul>
-        </div>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Path Forward</h2>
         <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-          Will we stick with this stack forever? Probably not. But it got us to market faster, kept our costs low, and let us focus on what really matters: building a product people want. In the end, that&#39;s what separates successful startups from failed ones, not their tech stack.
+          The engineers who end up building the most interesting systems are usually the ones who understood the tradeoffs deeply enough to start simple, ship fast, and reach the point where they actually needed to solve hard infrastructure problems. You cannot get to interesting scale problems without first having scale.
         </p>
       </div>
     </article>

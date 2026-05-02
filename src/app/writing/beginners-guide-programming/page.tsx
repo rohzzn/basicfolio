@@ -27,75 +27,53 @@ const BeginnersGuideProgramming: React.FC = () => {
 
       <header className="mb-8 max-w-3xl">
         <h1 className="text-lg font-medium mb-4 dark:text-white">
-          Beginner&#39;s Guide to Programming
+          Beginners Guide for Programming
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
-          <time dateTime="2023-05-15">May 15, 2023</time>
+          <time dateTime="2021-04-28">April 28, 2021</time>
         </div>
       </header>
 
       <div className="text-sm max-w-3xl">
+
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
+          I started coding seriously around 2018, mostly to automate things in games and build small tools I wanted to exist. I did not have a structured learning path. I bounced between YouTube tutorials, Stack Overflow answers, and half-finished Udemy courses. Looking back, the things that actually moved the needle were simple and nothing like what most beginner advice says. This is the version of that advice I wish I had read first.
+        </p>
+
         <ProgRoadmap />
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Understanding Programming</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Pick one language and stay with it</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Before we can introduce you to some key concepts, we need to understand what programming really is. 
-          A computer is a hardware machine that can store and process information. The language of a computer is Binary, 
-          a complex set of ones and zeroes. Programming is essentially the larger-scale process of developing a complex 
-          machine program that acts according to our wishes.
+          The single biggest mistake beginners make is switching languages every few weeks. Python looks easier, then JavaScript looks more practical, then someone mentions Java and now you are doing all three badly. Programming concepts — loops, functions, data structures, recursion — are the same in every language. Once you know them solidly in one language, picking up another takes weeks rather than months. Pick Python or JavaScript. Commit. Do not switch for at least a year.
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
+          I started with Python and I am glad I did. The syntax is clean, error messages are readable, and the standard library handles most things you want to do without third-party packages. Once I understood Python well, picking up JavaScript for web work felt natural. I now use TypeScript for almost everything. But none of that was possible without the Python foundation.
         </p>
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">What is Coding?</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Tutorials are a trap after the first week</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Think of coding as a translator between English (or a different human language) and the computer&#39;s binary. 
-          Coding involves the actual syntax and structure by which we write commands. A computer can then take those commands, 
-          translate it into binary, and do what is written.
+          Watch one beginner tutorial to understand the syntax. Then stop watching and start building something. Tutorials feel productive because you are following along and the code works. But you are not learning to problem-solve — you are learning to copy. The moment you try to do something not covered in the tutorial, you will feel like you know nothing, because you effectively do not.
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
+          The projects that actually taught me things were embarrassingly small: a script to rename files in a folder, a Discord bot that responded to commands, a webpage that fetched an API and displayed data. Each one forced me to read documentation, debug real errors, and make real decisions. That process is the actual learning.
         </p>
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Popular Programming Languages</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Learn to read errors before anything else</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          There are tons of programming languages, and they each serve different purposes, styles, and specializations. 
-          Here are some of the most popular ones:
+          New programmers are afraid of error messages and try to close them as fast as possible. This is backwards. The error message is almost always telling you exactly what is wrong, often including the file and line number. Learning to read a stack trace slowly and actually understand what it says will save you more time than any other skill you develop early on.
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
+          When you are stuck: read the full error message. Google the exact error text in quotes. Read the Stack Overflow answers, not just the accepted one. Try to understand why the solution works before applying it. This habit is what separates people who can actually debug from people who just paste errors into ChatGPT and hope the suggestion works.
         </p>
 
-        <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          <li><strong>Java:</strong> One of the older, more established programming languages used in universities and large-scale businesses</li>
-          <li><strong>Python:</strong> A very user-friendly language preferred by many beginners with simple and clear syntax</li>
-          <li><strong>Ruby:</strong> Similar to Python, known for being beginner-friendly and built on the notion that programming should be fun</li>
-          <li><strong>JavaScript:</strong> A text-based language foundational to all websites</li>
-          <li><strong>C:</strong> One of the original programming languages, great for high-performance applications</li>
-          <li><strong>Swift:</strong> Developed by Apple for iOS and Mac OS apps, designed to be simple and easy to learn</li>
-        </ul>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Career Paths</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Use Git from day one</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Different types of programming roles include:
+          I did not start using Git until embarrassingly late and I regret it. You do not need to understand branching or rebasing right away. Just learn <code className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">git init</code>, <code className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">git add</code>, <code className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">git commit</code>, and <code className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">git push</code>. Commit every time you make something work. Put every project on GitHub. When you break something, you can always go back. When you are applying for jobs, you have a public record of what you have built.
         </p>
 
-        <h3 className="text-sm font-medium mt-6 mb-3 dark:text-white">Web Developers</h3>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Web developers can be further separated into front-end and back-end coders. Front-end coders are responsible for writing 
-          the code that determines how the website looks and how its content is presented. Back-end programmers write web apps 
-          and other complicated programs that provide the framework for the website to run on.
-        </p>
-
-        <h3 className="text-sm font-medium mt-6 mb-3 dark:text-white">Software Programmers</h3>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Software programmers develop software for clients/companies based on demand. Key languages include Java, JavaScript, 
-          C++, and Python.
-        </p>
-
-        <h3 className="text-sm font-medium mt-6 mb-3 dark:text-white">Mobile App Development</h3>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Mobile app development is quickly becoming one of the most lucrative programming fields. React Native is widely used 
-          to build effective mobile apps, offering an easy learning curve and efficient workflow.
-        </p>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Conclusion</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The path that worked for me</h2>
         <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-          The journey to becoming a programmer requires dedication, continuous learning, and practice. Start with the basics, 
-          choose a path that interests you, and keep building projects to gain practical experience. Remember, every expert was 
-          once a beginner.
+          I went from Python scripts to web development (HTML, CSS, JavaScript) to backend work (Node.js, Express) to full-stack projects. Along the way I picked up TypeScript because codebases with type safety are much more pleasant to work in. I learned C++ briefly for algorithms coursework. I built iOS apps with Swift during a phase of wanting to ship something to the App Store. Each step added tools without replacing the previous ones. The foundation is always the same: write code, break things, fix them, repeat.
         </p>
       </div>
     </article>

@@ -78,6 +78,9 @@ const hobbyLinks: BaseItem[] = [
 ];
 
 const writingArticles: BaseItem[] = [
+  { title: 'What I Learned Building 40 Side Projects', href: '/writing/forty-projects', icon: <Code className="w-4 h-4" />, keywords: ['projects', 'side projects', 'building', 'shipping', 'lessons'] },
+  { title: 'Why I Use Satoshi on Everything I Build', href: '/writing/satoshi-font', icon: <PenTool className="w-4 h-4" />, keywords: ['satoshi', 'font', 'typography', 'design', 'typeface'] },
+  { title: 'From Hyderabad to Cincinnati', href: '/writing/moving-to-cincinnati', icon: <Briefcase className="w-4 h-4" />, keywords: ['hyderabad', 'cincinnati', 'india', 'grad school', 'moving', 'uc'] },
   { title: 'Building Multiplayer Catan From Scratch', href: '/writing/catan-coop', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['catan', 'game', 'multiplayer', 'socket.io', 'hex', 'board game'] },
   { title: 'Second Semester at UC', href: '/writing/first-spring', icon: <FileText className="w-4 h-4" />, keywords: ['article', 'spring', 'season', 'blog', 'uc', 'cincinnati'] },
   { title: 'First Semester at UC', href: '/writing/uc-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['uc', 'university', 'experience', 'cincinnati', 'semester'] },

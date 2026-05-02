@@ -21,6 +21,18 @@ interface Event {
 // Hackathons the user participated in
 const hackathonsParticipated: Event[] = [
   {
+    title: "RevolutionUC 2026",
+    date: "March 28-29, 2026",
+    time: "24 hours",
+    location: "University of Cincinnati, Cincinnati, OH",
+    description: "Built 'StudyPulse' — a cross-platform clinical trial recruitment engine with two distinct user experiences on a shared backend. Patients use a React Native mobile app with conversational voice/text search to find and apply to trials. Clinicians use a React web dashboard with AI-powered candidate triage, natural language filtering, and automated summarization of patient responses. Both platforms sync in real-time through a single Supabase backend. Built for the Medpace challenge track.",
+    technologies: ["Expo", "React Native", "React", "Vite", "Supabase", "PostgreSQL", "Gemini API", "ElevenLabs"],
+    role: "Full Stack Developer",
+    projectUrl: "https://devpost.com/software/studypulse-ik341d",
+    liveDemo: "https://devpost.com/software/studypulse-ik341d",
+    duration: 24
+  },
+  {
     title: "Namaste Jupiverse - Hackathon Edition (HYD)",
     date: "June 21, 2025",
     time: "10:00 AM - 10:00 PM",

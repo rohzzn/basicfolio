@@ -27,7 +27,7 @@ const DiscordArticle: React.FC = () => {
 
       <header className="mb-8 max-w-3xl">
         <h1 className="text-lg font-medium mb-4 dark:text-white">
-          The Untold Story of How Discord&#39;s API Survived 2024&#39;s Biggest Gaming Launch
+          How Discord Survived 2024s Biggest Launch
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2024-03-20">March 20, 2024</time>
@@ -35,152 +35,83 @@ const DiscordArticle: React.FC = () => {
       </header>
 
       <div className="text-sm max-w-3xl">
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h2 className="text-sm font-medium mb-4 dark:text-white">TLDR:</h2>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li>Discord handled 12 million concurrent users during Starfield&#39;s launch without major outages</li>
-            <li>Key strategies: Dynamic sharding, predictive scaling, and custom Redis implementation</li>
-            <li>New Rust-based message queue system reduced latency by 78%</li>
-            <li>Open-sourced their rate limiting library (code below)</li>
-            <li>Architecture diagrams and performance metrics included</li>
-          </ul>
-        </div>
 
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
-          When millions of gamers simultaneously jumped into voice channels to discuss Starfield&#39;s launch, Discord&#39;s infrastructure faced its biggest test yet. Here&#39;s the inside story of how their engineering team rewrote their entire message queue system just weeks before — and why that decision paid off in ways nobody expected.
+          When Starfield launched in September 2023, Discord faced a traffic spike unlike anything a typical app ever sees. Millions of people jumped into voice channels simultaneously. The gaming community flooded servers with messages. Activity timestamps, presence updates, and push notifications all fired at once for tens of millions of users. I spent some time reading through Discord&apos;s engineering blog posts and their public postmortems to understand how they actually handle this, and the architecture decisions involved are genuinely interesting.
         </p>
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Calm Before the Storm</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Problem With Gaming Launches</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Discord&#39;s engineering team had been watching their metrics climb steadily throughout 2024. But when they saw the pre-order numbers for Starfield, they knew their current infrastructure wouldn&#39;t cut it. Their solution? A complete rewrite of their message queue system in Rust, with just six weeks until launch day.
+          Most apps scale for gradual growth. You add capacity as traffic increases week over week. Gaming launches break that model. You go from baseline to absolute peak within minutes of a release. The traffic pattern looks less like a slope and more like a wall. Discord has to pre-scale infrastructure before they even know how bad it will be, based on game pre-order numbers and community signals.
         </p>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Technical Challenge</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          The problem wasn&#39;t just scale — it was the specific pattern of gaming launches. Millions of users don&#39;t just gradually log in; they slam the servers all at once, often in coordinated Discord groups, creating massive traffic spikes that look like DDoS attacks.
-        </p>
-
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-sm font-medium mb-4 dark:text-white">Before: Node.js Message Queue</h3>
-          <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
-{`// Previous implementation in Node.js
-class MessageQueue {
-  constructor() {
-    this.queue = new Map();
-    this.processing = false;
-  }
-
-  async enqueue(message) {
-    const key = {message.channelId}:{message.guildId};
-    if (!this.queue.has(key)) {
-      this.queue.set(key, []);
-    }
-    this.queue.get(key).push(message);
-    
-    if (!this.processing) {
-      this.processing = true;
-      await this.processQueue();
-    }
-  }
-
-  async processQueue() {
-    // Single-threaded processing
-    // Limited by Node.js event loop
-  }
-}`}
-          </pre>
-        </div>
-
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-sm font-medium mb-4 dark:text-white">After: Rust-based Queue System</h3>
-          <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
-{`// New Rust implementation
-use tokio::sync::mpsc;
-use dashmap::DashMap;
-
-pub struct MessageQueue {
-    queues: DashMap<String, mpsc::Sender<Message>>,
-    config: Arc<Config>,
-}
-
-impl MessageQueue {
-    pub async fn enqueue(&self, msg: Message) -> Result<(), Error> {
-        let key = format!("{}:{}", msg.channel_id, msg.guild_id);
-        
-        let sender = self.queues
-            .entry(key)
-            .or_insert_with(|| self.spawn_processor());
-            
-        sender.send(msg).await?;
-        Ok(())
-    }
-    
-    fn spawn_processor(&self) -> mpsc::Sender<Message> {
-        let (tx, mut rx) = mpsc::channel(1024);
-        
-        tokio::spawn(async move {
-            // Parallel processing with Tokio runtime
-            // Zero-copy message passing
-            // Custom memory allocator
-        });
-        
-        tx
-    }
-}`}
-          </pre>
-        </div>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Redis Innovation</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          But the message queue was only part of the solution. Discord&#39;s team also had to rethink how they handled rate limiting across their microservices architecture. They ended up building a custom Redis module that would make rate limiting decisions in microseconds.
-        </p>
-
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-sm font-medium mb-4 dark:text-white">Custom Redis Rate Limiting Module</h3>
-          <pre className="bg-black text-green-400 p-4 rounded overflow-x-auto">
-{`#[redis::command]
-pub fn check_rate_limit(ctx: &Context, args: Vec<RedisString>) -> RedisResult {
-    let key = args.get(0).ok_or("Missing key")?;
-    let limit = args.get(1).ok_or("Missing limit")?.parse::<u64>()?;
-    let window = args.get(2).ok_or("Missing window")?.parse::<u64>()?;
-
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-
-    // Sliding window with O(1) memory usage
-    let counts = ctx.call("ZREMRANGEBYSCORE", &[key, "0", &(now - window).to_string()])?;
-    let current = ctx.call("ZCARD", &[key])?;
-
-    if current >= limit {
-        return Ok(RedisValue::Integer(0));
-    }
-
-    ctx.call("ZADD", &[key, &now.to_string(), &now.to_string()])?;
-    ctx.call("EXPIRE", &[key, &window.to_string()])?;
-
-    Ok(RedisValue::Integer(1))
-}`}
-          </pre>
-        </div>
 
         <TrafficGraph />
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Results</h2>
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">How Discord Shards Its Gateway</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          The results speak for themselves: 12 million concurrent users, 78% lower latency, and zero major outages during one of gaming&#39;s biggest launches. But perhaps more importantly, Discord&#39;s team showed that sometimes the best way to handle scale isn&#39;t to optimize your existing system — it&#39;s to completely rethink your assumptions about how that system should work.
+          Discord&apos;s public developer documentation explains how their gateway (the WebSocket layer clients connect to) works at scale. Connections are distributed across shards, where each shard handles a subset of guilds. Large bots are required to use sharding because a single connection cannot handle the volume of events from millions of guilds. The same principle applies to the internal infrastructure: no single process owns all the state.
         </p>
 
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg mb-8">
-          <h3 className="text-sm font-medium mb-4 dark:text-white">Key Resources</h3>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li><strong>Discord Rate Limiter:</strong> github.com/discord/rate-limiter-rs</li>
-            <li><strong>Redis Module Docs:</strong> redis.io/topics/modules-api-ref</li>
-            <li><strong>Performance Metrics:</strong> discord.com/developers/docs/topics/gateway</li>
-            <li><strong>Engineering Blog:</strong> discord.com/blog/engineering</li>
-          </ul>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
+          Discord&apos;s engineering blog documented their move from a Node.js message broker to a Rust implementation. The core motivation was latency and memory efficiency. Node.js handles IO well but every message object in JavaScript has overhead. Rust lets you process more messages with the same memory budget and get more consistent latency without GC pauses. For a system handling billions of events per day, that difference compounds.
+        </p>
+
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
+          <h3 className="text-sm font-medium mb-4 dark:text-white">The architecture tradeoff in simplified form</h3>
+          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+{`// Node.js: easy to write, GC pauses at high load
+class MessageQueue {
+  private queue = new Map<string, Message[]>();
+
+  async enqueue(msg: Message) {
+    const key = \`\${msg.channelId}:\${msg.guildId}\`;
+    this.queue.get(key)?.push(msg) ?? this.queue.set(key, [msg]);
+    // GC pressure grows with queue depth
+  }
+}
+
+// Rust: more code, but predictable memory and latency
+// use dashmap::DashMap;
+// use tokio::sync::mpsc;
+// Each channel gets a separate Tokio task with bounded queue
+// No GC, no unpredictable pauses at peak load`}
+          </pre>
         </div>
+
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Rate Limiting at Scale</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
+          During a launch, many bots and clients hammer the API simultaneously. Without aggressive rate limiting, a traffic spike can cascade into a denial of service against your own infrastructure. Discord open-sourced parts of their rate limiting work. The interesting design choice is a sliding window algorithm implemented directly in Redis using sorted sets, which makes rate limit decisions in microseconds without a separate service hop.
+        </p>
+
+        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
+          <h3 className="text-sm font-medium mb-4 dark:text-white">Sliding window rate limiter in Redis</h3>
+          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+{`-- Lua script runs atomically in Redis
+local key = KEYS[1]
+local limit = tonumber(ARGV[1])
+local window = tonumber(ARGV[2])
+local now = tonumber(ARGV[3])
+
+-- Remove entries outside the window
+redis.call('ZREMRANGEBYSCORE', key, 0, now - window)
+
+local count = redis.call('ZCARD', key)
+if count >= limit then return 0 end
+
+redis.call('ZADD', key, now, now)
+redis.call('EXPIRE', key, window)
+return 1`}
+          </pre>
+        </div>
+
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">What Makes This Hard</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
+          Reading through Discord&apos;s engineering posts, the recurring theme is that distributed systems at their scale surface every assumption your architecture made. Things like clock drift between servers, the cost of serialization under load, and the interaction between rate limiting and retry logic all become real problems that you never see at smaller scale. The solutions are almost always boring: reduce shared mutable state, bound queue sizes, prefer simpler data structures.
+        </p>
+
+        <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+          What I find useful about studying how Discord does this is that the underlying principles apply even to much smaller systems. Bounding your queues, making rate limiting decisions as early in the stack as possible, and choosing predictable latency over peak throughput are ideas worth internalizing regardless of how many users you have.
+        </p>
       </div>
     </article>
   );
