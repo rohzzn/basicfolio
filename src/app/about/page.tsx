@@ -6,9 +6,9 @@ import Link from 'next/link';
 import { featuredProjects } from '@/data/projects';
 
 const recentProjects = featuredProjects.map((p) => ({
+  slug: p.slug,
   title: p.title,
   description: p.description,
-  url: p.links.find((l) => l.label !== 'GitHub')?.url ?? p.links[0]?.url ?? '#',
 }));
 
 const Home: React.FC = () => {
@@ -189,11 +189,9 @@ const Home: React.FC = () => {
         </div>
         <div>
           {recentProjects.map((project) => (
-            <a
-              key={project.title}
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              key={project.slug}
+              href={`/projects/${project.slug}`}
               className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
             >
               <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex-shrink-0">
@@ -202,7 +200,7 @@ const Home: React.FC = () => {
               <span className="text-sm text-zinc-400 dark:text-zinc-500 truncate ml-4 text-right hidden sm:block">
                 {project.description}
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

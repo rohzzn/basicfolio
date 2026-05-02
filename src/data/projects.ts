@@ -39,7 +39,7 @@ export const projects: Project[] = [
     ],
     image: "/projects/keel.png",
     packageType: 'appstore',
-    longDescription: "I built Keel because I kept forgetting about subscriptions until they showed up on my bank statement. The first submission to App Review got rejected over a UI detail that took three hours to track down. The second went through. Getting an app past App Review and into the store for the first time felt genuinely different from shipping a website — the process, the constraints, the platform. SwiftUI made the UI fast to build but StoreKit integrations took time to get right.",
+    longDescription: "I built Keel because I kept forgetting about subscriptions until they showed up on my bank statement. It is a native iOS app in Swift and SwiftUI — not React Native or a cross-platform wrapper. The first submission to App Review got rejected over a UI detail that took three hours to track down. The second went through. Getting an app past App Review and into the store for the first time felt genuinely different from shipping a website — the process, the constraints, the platform. SwiftUI made the UI fast to build but StoreKit integrations took time to get right.",
     highlights: [
       "Published to the App Store through Apple's review process",
       "Tracks recurring subscriptions with monthly and annual cost summaries",
@@ -197,7 +197,6 @@ export const projects: Project[] = [
     description: "Website blocker Chrome extension",
     tech: ["JavaScript", "Chrome Extensions", "CSS"],
     category: "application",
-    featured: true,
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/ShutTab" },
       { label: "Chrome Store", url: "https://chromewebstore.google.com/detail/shuttab-%E2%80%93-free-site-block/lmkjcljgmcbechfhpkpamniadalgjojc" },
@@ -220,6 +219,7 @@ export const projects: Project[] = [
     description: "CS2 Stats on Steam",
     tech: ["JavaScript", "Chrome Extensions", "CSS"],
     category: "application",
+    featured: true,
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/csstats" },
       { label: "Chrome Store", url: "https://chromewebstore.google.com/detail/cs-stats/fdnhgmlohooaabloinhbgmkhpebckapp" },
