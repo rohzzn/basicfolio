@@ -1706,7 +1706,7 @@ function getWidget(p: Project): React.ReactNode {
 
 export default function ProjectDetail({ project: p }: { project: Project }) {
   return (
-    <article className="max-w-2xl py-8 px-4 sm:px-0">
+    <article className="max-w-2xl pb-8 pt-0 px-4 sm:px-0">
       <header className="mb-6">
         <div className="flex items-start justify-between gap-4 mb-2">
           <h1 className="text-lg font-medium dark:text-white">{p.title}</h1>

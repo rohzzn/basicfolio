@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 const EsportsJourney: React.FC = () => {
   return (
-    <article className="max-w-3xl py-8 px-4 sm:px-0">
+    <article className="max-w-3xl pb-8 pt-0 px-4 sm:px-0">
       <header className="mb-8">
         <div className="flex items-start justify-between gap-4 mb-4">
           <h1 className="text-lg font-medium dark:text-white">My Time in Esports</h1>
