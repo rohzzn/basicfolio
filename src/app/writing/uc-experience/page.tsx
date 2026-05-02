@@ -6,10 +6,10 @@ import CourseCards from './CourseCards';
 
 export const metadata: Metadata = {
   title: 'First Semester at UC — Rohan',
-  description: 'My experience navigating grad school, new friendships, UC\'s facilities, and adjusting to life in Cincinnati during my first semester.',
+  description: 'My experience navigating grad school, new friendships, and adjusting to life in Cincinnati during my first semester.',
   openGraph: {
     title: 'First Semester at UC',
-    description: 'My experience navigating grad school, new friendships, UC\'s facilities, and adjusting to life in Cincinnati during my first semester.',
+    description: 'My experience navigating grad school, new friendships, and adjusting to life in Cincinnati during my first semester.',
     url: 'https://rohan.run/writing/uc-experience',
   },
   alternates: { canonical: 'https://rohan.run/writing/uc-experience' },
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const UCExperience: React.FC = () => {
   return (
     <article className="max-w-3xl py-8 px-4 sm:px-0">
-      <Link 
+      <Link
         href="/writing"
         className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white mb-8 transition-colors"
       >
@@ -26,111 +26,53 @@ const UCExperience: React.FC = () => {
         <span>Back to writing</span>
       </Link>
 
-      <header className="mb-8 max-w-3xl">
+      <header className="mb-8">
         <h1 className="text-lg font-medium mb-4 dark:text-white">
-          My First Semester at UC: New Beginnings, Technical Challenges, and Campus Exploration
+          First Semester at UC
         </h1>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
-          <time dateTime="2024-12-29">December 31, 2024</time>
+          <time dateTime="2024-12-31">December 2024</time>
         </div>
       </header>
 
       <div className="text-sm max-w-3xl">
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h2 className="text-sm font-medium mb-4 dark:text-white">TLDR:</h2>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li>Successfully completed first semester of MENG CS with rigorous technical curriculum</li>
-            <li>Discovered UC&apos;s impressive 1819 Innovation Hub and state-of-the-art esports lab</li>
-            <li>Balanced academics with rewarding part-time work at Bearcats Package Center</li>
-            <li>Explored Cincinnati&apos;s campus community and world-class university facilities</li>
-            <li>Built strong foundation for future semesters in the graduate program</li>
-          </ul>
-        </div>
 
-        <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
-          Fall 2024 marked the beginning of my UC journey as an F1 student in the Master of Engineering program. From intensive algorithm courses to exploring campus facilities, this semester has been filled with growth and discovery. Balancing academics, work, and campus life has created an incredible introduction to life as a Bearcat.
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+          I landed in Cincinnati in August with two suitcases, a laptop, and no idea what grad school in America was actually going to feel like. The moving post covers the logistics of getting here. This one is about what the first four months were like once I actually arrived.
+        </p>
+
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+          The short version: harder than I expected academically, better than I expected socially, and I finished with a 4.0 — all A+. The longer version is below.
         </p>
 
         <CourseCards />
 
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Academic Deep Dive: Fall 2024 Curriculum</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          My first semester presented me with a robust set of courses that established a strong foundation in advanced computing and problem-solving methodologies:
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The coursework</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+          Advanced Algorithms I was the course I was most nervous about and the one I spent the most time on. The gap between knowing that dynamic programming exists and being able to apply it cleanly under exam pressure is larger than I remembered. I spent most of September re-learning things I thought I knew. The Distributed Operating Systems course was dense in a different way — the content was new, not a refresher, and understanding how distributed state actually stays consistent changed how I think about the systems I build.
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+          Cloud Computing was the most immediately practical. We were deploying things to AWS and Azure within the first few weeks. I had used both before but having to understand the IAM model and the cost implications of every architecture decision made it feel different from just following a tutorial. Innovation Design Thinking was a useful gear change — thinking about problems from the user&apos;s perspective before jumping to the technical solution is not instinctive for engineers, and the course forced that habit.
         </p>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-sm font-medium mb-4 dark:text-white">Core Courses</h3>
-          <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li>
-              <strong>Advanced Algorithms 1:</strong>
-              <p className="mt-1">An intense exploration of algorithmic complexity and optimization techniques. We tackled challenging problem-solving scenarios that pushed our computational thinking to new levels, providing critical foundations for advanced software development.</p>
-            </li>
-            <li>
-              <strong>Distributed Operating Systems:</strong>
-              <p className="mt-1">Deep dive into distributed systems architecture and synchronization. This course opened my eyes to the complexities of modern distributed computing and cloud infrastructure, with practical implementations that reinforced theoretical concepts.</p>
-            </li>
-            <li>
-              <strong>Introduction to Cloud Computing:</strong>
-              <p className="mt-1">Hands-on experience with modern cloud platforms, understanding everything from basic deployments to complex cloud architectures. The practical approach made complex concepts accessible while providing valuable skills for today&apos;s tech landscape.</p>
-            </li>
-            <li>
-              <strong>Innovation Design Thinking:</strong>
-              <p className="mt-1">A refreshing take on problem-solving that went beyond pure technology. Learning to approach challenges from multiple angles has already improved how I tackle technical problems and enhanced my perspective on product development.</p>
-            </li>
-          </ul>
-        </div>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Campus Discovery: UC&apos;s Impressive Facilities</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          My exploration of UC&apos;s campus revealed impressive facilities that enhance both academic and recreational aspects of student life. Among these, the 1819 Innovation Hub stands in a league of its own – an architectural masterpiece that feels like a blend of Silicon Valley tech campus and next-gen gaming arena.
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The campus</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+          The 1819 Innovation Hub was the first thing on campus that made me think I had chosen the right place. It has an esports arena with professional-grade setups and a community of people who take gaming seriously, which is not something I expected to find at a grad school. I found my people there in the first week, which mattered more than I would have admitted at the time.
+        </p>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+          Langsam Library became my default study spot by October. The quiet floors are actually quiet. I worked through most of my algorithms problem sets there, usually late enough that the place was nearly empty. There is something about a library at 11pm that makes hard problems feel more manageable.
         </p>
 
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          The Innovation Hub&apos;s esports arena quickly became my campus sanctuary. With professional-grade gaming setups, a passionate community, and an atmosphere that balances competitive spirit with casual fun, it&apos;s the perfect place to unwind after intensive coursework or connect with fellow tech enthusiasts.
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">The Package Center</h2>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+          I got a part-time job at the Bearcats Package Center early in the semester, which was a good decision for reasons beyond the paycheck. On an F1 visa you can only work on campus, and this was the job that was available. I took it expecting to just sort boxes for a few hours a week. It turned out to be the easiest way to meet people outside my program — the team was a mix of students from completely different departments, and Tyler and Terrance ran it well enough that it never felt like dead time.
         </p>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-sm font-medium mb-4 dark:text-white">Campus Highlights</h3>
-          <ul className="list-disc pl-6 space-y-4 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li>
-              <strong>1819 Innovation Hub:</strong>
-              <p className="mt-1">UC&apos;s crown jewel of innovation, offering collaborative spaces, cutting-edge technology, and an environment that transforms theoretical knowledge into practical application.</p>
-            </li>
-            <li>
-              <strong>Langsam Library:</strong>
-              <p className="mt-1">My go-to spot for focused study sessions, offering quiet floors, group study rooms, and an extensive collection of technical resources. Perfect for those deep dives into algorithms and distributed systems.</p>
-            </li>
-            <li>
-              <strong>Campus Recreation Center:</strong>
-              <p className="mt-1">World-class fitness facilities that help maintain a healthy work-life balance, offering everything from swimming pools to rock climbing walls.</p>
-            </li>
-            <li>
-              <strong>Tangeman University Center (TUC):</strong>
-              <p className="mt-1">The heart of campus life, always buzzing with activity and perfect for quick meals, study breaks, and connecting with the diverse UC community.</p>
-            </li>
-          </ul>
-        </div>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Professional Development: Bearcats Package Center</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
-          Balancing academics with practical work experience, my part-time position at the Bearcats Package Center has become a valuable component of my UC journey. Under the exceptional leadership of Tyler and Terrance, what could have been just a job has transformed into an enriching experience that complements my academic pursuits.
+        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">How it ended</h2>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          I finished the semester with A+ in every course — 4.0 GPA — which I am genuinely proud of given how much of it was new terrain — new country, new academic system, new city, all at once. By December I had a rhythm: classes in the morning, Langsam in the afternoon, the esports lab in the evenings when I needed to decompress. The spring semester would be harder in some ways and better in others.
         </p>
 
-        <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
-          <h3 className="text-sm font-medium mb-4 dark:text-white">Work Experience Highlights</h3>
-          <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
-            <li>Developed efficient package handling and tracking skills with real-world applications</li>
-            <li>Built strong customer service abilities through interactions with the diverse campus community</li>
-            <li>Learned practical inventory management techniques that complement theoretical coursework</li>
-            <li>Collaborated with an amazing team of fellow students from various academic disciplines</li>
-            <li>Mastered the art of work-study balance, a critical skill for graduate success</li>
-          </ul>
-        </div>
-
-        <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Looking Forward</h2>
-        <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-          This first semester at UC has laid a strong foundation for my graduate journey. The combination of rigorous academics, cutting-edge facilities, and valuable work experience has exceeded my expectations for the MENG program. The knowledge gained through courses like Advanced Algorithms and Distributed Systems has prepared me for more advanced coursework, while connections made in the Innovation Hub and Package Center have enriched my campus experience. As I look toward spring semester, I&apos;m eager to build on this foundation, take on new challenges, and continue exploring everything UC has to offer.
-        </p>
       </div>
     </article>
   );

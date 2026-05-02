@@ -37,7 +37,7 @@ export default function CourseCards() {
           </div>
         ))}
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">GPA this semester: 4.0 across all courses.</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">4.0 GPA · all A+ across every course.</p>
     </div>
   );
 }

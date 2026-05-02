@@ -16,6 +16,22 @@ export type Thought = {
 
 export const posts: Post[] = [
   {
+    slug: 'what-this-site-loads',
+    title: 'Everything This Site Loads Over the Wire',
+    description: 'I opened the network tab on my own portfolio and wrote down every request. The fonts, the scripts, the API calls — and what I\'d change.',
+    date: '2026-05-02',
+    displayDate: 'May 2026',
+    category: 'tech',
+  },
+  {
+    slug: 'software-i-admire',
+    title: 'Software I Admire That I Didn\'t Write',
+    description: 'A look at the C programs, Rust tools, and Go infrastructure I depend on every day but couldn\'t have built myself.',
+    date: '2025-04-10',
+    displayDate: 'Apr 2025',
+    category: 'tech',
+  },
+  {
     slug: 'forty-projects',
     title: 'What I Learned Building 40 Side Projects',
     description: 'Looking back at every side project I have shipped: what got users, what got abandoned, and what the pattern between them actually is.',
