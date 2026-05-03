@@ -50,7 +50,7 @@ const FirstSpring: React.FC = () => {
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-white">Research at CCHMC</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-          Partway through the semester I got a Graduate Research Assistant position at Cincinnati Children&apos;s Hospital Medical Center. The work sits at the intersection of software engineering and healthcare infrastructure — the kind of thing where the stakes are different from building a web app because the systems you are working on actually matter to patient outcomes.
+          Partway through the semester I got a Graduate Research Assistant position at Cincinnati Children&apos;s Hospital. The work sits at the intersection of software engineering and healthcare infrastructure — the kind of thing where the stakes are different from building a web app because the systems you are working on actually matter to patient outcomes.
         </p>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
           It was the first time I was being paid to do research, which felt different from coursework in ways I found hard to articulate at first. The timeline is longer. The definition of done is fuzzier. You are not working toward a deadline set by a syllabus but toward understanding something that is genuinely not understood yet. I am still getting used to that mode of working, but I think it suits me.
