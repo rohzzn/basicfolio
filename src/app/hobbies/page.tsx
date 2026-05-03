@@ -16,7 +16,7 @@ const hobbies: Hobby[] = [
   },
   {
     title: "Photos",
-    description: "From @rohan_heic",
+    description: ".heic",
     href: "/hobbies/photos",
   },
   {
