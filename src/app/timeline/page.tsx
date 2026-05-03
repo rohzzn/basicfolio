@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Category = "education" | "work" | "gray" | "tech" | "content" | "achievement";
 
@@ -12,6 +13,14 @@ interface TimelineEvent {
   category: Category;
   start: Date;
   end: Date;
+  /** Info panel heading; timeline bars still use `description[0]`. */
+  detailTitle?: string;
+  /** Info panel lines under the heading (e.g. school, dates). */
+  detailLead?: string[];
+  /** Info panel body paragraphs. */
+  detailBody?: string[];
+  /** Path under `public` (e.g. `/images/uc_logo.png`). */
+  detailImage?: string;
 }
 
 function endOfMonth(y: number, m: number) {
@@ -29,36 +38,50 @@ function dayAt(y: number, m: number, d: number) {
 
 const events: TimelineEvent[] = [
   {
-    id: "cchmc-sde-cpt",
-    dateLabel: "CCHMC · Software Developer (CPT)",
-    description: ["Software Developer (CPT)", "Cincinnati Children's Hospital"],
-    category: "work",
-    start: startOfMonth(2025, 9),
-    end: endOfMonth(2026, 2),
-  },
-  {
     id: "cchmc-ra",
     dateLabel: "CCHMC · Research Assistant",
     description: ["Research Assistant", "Cincinnati Children's Hospital"],
     category: "work",
     start: startOfMonth(2025, 1),
     end: endOfMonth(2025, 8),
+    detailTitle: "Graduate Research Assistant",
+    detailLead: ["Cincinnati Children's Hospital", "January 2025 to August 2025"],
+    detailBody: [
+      "I worked on graph based RAG in Neo4j and LangGraph style agent workflows so internal research could pull richer, multi hop context with sensible guardrails. Less manual stitching, more repeatable pipelines.",
+      "I also shipped small internal interfaces in React, Next.js, and Streamlit (chat, citations, auth), and used Docker with CI and CD so environments were quicker to stand up and deployments stayed reproducible.",
+    ],
+    detailImage: "/images/cchmc.png",
   },
   {
-    id: "nov-2023",
-    dateLabel: "November 2023",
-    description: ["48-hour hackathon — 2nd place", "Google Gen AI & LLM certifications"],
-    category: "achievement",
-    start: startOfMonth(2023, 11),
-    end: endOfMonth(2023, 11),
+    id: "cchmc-sde-cpt",
+    dateLabel: "CCHMC · Software Developer (CPT)",
+    description: ["Software Developer (CPT)", "Cincinnati Children's Hospital"],
+    category: "work",
+    start: startOfMonth(2025, 9),
+    end: endOfMonth(2026, 2),
+    detailTitle: "Software Developer (Curricular Practical Training)",
+    detailLead: ["Cincinnati Children's Hospital", "September 2025 to February 2026"],
+    detailBody: [
+      "I helped build an AI search platform in Django, React, and Next.js that mixed graph RAG in Neo4j with hybrid retrieval: vectors, graph hops, and APIs, so answers could be sharper and better grounded.",
+      "I contributed to Neo4j schema design for clearer cross domain links, and to end to end search UX with authentication, citation backed responses, and a polished interface so the tool could be adopted responsibly.",
+    ],
+    detailImage: "/images/cchmc.png",
   },
   {
     id: "uc-meng-cs",
     dateLabel: "University of Cincinnati · M.Eng. Computer Science",
-    description: ["Masters in Computer Science", "University of Cincinnati"],
+    description: ["M.Eng. Computer Science", "University of Cincinnati"],
     category: "education",
     start: startOfMonth(2024, 8),
     end: dayAt(2026, 4, 30),
+    detailTitle: "Master of Engineering in Computer Science",
+    detailLead: ["University of Cincinnati", "August 2024 to April 2026"],
+    detailBody: [
+      "GPA: 4.0/4.0",
+      "Relevant Coursework: Advanced Algorithms I, Advanced Algorithms II, Distributed Operating Systems, Software Testing and QA, Introduction to Cloud Computing, Large Scale Software Engineering, Network Security, Innovation Design Thinking",
+      "Capstone: Curricular Practical Training internship at Cincinnati Children's Hospital Medical Center",
+    ],
+    detailImage: "/images/uc_logo.png",
   },
   {
     id: "abhibus-2023-2024",
@@ -67,6 +90,13 @@ const events: TimelineEvent[] = [
     category: "work",
     start: startOfMonth(2023, 6),
     end: endOfMonth(2024, 6),
+    detailTitle: "Software Engineer Intern",
+    detailLead: ["AbhiBus (Ixigo)", "June 2023 to June 2024"],
+    detailBody: [
+      "I improved booking flow reliability across React transport apps by implementing centralized session management. I also resolved 50 or more SOAP integration issues, reducing backend API errors by 95% and improving production stability.",
+      "I automated travel package reporting workflows, which reduced manual reporting effort and cut refresh time by more than 60%. I expanded backend support for booking workflows by developing and documenting 5 or more Node.js REST APIs.",
+    ],
+    detailImage: "/images/abhibus.png",
   },
   {
     id: "freelance-graphic-2017-2021",
@@ -83,6 +113,13 @@ const events: TimelineEvent[] = [
     category: "gray",
     start: startOfMonth(2021, 12),
     end: endOfMonth(2023, 5),
+    detailTitle: "Developer and Designer",
+    detailLead: ["Fiverr", "December 2021 to May 2023"],
+    detailBody: [
+      "On Fiverr I worked remotely with clients from brief to delivery: logos and brand kits, social and marketing graphics, and small landing pages and promo sites when the scope called for code as well as design.",
+      "Most projects were fixed scope with tight turnaround, so I got comfortable clarifying requirements up front, shipping revision rounds without drama, and handing off organized source files and assets people could actually reuse.",
+    ],
+    detailImage: "/images/fiver.png",
   },
   {
     id: "backstage-pass-game-dev",
@@ -99,6 +136,13 @@ const events: TimelineEvent[] = [
     category: "education",
     start: startOfMonth(2020, 11),
     end: endOfMonth(2024, 6),
+    detailTitle: "Bachelor of Technology, Computer Science",
+    detailLead: ["Malla Reddy Engineering College", "August 2020 to June 2024"],
+    detailBody: [
+      "GPA: 8.0/10",
+      "Relevant coursework included Data Structures and Algorithms, Operating Systems, Database Management Systems, Object Oriented Programming, Computer Networks, Analysis and Design of Algorithms, Software Engineering, Compiler Design, and Internet of Things.",
+    ],
+    detailImage: "/images/mrec.png",
   },
   {
     id: "newton-school-partner",
@@ -107,6 +151,12 @@ const events: TimelineEvent[] = [
     category: "tech",
     start: startOfMonth(2022, 6),
     end: endOfMonth(2023, 4),
+    detailTitle: "Partner",
+    detailLead: ["Newton School", "June 2022 to June 2023"],
+    detailBody: [
+      "During my tenure as CodeChef Chapter President, I had the privilege of fostering a valuable partnership with Newton School, a prominent organization dedicated to providing highly immersive learning to millions of students and working professionals. Through this collaboration, Newton School provided essential support and resources for our club's competitions, enhancing the overall experience for our members and contributing to the success of our events.",
+    ],
+    detailImage: "/images/newton.png",
   },
   {
     id: "slate-the-school",
@@ -135,11 +185,18 @@ const calendarOverlays: CalendarOverlay[] = [
   {
     id: "uc-bearcat-package",
     parentId: "uc-meng-cs",
-    dateLabel: "Bearcats Package Center · Student worker",
+    dateLabel: "Bearcats Package Center + Mail · Student worker",
     description: ["Student worker", "Bearcats Package Center"],
     category: "work",
     start: startOfMonth(2024, 8),
-    end: dayAt(2024, 12, 30),
+    end: endOfMonth(2024, 12),
+    detailTitle: "Student worker, Bearcats Package Center + Mail",
+    detailLead: ["University of Cincinnati", "August 2024 to December 2024"],
+    detailBody: [
+      "The Bearcats Package Center + Mail is UC's centralized mail and package hub in Tangeman University Center (TUC). Many on campus residents ship deliveries there (USPS, UPS, FedEx, Amazon). The operation centers on a secure, self service smart locker system. Students get an email when something is ready, then scan a barcode to open the right locker. Oversized or special handling items are routed to the service desk instead.",
+      "As a student worker I supported day to day operations during a stretch that included heavy move in volume: helping classmates at the desk, answering questions about pickup and holds, and keeping the locker workflow understandable when lines and notifications were both piling up.",
+    ],
+    detailImage: "/images/bearcatspackagecenter.png",
   },
   {
     id: "codechef-president",
@@ -149,12 +206,31 @@ const calendarOverlays: CalendarOverlay[] = [
     category: "achievement",
     start: startOfMonth(2021, 9),
     end: endOfMonth(2023, 9),
+    detailTitle: "President, CodeChef Chapter",
+    detailLead: ["Malla Reddy Engineering College", "September 2021 to September 2023"],
+    detailBody: [
+      "I managed a team of fifteen students, organized events, and coordinated rewards so the chapter could keep programs running smoothly.",
+      "I orchestrated 20 or more coding contests and skill building workshops for more than seven hundred undergraduate students. I built a custom Discord bot that improved server moderation for a community of more than four hundred users.",
+      "I developed and deployed the club website mrec.club using jQuery and Bootstrap to streamline events, and built hack.mrec.club to share contest information and take entries.",
+    ],
+    detailImage: "/images/codechef.png",
   },
 ];
 
 function findTimelineEntry(id: string | null): TimelineEvent | CalendarOverlay | null {
   if (!id) return null;
   return events.find((e) => e.id === id) ?? calendarOverlays.find((o) => o.id === id) ?? null;
+}
+
+function entryHasDetailPanel(
+  ev: Pick<TimelineEvent, "detailImage" | "detailTitle" | "detailLead" | "detailBody">,
+): boolean {
+  return Boolean(
+    ev.detailImage ||
+      ev.detailTitle ||
+      (ev.detailLead && ev.detailLead.length > 0) ||
+      (ev.detailBody && ev.detailBody.length > 0),
+  );
 }
 
 function dayStart(d: Date) {
@@ -486,22 +562,33 @@ export default function TimelinePage() {
 
   const allRows: LaneRow[] = [...eduRows, ...otherRows];
 
-  const active = activeId ? findTimelineEntry(activeId) : null;
+  const activeEntry = activeId ? findTimelineEntry(activeId) : null;
+  const active = activeEntry && entryHasDetailPanel(activeEntry) ? activeEntry : null;
+
+  useEffect(() => {
+    if (!activeId) return;
+    const e = findTimelineEntry(activeId);
+    if (!e || !entryHasDetailPanel(e)) setActiveId(null);
+  }, [activeId]);
 
   return (
-    <div className="w-full min-w-0 max-w-3xl">
-      <h2 className="text-lg font-medium text-zinc-900 dark:text-white">Timeline</h2>
-      <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-        Years happened. Here is some evidence.
-      </p>
+    <div className="w-full min-w-0 max-w-full pb-8 sm:pb-10">
+      <div className="max-w-3xl">
+        <h2 className="text-base font-medium tracking-tight text-zinc-900 dark:text-white sm:text-lg">Timeline</h2>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+          A long narrow autobiography.
+        </p>
+      </div>
 
-      <div className="mt-8 overflow-x-auto overflow-y-visible rounded-xl border border-zinc-200 bg-zinc-50/50 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40">
-        <div
-          ref={timelineHoverRef}
-          className="flex min-w-[min(100%,420px)]"
-          onMouseMove={(e) => updateHoveredMonthFromClientY(e.clientY)}
-          onMouseLeave={() => setHoveredYM(null)}
-        >
+      <div className="mt-6 flex min-w-0 flex-col gap-6 sm:mt-8 sm:gap-8 md:flex-row md:items-start md:gap-10 lg:gap-12">
+        <div className="w-full min-w-0 max-w-3xl shrink-0">
+          <div className="overflow-x-auto overflow-y-visible overscroll-x-contain rounded-lg border border-zinc-200 bg-zinc-50/50 shadow-sm [-webkit-overflow-scrolling:touch] dark:border-zinc-800 dark:bg-zinc-950/40 sm:rounded-xl">
+            <div
+              ref={timelineHoverRef}
+              className="flex w-full min-w-0 touch-pan-x sm:min-w-[min(100%,420px)]"
+              onMouseMove={(e) => updateHoveredMonthFromClientY(e.clientY)}
+              onMouseLeave={() => setHoveredYM(null)}
+            >
           {/* Schedule track */}
           <div
             className="relative flex-1 border-r border-zinc-200 bg-[length:100%_28px] bg-[linear-gradient(to_bottom,transparent_27px,rgba(0,0,0,0.05)_28px)] dark:border-zinc-800 dark:bg-zinc-950/70 dark:bg-[linear-gradient(to_bottom,transparent_27px,rgba(255,255,255,0.04)_28px)]"
@@ -537,14 +624,23 @@ export default function TimelinePage() {
               const { bottom, h, leftPct, lanePct } = rowGeometry(ev);
               const th = blockTheme(ev.category);
               const baseZ = ev.category === "education" ? "z-[1]" : "z-[2]";
-              const faded = eventOverlapsFadeEra(ev.startMs, ev.endMs) && activeId !== ev.id;
+              const hasDetail = entryHasDetailPanel(ev);
+              const evSelected = hasDetail && activeId === ev.id;
+              const faded = eventOverlapsFadeEra(ev.startMs, ev.endMs) && !evSelected;
               return (
                 <button
                   key={ev.id}
                   type="button"
-                  onClick={() => setActiveId((id) => (id === ev.id ? null : ev.id))}
-                  className={`absolute flex flex-col items-stretch justify-start overflow-hidden rounded-md px-2.5 pt-2 pb-1.5 text-left shadow-sm transition-[box-shadow,transform,opacity] hover:z-20 hover:shadow-md ${th.bar} ${th.box} ${
-                    activeId === ev.id ? "z-10 opacity-100 ring-2 ring-zinc-400/80 dark:ring-zinc-500" : baseZ
+                  disabled={!hasDetail}
+                  onClick={
+                    hasDetail
+                      ? () => setActiveId((id) => (id === ev.id ? null : ev.id))
+                      : undefined
+                  }
+                  className={`absolute flex flex-col items-stretch justify-start overflow-hidden rounded-md px-2 pt-2 pb-1.5 text-left shadow-sm transition-[box-shadow,transform,opacity] sm:px-2.5 ${th.bar} ${th.box} ${
+                    hasDetail ? "cursor-pointer hover:z-20 hover:shadow-md" : "cursor-default"
+                  } disabled:opacity-100 ${
+                    evSelected ? "z-10 opacity-100 ring-2 ring-zinc-400/80 dark:ring-zinc-500" : baseZ
                   } ${faded ? "opacity-[0.82] hover:opacity-100" : ""}`}
                   style={{
                     bottom,
@@ -566,8 +662,8 @@ export default function TimelinePage() {
                         key={i}
                         className={
                           i === 0
-                            ? "text-[15px] font-semibold leading-snug tracking-tight"
-                            : "text-sm font-medium leading-snug"
+                            ? "text-[13px] font-semibold leading-snug tracking-tight sm:text-[15px]"
+                            : "text-xs font-medium leading-snug sm:text-sm"
                         }
                       >
                         {line}
@@ -590,16 +686,24 @@ export default function TimelinePage() {
               const oh = Math.max(rawH, MIN_BLOCK_PX);
               const ob = Math.min(b0, b1);
               const th = blockTheme(ov.category);
-              const isOvActive = activeId === ov.id;
+              const hasDetailOv = entryHasDetailPanel(ov);
+              const isOvActive = hasDetailOv && activeId === ov.id;
               const ovFaded = eventOverlapsFadeEra(startMs, endMs) && !isOvActive;
 
               return (
                 <button
                   key={ov.id}
                   type="button"
-                  onClick={() => setActiveId((id) => (id === ov.id ? null : ov.id))}
-                  className={`absolute flex flex-col items-stretch justify-start overflow-hidden rounded-md px-2 pt-1.5 pb-1 text-left shadow-none ring-0 transition-[transform,opacity] ${th.bar} ${th.box} ${
-                    isOvActive ? "z-[40] opacity-100" : "z-[26] hover:z-[38]"
+                  disabled={!hasDetailOv}
+                  onClick={
+                    hasDetailOv
+                      ? () => setActiveId((id) => (id === ov.id ? null : ov.id))
+                      : undefined
+                  }
+                  className={`absolute flex flex-col items-stretch justify-start overflow-hidden rounded-md px-1.5 pt-1.5 pb-1 text-left shadow-none ring-0 transition-[transform,opacity] sm:px-2 ${th.bar} ${th.box} ${
+                    hasDetailOv ? "cursor-pointer hover:z-[38]" : "cursor-default"
+                  } disabled:opacity-100 ${
+                    isOvActive ? "z-[40] opacity-100" : "z-[26]"
                   } ${ovFaded ? "opacity-[0.82] hover:opacity-100" : ""}`}
                   style={{
                     bottom: ob,
@@ -615,8 +719,8 @@ export default function TimelinePage() {
                         key={i}
                         className={
                           i === 0
-                            ? "text-[14px] font-semibold leading-snug tracking-tight"
-                            : "text-[13px] font-medium leading-snug"
+                            ? "text-[12px] font-semibold leading-snug tracking-tight sm:text-[14px]"
+                            : "text-[11px] font-medium leading-snug sm:text-[13px]"
                         }
                       >
                         {line}
@@ -729,33 +833,71 @@ export default function TimelinePage() {
               );
             })}
           </div>
-        </div>
-      </div>
-
-      {active ? (
-        <div className="mt-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
-          <div className="mb-2 flex items-start justify-between gap-2">
-            <div>
-              <p className="text-sm font-semibold text-zinc-900 dark:text-white">
-                {active.description[0] ?? active.dateLabel}
-              </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{active.dateLabel}</p>
             </div>
-            <button
-              type="button"
-              className="text-xs text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-              onClick={() => setActiveId(null)}
-            >
-              Close
-            </button>
           </div>
-          <ul className="list-inside list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-300">
-            {active.description.map((line, i) => (
-              <li key={i}>{line}</li>
-            ))}
-          </ul>
         </div>
-      ) : null}
+
+        {active ? (
+          <div className="w-full min-w-0 max-w-full sm:max-w-[min(100%,38rem)] sm:shrink-0 lg:max-w-[40rem]">
+            <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 sm:rounded-xl sm:p-6">
+              <div
+                className={
+                  active.detailImage
+                    ? "mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+                    : "mb-3"
+                }
+              >
+                <div
+                  className={
+                    active.detailImage
+                      ? "w-full min-w-0 flex-1 sm:max-w-none"
+                      : ""
+                  }
+                >
+                  <p className="break-words text-sm font-semibold leading-snug text-zinc-900 dark:text-white sm:text-base sm:leading-normal">
+                    {active.detailTitle ?? active.description[0] ?? active.dateLabel}
+                  </p>
+                  {active.detailLead?.length ? (
+                    active.detailLead.map((line, i) => (
+                      <p key={i} className="mt-1 break-words text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 sm:mt-1 sm:text-[13px]">
+                        {line}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="mt-1 break-words text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 sm:text-[13px]">{active.dateLabel}</p>
+                  )}
+                </div>
+                {active.detailImage ? (
+                  <div className="shrink-0 self-end sm:self-start">
+                    <div className="relative h-12 w-[6.25rem] sm:h-14 sm:w-[7.25rem] md:h-[4.25rem] md:w-[8.25rem]">
+                      <Image
+                        src={active.detailImage}
+                        alt={active.detailTitle ?? active.description[0] ?? ""}
+                        fill
+                        className="object-contain object-right object-top"
+                        sizes="(max-width: 640px) 100px, (max-width: 768px) 116px, 132px"
+                      />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              {active.detailBody?.length ? (
+                <div className="space-y-2.5 text-[13px] leading-relaxed break-words text-zinc-600 dark:text-zinc-300 sm:space-y-3 sm:text-sm">
+                  {active.detailBody.map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                </div>
+              ) : (
+                <ul className="list-disc space-y-1.5 break-words pl-5 text-[13px] leading-relaxed text-zinc-600 marker:text-zinc-400 dark:text-zinc-300 dark:marker:text-zinc-500 sm:space-y-2 sm:text-sm sm:leading-normal">
+                  {active.description.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
