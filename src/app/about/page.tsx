@@ -230,21 +230,32 @@ const Home: React.FC = () => {
         </div>
 
         <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-          Reach out on{' '}
           <a href="https://www.linkedin.com/in/rohzzn/" target="_blank" rel="noopener noreferrer"
             className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
             LinkedIn
           </a>
-          ,{' '}
+          {' '}and my{' '}
+          <Link href="/resume"
+            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            resume
+          </Link>
+          {' '}cover the work.{' '}
           <a href="https://x.com/rohzzn" target="_blank" rel="noopener noreferrer"
             className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
             X
           </a>
-          ,{' '}
+          {' '}and my{' '}
+          <Link
+            href="/timeline"
+            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+          >
+            timeline
+          </Link>
+          {' '}cover the person behind it.{' '}
           <span className="relative inline-block">
             <span onClick={copyEmail}
               className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer">
-              email
+              Email me
             </span>
             {emailCopied && (
               <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs px-2.5 py-1 rounded-md pointer-events-none z-10">
@@ -252,19 +263,14 @@ const Home: React.FC = () => {
               </span>
             )}
           </span>
-          ,{' '}
+          {' '}or{' '}
           <Link
             href="/meet"
             className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
             book a meet
           </Link>
-          , or view my{' '}
-          <Link href="/resume"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
-            resume
-          </Link>
-          .
+          {' '}if you want to start a real conversation.
         </p>
       </div>
 
