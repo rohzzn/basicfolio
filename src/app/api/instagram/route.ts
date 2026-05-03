@@ -8,9 +8,10 @@ export async function GET() {
   }
 
   try {
+    // Lower = fresher after IG deletes/edits, but more Graph API calls (watch rate limits).
     const res = await fetch(
       `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=50&access_token=${token}`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 60 } }
     );
 
     if (!res.ok) {
