@@ -62,7 +62,12 @@ const nextConfig = {
     return [
       {
         source: '/hobbies/photos',
-        destination: '/hobbies/frames',
+        destination: '/hobbies/seen',
+        permanent: true,
+      },
+      {
+        source: '/hobbies/frames',
+        destination: '/hobbies/seen',
         permanent: true,
       },
     ];

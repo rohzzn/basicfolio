@@ -33,7 +33,8 @@ import {
   Award,
   Briefcase,
   TrendingUp,
-  Target
+  Target,
+  Camera,
 } from 'lucide-react';
 
 interface BaseItem {
@@ -56,8 +57,7 @@ const mainLinks: BaseItem[] = [
   { title: 'Hobbies', href: '/hobbies', icon: <Sparkles className="w-4 h-4" />, keywords: ['interests', 'fun', 'activities'] },
   { title: 'Links', href: '/links', icon: <Link2 className="w-4 h-4" />, keywords: ['social', 'contact', 'networks'] },
   { title: 'Timeline', href: '/timeline', icon: <Clock className="w-4 h-4" />, keywords: ['history', 'experience'] },
-  { title: 'Resume', href: '/resume', icon: <Laptop className="w-4 h-4" />, keywords: ['technology', 'tools', 'cv', 'experience'] },
-  { title: 'Focus', href: '/focus', icon: <Clock className="w-4 h-4" />, keywords: ['pomodoro', 'timer'], shortcut: 'F' },
+  { title: 'Resume', href: '/resume', icon: <Laptop className="w-4 h-4" />, keywords: ['cv', 'work', 'experience', 'jobs'] },
   { title: 'About', href: '/about', icon: <User className="w-4 h-4" />, keywords: ['profile', 'bio', 'personal'] },
   { title: 'Guestbook', href: '/guestbook', icon: <Bookmark className="w-4 h-4" />, keywords: ['comments', 'visitor', 'messages'] },
 ];
@@ -73,6 +73,12 @@ const hobbyLinks: BaseItem[] = [
   { title: 'Gaming Clips', href: '/hobbies/clips', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['clips', 'highlights', 'videos'] },
   { title: 'Hackathons', href: '/hobbies/hackathons', icon: <Code className="w-4 h-4" />, keywords: ['hackathon', 'competition', 'coding'] },
   { title: 'Music', href: '/hobbies/music', icon: <Music className="w-4 h-4" />, keywords: ['songs', 'playlist', 'spotify'] },
+  {
+    title: 'Seen',
+    href: '/hobbies/seen',
+    icon: <Camera className="w-4 h-4" />,
+    keywords: ['seen', 'frames', 'photos', 'instagram', 'gallery', 'archive', 'images', 'heic', '.heic'],
+  },
   { title: 'Setup', href: '/hobbies/uses', icon: <Laptop className="w-4 h-4" />, keywords: ['setup', 'workspace', 'tools'] },
   { title: 'Typing', href: '/hobbies/typing', icon: <Keyboard className="w-4 h-4" />, keywords: ['typing', 'speed', 'test'] },
 ];

@@ -82,6 +82,72 @@ function logicalIndexFromRendered(renderedIndex: number, n: number): number {
   return ((renderedIndex % n) + n) % n;
 }
 
+/** Soft mechanical tick when the centered strip frame changes (Web Audio; no asset files). */
+const FRAMES_SCROLL_TICK_MIN_MS = 74;
+
+function createFramesScrollTickSound() {
+  let ctx: AudioContext | null = null;
+  let lastAt = 0;
+
+  function getCtx(): AudioContext | null {
+    if (typeof window === "undefined") return null;
+    if (!ctx) {
+      try {
+        ctx = new AudioContext();
+      } catch {
+        return null;
+      }
+    }
+    return ctx;
+  }
+
+  function resume(): void {
+    const c = getCtx();
+    if (c?.state === "suspended") void c.resume();
+  }
+
+  function tick(): void {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const c = getCtx();
+    if (!c || c.state !== "running") return;
+
+    const now = performance.now();
+    if (now - lastAt < FRAMES_SCROLL_TICK_MIN_MS) return;
+    lastAt = now;
+
+    const t = c.currentTime;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    const filter = c.createBiquadFilter();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(560, t);
+    osc.frequency.exponentialRampToValueAtTime(340, t + 0.036);
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(2200, t);
+    filter.Q.setValueAtTime(0.6, t);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(c.destination);
+
+    const peak = 0.038;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(peak, t + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.052);
+
+    osc.start(t);
+    osc.stop(t + 0.055);
+  }
+
+  return { resume, tick };
+}
+
+const framesScrollTickSound = createFramesScrollTickSound();
+
 /** Closest thumbnail wrapper to viewport center Y (scroll coordinates); ties broken by lower rendered index. */
 function findClosestThumbnailWrapper(sc: HTMLDivElement, centerY: number): HTMLElement | null {
   const thumbs = sc.querySelectorAll<HTMLElement>("[data-rendered-index]");
@@ -102,6 +168,68 @@ function findClosestThumbnailWrapper(sc: HTMLDivElement, centerY: number): HTMLE
   return best;
 }
 
+/** Two stacked hero layers swap `frontA` so the URL can crossfade without layout changes. */
+type HeroDuplex = { a: InstagramPost; b: InstagramPost; frontA: boolean };
+
+function FramesHeroImageStack({
+  duplex,
+  altA,
+  altB,
+}: {
+  duplex: HeroDuplex;
+  altA: string;
+  altB: string;
+}) {
+  const layerBase =
+    "absolute inset-0 transition-opacity duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:!transition-none motion-reduce:!duration-0";
+
+  const renderPost = (post: InstagramPost, alt: string, isFront: boolean) => (
+    <div
+      className={`${layerBase} ${isFront ? "z-[1] opacity-100" : "z-0 opacity-0 pointer-events-none"}`}
+      aria-hidden={!isFront}
+    >
+      <Image
+        key={post.id}
+        src={post.media_type === "VIDEO" ? post.thumbnail_url ?? post.media_url : post.media_url}
+        alt={alt}
+        fill
+        className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.015] motion-reduce:transition-none"
+        sizes="(max-width: 1024px) min(100vw - 2rem, 384px), 420px"
+        unoptimized
+        draggable={false}
+        priority={isFront}
+      />
+      {post.media_type === "VIDEO" && (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-md dark:bg-zinc-900/90 dark:text-zinc-100">
+            <span className="ml-0.5 text-xs" aria-hidden>
+              ▶
+            </span>
+          </span>
+        </span>
+      )}
+      {post.media_type === "CAROUSEL_ALBUM" && (
+        <span
+          className="pointer-events-none absolute right-2.5 top-2.5 rounded bg-black/35 px-1.5 py-0.5 text-white backdrop-blur-[2px]"
+          aria-hidden
+        >
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <rect x="7" y="3" width="14" height="14" rx="2" strokeWidth="2" />
+            <path d="M3 7v10a2 2 0 002 2h10" strokeWidth="2" />
+          </svg>
+        </span>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      {renderPost(duplex.a, altA, duplex.frontA)}
+      {renderPost(duplex.b, altB, !duplex.frontA)}
+    </>
+  );
+}
+
 function FramesStrip({ posts }: { posts: InstagramPost[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -116,6 +244,8 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
 
   const [activeLogicalIndex, setActiveLogicalIndex] = useState(0);
   const [lightbox, setLightbox] = useState<InstagramPost | null>(null);
+  const heroDuplexRenderRef = useRef<HeroDuplex | null>(null);
+  const heroLastSyncedIdRef = useRef<string | null>(null);
 
   useLayoutEffect(() => {
     lightboxOpenRef.current = lightbox !== null;
@@ -126,6 +256,36 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
   useEffect(() => {
     activeLogicalIndexRef.current = activeLogicalIndex;
   }, [activeLogicalIndex]);
+
+  useEffect(() => {
+    const unlock = () => framesScrollTickSound.resume();
+    window.addEventListener("pointerdown", unlock, { passive: true });
+    window.addEventListener("keydown", unlock);
+    window.addEventListener("wheel", unlock, { passive: true, capture: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("wheel", unlock, true);
+    };
+  }, []);
+
+  const prevLogicalForSoundRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    prevLogicalForSoundRef.current = null;
+  }, [n]);
+
+  useEffect(() => {
+    if (n === 0 || lightbox) return;
+
+    const prev = prevLogicalForSoundRef.current;
+    prevLogicalForSoundRef.current = activeLogicalIndex;
+
+    if (prev === null) return;
+    if (prev === activeLogicalIndex) return;
+
+    framesScrollTickSound.tick();
+  }, [activeLogicalIndex, lightbox, n]);
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === "Escape") setLightbox(null);
@@ -222,15 +382,6 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
     const closestRenderedIndex = Number(centeredThumb.dataset.renderedIndex);
     const closestLogicalIndex = Number(centeredThumb.dataset.logicalIndex);
     if (!Number.isFinite(closestRenderedIndex) || !Number.isFinite(closestLogicalIndex)) return;
-
-    console.log({
-      scrollTop: sc.scrollTop,
-      centerY: centerY2,
-      closestRenderedIndex,
-      closestLogicalIndex,
-      activeLogicalIndex: activeLogicalIndexRef.current,
-      copyIdx: Math.floor(closestRenderedIndex / n),
-    });
 
     const thumbs = sc.querySelectorAll<HTMLElement>("[data-rendered-index]");
     thumbs.forEach((node) => {
@@ -461,6 +612,28 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
   const activePost = posts[heroIdx];
   const lightboxCaption = lightbox ? captionForDisplay(lightbox.caption) : undefined;
 
+  let heroDuplexForUi: HeroDuplex | null = null;
+  if (!activePost) {
+    heroDuplexRenderRef.current = null;
+    heroLastSyncedIdRef.current = null;
+  } else {
+    const cur = heroDuplexRenderRef.current;
+    if (cur === null || activePost.id !== heroLastSyncedIdRef.current) {
+      heroLastSyncedIdRef.current = activePost.id;
+      if (cur === null) {
+        heroDuplexRenderRef.current = { a: activePost, b: activePost, frontA: true };
+      } else if (cur.frontA) {
+        heroDuplexRenderRef.current = { ...cur, b: activePost, frontA: false };
+      } else {
+        heroDuplexRenderRef.current = { ...cur, a: activePost, frontA: true };
+      }
+    }
+    heroDuplexForUi = heroDuplexRenderRef.current;
+  }
+
+  const heroAltA = captionForDisplay(heroDuplexForUi?.a.caption);
+  const heroAltB = captionForDisplay(heroDuplexForUi?.b.caption);
+
   return (
     <>
       <div
@@ -478,50 +651,18 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
           <div className="flex w-full min-w-0 flex-col items-start gap-4">
             <div className="flex min-w-0 w-full flex-row items-start gap-3 sm:gap-4">
               <div className="w-[min(100%,24rem)] shrink-0">
-            {activePost ? (
+            {activePost && heroDuplexForUi ? (
                 <button
                   type="button"
                   onClick={() => setLightbox(activePost)}
                   className="group relative block w-full max-w-sm outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:focus-visible:ring-zinc-500"
                 >
                   <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-zinc-200/90 shadow-md ring-1 ring-zinc-200/90 dark:bg-zinc-800/70 dark:ring-zinc-700/60">
-                    <Image
-                      key={activePost.id}
-                      src={
-                        activePost.media_type === "VIDEO"
-                          ? activePost.thumbnail_url ?? activePost.media_url
-                          : activePost.media_url
-                      }
-                      alt={activeCaption ? activeCaption.slice(0, 120) : "Photo"}
-                      fill
-                      className="object-cover transition-[opacity,transform] duration-300 ease-out group-hover:scale-[1.015]"
-                      sizes="(max-width: 1024px) min(100vw - 2rem, 384px), 420px"
-                      unoptimized
-                      draggable={false}
-                      priority
+                    <FramesHeroImageStack
+                      duplex={heroDuplexForUi}
+                      altA={heroAltA ? heroAltA.slice(0, 120) : "Photo"}
+                      altB={heroAltB ? heroAltB.slice(0, 120) : "Photo"}
                     />
-
-                    {activePost.media_type === "VIDEO" && (
-                      <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-md dark:bg-zinc-900/90 dark:text-zinc-100">
-                          <span className="ml-0.5 text-xs" aria-hidden>
-                            ▶
-                          </span>
-                        </span>
-                      </span>
-                    )}
-
-                    {activePost.media_type === "CAROUSEL_ALBUM" && (
-                      <span
-                        className="pointer-events-none absolute right-2.5 top-2.5 rounded bg-black/35 px-1.5 py-0.5 text-white backdrop-blur-[2px]"
-                        aria-hidden
-                      >
-                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <rect x="7" y="3" width="14" height="14" rx="2" strokeWidth="2" />
-                          <path d="M3 7v10a2 2 0 002 2h10" strokeWidth="2" />
-                        </svg>
-                      </span>
-                    )}
                   </div>
                 </button>
               ) : null}
@@ -535,7 +676,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                 }}
                 tabIndex={0}
                 role="region"
-                aria-label="Photo frames — scroll the wheel over the gallery or swipe the strip. Arrow keys when focused."
+                aria-label="Seen — scroll the wheel over the gallery or swipe the strip. Arrow keys when focused."
                 onKeyDown={(e) => {
                   const next = e.key === "ArrowDown" || e.key === "ArrowRight";
                   const prev = e.key === "ArrowUp" || e.key === "ArrowLeft";
@@ -561,7 +702,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                       }}
                       data-rendered-index={renderedIndex}
                       data-logical-index={logicalIndex}
-                      className="w-full shrink-0 snap-center will-change-[transform,opacity]"
+                      className="w-full shrink-0 snap-center will-change-[transform,opacity] transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none"
                       style={{ transformOrigin: "center center" }}
                     >
                       <button
@@ -583,7 +724,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                             src={imgUrl}
                             alt={alt}
                             fill
-                            className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
+                            className="object-cover transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none group-hover:scale-[1.04]"
                             sizes="76px"
                             unoptimized
                             draggable={false}
@@ -619,7 +760,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
             </div>
 
               <p
-                className="max-w-prose text-left text-sm font-normal lowercase leading-snug tracking-tight text-zinc-700 dark:text-zinc-300"
+                className="max-w-prose text-left text-sm font-normal lowercase leading-snug tracking-tight text-zinc-700 transition-opacity duration-200 ease-out motion-reduce:transition-none dark:text-zinc-300"
                 aria-live="polite"
               >
                 {activeCaption ?? "\u00a0"}
@@ -692,7 +833,7 @@ function SkeletonStrip() {
   );
 }
 
-export default function FramesPage() {
+export default function SeenPage() {
   const [posts, setPosts] = useState<InstagramPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -711,7 +852,7 @@ export default function FramesPage() {
   return (
     <div className="w-full min-w-0" style={{ maxWidth: "75ch" }}>
       <div className="mb-6 space-y-3">
-        <h2 className="text-lg font-medium dark:text-white">Frames</h2>
+        <h2 className="text-lg font-medium dark:text-white">Seen</h2>
         <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
           An archive of images I liked.
         </p>
