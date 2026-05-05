@@ -521,7 +521,8 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </main>
       
-      {/* Bottom Controls - Hidden on mobile */}
+      {/* Bottom Controls - Hidden on mobile and on guestbook (desk workspace) */}
+      {pathname !== "/guestbook" && (
       <div className="hidden md:flex fixed bottom-4 right-4 z-40 flex-row items-center space-x-3">
         <Link 
           href="/guestbook"
@@ -544,6 +545,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
           )}
         </button>
       </div>
+      )}
       
 
     </div>

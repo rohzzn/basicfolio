@@ -43,6 +43,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'media.themoviedb.org' },
       { protocol: 'https', hostname: 'a.ltrbxd.com' },
       { protocol: 'https', hostname: 's.ltrbxd.com' },
+      { protocol: 'https', hostname: 'api.dicebear.com' },
     ],
   },
   async headers() {

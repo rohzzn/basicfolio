@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Command } from 'cmdk';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import './CommandPalette.css';
 import {
   Search,
@@ -152,6 +152,7 @@ interface RecentCommand {
 export default function CommandPalette({ links = defaultLinks }: CommandPaletteProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const [inputValue, setInputValue] = useState('');
   const [pages, setPages] = useState<string[]>([]);
   const [recentCommands, setRecentCommands] = useState<RecentCommand[]>([]);
@@ -327,6 +328,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
 
   return (
     <>
+      {pathname !== '/guestbook' && (
       <kbd
         className="fixed right-4 top-4 hidden h-6 items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 font-mono text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 md:flex"
         onClick={() => setOpen(true)}
@@ -346,6 +348,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
           </>
         )}
       </kbd>
+      )}
 
       {open && (
         <div
