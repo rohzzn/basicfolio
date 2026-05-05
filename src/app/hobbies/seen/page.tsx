@@ -28,16 +28,25 @@ function captionForDisplay(raw: string | undefined): string | undefined {
   return t.length > 0 ? t : undefined;
 }
 
-function measureSlideStepY(sc: HTMLDivElement): number {
+/** Distance between adjacent strip items along the scroll axis. */
+function measureSlideStep(sc: HTMLDivElement, horizontal: boolean): number {
   const ch = sc.children;
   if (ch.length < 2) return 0;
   const a = ch[0] as HTMLElement;
   const b = ch[1] as HTMLElement;
-  return b.offsetTop - a.offsetTop;
+  return horizontal ? b.offsetLeft - a.offsetLeft : b.offsetTop - a.offsetTop;
 }
 
-/** Y-center of-item in scroll content coordinates (ignores transforms on thumbnails). */
-function itemCenterScrollY(sc: HTMLElement, node: HTMLElement): number {
+/** Item center along scroll content coordinates (ignores transforms on thumbnails). */
+function itemCenterScrollAlong(sc: HTMLElement, node: HTMLElement, horizontal: boolean): number {
+  if (horizontal) {
+    if ((node.offsetParent as HTMLElement | null) === sc) {
+      return node.offsetLeft + node.offsetWidth / 2;
+    }
+    const sr = sc.getBoundingClientRect();
+    const nr = node.getBoundingClientRect();
+    return sc.scrollLeft + (nr.left - sr.left) + nr.width / 2;
+  }
   if ((node.offsetParent as HTMLElement | null) === sc) {
     return node.offsetTop + node.offsetHeight / 2;
   }
@@ -46,17 +55,26 @@ function itemCenterScrollY(sc: HTMLElement, node: HTMLElement): number {
   return sc.scrollTop + (nr.top - sr.top) + nr.height / 2;
 }
 
-function clampScrollTop(sc: HTMLDivElement) {
-  const maxScroll = Math.max(0, sc.scrollHeight - sc.clientHeight);
-  sc.scrollTop = Math.max(0, Math.min(sc.scrollTop, maxScroll));
+function clampScrollAlong(sc: HTMLDivElement, horizontal: boolean) {
+  if (horizontal) {
+    const maxScroll = Math.max(0, sc.scrollWidth - sc.clientWidth);
+    sc.scrollLeft = Math.max(0, Math.min(sc.scrollLeft, maxScroll));
+  } else {
+    const maxScroll = Math.max(0, sc.scrollHeight - sc.clientHeight);
+    sc.scrollTop = Math.max(0, Math.min(sc.scrollTop, maxScroll));
+  }
 }
 
-function scrollStripSoThumbCentered(sc: HTMLDivElement, node: HTMLElement) {
+function scrollStripSoThumbCenteredAlong(sc: HTMLDivElement, node: HTMLElement, horizontal: boolean) {
   if ((node.offsetParent as HTMLElement | null) !== sc) return;
-  const mid = node.offsetTop + node.offsetHeight / 2;
-  const nextTop = mid - sc.clientHeight / 2;
-  sc.scrollTop = nextTop;
-  clampScrollTop(sc);
+  if (horizontal) {
+    const mid = node.offsetLeft + node.offsetWidth / 2;
+    sc.scrollLeft = mid - sc.clientWidth / 2;
+  } else {
+    const mid = node.offsetTop + node.offsetHeight / 2;
+    sc.scrollTop = mid - sc.clientHeight / 2;
+  }
+  clampScrollAlong(sc, horizontal);
 }
 
 /** Convert wheel deltas to pixels (many mice use DOM_DELTA_LINE with small values). */
@@ -148,8 +166,12 @@ function createFramesScrollTickSound() {
 
 const framesScrollTickSound = createFramesScrollTickSound();
 
-/** Closest thumbnail wrapper to viewport center Y (scroll coordinates); ties broken by lower rendered index. */
-function findClosestThumbnailWrapper(sc: HTMLDivElement, centerY: number): HTMLElement | null {
+/** Closest thumbnail to viewport center along scroll axis; ties broken by lower rendered index. */
+function findClosestThumbnailAlong(
+  sc: HTMLDivElement,
+  centerAlong: number,
+  horizontal: boolean
+): HTMLElement | null {
   const thumbs = sc.querySelectorAll<HTMLElement>("[data-rendered-index]");
   let best: HTMLElement | null = null;
   let bestD = Infinity;
@@ -157,8 +179,8 @@ function findClosestThumbnailWrapper(sc: HTMLDivElement, centerY: number): HTMLE
   thumbs.forEach((node) => {
     const ri = Number(node.dataset.renderedIndex);
     if (!Number.isFinite(ri)) return;
-    const ic = itemCenterScrollY(sc, node);
-    const d = Math.abs(ic - centerY);
+    const ic = itemCenterScrollAlong(sc, node, horizontal);
+    const d = Math.abs(ic - centerAlong);
     if (d < bestD - 1e-6 || (Math.abs(d - bestD) <= 1e-6 && ri < bestRendered)) {
       best = node;
       bestD = d;
@@ -166,6 +188,20 @@ function findClosestThumbnailWrapper(sc: HTMLDivElement, centerY: number): HTMLE
     }
   });
   return best;
+}
+
+const STRIP_HORIZONTAL_MQ = "(max-width: 767px)";
+
+function useStripHorizontal(): boolean {
+  const [horizontal, setHorizontal] = useState(false);
+  useLayoutEffect(() => {
+    const mq = window.matchMedia(STRIP_HORIZONTAL_MQ);
+    const apply = () => setHorizontal(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  return horizontal;
 }
 
 /** Two stacked hero layers swap `frontA` so the URL can crossfade without layout changes. */
@@ -194,7 +230,7 @@ function FramesHeroImageStack({
         alt={alt}
         fill
         className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.015] motion-reduce:transition-none"
-        sizes="(max-width: 1024px) min(100vw - 2rem, 384px), 420px"
+        sizes="(max-width: 768px) min(100vw - 3rem, 24rem), (max-width: 1024px) min(100vw - 2rem, 384px), 420px"
         unoptimized
         draggable={false}
         priority={isFront}
@@ -241,6 +277,8 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
   const activeLogicalIndexRef = useRef(0);
   const pendingScrollSyncRafRef = useRef<number | null>(null);
   const postRecenterRafRef = useRef<number | null>(null);
+
+  const stripHorizontal = useStripHorizontal();
 
   const [activeLogicalIndex, setActiveLogicalIndex] = useState(0);
   const [lightbox, setLightbox] = useState<InstagramPost | null>(null);
@@ -343,40 +381,45 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
     if (!sc || n === 0) return;
     if (isRecenteringRef.current) return;
 
-    const scrollTop = sc.scrollTop;
-    const centerY = scrollTop + sc.clientHeight / 2;
+    const horizontal = stripHorizontal;
+    const scrollPos = horizontal ? sc.scrollLeft : sc.scrollTop;
+    const viewportExtent = horizontal ? sc.clientWidth : sc.clientHeight;
+    const centerAlong = scrollPos + viewportExtent / 2;
 
-    const closestBefore = findClosestThumbnailWrapper(sc, centerY);
+    const closestBefore = findClosestThumbnailAlong(sc, centerAlong, horizontal);
     if (!closestBefore) return;
 
     const closestRenderedBefore = Number(closestBefore.dataset.renderedIndex);
     if (!Number.isFinite(closestRenderedBefore)) return;
 
-    const step = measureSlideStepY(sc);
-    const cycleHeight = n * step;
+    const step = measureSlideStep(sc, horizontal);
+    const cycleLen = n * step;
     const copyIdxBefore = Math.floor(closestRenderedBefore / n);
 
     if (step > 0 && STRIP_LOOP_COPIES >= 3) {
       if (copyIdxBefore === 0) {
         abortScheduledStripSync();
         isRecenteringRef.current = true;
-        sc.scrollTop += cycleHeight;
-        clampScrollTop(sc);
+        if (horizontal) sc.scrollLeft += cycleLen;
+        else sc.scrollTop += cycleLen;
+        clampScrollAlong(sc, horizontal);
         queuePostRecenterSync();
         return;
       }
       if (copyIdxBefore === STRIP_LOOP_COPIES - 1) {
         abortScheduledStripSync();
         isRecenteringRef.current = true;
-        sc.scrollTop -= cycleHeight;
-        clampScrollTop(sc);
+        if (horizontal) sc.scrollLeft -= cycleLen;
+        else sc.scrollTop -= cycleLen;
+        clampScrollAlong(sc, horizontal);
         queuePostRecenterSync();
         return;
       }
     }
 
-    const centerY2 = sc.scrollTop + sc.clientHeight / 2;
-    const centeredThumb = findClosestThumbnailWrapper(sc, centerY2);
+    const scrollPos2 = horizontal ? sc.scrollLeft : sc.scrollTop;
+    const centerAlong2 = scrollPos2 + viewportExtent / 2;
+    const centeredThumb = findClosestThumbnailAlong(sc, centerAlong2, horizontal);
     if (!centeredThumb) return;
 
     const closestRenderedIndex = Number(centeredThumb.dataset.renderedIndex);
@@ -385,9 +428,9 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
 
     const thumbs = sc.querySelectorAll<HTMLElement>("[data-rendered-index]");
     thumbs.forEach((node) => {
-      const ic = itemCenterScrollY(sc, node);
-      const d = Math.abs(ic - centerY2);
-      const norm = Math.min(1, d / (sc.clientHeight * 0.42));
+      const ic = itemCenterScrollAlong(sc, node, horizontal);
+      const d = Math.abs(ic - centerAlong2);
+      const norm = Math.min(1, d / (viewportExtent * 0.42));
       const scale = 1 - norm * 0.22;
       const opacity = 0.28 + (1 - norm) * 0.72;
       node.style.transform = `scale(${scale})`;
@@ -396,7 +439,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
 
     activeLogicalIndexRef.current = closestLogicalIndex;
     setActiveLogicalIndex((prev) => (prev === closestLogicalIndex ? prev : closestLogicalIndex));
-  }, [n, abortScheduledStripSync, queuePostRecenterSync]);
+  }, [n, abortScheduledStripSync, queuePostRecenterSync, stripHorizontal]);
 
   useLayoutEffect(() => {
     syncFromScrollRef.current = syncFromScroll;
@@ -421,11 +464,11 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
       if (!node) return;
       abortScheduledStripSync();
       isRecenteringRef.current = true;
-      scrollStripSoThumbCentered(sc, node);
-      clampScrollTop(sc);
+      scrollStripSoThumbCenteredAlong(sc, node, stripHorizontal);
+      clampScrollAlong(sc, stripHorizontal);
       queuePostRecenterSync();
     },
-    [n, abortScheduledStripSync, queuePostRecenterSync]
+    [n, abortScheduledStripSync, queuePostRecenterSync, stripHorizontal]
   );
 
   const centerRenderedThumbnailThen = useCallback(
@@ -436,11 +479,11 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
       if (!sc || !node || renderedIndex < 0 || renderedIndex >= totalRendered) return;
       abortScheduledStripSync();
       isRecenteringRef.current = true;
-      scrollStripSoThumbCentered(sc, node);
-      clampScrollTop(sc);
+      scrollStripSoThumbCenteredAlong(sc, node, stripHorizontal);
+      clampScrollAlong(sc, stripHorizontal);
       queuePostRecenterSync(afterSync);
     },
-    [n, abortScheduledStripSync, queuePostRecenterSync]
+    [n, abortScheduledStripSync, queuePostRecenterSync, stripHorizontal]
   );
 
   const navigateByArrow = useCallback(
@@ -491,6 +534,15 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
   }, [posts]);
 
   useLayoutEffect(() => {
+    didInitScrollRef.current = false;
+    const sc = scrollRef.current;
+    if (sc) {
+      sc.scrollTop = 0;
+      sc.scrollLeft = 0;
+    }
+  }, [stripHorizontal]);
+
+  useLayoutEffect(() => {
     const totalRendered = STRIP_LOOP_COPIES * n;
     if (itemRefs.current.length > totalRendered) itemRefs.current.length = totalRendered;
   }, [n]);
@@ -506,7 +558,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
         if (anchor) {
           abortScheduledStripSync();
           isRecenteringRef.current = true;
-          scrollStripSoThumbCentered(sc, anchor);
+          scrollStripSoThumbCenteredAlong(sc, anchor, stripHorizontal);
           didInitScrollRef.current = true;
           activeLogicalIndexRef.current = 0;
           setActiveLogicalIndex(0);
@@ -517,7 +569,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
       syncFromScroll();
     });
     return () => cancelAnimationFrame(id);
-  }, [n, posts, syncFromScroll, abortScheduledStripSync, queuePostRecenterSync]);
+  }, [n, posts, syncFromScroll, abortScheduledStripSync, queuePostRecenterSync, stripHorizontal]);
 
   useLayoutEffect(() => {
     const onWheelWindowCapture = (e: WheelEvent) => {
@@ -527,7 +579,10 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
       const sc = scrollRef.current;
       if (!zone || !sc || n === 0) return;
 
-      const maxScroll = sc.scrollHeight - sc.clientHeight;
+      const horizontal = stripHorizontal;
+      const maxScroll = horizontal
+        ? sc.scrollWidth - sc.clientWidth
+        : sc.scrollHeight - sc.clientHeight;
       if (maxScroll <= 0) return;
 
       const zr = zone.getBoundingClientRect();
@@ -538,14 +593,21 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
       if (e.ctrlKey) return;
 
       const { dx, dy } = wheelDeltaPixels(e);
-      const delta = Math.abs(dy) >= Math.abs(dx) ? dy : dx;
+      const delta = horizontal
+        ? Math.abs(dx) >= Math.abs(dy)
+          ? dx
+          : dy
+        : Math.abs(dy) >= Math.abs(dx)
+          ? dy
+          : dx;
       if (delta === 0) return;
 
       e.preventDefault();
 
       abortScheduledStripSync();
-      sc.scrollTop += delta;
-      clampScrollTop(sc);
+      if (horizontal) sc.scrollLeft += delta;
+      else sc.scrollTop += delta;
+      clampScrollAlong(sc, horizontal);
 
       if (pendingScrollSyncRafRef.current != null) {
         cancelAnimationFrame(pendingScrollSyncRafRef.current);
@@ -561,7 +623,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
     return () => {
       window.removeEventListener("wheel", onWheelWindowCapture, true);
     };
-  }, [n, abortScheduledStripSync]);
+  }, [n, abortScheduledStripSync, stripHorizontal]);
 
   useEffect(() => {
     const sc = scrollRef.current;
@@ -600,7 +662,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
       window.removeEventListener("resize", onResize);
       ro.disconnect();
     };
-  }, [n, syncFromScroll, scheduleSyncFromScroll]);
+  }, [n, syncFromScroll, scheduleSyncFromScroll, stripHorizontal]);
 
   useLayoutEffect(() => {
     if (n === 0) return;
@@ -648,14 +710,14 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
         }}
       >
         <div className="w-full min-w-0" aria-roledescription="carousel">
-          <div className="flex w-full min-w-0 flex-col items-start gap-4">
-            <div className="flex min-w-0 w-full flex-row items-start gap-3 sm:gap-4">
-              <div className="w-[min(100%,24rem)] shrink-0">
+          <div className="flex w-full min-w-0 flex-col items-stretch gap-4">
+            <div className="flex min-w-0 w-full flex-col items-center gap-5 md:flex-row md:items-start md:gap-4">
+              <div className="w-full max-w-sm shrink-0 md:max-w-none md:w-[min(100%,24rem)]">
             {activePost && heroDuplexForUi ? (
                 <button
                   type="button"
                   onClick={() => setLightbox(activePost)}
-                  className="group relative block w-full max-w-sm outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:focus-visible:ring-zinc-500"
+                  className="group relative mx-auto block w-full max-w-sm outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] md:mx-0 dark:focus-visible:ring-zinc-500"
                 >
                   <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-zinc-200/90 shadow-md ring-1 ring-zinc-200/90 dark:bg-zinc-800/70 dark:ring-zinc-700/60">
                     <FramesHeroImageStack
@@ -670,13 +732,21 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
 
               <div
                 ref={scrollRef}
-                className="flex h-[min(32rem,72vh)] w-[4.25rem] shrink-0 snap-y snap-mandatory flex-col gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain px-0.5 py-0 [scroll-padding-block:min(20vh,5.5rem)] [-webkit-mask-image:linear-gradient(180deg,transparent,black_12px,black_calc(100%-12px),transparent)] [mask-image:linear-gradient(180deg,transparent,black_12px,black_calc(100%-12px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:w-[4.75rem]"
+                className={
+                  stripHorizontal
+                    ? "mx-auto flex h-[5.75rem] w-full min-w-0 max-w-full shrink-0 flex-row gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain px-0 py-0.5 snap-x snap-mandatory [scroll-padding-inline:min(18vw,4rem)] [-webkit-mask-image:linear-gradient(90deg,transparent,black_12px,black_calc(100%-12px),transparent)] [mask-image:linear-gradient(90deg,transparent,black_12px,black_calc(100%-12px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:h-[6rem]"
+                    : "flex h-[min(28rem,min(52vh,32rem))] w-[4.25rem] shrink-0 snap-y snap-mandatory flex-col gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain px-0.5 py-0 [scroll-padding-block:min(18vh,5rem)] [-webkit-mask-image:linear-gradient(180deg,transparent,black_12px,black_calc(100%-12px),transparent)] [mask-image:linear-gradient(180deg,transparent,black_12px,black_calc(100%-12px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:h-[min(32rem,72vh)] sm:[scroll-padding-block:min(20vh,5.5rem)] sm:w-[4.75rem]"
+                }
                 style={{
                   WebkitOverflowScrolling: "touch",
                 }}
                 tabIndex={0}
                 role="region"
-                aria-label="Seen — scroll the wheel over the gallery or swipe the strip. Arrow keys when focused."
+                aria-label={
+                  stripHorizontal
+                    ? "Seen — swipe thumbnails sideways or scroll the wheel over the gallery. Arrow keys when focused."
+                    : "Seen — scroll the wheel over the gallery or swipe the strip vertically. Arrow keys when focused."
+                }
                 onKeyDown={(e) => {
                   const next = e.key === "ArrowDown" || e.key === "ArrowRight";
                   const prev = e.key === "ArrowUp" || e.key === "ArrowLeft";
@@ -702,7 +772,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                       }}
                       data-rendered-index={renderedIndex}
                       data-logical-index={logicalIndex}
-                      className="w-full shrink-0 snap-center will-change-[transform,opacity] transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none"
+                      className={`shrink-0 snap-center will-change-[transform,opacity] transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none ${stripHorizontal ? "flex h-full w-[4.25rem] flex-col justify-center sm:w-[4.75rem]" : "w-full"}`}
                       style={{ transformOrigin: "center center" }}
                     >
                       <button
@@ -725,7 +795,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                             alt={alt}
                             fill
                             className="object-cover transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none group-hover:scale-[1.04]"
-                            sizes="76px"
+                            sizes={stripHorizontal ? "(max-width: 767px) 76px, 76px" : "(max-width: 640px) 80px, 76px"}
                             unoptimized
                             draggable={false}
                           />
@@ -816,17 +886,29 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
 }
 
 function SkeletonStrip() {
+  const stripHorizontal = useStripHorizontal();
   return (
-    <div className="flex w-full min-w-0 flex-col items-start gap-4 animate-pulse">
-      <div className="flex min-w-0 w-full flex-row items-start gap-3 sm:gap-4">
-        <div className="w-[min(100%,24rem)] shrink-0">
+    <div className="flex w-full min-w-0 flex-col items-stretch gap-4 animate-pulse">
+      <div className="flex min-w-0 w-full flex-col items-center gap-5 md:flex-row md:items-start md:gap-4">
+        <div className="mx-auto w-full max-w-sm shrink-0 md:mx-0 md:max-w-none md:w-[min(100%,24rem)]">
           <div className="aspect-[3/4] w-full rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
         </div>
-        <div className="flex h-[min(32rem,72vh)] w-[4.25rem] shrink-0 flex-col gap-2 overflow-hidden px-0.5 sm:w-[4.75rem]">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="aspect-[3/4] w-full shrink-0 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
-          ))}
-        </div>
+        {stripHorizontal ? (
+          <div className="flex h-[5.75rem] w-full min-w-0 flex-row gap-2 overflow-hidden px-0 py-0.5 sm:h-[6rem]">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="aspect-[3/4] h-full w-[4.25rem] shrink-0 rounded-xl bg-zinc-200 dark:bg-zinc-800 sm:w-[4.75rem]"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex h-[min(28rem,min(52vh,32rem))] w-[4.25rem] shrink-0 flex-col gap-2 overflow-hidden px-0.5 sm:h-[min(32rem,72vh)] sm:w-[4.75rem]">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="aspect-[3/4] w-full shrink-0 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+            ))}
+          </div>
+        )}
       </div>
       <div className="h-14 max-w-prose rounded-md bg-zinc-200 dark:bg-zinc-800" />
     </div>
@@ -850,7 +932,7 @@ export default function SeenPage() {
   }, []);
 
   return (
-    <div className="w-full min-w-0" style={{ maxWidth: "75ch" }}>
+    <div className="w-full min-w-0 max-w-[min(100%,75ch)]">
       <div className="mb-6 space-y-3">
         <h2 className="text-lg font-medium dark:text-white">Seen</h2>
         <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
