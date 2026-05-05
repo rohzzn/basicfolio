@@ -58,6 +58,15 @@ const nextConfig = {
       },
     ]
   },
+  async redirects() {
+    return [
+      {
+        source: '/hobbies/photos',
+        destination: '/hobbies/frames',
+        permanent: true,
+      },
+    ];
+  },
   // ... other configurations
 };
 
