@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Profile from './Profile';
 import Image from 'next/image';
 import { X } from 'lucide-react';
@@ -282,6 +282,8 @@ export default function Games() {
   const [clipsLoading, setClipsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeClip, setActiveClip] = useState<UnifiedClip | null>(null);
+  const leftColRef = useRef<HTMLDivElement>(null);
+  const [leftHeight, setLeftHeight] = useState<number | null>(null);
 
   // Fetch Steam
   useEffect(() => {
@@ -334,6 +336,16 @@ export default function Games() {
   const openClip = useCallback((clip: UnifiedClip) => setActiveClip(clip), []);
   const closeClip = useCallback(() => setActiveClip(null), []);
 
+  // Keep clips column height synced to left column
+  useEffect(() => {
+    const el = leftColRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setLeftHeight(el.offsetHeight));
+    ro.observe(el);
+    setLeftHeight(el.offsetHeight);
+    return () => ro.disconnect();
+  }, [gamesLoading]);
+
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming</h2>
@@ -349,7 +361,7 @@ export default function Games() {
       <div className="grid grid-cols-2 gap-10 items-start">
 
         {/* ── LEFT ── */}
-        <div className="space-y-8 min-w-0">
+        <div ref={leftColRef} className="space-y-8 min-w-0">
 
           {/* Recently played */}
           {(gamesLoading || byRecent.length > 0) && (
@@ -480,7 +492,14 @@ export default function Games() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
+            <div
+              className="grid grid-cols-2 gap-3 content-start scrollbar-hide"
+              style={
+                activeFilter === 'all' && leftHeight
+                  ? { maxHeight: leftHeight, overflowY: 'auto' }
+                  : undefined
+              }
+            >
               {filteredClips.map(clip => (
                 <div
                   key={`${clip.source}-${clip.id}`}

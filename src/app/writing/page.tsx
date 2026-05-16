@@ -1,26 +1,59 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { posts, thoughts, type Post, type Thought } from '@/data/writing';
+import { posts } from '@/data/writing';
 
-type Item = Post | Thought;
+interface Note {
+  id: string;
+  text: string;
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video';
+  date: string;
+  displayDate: string;
+  published: boolean;
+}
+
+const INITIAL_NOTES_SHOWN = 3;
 
 const WritingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showAllNotes, setShowAllNotes] = useState(false);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const fetchedRef = React.useRef(false);
 
-  const allItems = useMemo<Item[]>(() => {
-    return [...posts, ...thoughts].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+  const fetchNotes = React.useCallback(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+    setNotesLoading(true);
+    fetch('/api/notes')
+      .then(r => r.json())
+      .then(data => setNotes(data.notes || []))
+      .catch(() => {})
+      .finally(() => setNotesLoading(false));
   }, []);
 
-  const filtered = useMemo(() => {
-    if (selectedCategory === 'all') return allItems.filter((item) => item.category !== 'thoughts');
-    return allItems.filter((item) => item.category === selectedCategory);
-  }, [allItems, selectedCategory]);
+  // Prefetch in background on mount so notes tab feels instant
+  useEffect(() => {
+    fetchNotes();
+  }, [fetchNotes]);
 
-  const categories = ['all', 'tech', 'life', 'thoughts'];
+  useEffect(() => {
+    if (selectedCategory === 'notes') fetchNotes();
+  }, [selectedCategory, fetchNotes]);
+
+  const filtered = useMemo(() => {
+    return posts.filter(p =>
+      selectedCategory === 'all' ? true : p.category === selectedCategory
+    );
+  }, [selectedCategory]);
+
+  const categories = ['all', 'tech', 'life', 'notes'];
+
+  const visibleNotes = showAllNotes ? notes : notes.slice(0, INITIAL_NOTES_SHOWN);
+  const hiddenCount = Math.max(0, notes.length - INITIAL_NOTES_SHOWN);
 
   return (
     <div style={{ maxWidth: '75ch' }}>
@@ -30,7 +63,7 @@ const WritingPage = () => {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => { setSelectedCategory(cat); setShowAllNotes(false); }}
               className={`text-sm capitalize transition-colors ${
                 selectedCategory === cat
                   ? 'text-zinc-900 dark:text-white font-medium'
@@ -43,23 +76,59 @@ const WritingPage = () => {
         </div>
       </div>
 
-      <div>
-        {filtered.map((item, i) =>
-          item.category === 'thoughts' ? (
-            <div
-              key={i}
-              className="py-3 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-line">
-                  {item.text}
-                </p>
-                <span className="text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0 mt-0.5">
-                  {item.displayDate}
-                </span>
-              </div>
-            </div>
+      {selectedCategory === 'notes' ? (
+        <div>
+          {notesLoading ? (
+            <p className="text-sm text-zinc-400 dark:text-zinc-600">Loading…</p>
+          ) : notes.length === 0 ? (
+            <p className="text-sm text-zinc-400 dark:text-zinc-600">Nothing here yet.</p>
           ) : (
+            <>
+              {visibleNotes.map((note) => (
+                <div
+                  key={note.id}
+                  className="py-3 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
+                >
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-snug mb-1.5">
+                    {note.text}
+                  </p>
+                  {note.mediaUrl && note.mediaType === 'image' && (
+                    <div className="mt-2 mb-2 rounded-lg overflow-hidden border border-zinc-100 dark:border-zinc-800">
+                      <Image
+                        src={note.mediaUrl}
+                        alt=""
+                        width={600}
+                        height={400}
+                        className="w-full h-auto object-cover"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                  {note.mediaUrl && note.mediaType === 'video' && (
+                    <div className="mt-2 mb-2 rounded-lg overflow-hidden border border-zinc-100 dark:border-zinc-800">
+                      <video src={note.mediaUrl} controls className="w-full" />
+                    </div>
+                  )}
+                  <span className="text-xs text-zinc-400 dark:text-zinc-600">
+                    {note.displayDate}
+                  </span>
+                </div>
+              ))}
+
+              {!showAllNotes && hiddenCount > 0 && (
+                <button
+                  onClick={() => setShowAllNotes(true)}
+                  className="mt-3 text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors"
+                >
+                  {hiddenCount} more
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      ) : (
+        <div>
+          {filtered.map((item) => (
             <Link
               key={item.slug}
               href={`/writing/${item.slug}`}
@@ -72,9 +141,9 @@ const WritingPage = () => {
                 {item.displayDate}
               </span>
             </Link>
-          )
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

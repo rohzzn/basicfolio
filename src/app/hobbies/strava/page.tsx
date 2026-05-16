@@ -250,24 +250,33 @@ const ActivitiesPage: React.FC = () => {
     return combined.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [activities, workouts]);
 
+  const calcWorkoutVolume = (w: Workout): number =>
+    w.exercises.reduce((total, ex) =>
+      total + ex.sets.reduce((s, set) =>
+        s + (set.weight_kg ?? 0) * (set.reps ?? 0), 0), 0);
+
   const gymStats = React.useMemo(() => {
     let totalDuration = 0;
     let totalSets = 0;
+    let totalVolumeKg = 0;
     workouts.forEach(w => {
       totalDuration += new Date(w.end_time).getTime() - new Date(w.start_time).getTime();
       w.exercises.forEach(ex => {
         totalSets += ex.sets.length;
+        ex.sets.forEach(set => {
+          totalVolumeKg += (set.weight_kg ?? 0) * (set.reps ?? 0);
+        });
       });
     });
     return {
       totalWorkouts: workouts.length,
       totalSets,
       totalDuration: Math.ceil(totalDuration / 60000),
+      totalVolumeKg,
     };
   }, [workouts]);
 
   const stravaStats = React.useMemo(() => ({
-    totalDistance: activities.reduce((s, a) => s + a.distance, 0),
     totalTime: activities.reduce((s, a) => s + a.moving_time, 0),
     totalCalories: activities.reduce((s, a) => s + calculateCalories(a), 0),
   }), [activities]);
@@ -288,10 +297,12 @@ const ActivitiesPage: React.FC = () => {
     );
   }
 
+  const fmtVolume = (kg: number) => `${Math.round(kg).toLocaleString()} kg`;
+
   const stats = [
     { label: 'Gym sessions', value: gymStats.totalWorkouts.toString() },
     { label: 'Sets', value: gymStats.totalSets.toLocaleString() },
-    { label: 'Distance', value: fmtDist(stravaStats.totalDistance) },
+    { label: 'Volume', value: fmtVolume(gymStats.totalVolumeKg) },
     { label: 'Active time', value: fmtTime(stravaStats.totalTime + gymStats.totalDuration * 60) },
   ];
 
@@ -432,24 +443,37 @@ const ActivitiesPage: React.FC = () => {
               // ── GYM ────────────────────────────────────────────────
               if (item.type === 'gym' && item.gymWorkout) {
                 const w = item.gymWorkout;
+                const workoutVolume = calcWorkoutVolume(w);
                 const gymImages = [
                   ...(w.images ?? []).map(img => img.url),
                   ...(w.image_urls ?? []),
                 ].slice(0, 9);
                 const hasGymImages = gymImages.length > 0;
 
+                const gymMeta = (
+                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                    {fmtDur(w.start_time, w.end_time)} · {w.exercises.length}{' '}
+                    exercise{w.exercises.length !== 1 ? 's' : ''}
+                    {workoutVolume > 0 && ` · ${fmtVolume(workoutVolume)}`}
+                  </p>
+                );
+
                 const exerciseBlock = (
                   <div className="mt-2 space-y-1.5 border-t border-zinc-100 pt-2 dark:border-zinc-800">
-                    {w.exercises.map(ex => (
-                      <div key={ex.id} className="flex min-w-0 items-baseline justify-between gap-2">
-                        <span className="truncate text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                          {ex.title}
-                        </span>
-                        <span className="flex-shrink-0 tabular-nums text-xs text-zinc-400 dark:text-zinc-600">
-                          {ex.sets.length} {ex.sets.length === 1 ? 'set' : 'sets'}
-                        </span>
-                      </div>
-                    ))}
+                    {w.exercises.map(ex => {
+                      const exVol = ex.sets.reduce((s, set) => s + (set.weight_kg ?? 0) * (set.reps ?? 0), 0);
+                      return (
+                        <div key={ex.id} className="flex min-w-0 items-baseline justify-between gap-2">
+                          <span className="truncate text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                            {ex.title}
+                          </span>
+                          <span className="flex-shrink-0 tabular-nums text-xs text-zinc-400 dark:text-zinc-600">
+                            {ex.sets.length} {ex.sets.length === 1 ? 'set' : 'sets'}
+                            {exVol > 0 && ` · ${Math.round(exVol).toLocaleString()} kg`}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 );
 
@@ -487,10 +511,7 @@ const ActivitiesPage: React.FC = () => {
                             {shortDate(w.start_time)}
                           </time>
                         </div>
-                        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                          {fmtDur(w.start_time, w.end_time)} · {w.exercises.length}{' '}
-                          exercise{w.exercises.length !== 1 ? 's' : ''}
-                        </p>
+                        {gymMeta}
                         {exerciseBlock}
                       </div>
                     </div>
@@ -516,10 +537,7 @@ const ActivitiesPage: React.FC = () => {
                           {shortDate(w.start_time)}
                         </time>
                       </div>
-                      <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                        {fmtDur(w.start_time, w.end_time)} · {w.exercises.length}{' '}
-                        exercise{w.exercises.length !== 1 ? 's' : ''}
-                      </p>
+                      {gymMeta}
                       {exerciseBlock}
                     </div>
                   </div>

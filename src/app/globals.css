@@ -343,3 +343,11 @@ html.e-reader-mode pre {
   opacity: 0.85;
   letter-spacing: 0.5px;
 }
+
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
+}
