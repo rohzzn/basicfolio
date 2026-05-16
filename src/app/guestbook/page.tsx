@@ -318,7 +318,7 @@ export default function GuestbookPage() {
   const [flippedId, setFlippedId] = useState<number | null>(null);
   const [positions, setPositions] = useState<Record<number, Pos>>({});
   const [zMap, setZMap] = useState<Record<number, number>>({});
-  const [topZ, setTopZ] = useState(20);
+  const [, setTopZ] = useState(20);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);

@@ -118,8 +118,6 @@ export default function NotFound() {
     fire();
     const id = setInterval(fire, stepMs);
     return () => clearInterval(id);
-    // Intentionally not including grid in deps — we read via ref
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing, bpm]);
 
   // ── grid interaction ──────────────────────────────────────────────────────
