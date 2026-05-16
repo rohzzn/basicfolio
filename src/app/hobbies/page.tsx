@@ -46,13 +46,8 @@ const hobbies: Hobby[] = [
   },
   {
     title: "Gaming",
-    description: "Stats & achievements",
+    description: "Stats, clips & achievements",
     href: "/hobbies/games",
-  },
-  {
-    title: "Gaming Clips",
-    description: "CS2, Valorant & more",
-    href: "/hobbies/clips",
   },
   {
     title: "Hackathons",

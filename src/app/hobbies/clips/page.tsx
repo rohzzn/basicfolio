@@ -3,6 +3,18 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
+interface UnifiedClip {
+  id: string;
+  title: string;
+  thumbnail: string;
+  clipUrl: string;
+  createdTimestamp: number;
+  views: number;
+  duration: number;
+  source: 'medal' | 'allstar';
+  categoryName: string;
+}
+
 interface MedalClip {
   contentId: string;
   contentTitle: string;
@@ -16,6 +28,18 @@ interface MedalClip {
   videoLengthSeconds: number;
 }
 
+interface AllstarClip {
+  id: string;
+  title: string;
+  thumbnail: string;
+  clipUrl: string;
+  createdTimestamp: number;
+  views: number;
+  duration: number;
+  source: 'allstar';
+  categoryName: string;
+}
+
 const FILTERS = [
   { id: 'all', label: 'All' },
   { id: '2k', label: '2K' },
@@ -25,15 +49,15 @@ const FILTERS = [
   { id: 'other', label: 'Other' },
 ];
 
-function matchesFilter(clip: MedalClip, id: string): boolean {
+function matchesFilter(clip: UnifiedClip, id: string): boolean {
   if (id === 'all') return true;
-  const t = clip.contentTitle.toLowerCase();
+  const t = clip.title.toLowerCase();
   switch (id) {
-    case '2k': return t.includes('2k') || t.includes(' 2 ') || t.includes('double') || t.includes('2 kill');
-    case '3k': return t.includes('3k') || t.includes(' 3 ') || t.includes('triple') || t.includes('3 kill');
-    case '4k': return t.includes('4k') || t.includes(' 4 ') || t.includes('quad') || t.includes('4 kill');
-    case '5k': return t.includes('5k') || t.includes(' 5 ') || t.includes('penta') || t.includes('ace') || t.includes('5 kill') || t.includes('pentakill');
-    case 'other': return !/\b[1-5]k\b|\b[1-5] kill|\b[1-5]\b|single|double|triple|quad|penta|ace/.test(t);
+    case '2k': return t.includes('2k') || /\b2 kill/.test(t) || t.includes('double');
+    case '3k': return t.includes('3k') || /\b3 kill/.test(t) || t.includes('triple');
+    case '4k': return t.includes('4k') || /\b4 kill/.test(t) || t.includes('quad');
+    case '5k': return t.includes('5k') || /\b5 kill/.test(t) || t.includes('penta') || t.includes('ace') || t.includes('pentakill');
+    case 'other': return !/\b[1-5]k\b|\b[1-5] kill|single|double|triple|quad|penta|ace/.test(t);
     default: return true;
   }
 }
@@ -42,18 +66,44 @@ function fmtDur(sec: number) {
   return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 }
 
+function medalToUnified(clip: MedalClip): UnifiedClip {
+  return {
+    id: clip.contentId,
+    title: clip.contentTitle,
+    thumbnail: clip.contentThumbnail,
+    clipUrl: clip.directClipUrl || clip.embedIframeUrl,
+    createdTimestamp: clip.createdTimestamp,
+    views: clip.contentViews,
+    duration: clip.videoLengthSeconds,
+    source: 'medal',
+    categoryName: clip.categoryName,
+  };
+}
+
 export default function ClipsPage() {
-  const [clips, setClips] = useState<MedalClip[]>([]);
+  const [clips, setClips] = useState<UnifiedClip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
-    fetch('/api/medal')
-      .then(r => r.json())
-      .then(data => setClips(data.clips ?? []))
-      .catch(() => setError('Failed to load clips.'))
-      .finally(() => setLoading(false));
+    Promise.all([
+      fetch('/api/medal').then(r => r.json()).catch(() => ({ clips: [] })),
+      fetch('/api/allstar').then(r => r.json()).catch(() => ({ clips: [] })),
+    ]).then(([medalData, allstarData]) => {
+      const medalClips: UnifiedClip[] = (medalData.clips ?? []).map(medalToUnified);
+      const allstarClips: AllstarClip[] = allstarData.clips ?? [];
+
+      // Merge and sort newest first
+      const merged: UnifiedClip[] = [...medalClips, ...allstarClips];
+      merged.sort((a, b) => b.createdTimestamp - a.createdTimestamp);
+
+      setClips(merged);
+
+      if (merged.length === 0 && (medalData.error || allstarData.error)) {
+        setError('Failed to load clips.');
+      }
+    }).catch(() => setError('Failed to load clips.')).finally(() => setLoading(false));
   }, []);
 
   const filtered = clips.filter(c => matchesFilter(c, activeFilter));
@@ -89,7 +139,7 @@ export default function ClipsPage() {
             </div>
           ))}
         </div>
-      ) : error ? (
+      ) : error && clips.length === 0 ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-400 py-8">{error}</p>
       ) : filtered.length === 0 ? (
         <div className="py-8">
@@ -109,40 +159,50 @@ export default function ClipsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(clip => (
             <div
-              key={clip.contentId}
+              key={`${clip.source}-${clip.id}`}
               onClick={() => {
-                const url = clip.directClipUrl || clip.embedIframeUrl;
-                if (url) window.open(url, '_blank', 'noopener,noreferrer');
+                if (clip.clipUrl) window.open(clip.clipUrl, '_blank', 'noopener,noreferrer');
               }}
               className="group cursor-pointer"
             >
               <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-800 mb-2.5">
-                <Image
-                  src={clip.contentThumbnail}
-                  alt={clip.contentTitle}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+                {clip.thumbnail ? (
+                  <Image
+                    src={clip.thumbnail}
+                    alt={clip.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-zinc-300 dark:bg-zinc-700" />
+                )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
                     <span className="text-zinc-900 text-sm ml-0.5">▶</span>
                   </div>
                 </div>
-                {clip.videoLengthSeconds > 0 && (
+                {clip.duration > 0 && (
                   <div className="absolute bottom-2 right-2 bg-black/75 text-white text-xs px-1.5 py-0.5 rounded tabular-nums">
-                    {fmtDur(clip.videoLengthSeconds)}
+                    {fmtDur(clip.duration)}
                   </div>
                 )}
+                <div className={`absolute top-2 left-2 text-xs px-1.5 py-0.5 rounded font-medium ${
+                  clip.source === 'allstar'
+                    ? 'bg-violet-500/90 text-white'
+                    : 'bg-yellow-500/90 text-black'
+                }`}>
+                  {clip.source === 'allstar' ? 'Allstar' : 'Medal'}
+                </div>
               </div>
               <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors line-clamp-1">
-                {clip.contentTitle}
+                {clip.title}
               </p>
               <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
                 {new Date(clip.createdTimestamp).toLocaleDateString('en-US', {
                   month: 'short', day: 'numeric', year: 'numeric',
                 })}
-                {clip.contentViews > 0 && ` · ${clip.contentViews.toLocaleString()} views`}
+                {clip.views > 0 && ` · ${clip.views.toLocaleString()} views`}
               </p>
             </div>
           ))}

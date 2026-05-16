@@ -175,46 +175,16 @@ export async function GET() {
       const numericId = contentIdMatch ? contentIdMatch[1] : 
                         (typeof clip.contentId === 'string' ? clip.contentId.replace('cid', '') : '');
       
-      // Extract the embed URL from the iframe code
+      // Extract the embed URL directly from the iframe code src attribute
       let embedUrl = '';
       if (clip.embedIframeCode && typeof clip.embedIframeCode === 'string') {
         const match = clip.embedIframeCode.match(/src='([^']+)'/);
-        if (match && match[1]) {
-          embedUrl = match[1];
-        }
-      } else if (clip.embedIframeUrl && typeof clip.embedIframeUrl === 'string') {
-        embedUrl = clip.embedIframeUrl;
+        if (match?.[1]) embedUrl = match[1];
       }
-      
-      // If no embed URL found, construct one from the content ID
-      if (!embedUrl && numericId) {
-        embedUrl = `https://medal.tv/games/valorant/clips/${numericId}/embed`;
+      // Fall back to directClipUrl formatted as an embed
+      if (!embedUrl && typeof clip.directClipUrl === 'string' && clip.directClipUrl) {
+        embedUrl = clip.directClipUrl;
       }
-      
-      // Ensure the embed URL is in the correct format for iframe embedding
-      if (embedUrl && !embedUrl.includes('/embed')) {
-        // Convert regular Medal.tv URLs to embed URLs
-        if (embedUrl.includes('medal.tv/games/') && embedUrl.includes('/clips/')) {
-          embedUrl = embedUrl.replace(/\/clips\/([^\/]+)$/, '/clips/$1/embed');
-        } else if (embedUrl.includes('medal.tv/clip/')) {
-          // Handle different URL formats
-          const clipIdMatch = embedUrl.match(/medal\.tv\/clip\/([^\/\?]+)/);
-          if (clipIdMatch && clipIdMatch[1]) {
-            embedUrl = `https://medal.tv/games/valorant/clips/${clipIdMatch[1]}/embed`;
-          }
-        }
-      }
-      
-      // Log the embed URL for debugging
-      console.log('Embed URL for clip:', embedUrl);
-      
-      // Log the clip data for debugging
-      console.log('Clip data:', {
-        id: clip.contentId,
-        title: clip.contentTitle,
-        categoryId: clip.categoryId,
-        categoryName: clip.categoryName
-      });
       
       // Determine the proper game name
       let gameName = 'Unknown Game';

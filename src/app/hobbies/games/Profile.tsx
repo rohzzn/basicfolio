@@ -30,14 +30,25 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
         />
         <div>
           <h3 className="text-lg font-medium dark:text-white">{profile.personaname}</h3>
-          <a
-            href={profile.profileurl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
-          >
-            Steam Profile →
-          </a>
+          <div className="flex items-center gap-3 mt-0.5">
+            <a
+              href={profile.profileurl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            >
+              Steam ↗
+            </a>
+            <span className="text-zinc-300 dark:text-zinc-600">·</span>
+            <a
+              href="https://settings.gg/rohzzn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            >
+              Config ↗
+            </a>
+          </div>
         </div>
       </div>
       

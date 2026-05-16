@@ -1,13 +1,11 @@
-// src/app/hobbies/games/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Profile from './Profile';
-import LeetifyProfileCard from './LeetifyProfileCard';
-
-import Link from 'next/link';
 import Image from 'next/image';
-import { Settings } from 'lucide-react';
+import { X } from 'lucide-react';
+
+// ── Types ──────────────────────────────────────────────────────────────────────
 
 interface SteamProfile {
   personaname: string;
@@ -16,17 +14,7 @@ interface SteamProfile {
   avatarmedium: string;
   avatarfull: string;
   profileurl: string;
-  communityvisibilitystate?: number;
-  profilestate?: number;
-  lastlogoff?: number;
-  commentpermission?: number;
-  personastate?: number;
-  personastateflags?: number;
-  loccountrycode?: string;
-  locstatecode?: string;
-  loccityid?: number;
 }
-
 
 interface SteamGame {
   appid: number;
@@ -34,356 +22,507 @@ interface SteamGame {
   playtime_2weeks?: number;
   playtime_forever: number;
   img_icon_url: string;
-  img_logo_url?: string;
 }
 
-
-interface Achievement {
-  tournament: string;
-  year: string;
-  result: string;
+interface UnifiedClip {
+  id: string;
+  title: string;
+  thumbnail: string;
+  clipUrl: string;
+  videoUrl: string;
+  embedUrl: string;
+  duration: number;
+  source: 'medal' | 'allstar';
+  createdTimestamp: number;
 }
-const achievements: Achievement[] = [
+
+interface MedalClip {
+  contentId: string;
+  contentTitle: string;
+  contentViews: number;
+  contentThumbnail: string;
+  embedIframeUrl: string;
+  createdTimestamp: number;
+  directClipUrl: string;
+  videoLengthSeconds: number;
+}
+
+interface AllstarClipRaw {
+  id: string;
+  title: string;
+  thumbnail: string;
+  clipUrl: string;
+  videoUrl?: string;
+  createdTimestamp: number;
+  views: number;
+  duration: number;
+  source: 'allstar';
+}
+
+// ── Manual games (non-Steam, shown alongside Steam library) ───────────────────
+
+interface ManualGame {
+  id: string;
+  name: string;
+  playtime_forever: number; // minutes
+  logoUrl: string;
+  storeUrl: string;
+}
+
+const MANUAL_GAMES: ManualGame[] = [
   {
-    tournament: "Comic Con x The Arena",
-    year: "2024",
-    result: "3rd Place"
+    id: 'valorant',
+    name: 'Valorant',
+    playtime_forever: 2430 * 60,
+    logoUrl: '/images/games/valorantlogo.png',
+    storeUrl: 'https://playvalorant.com',
   },
   {
-    tournament: "Trinity Gaming TAGVALO - Valorant",
-    year: "2020",
-    result: "1st Place"
+    id: 'fortnite',
+    name: 'Fortnite',
+    playtime_forever: 1839 * 60,
+    logoUrl: '/images/games/fortnitelogo.png',
+    storeUrl: 'https://www.epicgames.com/fortnite',
   },
   {
-    tournament: "ACT X CSGO 1v1 Tournament",
-    year: "2020",
-    result: "1st Place"
+    id: 'minecraft',
+    name: 'Minecraft',
+    playtime_forever: 439 * 60,
+    logoUrl: '/images/games/minecraftlogo.png',
+    storeUrl: 'https://www.minecraft.net',
   },
-  {
-    tournament: "AMD Gameon x Playmax - Fortnite",
-    year: "2019",
-    result: "3rd Place"
-  },
-  {
-    tournament: "AMD Gameon x Playmax - PUBG",
-    year: "2019",
-    result: "3rd Place"
-  },
-  {
-    tournament: "AMD Gameon x Playmax",
-    year: "2019",
-    result: "2nd Place"
-  },
-  {
-    tournament: "Comic-Con Hyderabad",
-    year: "2018",
-    result: "2nd Place"
-  },
-  {
-    tournament: "Gamer's Connect Hyderabad",
-    year: "2017",
-    result: "3rd Place"
-  },
-  {
-    tournament: "AMD Gameon Hyderabad",
-    year: "2017",
-    result: "3rd Place"
-  }
 ];
 
-// Empty fallback data (no hardcoded values)
-const emptyProfile: SteamProfile = {
-  personaname: "",
-  steamid: "",
-  avatar: "",
-  avatarmedium: "",
-  avatarfull: "",
-  profileurl: ""
-};
+// ── Static data ────────────────────────────────────────────────────────────────
 
-const emptyGames: SteamGame[] = [];
-const Games = () => {
-  
-  // State for data
-  const [profile, setProfile] = useState<SteamProfile>(emptyProfile);
-  const [ownedGames, setOwnedGames] = useState<SteamGame[]>(emptyGames);
-  const [profileError, setProfileError] = useState(false);
-  const [ownedGamesError, setOwnedGamesError] = useState(false);
-  const [loading, setLoading] = useState(true);
+const achievements = [
+  { tournament: 'Comic Con x The Arena', year: '2024', result: '3rd' },
+  { tournament: 'Trinity Gaming TAGVALO', year: '2020', result: '1st' },
+  { tournament: 'ACT X CSGO 1v1', year: '2020', result: '1st' },
+  { tournament: 'AMD Gameon - Fortnite', year: '2019', result: '3rd' },
+  { tournament: 'AMD Gameon - PUBG', year: '2019', result: '3rd' },
+  { tournament: 'AMD Gameon x Playmax', year: '2019', result: '2nd' },
+  { tournament: 'Comic-Con Hyderabad', year: '2018', result: '2nd' },
+  { tournament: "Gamer's Connect Hyd", year: '2017', result: '3rd' },
+  { tournament: 'AMD Gameon Hyderabad', year: '2017', result: '3rd' },
+];
 
+// ── Clip helpers ───────────────────────────────────────────────────────────────
+
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: '2k', label: '2K' },
+  { id: '3k', label: '3K' },
+  { id: '4k', label: '4K' },
+  { id: '5k', label: 'Ace' },
+];
+
+function matchesFilter(clip: UnifiedClip, id: string): boolean {
+  if (id === 'all') return true;
+  const t = clip.title.toLowerCase();
+  switch (id) {
+    case '2k': return t.includes('2k') || /\b2 kill/.test(t);
+    case '3k': return t.includes('3k') || /\b3 kill/.test(t) || t.includes('triple');
+    case '4k': return t.includes('4k') || /\b4 kill/.test(t) || t.includes('quad');
+    case '5k': return t.includes('5k') || /\b5 kill/.test(t) || t.includes('penta') || t.includes('ace');
+    default: return true;
+  }
+}
+
+function fmtDur(sec: number) {
+  return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+}
+
+function medalToUnified(clip: MedalClip): UnifiedClip {
+  return {
+    id: clip.contentId,
+    title: clip.contentTitle,
+    thumbnail: clip.contentThumbnail,
+    clipUrl: clip.directClipUrl || clip.embedIframeUrl,
+    videoUrl: clip.directClipUrl || '',
+    embedUrl: clip.embedIframeUrl || '',
+    duration: clip.videoLengthSeconds,
+    source: 'medal',
+    createdTimestamp: clip.createdTimestamp,
+  };
+}
+
+function allstarToUnified(clip: AllstarClipRaw): UnifiedClip {
+  return {
+    id: clip.id,
+    title: clip.title,
+    thumbnail: clip.thumbnail,
+    clipUrl: clip.clipUrl,
+    videoUrl: clip.videoUrl || '',
+    embedUrl: '',
+    duration: clip.duration,
+    source: 'allstar',
+    createdTimestamp: clip.createdTimestamp,
+  };
+}
+
+// ── Game list item ─────────────────────────────────────────────────────────────
+
+function GameRow({ name, iconSrc, href, label }: { name: string; iconSrc: string; href: string; label: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2.5 py-1.5 px-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors group"
+    >
+      <div className="w-5 h-5 flex-shrink-0 rounded overflow-hidden bg-zinc-100 dark:bg-zinc-700/50 flex items-center justify-center">
+        <Image
+          src={iconSrc}
+          alt={name}
+          width={20}
+          height={20}
+          unoptimized
+          className="w-full h-full object-contain"
+        />
+      </div>
+      <span className="text-xs text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors line-clamp-1 flex-1 min-w-0">
+        {name}
+      </span>
+      <span className="text-[10px] text-zinc-400 dark:text-zinc-500 flex-shrink-0 tabular-nums">
+        {label}
+      </span>
+    </a>
+  );
+}
+
+// ── Clip modal ─────────────────────────────────────────────────────────────────
+
+function ClipModal({ clip, onClose }: { clip: UnifiedClip; onClose: () => void }) {
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch from our API routes instead of directly from Steam
-        const [profileResponse, gamesResponse] = await Promise.all([
-          fetch('/api/steam/profile').catch(() => null),
-          fetch('/api/steam/games').catch(() => null)
-        ]);
-
-        if (profileResponse && profileResponse.ok) {
-          const profileData = await profileResponse.json();
-          if (profileData.response && profileData.response.players && profileData.response.players.length > 0) {
-            setProfile(profileData.response.players[0]);
-          }
-        } else {
-          setProfileError(true);
-        }
-
-        if (gamesResponse && gamesResponse.ok) {
-          const gamesData = await gamesResponse.json();
-          if (gamesData.response && gamesData.response.games) {
-            setOwnedGames(gamesData.response.games);
-          }
-        } else {
-          setOwnedGamesError(true);
-        }
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setProfileError(true);
-        setOwnedGamesError(true);
-      } finally {
-        setLoading(false);
-      }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
     };
+  }, [onClose]);
 
-    fetchData();
+  const canPlayInline =
+    (clip.source === 'medal' && !!clip.embedUrl) ||
+    (clip.source === 'allstar' && !!clip.videoUrl);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
+      onClick={onClose}
+    >
+      <div className="relative w-full max-w-3xl" onClick={e => e.stopPropagation()}>
+        <button
+          onClick={onClose}
+          className="absolute -top-9 right-0 text-white/60 hover:text-white transition-colors flex items-center gap-1.5 text-xs"
+        >
+          <X className="w-4 h-4" /> close
+        </button>
+
+        <div className="aspect-video rounded-xl overflow-hidden bg-zinc-950">
+          {clip.source === 'medal' && clip.embedUrl ? (
+            <iframe
+              src={clip.embedUrl}
+              className="w-full h-full"
+              allowFullScreen
+              allow="autoplay; fullscreen"
+              title={clip.title}
+            />
+          ) : clip.source === 'allstar' && clip.videoUrl ? (
+            <video
+              src={clip.videoUrl}
+              controls
+              autoPlay
+              playsInline
+              className="w-full h-full"
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full gap-3">
+              <p className="text-white/50 text-sm">Playback unavailable here</p>
+              <a
+                href={clip.clipUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-white/80 hover:text-white underline"
+              >
+                Open on {clip.source === 'allstar' ? 'Allstar' : 'Medal'} ↗
+              </a>
+            </div>
+          )}
+        </div>
+
+        {!canPlayInline && null}
+
+        <div className="mt-2.5 flex items-center justify-between">
+          <p className="text-sm text-white/70 line-clamp-1">{clip.title}</p>
+          <a
+            href={clip.clipUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-white/40 hover:text-white/70 transition-colors flex-shrink-0 ml-3"
+          >
+            {clip.source === 'allstar' ? 'allstar ↗' : 'medal ↗'}
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main page ──────────────────────────────────────────────────────────────────
+
+export default function Games() {
+  const [profile, setProfile] = useState<SteamProfile | null>(null);
+  const [ownedGames, setOwnedGames] = useState<SteamGame[]>([]);
+  const [gamesLoading, setGamesLoading] = useState(true);
+
+  const [clips, setClips] = useState<UnifiedClip[]>([]);
+  const [clipsLoading, setClipsLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeClip, setActiveClip] = useState<UnifiedClip | null>(null);
+
+  // Fetch Steam
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/steam/profile').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/api/steam/games').then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([pd, gd]) => {
+      if (pd?.response?.players?.[0]) setProfile(pd.response.players[0]);
+      if (gd?.response?.games) setOwnedGames(gd.response.games);
+    }).finally(() => setGamesLoading(false));
   }, []);
 
-  // Sort games by recent playtime for recent games section
-  const recentlySortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
-    if (a.playtime_2weeks && b.playtime_2weeks) {
-      return b.playtime_2weeks - a.playtime_2weeks;
-    }
-    if (a.playtime_2weeks) return -1;
-    if (b.playtime_2weeks) return 1;
-    return b.playtime_forever - a.playtime_forever;
-  });
-
-  // Sort games by total playtime for top games section
-  const totalPlaytimeSortedGames = [...ownedGames].sort((a: SteamGame, b: SteamGame) => {
-    return b.playtime_forever - a.playtime_forever;
-  });
-
-  // Get recent and top games
-  const recentGames = recentlySortedGames.filter((game: SteamGame) => 
-    game.playtime_2weeks && game.playtime_2weeks > 0
-  ).slice(0, 3);
-  const allGames = totalPlaytimeSortedGames.slice(0, 12);
-  
-  // Debug: Log recent games
+  // Fetch clips
   useEffect(() => {
-    if (recentGames.length > 0) {
-      console.log('Recent games (played in last 2 weeks):', recentGames.map(g => ({
-        name: g.name,
-        playtime_2weeks: g.playtime_2weeks,
-        playtime_2weeks_hours: Math.floor((g.playtime_2weeks || 0) / 60)
-      })));
-    } else {
-      console.log('No games with playtime_2weeks > 0 found');
-    }
-  }, [recentGames]);
-  
-  // Calculate total Steam hours
-  const totalSteamHours = Math.floor(
-    ownedGames.reduce((total, game) => total + game.playtime_forever, 0) / 60
-  );
+    Promise.all([
+      fetch('/api/medal').then(r => r.json()).catch(() => ({ clips: [] })),
+      fetch('/api/allstar').then(r => r.json()).catch(() => ({ clips: [] })),
+    ]).then(([md, ad]) => {
+      const medal = (md.clips ?? []).map(medalToUnified);
+      const allstar = (ad.clips ?? []).map(allstarToUnified);
+      const merged = [...medal, ...allstar].sort((a, b) => b.createdTimestamp - a.createdTimestamp);
+      setClips(merged);
+    }).finally(() => setClipsLoading(false));
+  }, []);
 
-  if (loading) {
-    return (
-      <div className="max-w-7xl">
-        <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming</h2>
-        <p className="text-zinc-500 dark:text-zinc-400">Loading gaming data...</p>
-      </div>
-    );
-  }
+  const byRecent = [...ownedGames]
+    .sort((a, b) => {
+      if (a.playtime_2weeks && b.playtime_2weeks) return b.playtime_2weeks - a.playtime_2weeks;
+      if (a.playtime_2weeks) return -1;
+      if (b.playtime_2weeks) return 1;
+      return 0;
+    })
+    .filter(g => g.playtime_2weeks && g.playtime_2weeks > 0)
+    .slice(0, 3);
+
+  // Merge Steam games with manual games, sort by total playtime, show all
+  type AnyGame =
+    | { kind: 'steam'; game: SteamGame }
+    | { kind: 'manual'; game: ManualGame };
+
+  const allGamesMerged: AnyGame[] = [
+    ...ownedGames.map(g => ({ kind: 'steam' as const, game: g })),
+    ...MANUAL_GAMES.map(g => ({ kind: 'manual' as const, game: g })),
+  ]
+    .filter(entry => entry.game.playtime_forever >= 120) // at least 2 hours
+    .sort((a, b) => b.game.playtime_forever - a.game.playtime_forever);
+
+  const filteredClips = clips.filter(c => matchesFilter(c, activeFilter));
+
+  const openClip = useCallback((clip: UnifiedClip) => setActiveClip(clip), []);
+  const closeClip = useCallback(() => setActiveClip(null), []);
 
   return (
     <div className="max-w-7xl">
       <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming</h2>
 
       {/* Steam Profile */}
-      <section className="mb-8">
-        {profileError ? (
-          <div className="bg-yellow-50 dark:bg-zinc-800 p-4 rounded-lg">
-            <p className="text-yellow-800 dark:text-yellow-400">Could not load Steam profile.</p>
-          </div>
-        ) : null}
-        <Profile profile={profile} />
-      </section>
+      {!gamesLoading && profile && (
+        <section className="mb-6">
+          <Profile profile={profile} />
+        </section>
+      )}
 
-      {/* Config Download Card */}
-      <section className="mb-8">
-        <div className="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800">
-          <div className="flex items-center gap-3">
-            <Settings className="w-4 h-4 text-zinc-400 dark:text-zinc-500 flex-shrink-0" />
+      {/* 50/50 split: Left = games + tournaments, Right = clips */}
+      <div className="grid grid-cols-2 gap-10 items-start">
+
+        {/* ── LEFT ── */}
+        <div className="space-y-8 min-w-0">
+
+          {/* Recently played */}
+          {(gamesLoading || byRecent.length > 0) && (
             <div>
-              <span className="text-sm font-medium dark:text-white">Game Configurations</span>
-              <span className="text-xs text-zinc-400 dark:text-zinc-500 ml-3">CS:GO &amp; Valorant settings</span>
-            </div>
-          </div>
-          <Link
-            href="https://settings.gg/rohzzn"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-          >
-            settings.gg ↗
-          </Link>
-        </div>
-      </section>
-
-      {/* Leetify (CS2) & Valorant */}
-      <section className="mb-8">
-        <LeetifyProfileCard totalSteamHours={totalSteamHours} />
-      </section>
-
-      {/* Gaming Content Layout */}
-      <section className="mb-8">
-        {ownedGamesError && (
-          <div className="bg-yellow-50 dark:bg-zinc-800 p-4 rounded-lg mb-4">
-            <p className="text-yellow-800 dark:text-yellow-400">Could not load game data.</p>
-          </div>
-        )}
-        
-        <div className="space-y-8">
-          {/* Recent Games */}
-          {recentGames.length > 0 && (
-            <div>
-              <h3 className="text-base font-medium mb-6 dark:text-white">Recently Played Games</h3>
-              <div className="grid grid-cols-3 gap-3">
-                {recentGames.map((game) => (
-                  <Link
-                    key={game.appid}
-                    href={`https://store.steampowered.com/app/${game.appid}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group cursor-pointer block"
-                  >
-                    <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-                      <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded overflow-hidden mb-2">
-                        <Image
-                          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
-                          alt={`${game.name} Header`}
-                          width={460}
-                          height={215}
-                          className="w-full h-auto"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`;
-                            target.onerror = () => {
-                              target.style.display = 'none';
-                              const parent = target.parentElement;
-                              if (parent) {
-                                parent.innerHTML = '<span class="text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center w-full h-full">No IMG</span>';
-                              }
-                            };
-                          }}
-                        />
-                      </div>
-                      <h4 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1 line-clamp-2">
-                        {game.name}
-                      </h4>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                        {game.playtime_2weeks && game.playtime_2weeks > 0 
-                          ? `${Math.floor(game.playtime_2weeks / 60)}h recently` 
-                          : `${Math.floor(game.playtime_forever / 60)}h total`}
-                      </p>
-                    </article>
-                  </Link>
-                ))}
-              </div>
+              <h3 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+                Recently Played
+              </h3>
+              {gamesLoading ? (
+                <div className="space-y-1">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded-md animate-pulse" />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-0.5">
+                  {byRecent.map(g => (
+                    <GameRow
+                      key={g.appid}
+                      name={g.name}
+                      iconSrc={`https://media.steampowered.com/steamcommunity/public/images/apps/${g.appid}/${g.img_icon_url}.jpg`}
+                      href={`https://store.steampowered.com/app/${g.appid}`}
+                      label={`${Math.floor((g.playtime_2weeks ?? 0) / 60)}h recently`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
-          
-          {/* Top Games */}
+
+          {/* Top games — all Steam + manual merged */}
           <div>
-            <h3 className="text-base font-medium mb-6 dark:text-white">Top Games</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {allGames.map((game) => (
-                <Link
-                  key={game.appid}
-                  href={`https://store.steampowered.com/app/${game.appid}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group cursor-pointer block"
+            <h3 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+              Top Games
+            </h3>
+            {gamesLoading ? (
+              <div className="space-y-1">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded-md animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-0.5">
+                {allGamesMerged.map(entry =>
+                  entry.kind === 'steam' ? (
+                    <GameRow
+                      key={`steam-${entry.game.appid}`}
+                      name={entry.game.name}
+                      iconSrc={`https://media.steampowered.com/steamcommunity/public/images/apps/${entry.game.appid}/${entry.game.img_icon_url}.jpg`}
+                      href={`https://store.steampowered.com/app/${entry.game.appid}`}
+                      label={`${Math.floor(entry.game.playtime_forever / 60)}h`}
+                    />
+                  ) : (
+                    <GameRow
+                      key={`manual-${entry.game.id}`}
+                      name={entry.game.name}
+                      iconSrc={entry.game.logoUrl}
+                      href={entry.game.storeUrl}
+                      label={`${Math.floor(entry.game.playtime_forever / 60)}h`}
+                    />
+                  )
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Tournaments */}
+          <div>
+            <h3 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+              Tournaments
+            </h3>
+            <div>
+              {achievements.map((a, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between py-1.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
                 >
-                  <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-center">
-                    <div className="w-full aspect-[600/900] bg-zinc-200 dark:bg-zinc-700 rounded mx-auto mb-2 overflow-hidden">
-                      <Image
-                        src={game.appid === 243470 
-                          ? `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`
-                          : `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/library_600x900.jpg`
-                        }
-                        alt={`${game.name} Library`}
-                        width={600}
-                        height={900}
-                        className="w-full h-full object-cover rounded"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          // Fallback to capsule image if library fails
-                          target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/capsule_616x353.jpg`;
-                          target.onerror = () => {
-                            // Second fallback to header image
-                            target.src = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
-                            target.onerror = () => {
-                              // Final fallback to icon if available
-                              if (game.img_icon_url) {
-                                target.src = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
-                                target.className = "w-8 h-8 mx-auto my-auto object-contain rounded";
-                                target.onerror = () => {
-                                  target.style.display = 'none';
-                                  const parent = target.parentElement;
-                                  if (parent) {
-                                    parent.innerHTML = '<span class="text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center w-full h-full">🎮</span>';
-                                  }
-                                };
-                              } else {
-                                target.style.display = 'none';
-                                const parent = target.parentElement;
-                                if (parent) {
-                                  parent.innerHTML = '<span class="text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center w-full h-full">🎮</span>';
-                                }
-                              }
-                            };
-                          };
-                        }}
-                      />
-                    </div>
-                    <h4 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors mb-1 line-clamp-2">
-                      {game.name}
-                    </h4>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {Math.floor(game.playtime_forever / 60)}h
-                    </p>
-                  </article>
-                </Link>
+                  <span className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mr-2">{a.tournament}</span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500">{a.year}</span>
+                    <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400">{a.result}</span>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Tournament Achievements */}
-      <section className="mb-8">
-        <h3 className="text-sm font-medium mb-4 dark:text-white">Tournament Achievements</h3>
-        <div>
-          {achievements.map((achievement, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
-            >
-              <span className="text-sm text-zinc-700 dark:text-zinc-300">{achievement.tournament}</span>
-              <div className="flex items-center gap-4 flex-shrink-0 ml-4">
-                <span className="text-xs text-zinc-400 dark:text-zinc-500 tabular-nums">{achievement.year}</span>
-                <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{achievement.result}</span>
-              </div>
+        {/* ── RIGHT: clips ── */}
+        <div className="min-w-0">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium dark:text-white">Clips</h3>
+            <div className="flex gap-3">
+              {FILTERS.map(({ id, label }) => (
+                <button
+                  key={id}
+                  onClick={() => setActiveFilter(id)}
+                  className={`text-xs transition-colors ${
+                    activeFilter === id
+                      ? 'text-zinc-900 dark:text-white font-medium'
+                      : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {clipsLoading ? (
+            <div className="grid grid-cols-2 gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-video bg-zinc-200 dark:bg-zinc-800 rounded-lg mb-2" />
+                  <div className="w-3/4 h-3 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : filteredClips.length === 0 ? (
+            <div className="py-6">
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">No clips matching this filter.</p>
+              {activeFilter !== 'all' && (
+                <button
+                  onClick={() => setActiveFilter('all')}
+                  className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors mt-1"
+                >
+                  Show all
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {filteredClips.map(clip => (
+                <div
+                  key={`${clip.source}-${clip.id}`}
+                  onClick={() => openClip(clip)}
+                  className="group cursor-pointer"
+                >
+                  <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-800 mb-1.5">
+                    {clip.thumbnail ? (
+                      <Image
+                        src={clip.thumbnail}
+                        alt={clip.title}
+                        fill
+                        unoptimized
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-zinc-300 dark:bg-zinc-700" />
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
+                        <span className="text-zinc-900 text-xs ml-0.5">▶</span>
+                      </div>
+                    </div>
+                    {clip.duration > 0 && (
+                      <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1 py-0.5 rounded tabular-nums">
+                        {fmtDur(clip.duration)}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors line-clamp-1">
+                    {clip.title}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </section>
+      </div>
+
+      {/* Modal */}
+      {activeClip && <ClipModal clip={activeClip} onClose={closeClip} />}
     </div>
   );
-};
-
-export default Games;
+}
