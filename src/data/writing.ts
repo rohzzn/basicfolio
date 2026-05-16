@@ -7,13 +7,6 @@ export type Post = {
   category: 'tech' | 'life';
 };
 
-export type Thought = {
-  text: string;
-  image?: string;
-  date: string;
-  displayDate: string;
-  category: 'notes';
-};
 
 export const posts: Post[] = [
   {
@@ -170,47 +163,3 @@ export const posts: Post[] = [
   },
 ];
 
-export const thoughts: Thought[] = [
-  {
-    text: "the gap between knowing what to do and actually doing it is where most people live permanently",
-    date: '2026-05-14',
-    displayDate: 'May 2026',
-    category: 'notes',
-  },
-  {
-    text: "side projects die in the planning phase. the ones that survive are the ones you just started",
-    date: '2026-04-30',
-    displayDate: 'Apr 2026',
-    category: 'notes',
-  },
-  {
-    text: "spent 3 hours picking a font. shipped nothing. classic",
-    date: '2026-04-18',
-    displayDate: 'Apr 2026',
-    category: 'notes',
-  },
-  {
-    text: "every senior dev i respect writes embarrassingly simple code",
-    date: '2026-04-02',
-    displayDate: 'Apr 2026',
-    category: 'notes',
-  },
-  {
-    text: "less shortcuts, less overthinking, less adding. more doing, more risk, more shipping",
-    date: '2026-03-11',
-    displayDate: 'Mar 2026',
-    category: 'notes',
-  },
-  {
-    text: "most \"i don't have time\" is actually \"i haven't decided this matters yet\"",
-    date: '2026-02-27',
-    displayDate: 'Feb 2026',
-    category: 'notes',
-  },
-  {
-    text: "your first version doesn't have to be good. it has to exist",
-    date: '2026-02-09',
-    displayDate: 'Feb 2026',
-    category: 'notes',
-  },
-];

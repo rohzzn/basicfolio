@@ -68,7 +68,7 @@ const CLOUD_COSTS = [
   { label: 'Google Photos (2 TB)',       monthly: 10  },
   { label: 'Managed Postgres',           monthly: 15  },
   { label: 'Uptime monitoring',          monthly: 7   },
-  { label: 'VPS for misc containers',   monthly: 12  },
+  { label: 'VPS for misc containers',   monthly: 50  },
 ];
 const HARDWARE_COST = 1086.51;
 
