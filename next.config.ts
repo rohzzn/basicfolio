@@ -24,6 +24,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'media.steampowered.com' },
       { protocol: 'https', hostname: 'steamuserimages-a.akamaihd.net' },
       { protocol: 'https', hostname: 'cdn.akamai.steamstatic.com' },
+      { protocol: 'https', hostname: 'community.cloudflare.steamstatic.com' },
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
       { protocol: 'https', hostname: 'dgtzuqphqg23d.cloudfront.net' },
       { protocol: 'https', hostname: 'i.scdn.co' },

@@ -4,6 +4,109 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Profile from './Profile';
 import Image from 'next/image';
 import { X } from 'lucide-react';
+import { cs2Items, valorantItems, type CS2Item, type ValorantItem } from '@/data/inventory';
+
+// ── Inventory section ─────────────────────────────────────────────────────────
+
+const RARITY_ORDER: Record<string, number> = {
+  Extraordinary: 0, Covert: 1, Classified: 2, Restricted: 3,
+  'Mil-Spec': 4, Industrial: 5, Consumer: 6, Superior: 2,
+};
+
+function InventoryCard({ item }: { item: CS2Item }) {
+  if (!item.image) return null;
+  return (
+    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 cursor-default group">
+      <div className="relative w-full aspect-[4/3]">
+        {item.condition && (
+          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-zinc-500">
+            {item.condition}
+          </div>
+        )}
+        <Image
+          src={item.image}
+          alt={`${item.name} | ${item.skin}`}
+          fill
+          sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, 12vw"
+          className="object-contain p-2 transition-transform duration-200 group-hover:scale-105"
+        />
+      </div>
+      <div className="h-[2px] w-full" style={{ background: item.rarityColor }} />
+      <div className="px-2 py-1.5">
+        <p className="text-[10px] font-medium leading-tight line-clamp-1" style={{ color: item.rarityColor }}>
+          {item.skin}
+        </p>
+        <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 line-clamp-1">
+          {item.name}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ValorantInventoryCard({ item }: { item: ValorantItem }) {
+  return (
+    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 cursor-default group">
+      <div className="relative w-full aspect-[4/3]">
+        {item.isAlt && (
+          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-zinc-600">
+            ✦
+          </div>
+        )}
+        <Image
+          src={item.image}
+          alt={`${item.name} ${item.weapon}`}
+          fill
+          sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, 12vw"
+          className="object-contain p-2 transition-transform duration-200 group-hover:scale-105"
+        />
+      </div>
+      <div className="h-[2px] w-full" style={{ background: item.tierColor }} />
+      <div className="px-2 py-1.5">
+        <p className="text-[10px] font-medium leading-tight line-clamp-1" style={{ color: item.tierColor }}>
+          {item.name}
+        </p>
+        <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 line-clamp-1">
+          {item.weapon}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function InventoryRow() {
+  const [game, setGame] = useState<'cs2' | 'valorant'>('cs2');
+  const sortedCS2 = [...cs2Items]
+    .filter(i => i.image)
+    .sort((a, b) => (RARITY_ORDER[a.rarityName] ?? 9) - (RARITY_ORDER[b.rarityName] ?? 9));
+
+  return (
+    <section className="mb-8">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Inventory</h3>
+        <div className="flex gap-3">
+          {(['cs2', 'valorant'] as const).map(g => (
+            <button key={g} onClick={() => setGame(g)}
+              className={`text-xs uppercase tracking-wide transition-colors ${game === g
+                ? 'text-zinc-900 dark:text-white font-medium'
+                : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>
+              {g === 'cs2' ? 'CS2' : 'Valorant'}
+            </button>
+          ))}
+        </div>
+      </div>
+      {game === 'cs2' ? (
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+          {sortedCS2.map(item => <InventoryCard key={item.id} item={item} />)}
+        </div>
+      ) : (
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+          {valorantItems.map(item => <ValorantInventoryCard key={item.id} item={item} />)}
+        </div>
+      )}
+    </section>
+  );
+}
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -356,6 +459,9 @@ export default function Games() {
           <Profile profile={profile} />
         </section>
       )}
+
+      {/* Inventory row */}
+      <InventoryRow />
 
       {/* 50/50 split: Left = games + tournaments, Right = clips */}
       <div className="grid grid-cols-2 gap-10 items-start">
