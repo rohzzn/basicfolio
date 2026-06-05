@@ -40,7 +40,7 @@ const BoringPerformance: React.FC = () => {
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">Code splitting with Next.js dynamic imports</h3>
-          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+          <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
 {`import dynamic from 'next/dynamic';
 
 // Heavy chart library only loads when the component is actually rendered
@@ -58,7 +58,7 @@ const Chart = dynamic(() => import('./HeavyChart'), {
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">Missing cleanup vs correct cleanup</h3>
-          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+          <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
 {`// Leaks memory — interval keeps running after unmount
 useEffect(() => {
   const interval = setInterval(() => {
@@ -84,7 +84,7 @@ useEffect(() => {
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">vercel.json cache configuration</h3>
-          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+          <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
 {`{
   "headers": [
     {

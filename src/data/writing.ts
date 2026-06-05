@@ -10,6 +10,14 @@ export type Post = {
 
 export const posts: Post[] = [
   {
+    slug: 'discord-widgets',
+    title: 'How to Build Discord Profile Widgets',
+    description: 'A practical guide to building Discord profile widgets using the new widgets v2 experiment — from setting up your application to displaying live data on your profile.',
+    date: '2026-05-29',
+    displayDate: 'May 2026',
+    category: 'tech',
+  },
+  {
     slug: 'linux-home-server',
     title: 'Building a Linux Home Server',
     description: 'Planning a self-hosted Linux server to run every personal website, Docker container, photo backup, ad blocker, and side project from one machine.',

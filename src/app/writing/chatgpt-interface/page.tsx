@@ -42,7 +42,7 @@ const ChatGPTInterface: React.FC = () => {
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">Streaming response in a Next.js route handler</h3>
-          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+          <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
 {`// app/api/chat/route.ts
 import OpenAI from 'openai';
 

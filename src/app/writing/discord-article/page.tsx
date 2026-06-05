@@ -51,7 +51,7 @@ const DiscordArticle: React.FC = () => {
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">The architecture tradeoff in simplified form</h3>
-          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+          <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
 {`// Node.js: easy to write, GC pauses at high load
 class MessageQueue {
   private queue = new Map<string, Message[]>();
@@ -78,7 +78,7 @@ class MessageQueue {
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">Sliding window rate limiter in Redis</h3>
-          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+          <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
 {`-- Lua script runs atomically in Redis
 local key = KEYS[1]
 local limit = tonumber(ARGV[1])

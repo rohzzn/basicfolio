@@ -231,12 +231,12 @@ const R_COLORS: Record<Resource['type'], { bar: string; dot: string; badge: stri
   css:      { bar: 'bg-violet-400 dark:bg-violet-500',dot: 'bg-violet-400', badge: 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400' },
   font:     { bar: 'bg-amber-400 dark:bg-amber-500',  dot: 'bg-amber-400',  badge: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' },
   script:   { bar: 'bg-yellow-400 dark:bg-yellow-500',dot: 'bg-yellow-400', badge: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-600' },
-  api:      { bar: 'bg-green-400 dark:bg-green-500',  dot: 'bg-green-400',  badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' },
+  api:      { bar: 'bg-green-400 dark:bg-green-500',  dot: 'bg-green-400',  badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-zinc-200' },
 };
 
 const C_COLORS: Record<Category, { dot: string; badge: string }> = {
   gaming:        { dot: 'bg-violet-400',  badge: 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400' },
-  activity:      { dot: 'bg-green-400',   badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' },
+  activity:      { dot: 'bg-green-400',   badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-zinc-200' },
   entertainment: { dot: 'bg-amber-400',   badge: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' },
   social:        { dot: 'bg-blue-400',    badge: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' },
   infra:         { dot: 'bg-zinc-400',    badge: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400' },

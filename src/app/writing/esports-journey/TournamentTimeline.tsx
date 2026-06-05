@@ -23,7 +23,7 @@ const PLACE_STYLE: Record<number, string> = {
 const GAME_COLORS: Record<string, string> = {
   'CS:GO':   'text-yellow-600 dark:text-yellow-400',
   'Valorant':'text-red-500 dark:text-red-400',
-  'PUBG':    'text-green-600 dark:text-green-400',
+  'PUBG':    'text-green-600 dark:text-zinc-200',
 };
 
 const ALL_GAMES = [...new Set(EVENTS.map(e => e.game))];

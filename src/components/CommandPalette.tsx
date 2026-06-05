@@ -84,6 +84,7 @@ const hobbyLinks: BaseItem[] = [
 ];
 
 const writingArticles: BaseItem[] = [
+  { title: 'How to Build Discord Profile Widgets', href: '/writing/discord-widgets', icon: <Code className="w-4 h-4" />, keywords: ['discord', 'widgets', 'profile', 'bot', 'api', 'discord widgets', 'social layer'] },
   { title: 'What I Learned Building 40 Side Projects', href: '/writing/forty-projects', icon: <Code className="w-4 h-4" />, keywords: ['projects', 'side projects', 'building', 'shipping', 'lessons'] },
   { title: 'Why I Use Satoshi on Everything I Build', href: '/writing/satoshi-font', icon: <PenTool className="w-4 h-4" />, keywords: ['satoshi', 'font', 'typography', 'design', 'typeface'] },
   { title: 'From Hyderabad to Cincinnati', href: '/writing/moving-to-cincinnati', icon: <Briefcase className="w-4 h-4" />, keywords: ['hyderabad', 'cincinnati', 'india', 'grad school', 'moving', 'uc'] },

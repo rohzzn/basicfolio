@@ -51,7 +51,7 @@ const SecurityArticle: React.FC = () => {
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">Vulnerable vs correct TOTP check</h3>
-          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+          <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
 {`// Vulnerable: only checks current 30-second window
 function verifyTOTP(token: string, secret: string): boolean {
   const now = Math.floor(Date.now() / 30000);
@@ -76,7 +76,7 @@ function verifyTOTPSecure(token: string, secret: string): boolean {
 
         <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-white">Adding replay protection</h3>
-          <pre className="bg-zinc-900 text-green-400 p-4 rounded overflow-x-auto text-xs">
+          <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
 {`// Track used codes in Redis with TTL matching the acceptance window
 async function verifyWithReplayProtection(
   userId: string,
