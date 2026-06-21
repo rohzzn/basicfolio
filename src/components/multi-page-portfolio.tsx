@@ -8,6 +8,7 @@ import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
 import EReaderEasterEgg from "./EReaderEasterEgg";
+import LocalTime from "./LocalTime";
 
 interface NavLinkProps {
   href: string;
@@ -523,7 +524,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       
       {/* Bottom Controls - Hidden on mobile and on guestbook (desk workspace) */}
       {pathname !== "/guestbook" && (
-      <div className="hidden md:flex fixed bottom-4 right-4 z-40 flex-row items-center space-x-3">
+      <div className="hidden md:flex fixed bottom-4 right-4 z-40 flex-row items-center gap-1.5">
         <Link 
           href="/guestbook"
           className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"
@@ -544,6 +545,9 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             <VolumeX className="w-3.5 h-3.5" />
           )}
         </button>
+
+        <span className="h-3 w-px bg-zinc-300 dark:bg-zinc-600" aria-hidden="true" />
+        <LocalTime />
       </div>
       )}
       

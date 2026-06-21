@@ -25,32 +25,38 @@ import {
   Linkedin,
   Instagram,
   Moon,
-  Sun,
   Sparkles,
   ArrowLeft,
   History,
   Mail,
-  Award,
-  Briefcase,
-  TrendingUp,
   Target,
   Camera,
+  Focus,
+  Calendar,
+  Archive,
+  Image as ImageIcon,
+  ChevronRight,
+  Rss,
 } from 'lucide-react';
-
-interface BaseItem {
-    title: string;
-  href?: string;
-    icon?: React.ReactNode;
-    keywords?: string[];
-    shortcut?: string;
-    action?: () => void;
-}
+import { writingArticles, projectLinks, type PaletteItem } from '@/lib/command-palette-data';
+import { toggleEReaderMode } from '@/lib/ereader-mode';
 
 interface CommandPaletteProps {
-  links?: BaseItem[];
+  links?: PaletteItem[];
 }
 
-const mainLinks: BaseItem[] = [
+type PalettePage = 'pages' | 'writing' | 'projects' | 'hobbies' | 'external' | 'actions';
+
+const PAGE_LABELS: Record<PalettePage, string> = {
+  pages: 'Pages',
+  writing: 'Writing',
+  projects: 'Projects',
+  hobbies: 'Hobbies',
+  external: 'External links',
+  actions: 'Actions',
+};
+
+const mainLinks: PaletteItem[] = [
   { title: 'Home', href: '/', icon: <Home className="w-4 h-4" />, keywords: ['about', 'main', 'index'] },
   { title: 'Projects', href: '/projects', icon: <Code className="w-4 h-4" />, keywords: ['work', 'portfolio', 'code'] },
   { title: 'Writing', href: '/writing', icon: <FileText className="w-4 h-4" />, keywords: ['blog', 'articles', 'posts'] },
@@ -59,52 +65,33 @@ const mainLinks: BaseItem[] = [
   { title: 'Timeline', href: '/timeline', icon: <Clock className="w-4 h-4" />, keywords: ['history', 'experience'] },
   { title: 'Resume', href: '/resume', icon: <Laptop className="w-4 h-4" />, keywords: ['cv', 'work', 'experience', 'jobs'] },
   { title: 'About', href: '/about', icon: <User className="w-4 h-4" />, keywords: ['profile', 'bio', 'personal'] },
+  { title: 'Meet', href: '/meet', icon: <Calendar className="w-4 h-4" />, keywords: ['meet', 'schedule', 'calendar', 'book'] },
+  { title: 'Focus', href: '/focus', icon: <Focus className="w-4 h-4" />, keywords: ['focus', 'pomodoro', 'timer', 'productivity'] },
   { title: 'Guestbook', href: '/guestbook', icon: <Bookmark className="w-4 h-4" />, keywords: ['comments', 'visitor', 'messages'] },
 ];
 
-const hobbyLinks: BaseItem[] = [
+const hobbyLinks: PaletteItem[] = [
   { title: 'Activities', href: '/hobbies/strava', icon: <Activity className="w-4 h-4" />, keywords: ['strava', 'workout', 'running'] },
+  { title: 'Archive', href: '/hobbies/archive', icon: <Archive className="w-4 h-4" />, keywords: ['archive', 'old', 'history'] },
   { title: 'Ben 10', href: '/hobbies/ben10', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['ben 10', 'savage pursuit', 'flash game', 'childhood'] },
   { title: 'Books', href: '/hobbies/readings', icon: <BookOpen className="w-4 h-4" />, keywords: ['reading', 'books', 'literature'] },
   { title: 'Content', href: '/hobbies/content', icon: <Youtube className="w-4 h-4" />, keywords: ['youtube', 'videos', 'content'] },
   { title: 'Designs', href: '/hobbies/art', icon: <PenTool className="w-4 h-4" />, keywords: ['art', 'design', 'creative'] },
-  { title: 'Watchlist', href: '/hobbies/watchlist', icon: <Film className="w-4 h-4" />, keywords: ['tmdb', 'myanimelist', 'movies', 'tv', 'anime', 'watch', 'watchlist', 'streaming', 'cinema'] },
-  { title: 'Gaming', href: '/hobbies/games', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['games', 'gaming', 'steam', 'cs2', 'csgo', 'leetify', 'stats', 'premier', 'faceit'] },
-  { title: 'Gaming Clips', href: '/hobbies/clips', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['clips', 'highlights', 'videos'] },
+  { title: 'Letterboxd', href: '/hobbies/letterboxd', icon: <Film className="w-4 h-4" />, keywords: ['letterboxd', 'movies', 'film', 'cinema', 'reviews'] },
+  { title: 'MyAnimeList', href: '/hobbies/myanimelist', icon: <Film className="w-4 h-4" />, keywords: ['anime', 'mal', 'myanimelist', 'manga'] },
+  { title: 'Watchlist', href: '/hobbies/watchlist', icon: <Film className="w-4 h-4" />, keywords: ['tmdb', 'movies', 'tv', 'anime', 'watchlist', 'streaming'] },
+  { title: 'Gaming', href: '/hobbies/games', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['games', 'gaming', 'steam', 'cs2', 'csgo', 'leetify', 'stats', 'clips', 'highlights'] },
   { title: 'Hackathons', href: '/hobbies/hackathons', icon: <Code className="w-4 h-4" />, keywords: ['hackathon', 'competition', 'coding'] },
   { title: 'Music', href: '/hobbies/music', icon: <Music className="w-4 h-4" />, keywords: ['songs', 'playlist', 'spotify'] },
-  {
-    title: 'Seen',
-    href: '/hobbies/seen',
-    icon: <Camera className="w-4 h-4" />,
-    keywords: ['seen', 'frames', 'photos', 'instagram', 'gallery', 'archive', 'images', 'heic', '.heic'],
-  },
-  { title: 'Setup', href: '/hobbies/uses', icon: <Laptop className="w-4 h-4" />, keywords: ['setup', 'workspace', 'tools'] },
-  { title: 'Typing', href: '/hobbies/typing', icon: <Keyboard className="w-4 h-4" />, keywords: ['typing', 'speed', 'test'] },
+  { title: 'Screen', href: '/hobbies/screen', icon: <Laptop className="w-4 h-4" />, keywords: ['screen', 'display', 'monitor', 'setup'] },
+  { title: 'Seen', href: '/hobbies/seen', icon: <Camera className="w-4 h-4" />, keywords: ['seen', 'frames', 'photos', 'instagram', 'gallery', 'heic'] },
+  { title: 'Setup', href: '/hobbies/uses', icon: <Laptop className="w-4 h-4" />, keywords: ['setup', 'workspace', 'tools', 'uses'] },
+  { title: 'Stills', href: '/hobbies/stills', icon: <ImageIcon className="w-4 h-4" />, keywords: ['stills', 'photos', 'images', 'frames'] },
+  { title: 'Typing', href: '/hobbies/typing', icon: <Keyboard className="w-4 h-4" />, keywords: ['typing', 'speed', 'test', 'wpm'] },
+  { title: 'Watch', href: '/hobbies/watch', icon: <Film className="w-4 h-4" />, keywords: ['watch', 'movies', 'tv', 'streaming'] },
 ];
 
-const writingArticles: BaseItem[] = [
-  { title: "Apple's Best AI Feature Is Not Siri", href: '/writing/apple-best-ai-feature', icon: <Sparkles className="w-4 h-4" />, keywords: ['apple', 'ios 27', 'wwdc', 'passwords', 'siri', 'agentic ai', 'security'] },
-  { title: 'How to Build Discord Profile Widgets', href: '/writing/discord-widgets', icon: <Code className="w-4 h-4" />, keywords: ['discord', 'widgets', 'profile', 'bot', 'api', 'discord widgets', 'social layer'] },
-  { title: 'What I Learned Building 40 Side Projects', href: '/writing/forty-projects', icon: <Code className="w-4 h-4" />, keywords: ['projects', 'side projects', 'building', 'shipping', 'lessons'] },
-  { title: 'Why I Use Satoshi on Everything I Build', href: '/writing/satoshi-font', icon: <PenTool className="w-4 h-4" />, keywords: ['satoshi', 'font', 'typography', 'design', 'typeface'] },
-  { title: 'From Hyderabad to Cincinnati', href: '/writing/moving-to-cincinnati', icon: <Briefcase className="w-4 h-4" />, keywords: ['hyderabad', 'cincinnati', 'india', 'grad school', 'moving', 'uc'] },
-  { title: 'Building Multiplayer Catan From Scratch', href: '/writing/catan-coop', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['catan', 'game', 'multiplayer', 'socket.io', 'hex', 'board game'] },
-  { title: 'Second Semester at UC', href: '/writing/first-spring', icon: <FileText className="w-4 h-4" />, keywords: ['article', 'spring', 'season', 'blog', 'uc', 'cincinnati'] },
-  { title: 'First Semester at UC', href: '/writing/uc-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['uc', 'university', 'experience', 'cincinnati', 'semester'] },
-  { title: 'Environment Variables Dont Hide Data', href: '/writing/variables-exposure', icon: <Code className="w-4 h-4" />, keywords: ['variables', 'security', 'environment', 'env'] },
-  { title: 'Modern Tech Stacks Kill Startups', href: '/writing/modern-tech-stacks', icon: <Code className="w-4 h-4" />, keywords: ['tech', 'stack', 'tools', 'modern', 'php'] },
-  { title: 'Your 2FA Is Broken', href: '/writing/security-article', icon: <Target className="w-4 h-4" />, keywords: ['security', 'privacy', 'protection', '2fa'] },
-  { title: 'Boring Guide to 10x Frontend Performance', href: '/writing/boring-performance', icon: <TrendingUp className="w-4 h-4" />, keywords: ['performance', 'optimization', 'web', 'speed'] },
-  { title: 'How Discord Survived 2024s Biggest Launch', href: '/writing/discord-article', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['discord', 'community', 'platform', 'api'] },
-  { title: 'My Time in Esports', href: '/writing/esports-journey', icon: <Award className="w-4 h-4" />, keywords: ['esports', 'gaming', 'competitive', 'journey', 'valorant'] },
-  { title: 'Building My Own ChatGPT UI', href: '/writing/chatgpt-interface', icon: <Sparkles className="w-4 h-4" />, keywords: ['ai', 'chatgpt', 'interface', 'design', 'ux'] },
-  { title: 'SDE Intern at Abhibus (Ixigo)', href: '/writing/ixigo-experience', icon: <Briefcase className="w-4 h-4" />, keywords: ['ixigo', 'internship', 'work', 'experience'] },
-  { title: 'Beginners Guide for Programming', href: '/writing/beginners-guide-programming', icon: <Code className="w-4 h-4" />, keywords: ['programming', 'coding', 'tutorial', 'learn'] },
-  { title: 'Beginners Guide for Design', href: '/writing/beginners-guide-design', icon: <PenTool className="w-4 h-4" />, keywords: ['design', 'tutorial', 'ui', 'ux'] },
-];
-
-const externalLinks: BaseItem[] = [
+const externalLinks: PaletteItem[] = [
   { title: 'GitHub', keywords: ['code', 'repo', 'git', 'source'], icon: <Github className="w-4 h-4" />, href: 'https://github.com/rohzzn' },
   { title: 'Twitter', keywords: ['social', 'tweet', 'x'], icon: <Twitter className="w-4 h-4" />, href: 'https://twitter.com/rohzzn' },
   { title: 'LinkedIn', keywords: ['job', 'work', 'professional', 'career'], icon: <Linkedin className="w-4 h-4" />, href: 'https://linkedin.com/in/rohzzn' },
@@ -119,58 +106,99 @@ const externalLinks: BaseItem[] = [
   { title: 'Settings.gg', keywords: ['settings', 'config', 'csgo', 'valorant'], icon: <Laptop className="w-4 h-4" />, href: 'https://settings.gg/rohzzn' },
 ];
 
-const quickActions: BaseItem[] = [
-  { 
-    title: 'Toggle Dark Mode', 
+const quickActions: PaletteItem[] = [
+  {
+    title: 'Toggle Dark Mode',
     keywords: ['theme', 'light', 'dark', 'switch'],
-    icon: <Moon className="w-4 h-4" />, 
+    icon: <Moon className="w-4 h-4" />,
     action: () => {
       document.documentElement.classList.toggle('dark');
       const isDark = document.documentElement.classList.contains('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
+    },
   },
   {
-    title: 'Toggle Sun Rays',
-    keywords: ['sun', 'rays', 'shadow', 'light', 'overlay', 'effect'],
-    icon: <Sun className="w-4 h-4" />,
+    title: 'Toggle E-Reader Mode',
+    keywords: ['ereader', 'e-reader', 'reading', 'sepia', 'eink'],
+    icon: <BookOpen className="w-4 h-4" />,
     action: () => {
-      document.documentElement.classList.toggle('sun-rays-on');
-      const isOn = document.documentElement.classList.contains('sun-rays-on');
-      localStorage.setItem('sunRays', isOn ? 'on' : 'off');
-    }
+      toggleEReaderMode();
+    },
+  },
+  {
+    title: 'Open RSS Feed',
+    keywords: ['rss', 'feed', 'subscribe', 'writing', 'blog', 'xml'],
+    icon: <Rss className="w-4 h-4" />,
+    action: () => {
+      window.open('/feed.xml', '_blank');
+    },
   },
 ];
 
-const defaultLinks: BaseItem[] = [...mainLinks, ...hobbyLinks, ...writingArticles, ...externalLinks, ...quickActions];
+const sectionItems: Record<PalettePage, PaletteItem[]> = {
+  pages: mainLinks,
+  writing: writingArticles,
+  projects: projectLinks,
+  hobbies: hobbyLinks,
+  external: externalLinks,
+  actions: quickActions,
+};
 
-// Create a new type for recent commands
+const categories: { id: PalettePage; title: string; icon: React.ReactNode; count: number; keywords: string[] }[] = [
+  { id: 'pages', title: 'Pages', icon: <Home className="w-4 h-4" />, count: mainLinks.length, keywords: ['pages', 'navigate', 'site'] },
+  { id: 'writing', title: 'Writing', icon: <FileText className="w-4 h-4" />, count: writingArticles.length, keywords: ['writing', 'blog', 'articles', 'posts'] },
+  { id: 'projects', title: 'Projects', icon: <Code className="w-4 h-4" />, count: projectLinks.length, keywords: ['projects', 'work', 'portfolio'] },
+  { id: 'hobbies', title: 'Hobbies', icon: <Sparkles className="w-4 h-4" />, count: hobbyLinks.length, keywords: ['hobbies', 'interests', 'fun'] },
+  { id: 'external', title: 'External links', icon: <Link2 className="w-4 h-4" />, count: externalLinks.length, keywords: ['external', 'social', 'links'] },
+  { id: 'actions', title: 'Actions', icon: <Moon className="w-4 h-4" />, count: quickActions.length, keywords: ['actions', 'theme', 'dark mode'] },
+];
+
+const searchGroups: { heading: string; page: PalettePage }[] = [
+  { heading: 'Pages', page: 'pages' },
+  { heading: 'Writing', page: 'writing' },
+  { heading: 'Projects', page: 'projects' },
+  { heading: 'Hobbies', page: 'hobbies' },
+  { heading: 'External links', page: 'external' },
+  { heading: 'Actions', page: 'actions' },
+];
+
+const defaultLinks: PaletteItem[] = [
+  ...mainLinks,
+  ...hobbyLinks,
+  ...writingArticles,
+  ...projectLinks,
+  ...externalLinks,
+  ...quickActions,
+];
+
 interface RecentCommand {
   title: string;
   type: 'link' | 'action';
   timestamp: number;
 }
 
+const itemClassName =
+  'flex items-center justify-between gap-2 px-2 py-2 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100';
+
 export default function CommandPalette({ links = defaultLinks }: CommandPaletteProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const [inputValue, setInputValue] = useState('');
-  const [pages, setPages] = useState<string[]>([]);
+  const [pages, setPages] = useState<PalettePage[]>([]);
   const [recentCommands, setRecentCommands] = useState<RecentCommand[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  
-  const allItems = useMemo(() => {
-    return [...links];
-  }, [links]);
 
-  // Track mounted state to prevent hydration issues
+  const currentPage = pages[pages.length - 1] ?? null;
+  const isSearching = inputValue.trim().length > 0;
+
+  const allItems = useMemo(() => [...links], [links]);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Load recent commands from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedRecents = localStorage.getItem('commandPaletteRecents');
@@ -184,70 +212,32 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
     }
   }, []);
 
-  // Custom filter function for better search results
-  const customFilter = (value: string, search: string, keywords?: string[]) => {
+  const customFilter = (value: string, search: string) => {
     if (!search) return 1;
-    
-    // Create a search score based on different factors
+
     let score = 0;
     const normalizedValue = value.toLowerCase();
     const normalizedSearch = search.toLowerCase();
-    
-    // Direct matches get highest score
+
     if (normalizedValue === normalizedSearch) return 2;
-    
-    // Starting with the search term gets high score
-    if (normalizedValue.startsWith(normalizedSearch)) {
-      score += 1.5;
-    }
-    
-    // Contains the search term gets medium score
-    if (normalizedValue.includes(normalizedSearch)) {
-      score += 1;
-    }
-    
-    // Check keywords for matches
-    if (keywords && keywords.length) {
-      for (const keyword of keywords) {
-        const normalizedKeyword = keyword.toLowerCase();
-        if (normalizedKeyword === normalizedSearch) {
-          score += 1;
-        } else if (normalizedKeyword.startsWith(normalizedSearch)) {
-          score += 0.8;
-        } else if (normalizedKeyword.includes(normalizedSearch)) {
-          score += 0.5;
-        }
-      }
-    }
-    
+    if (normalizedValue.startsWith(normalizedSearch)) score += 1.5;
+    if (normalizedValue.includes(normalizedSearch)) score += 1;
+
     return score;
   };
 
-  // Save a command to recent history
   const saveToRecents = useCallback((title: string, type: 'link' | 'action') => {
-    const newRecent: RecentCommand = {
-      title,
-      type,
-      timestamp: Date.now()
-    };
-    
-    // Add to recents, keeping only the most recent 5 unique commands
-    setRecentCommands(prev => {
-      // Filter out any existing entry with the same title
-      const filtered = prev.filter(item => item.title !== title);
-      // Add new entry at the beginning
-      const updated = [newRecent, ...filtered].slice(0, 5);
-      
-      // Save to localStorage
+    const newRecent: RecentCommand = { title, type, timestamp: Date.now() };
+
+    setRecentCommands((prev) => {
+      const updated = [{ ...newRecent }, ...prev.filter((item) => item.title !== title)].slice(0, 5);
       if (typeof window !== 'undefined') {
         localStorage.setItem('commandPaletteRecents', JSON.stringify(updated));
       }
-      
       return updated;
     });
   }, []);
 
-  // Toggle the menu when ⌘K is pressed
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -255,7 +245,9 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
         setOpen((open) => !open);
       } else if (e.key === 'Escape') {
         if (pages.length > 0) {
-          setPages(pages.slice(0, -1));
+          e.preventDefault();
+          setPages((prev) => prev.slice(0, -1));
+          setInputValue('');
           return;
         }
         setOpen(false);
@@ -267,7 +259,6 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
   }, [pages]);
 
   useEffect(() => {
-    // Reset input value when dialog opens/closes
     if (!open) {
       setTimeout(() => {
         setInputValue('');
@@ -276,80 +267,106 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
     }
   }, [open]);
 
-  // Focus the search input when the palette opens for smooth keyboard navigation
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [open]);
+  }, [open, currentPage]);
 
   const isMac = useMemo(() => {
     if (typeof window === 'undefined' || !isMounted) return false;
     return navigator.platform.toLowerCase().includes('mac');
   }, [isMounted]);
 
-  const handleSelect = useCallback((value: string) => {
-    const item = allItems.find((item) => 
-      item.title === value || 
-      (item.keywords && item.keywords.some(k => k === value))
-    );
-    
-    if (!item) return;
-    
-    // Save to recent commands
-    const commandType = 'href' in item ? 'link' : 'action';
-    saveToRecents(item.title, commandType);
-    
-    if ('href' in item && item.href) {
-      if (item.href.startsWith('http')) {
-        window.open(item.href, '_blank');
-      } else {
-        router.push(item.href);
-      }
-      setOpen(false);
-    } else if ('action' in item && typeof item.action === 'function') {
-      item.action();
-      setOpen(false);
-    }
-  }, [allItems, router, saveToRecents]);
+  const navigateToItem = useCallback(
+    (item: PaletteItem) => {
+      const commandType = item.href ? 'link' : 'action';
+      saveToRecents(item.title, commandType);
 
-  // Get recent items with their full details
-  const recentItems = useMemo(() => {
-    return recentCommands
-      .map(recent => {
-        const item = allItems.find(item => item.title === recent.title);
-        return item ? { ...item, timestamp: recent.timestamp } : null;
-      })
-      .filter(Boolean) as Array<(typeof allItems[0] & { timestamp: number })>;
-  }, [recentCommands, allItems]);
-  
-  const goBack = useCallback(() => {
-    setPages(prev => prev.slice(0, -1));
+      if (item.href) {
+        if (item.href.startsWith('http')) {
+          window.open(item.href, '_blank');
+        } else {
+          router.push(item.href);
+        }
+        setOpen(false);
+      } else if (item.action) {
+        item.action();
+        setOpen(false);
+      }
+    },
+    [router, saveToRecents]
+  );
+
+  const handleSelect = useCallback(
+    (title: string) => {
+      const item = allItems.find((entry) => entry.title === title);
+      if (item) navigateToItem(item);
+    },
+    [allItems, navigateToItem]
+  );
+
+  const openCategory = useCallback((page: PalettePage) => {
+    setPages([page]);
     setInputValue('');
   }, []);
+
+  const recentItems = useMemo(() => {
+    return recentCommands
+      .map((recent) => {
+        const item = allItems.find((entry) => entry.title === recent.title);
+        return item ? { ...item, timestamp: recent.timestamp } : null;
+      })
+      .filter(Boolean) as Array<(typeof allItems)[0] & { timestamp: number }>;
+  }, [recentCommands, allItems]);
+
+  const goBack = useCallback(() => {
+    setPages((prev) => prev.slice(0, -1));
+    setInputValue('');
+  }, []);
+
+  const placeholder = isSearching
+    ? 'Search everything...'
+    : currentPage
+      ? `Search in ${PAGE_LABELS[currentPage]}...`
+      : 'Search or pick a category...';
+
+  const renderItems = (items: PaletteItem[], keyPrefix: string) =>
+    items.map((item) => (
+      <Command.Item
+        key={`${keyPrefix}-${item.href ?? item.title}`}
+        value={`${item.title} ${item.keywords?.join(' ') ?? ''}`}
+        onSelect={() => handleSelect(item.title)}
+        className={itemClassName}
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          {item.icon || <div className="w-4 h-4 flex-shrink-0" />}
+          <span className="truncate">{item.title}</span>
+        </div>
+      </Command.Item>
+    ));
 
   return (
     <>
       {pathname !== '/guestbook' && (
-      <kbd
-        className="fixed right-4 top-4 hidden h-6 items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 font-mono text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 md:flex"
-        onClick={() => setOpen(true)}
-      >
-        {!isMounted ? (
-          // Show a neutral placeholder during SSR to prevent hydration mismatch
-          <>
-            <span className="text-xs">⌘</span>K
-          </>
-        ) : isMac ? (
-          <>
-            <span className="text-xs">⌘</span>K
-          </>
-        ) : (
-          <>
-            <span className="text-xs">Ctrl</span>K
-          </>
-        )}
-      </kbd>
+        <kbd
+          className="fixed right-4 top-4 hidden h-6 items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 font-mono text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 md:flex"
+          onClick={() => setOpen(true)}
+        >
+          {!isMounted ? (
+            <>
+              <span className="text-xs">⌘</span>K
+            </>
+          ) : isMac ? (
+            <>
+              <span className="text-xs">⌘</span>K
+            </>
+          ) : (
+            <>
+              <span className="text-xs">Ctrl</span>K
+            </>
+          )}
+        </kbd>
       )}
 
       {open && (
@@ -362,176 +379,132 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
 
       {open && (
         <Command
-        label="Command Menu"
-        filter={customFilter}
+          label="Command Menu"
+          filter={customFilter}
           loop
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-[10000]"
-        style={{ transform: 'translate(-50%, -50%)' }}
-      >
-        {/* Hidden title for accessibility */}
-        <div className="sr-only">
-          <h2>Command Menu</h2>
-        </div>
-        <div className="border-b border-zinc-200 dark:border-zinc-700 flex items-center px-3">
-          {pages.length > 0 && (
-            <button 
-              onClick={goBack} 
-              className="flex items-center mr-2 p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </button>
-          )}
-          <Search className="w-4 h-4 mr-2 text-zinc-500 dark:text-zinc-400" />
-          <Command.Input
-            ref={inputRef}
-            value={inputValue}
-            onValueChange={setInputValue}
-            placeholder="Search pages, articles, hobbies, links..."
-            className="w-full h-12 bg-transparent text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 outline-none"
-          />
-        </div>
-
-        <Command.List className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-          <Command.Empty className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400 flex flex-col items-center justify-center">
-            <Sparkles className="w-5 h-5 mb-2 text-zinc-400 dark:text-zinc-500" />
-            <p>No results found for &ldquo;{inputValue}&rdquo;</p>
-          </Command.Empty>
-
-          {recentItems.length > 0 && !inputValue && (
-            <>
-              <Command.Group heading="Recent" className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
-                    {recentItems.map((item, index) => (
-                      <Command.Item
-                        key={`recent-${index}`}
-                        value={`${item.title} ${item.keywords?.join(' ')}`}
-                        onSelect={() => handleSelect(item.title)}
-                        className="flex items-center justify-between gap-2 px-2 py-2 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
-                      >
-                        <div className="flex items-center gap-2">
-                          {item.icon || <History className="w-4 h-4" />}
-                          <span>{item.title}</span>
-                        </div>
-                </Command.Item>
-              ))}
-            </Command.Group>
-            <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
-          </>
-        )}
-
-        <Command.Group heading="Go to" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
-                {mainLinks.map((link) => (
-                  <Command.Item
-                    key={link.href}
-                    value={`${link.title} ${link.keywords?.join(' ')}`}
-                    onSelect={() => handleSelect(link.title)}
-                    className="flex items-center justify-between gap-2 px-2 py-2 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
-                  >
-                    <div className="flex items-center gap-2">
-                      {link.icon || <div className="w-4 h-4" />}
-                      <span>{link.title}</span>
-                    </div>
-
-                    {link.shortcut && (
-                      <kbd className="bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 text-xs rounded">
-                        {link.shortcut}
-                      </kbd>
-                    )}
-                  </Command.Item>
-                ))}
-              </Command.Group>
-
-              <Command.Group heading="Hobbies" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2 mt-1">
-                {hobbyLinks.map((link) => (
-                  <Command.Item
-                    key={link.href}
-                    value={`${link.title} ${link.keywords?.join(' ')}`}
-                    onSelect={() => handleSelect(link.title)}
-                    className="flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
-                  >
-                    <div className="flex items-center gap-2">
-                      {link.icon || <div className="w-4 h-4" />}
-                      <span>{link.title}</span>
-                    </div>
-                  </Command.Item>
-                ))}
-              </Command.Group>
-
-              <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
-
-              <Command.Group heading="Writing" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
-                {writingArticles.map((article) => (
-                  <Command.Item
-                    key={article.href}
-                    value={`${article.title} ${article.keywords?.join(' ')}`}
-                    onSelect={() => handleSelect(article.title)}
-                    className="flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
-                  >
-                    <div className="flex items-center gap-2">
-                      {article.icon || <div className="w-4 h-4" />}
-                      <span>{article.title}</span>
-                    </div>
-                  </Command.Item>
-                ))}
-              </Command.Group>
-
-              <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
-
-              <Command.Group heading="External links" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
-                {externalLinks.map((link) => (
-                  <Command.Item
-                    key={link.href}
-                    value={`${link.title} ${link.keywords?.join(' ')}`}
-                    onSelect={() => handleSelect(link.title)}
-                    className="flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
-                  >
-                    <div className="flex items-center gap-2">
-                      {link.icon || <div className="w-4 h-4" />}
-                      <span>{link.title}</span>
-                    </div>
-                  </Command.Item>
-                ))}
-              </Command.Group>
-
-              <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
-
-              <Command.Group heading="Quick actions" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
-                {quickActions.map((item, index) => (
-                  <Command.Item
-                    key={index}
-                    value={`${item.title} ${item.keywords?.join(' ')}`}
-                    onSelect={() => handleSelect(item.title)}
-                    className="flex items-center justify-between gap-2 px-2 py-2 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100"
-                  >
-                    <div className="flex items-center gap-2">
-                      {item.icon || <div className="w-4 h-4" />}
-                      <span>{item.title}</span>
-                    </div>
-                </Command.Item>
-              ))}
-            </Command.Group>
-
-          <div className="py-2 px-2 text-xs border-t border-zinc-200 dark:border-zinc-700 mt-2 text-zinc-500 dark:text-zinc-400 flex justify-between">
-            <div className="flex gap-2">
-              <div className="flex items-center gap-1">
-                <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">↑</kbd>
-                <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">↓</kbd>
-                <span className="text-[10px]">Navigate</span>
-              </div>
-              
-              <div className="flex items-center gap-1">
-                <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">Enter</kbd>
-                <span className="text-[10px]">Select</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-1">
-              <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">Esc</kbd>
-              <span className="text-[10px]">{pages.length > 0 ? 'Back' : 'Close'}</span>
-            </div>
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-[10000]"
+          style={{ transform: 'translate(-50%, -50%)' }}
+        >
+          <div className="sr-only">
+            <h2>Command Menu</h2>
           </div>
-        </Command.List>
-      </Command>
+
+          <div className="border-b border-zinc-200 dark:border-zinc-700 flex items-center px-3 gap-2">
+            {currentPage && !isSearching && (
+              <button
+                onClick={goBack}
+                className="flex items-center p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+            )}
+            <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400 flex-shrink-0" />
+            {currentPage && !isSearching && (
+              <span className="text-xs text-zinc-500 dark:text-zinc-400 flex-shrink-0">
+                {PAGE_LABELS[currentPage]}
+              </span>
+            )}
+            <Command.Input
+              ref={inputRef}
+              value={inputValue}
+              onValueChange={setInputValue}
+              placeholder={placeholder}
+              className="w-full h-12 bg-transparent text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 outline-none"
+            />
+          </div>
+
+          <Command.List className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+            <Command.Empty className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400 flex flex-col items-center justify-center">
+              <Sparkles className="w-5 h-5 mb-2 text-zinc-400 dark:text-zinc-500" />
+              <p>No results found for &ldquo;{inputValue}&rdquo;</p>
+            </Command.Empty>
+
+            {isSearching &&
+              searchGroups.map(({ heading, page }) => (
+                <Command.Group
+                  key={`search-${page}`}
+                  heading={heading}
+                  className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2"
+                >
+                  {renderItems(sectionItems[page], `search-${page}`)}
+                </Command.Group>
+              ))}
+
+            {!isSearching && !currentPage && (
+              <>
+                {recentItems.length > 0 && (
+                  <>
+                    <Command.Group heading="Recent" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+                      {recentItems.map((item, index) => (
+                        <Command.Item
+                          key={`recent-${index}`}
+                          value={`${item.title} ${item.keywords?.join(' ') ?? ''}`}
+                          onSelect={() => handleSelect(item.title)}
+                          className={itemClassName}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            {item.icon || <History className="w-4 h-4 flex-shrink-0" />}
+                            <span className="truncate">{item.title}</span>
+                          </div>
+                        </Command.Item>
+                      ))}
+                    </Command.Group>
+                    <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
+                  </>
+                )}
+
+                <Command.Group heading="Browse" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+                  {categories.map((category) => (
+                    <Command.Item
+                      key={category.id}
+                      value={`${category.title} ${category.keywords.join(' ')}`}
+                      onSelect={() => openCategory(category.id)}
+                      className={itemClassName}
+                    >
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {category.icon}
+                        <span>{category.title}</span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0 text-zinc-400 dark:text-zinc-500">
+                        <span className="text-[11px]">{category.count}</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </div>
+                    </Command.Item>
+                  ))}
+                </Command.Group>
+              </>
+            )}
+
+            {!isSearching && currentPage && (
+              <Command.Group
+                heading={PAGE_LABELS[currentPage]}
+                className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2"
+              >
+                {renderItems(sectionItems[currentPage], currentPage)}
+              </Command.Group>
+            )}
+
+            <div className="py-2 px-2 text-xs border-t border-zinc-200 dark:border-zinc-700 mt-2 text-zinc-500 dark:text-zinc-400 flex justify-between">
+              <div className="flex gap-2">
+                <div className="flex items-center gap-1">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">↑</kbd>
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">↓</kbd>
+                  <span className="text-[10px]">Navigate</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">Enter</kbd>
+                  <span className="text-[10px]">Select</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">Esc</kbd>
+                <span className="text-[10px]">{currentPage && !isSearching ? 'Back' : 'Close'}</span>
+              </div>
+            </div>
+          </Command.List>
+        </Command>
       )}
     </>
   );
-} 
+}

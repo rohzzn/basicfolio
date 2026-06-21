@@ -1,23 +1,12 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-
-type EReaderSettings = {
-  enabled: boolean;
-};
-
-const STORAGE_KEY = "basicfolio:ereader:v1";
-
-function safeParseSettings(raw: string | null): EReaderSettings | null {
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw) as Partial<EReaderSettings>;
-    if (typeof parsed !== "object" || parsed === null) return null;
-    return { enabled: Boolean(parsed.enabled) };
-  } catch {
-    return null;
-  }
-}
+import {
+  EREADER_CHANGE_EVENT,
+  applyEReaderMode,
+  getEReaderEnabled,
+  setEReaderEnabled,
+} from "@/lib/ereader-mode";
 
 export default function EReaderEasterEgg() {
   const sequence = useMemo(
@@ -38,36 +27,34 @@ export default function EReaderEasterEgg() {
 
   const indexRef = useRef(0);
   const toastTimeoutRef = useRef<number | null>(null);
-  const hadDarkRef = useRef<boolean>(false);
 
-  const [settings, setSettings] = useState<EReaderSettings>({ enabled: false });
+  const [enabled, setEnabled] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  // Load saved settings once.
   useEffect(() => {
-    const saved = safeParseSettings(localStorage.getItem(STORAGE_KEY));
-    if (saved) setSettings(saved);
+    const saved = getEReaderEnabled();
+    setEnabled(saved);
+    if (saved) applyEReaderMode(true);
   }, []);
 
-  // Apply/remove global class (+ temporarily force light mode).
   useEffect(() => {
-    const root = document.documentElement;
+    const onChange = (event: Event) => {
+      const next = (event as CustomEvent<{ enabled: boolean }>).detail.enabled;
+      setEnabled(next);
+    };
 
-    if (settings.enabled) {
-      hadDarkRef.current = root.classList.contains("dark");
-      root.classList.remove("dark");
-      root.classList.add("e-reader-mode");
-    } else {
-      root.classList.remove("e-reader-mode");
-      if (hadDarkRef.current) root.classList.add("dark");
-      hadDarkRef.current = false;
-    }
-  }, [settings.enabled]);
+    window.addEventListener(EREADER_CHANGE_EVENT, onChange);
+    return () => window.removeEventListener(EREADER_CHANGE_EVENT, onChange);
+  }, []);
 
-  // Persist on change.
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  }, [settings]);
+  const showEasterEggToast = () => {
+    setShowToast(true);
+    if (toastTimeoutRef.current) window.clearTimeout(toastTimeoutRef.current);
+    toastTimeoutRef.current = window.setTimeout(() => {
+      setShowToast(false);
+      toastTimeoutRef.current = null;
+    }, 3400);
+  };
 
   // Konami listener (toggles e-reader mode).
   useEffect(() => {
@@ -82,7 +69,9 @@ export default function EReaderEasterEgg() {
       if (isEditable) return;
 
       if (e.key === "Escape") {
-        setSettings({ enabled: false });
+        if (getEReaderEnabled()) {
+          setEReaderEnabled(false);
+        }
         setShowToast(false);
         if (toastTimeoutRef.current) {
           window.clearTimeout(toastTimeoutRef.current);
@@ -99,18 +88,9 @@ export default function EReaderEasterEgg() {
         indexRef.current += 1;
         if (indexRef.current >= sequence.length) {
           indexRef.current = 0;
-          setSettings((s) => {
-            const next = !s.enabled;
-            if (next) {
-              setShowToast(true);
-              if (toastTimeoutRef.current) window.clearTimeout(toastTimeoutRef.current);
-              toastTimeoutRef.current = window.setTimeout(() => {
-                setShowToast(false);
-                toastTimeoutRef.current = null;
-              }, 3400);
-            }
-            return { enabled: next };
-          });
+          const next = !getEReaderEnabled();
+          setEReaderEnabled(next);
+          if (next) showEasterEggToast();
         }
         return;
       }
@@ -133,7 +113,7 @@ export default function EReaderEasterEgg() {
 
   return (
     <>
-      {settings.enabled && <div className="ereader-overlay" aria-hidden="true" />}
+      {enabled && <div className="ereader-overlay" aria-hidden="true" />}
 
       {showToast && (
         <div
@@ -151,4 +131,3 @@ export default function EReaderEasterEgg() {
     </>
   );
 }
-
