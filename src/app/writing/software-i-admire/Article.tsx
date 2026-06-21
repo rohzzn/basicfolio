@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import AdmiredSoftware from './AdmiredSoftware';
-
-export const metadata: Metadata = {
-  title: 'Software I Admire That I Didn\'t Write — Rohan',
-  description: 'A look at the C programs, Rust tools, and Go infrastructure I depend on every day but couldn\'t have built myself.',
-  openGraph: {
-    title: 'Software I Admire That I Didn\'t Write',
-    description: 'A look at the C programs, Rust tools, and Go infrastructure I depend on every day but couldn\'t have built myself.',
-    url: 'https://rohan.run/writing/software-i-admire',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/software-i-admire' },
-};
 
 export default function SoftwareIAdmire() {
   return (

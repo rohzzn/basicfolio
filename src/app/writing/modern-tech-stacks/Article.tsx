@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import CostComparison from './CostComparison';
-
-export const metadata: Metadata = {
-  title: 'Modern Tech Stacks Kill Startups — Rohan',
-  description: 'Why chasing the latest frameworks and tools can kill a startup before it ever ships anything of value.',
-  openGraph: {
-    title: 'Modern Tech Stacks Kill Startups',
-    description: 'Why chasing the latest frameworks and tools can kill a startup before it ever ships anything of value.',
-    url: 'https://rohan.run/writing/modern-tech-stacks',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/modern-tech-stacks' },
-};
 
 const ModernTechStacks: React.FC = () => {
   return (

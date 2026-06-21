@@ -84,6 +84,7 @@ const hobbyLinks: BaseItem[] = [
 ];
 
 const writingArticles: BaseItem[] = [
+  { title: "Apple's Best AI Feature Is Not Siri", href: '/writing/apple-best-ai-feature', icon: <Sparkles className="w-4 h-4" />, keywords: ['apple', 'ios 27', 'wwdc', 'passwords', 'siri', 'agentic ai', 'security'] },
   { title: 'How to Build Discord Profile Widgets', href: '/writing/discord-widgets', icon: <Code className="w-4 h-4" />, keywords: ['discord', 'widgets', 'profile', 'bot', 'api', 'discord widgets', 'social layer'] },
   { title: 'What I Learned Building 40 Side Projects', href: '/writing/forty-projects', icon: <Code className="w-4 h-4" />, keywords: ['projects', 'side projects', 'building', 'shipping', 'lessons'] },
   { title: 'Why I Use Satoshi on Everything I Build', href: '/writing/satoshi-font', icon: <PenTool className="w-4 h-4" />, keywords: ['satoshi', 'font', 'typography', 'design', 'typeface'] },

@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import FontShowcase from './FontShowcase';
-
-export const metadata: Metadata = {
-  title: 'Why I Use Satoshi on Everything I Build — Rohan',
-  description: 'The font choices behind this site and why Satoshi specifically became my default for almost every project.',
-  openGraph: {
-    title: 'Why I Use Satoshi on Everything I Build',
-    description: 'The font choices behind this site and why Satoshi specifically became my default for almost every project.',
-    url: 'https://rohan.run/writing/satoshi-font',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/satoshi-font' },
-};
 
 export default function SatoshiFont() {
   return (

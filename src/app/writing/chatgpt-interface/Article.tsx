@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import ChatDemo from './ChatDemo';
-
-export const metadata: Metadata = {
-  title: 'Building My Own ChatGPT UI — Rohan',
-  description: 'Why I built a custom ChatGPT interface instead of using the default, and what I learned about AI tooling along the way.',
-  openGraph: {
-    title: 'Building My Own ChatGPT UI',
-    description: 'Why I built a custom ChatGPT interface instead of using the default, and what I learned about AI tooling along the way.',
-    url: 'https://rohan.run/writing/chatgpt-interface',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/chatgpt-interface' },
-};
 
 const ChatGPTInterface: React.FC = () => {
   return (

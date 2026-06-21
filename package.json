@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build && next lint --max-warnings 0",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ping-sitemap": "node scripts/ping-sitemap.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

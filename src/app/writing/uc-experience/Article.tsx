@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import CourseCards from './CourseCards';
-
-export const metadata: Metadata = {
-  title: 'First Semester at UC — Rohan',
-  description: 'My experience navigating grad school, new friendships, and adjusting to life in Cincinnati during my first semester.',
-  openGraph: {
-    title: 'First Semester at UC',
-    description: 'My experience navigating grad school, new friendships, and adjusting to life in Cincinnati during my first semester.',
-    url: 'https://rohan.run/writing/uc-experience',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/uc-experience' },
-};
 
 const UCExperience: React.FC = () => {
   return (

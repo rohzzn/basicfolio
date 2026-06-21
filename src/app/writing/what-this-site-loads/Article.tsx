@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import NetworkWaterfall from './NetworkWaterfall';
-
-export const metadata: Metadata = {
-  title: 'Everything This Site Loads Over the Wire — Rohan',
-  description: "I opened the network tab on my own portfolio, wrote down every request, and inventoried all 13 external services it talks to.",
-  openGraph: {
-    title: 'Everything This Site Loads Over the Wire',
-    description: "I opened the network tab on my own portfolio, wrote down every request, and inventoried all 13 external services it talks to.",
-    url: 'https://rohan.run/writing/what-this-site-loads',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/what-this-site-loads' },
-};
 
 export default function WhatThisSiteLoads() {
   return (

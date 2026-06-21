@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-
-export const metadata: Metadata = {
-  title: 'How to Build Discord Profile Widgets - Rohan',
-  description: 'A practical guide to building Discord profile widgets using the new widgets v2 experiment, from setting up your application to displaying live data on your profile.',
-  openGraph: {
-    title: 'How to Build Discord Profile Widgets',
-    description: 'A practical guide to building Discord profile widgets using the new widgets v2 experiment, from setting up your application to displaying live data on your profile.',
-    url: 'https://rohan.run/writing/discord-widgets',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/discord-widgets' },
-};
 
 const DiscordWidgets: React.FC = () => {
   return (

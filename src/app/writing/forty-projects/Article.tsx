@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import ProjectStats from './ProjectStats';
-
-export const metadata: Metadata = {
-  title: 'What I Learned Building 40 Side Projects — Rohan',
-  description: 'Looking back at every side project I have shipped: what got users, what got abandoned, and what the pattern between them actually is.',
-  openGraph: {
-    title: 'What I Learned Building 40 Side Projects',
-    description: 'Looking back at every side project I have shipped: what got users, what got abandoned, and what the pattern between them actually is.',
-    url: 'https://rohan.run/writing/forty-projects',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/forty-projects' },
-};
 
 export default function FortyProjects() {
   return (

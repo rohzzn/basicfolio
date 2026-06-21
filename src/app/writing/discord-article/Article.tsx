@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import TrafficGraph from './TrafficGraph';
-
-export const metadata: Metadata = {
-  title: "How Discord Survived 2024's Biggest Launch — Rohan",
-  description: "A deep dive into how Discord's infrastructure scaled to handle millions of concurrent users during a massive game launch.",
-  openGraph: {
-    title: "How Discord Survived 2024's Biggest Launch",
-    description: "A deep dive into how Discord's infrastructure scaled to handle millions of concurrent users during a massive game launch.",
-    url: 'https://rohan.run/writing/discord-article',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/discord-article' },
-};
 
 const DiscordArticle: React.FC = () => {
   return (

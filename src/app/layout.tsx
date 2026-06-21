@@ -33,7 +33,10 @@ export const metadata: Metadata = {
     images: ['/og.png'], // Use the same optimized image
   },
   alternates: {
-    canonical: 'https://rohan.run'
+    canonical: 'https://rohan.run',
+    types: {
+      'application/rss+xml': [{ url: '/feed.xml', title: "Rohan's Writing" }],
+    },
   },
   other: {
     'og:image:type': 'image/png',
@@ -46,8 +49,17 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
-  }
+  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? {
+        verification: {
+          google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+        },
+      }
+    : {}),
 };
 
 export default function RootLayout({

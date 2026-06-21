@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import PerfMetrics from './PerfMetrics';
-
-export const metadata: Metadata = {
-  title: 'Boring Guide to 10x Frontend Performance — Rohan',
-  description: 'The unsexy, practical steps that actually make your frontend fast — no magic, just fundamentals done right.',
-  openGraph: {
-    title: 'Boring Guide to 10x Frontend Performance',
-    description: 'The unsexy, practical steps that actually make your frontend fast — no magic, just fundamentals done right.',
-    url: 'https://rohan.run/writing/boring-performance',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/boring-performance' },
-};
 
 const BoringPerformance: React.FC = () => {
   return (

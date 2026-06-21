@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import MoveTimeline from './MoveTimeline';
-
-export const metadata: Metadata = {
-  title: 'From Hyderabad to Cincinnati — Rohan',
-  description: 'The whole process of finishing a degree in India, applying to grad school, getting a visa, and arriving alone in a city 14,000km away.',
-  openGraph: {
-    title: 'From Hyderabad to Cincinnati',
-    description: 'The whole process of finishing a degree in India, applying to grad school, getting a visa, and arriving alone in a city 14,000km away.',
-    url: 'https://rohan.run/writing/moving-to-cincinnati',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/moving-to-cincinnati' },
-};
 
 export default function MovingToCincinnati() {
   return (

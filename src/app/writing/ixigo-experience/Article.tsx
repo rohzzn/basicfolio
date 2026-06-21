@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import WorkTimeline from './WorkTimeline';
-
-export const metadata: Metadata = {
-  title: 'SDE Intern at Abhibus (Ixigo) — Rohan',
-  description: "Lessons from my software engineering internship at Abhibus, a subsidiary of Ixigo, India's leading travel platform.",
-  openGraph: {
-    title: 'SDE Intern at Abhibus (Ixigo)',
-    description: "Lessons from my software engineering internship at Abhibus, a subsidiary of Ixigo, India's leading travel platform.",
-    url: 'https://rohan.run/writing/ixigo-experience',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/ixigo-experience' },
-};
 
 const IxigoExperience: React.FC = () => {
   return (

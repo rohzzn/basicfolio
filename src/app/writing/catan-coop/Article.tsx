@@ -1,20 +1,8 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import HexBoard from './HexBoard';
 import DiceRoller from './DiceRoller';
 import BuildCosts from './BuildCosts';
-
-export const metadata: Metadata = {
-  title: 'Building Multiplayer Catan From Scratch — Rohan',
-  description: 'How I built a full-featured online Settlers of Catan — hex grid geometry, server-authoritative game state, Socket.IO rooms, and Web Audio all from scratch.',
-  openGraph: {
-    title: 'Building Multiplayer Catan From Scratch',
-    description: 'How I built a full-featured online Settlers of Catan — hex grid geometry, server-authoritative game state, Socket.IO rooms, and Web Audio all from scratch.',
-    url: 'https://rohan.run/writing/catan-coop',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/catan-coop' },
-};
 
 export default function CatanCoop() {
   return (

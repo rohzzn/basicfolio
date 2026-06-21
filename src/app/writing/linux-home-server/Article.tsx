@@ -1,18 +1,6 @@
-import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import { BuildConfigurator, CostComparison, ServiceList, StorageLayout, ComposePreview, TrafficFlow } from './ServerComponents';
-
-export const metadata: Metadata = {
-  title: 'Building a Linux Home Server — Rohan',
-  description: 'I want to build a Linux home server this year to run all my self-hosted services, personal websites, and side projects from one machine.',
-  openGraph: {
-    title: 'Building a Linux Home Server',
-    description: 'I want to build a Linux home server this year to run all my self-hosted services, personal websites, and side projects from one machine.',
-    url: 'https://rohan.run/writing/linux-home-server',
-  },
-  alternates: { canonical: 'https://rohan.run/writing/linux-home-server' },
-};
 
 const LinuxHomeServer: React.FC = () => {
   return (

@@ -10,6 +10,14 @@ export type Post = {
 
 export const posts: Post[] = [
   {
+    slug: 'apple-best-ai-feature',
+    title: "Apple's Best AI Feature Is Not Siri",
+    description: 'WWDC 2026 buried the most useful agentic AI feature in the Passwords app. A look at what it actually does, why it works, and where it breaks.',
+    date: '2026-06-21',
+    displayDate: 'Jun 2026',
+    category: 'tech',
+  },
+  {
     slug: 'discord-widgets',
     title: 'How to Build Discord Profile Widgets',
     description: 'A practical guide to building Discord profile widgets using the new widgets v2 experiment — from setting up your application to displaying live data on your profile.',
