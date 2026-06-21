@@ -8,7 +8,6 @@ import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
 import EReaderEasterEgg from "./EReaderEasterEgg";
-import LocalTime from "./LocalTime";
 
 interface NavLinkProps {
   href: string;
@@ -545,9 +544,6 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
             <VolumeX className="w-3.5 h-3.5" />
           )}
         </button>
-
-        <span className="h-3 w-px bg-zinc-300 dark:bg-zinc-600" aria-hidden="true" />
-        <LocalTime />
       </div>
       )}
       

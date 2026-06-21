@@ -1,4 +1,5 @@
 import React from 'react';
+import PostReads from '@/components/PostReads';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -12,6 +13,7 @@ const DiscordWidgets: React.FC = () => {
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2026-05-29">May 29, 2026</time>
+          <PostReads />
         </div>
       </header>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import PostReads from '@/components/PostReads';
 import Link from 'next/link';
 import AdmiredSoftware from './AdmiredSoftware';
 
@@ -12,6 +13,7 @@ export default function SoftwareIAdmire() {
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2025-04-10">April 2025</time>
+          <PostReads />
         </div>
       </header>
 

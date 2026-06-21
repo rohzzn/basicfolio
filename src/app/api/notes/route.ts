@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Redis } from '@upstash/redis';
+import { getRedis } from '@/lib/redis';
 
 export interface Note {
   id: string;
@@ -11,10 +11,7 @@ export interface Note {
   published: boolean;
 }
 
-const redis = new Redis({
-  url: process.env.KVI_KV_REST_API_URL!,
-  token: process.env.KVI_KV_REST_API_TOKEN!,
-});
+const redis = () => getRedis();
 
 const NOTES_KEY = 'admin-notes';
 
@@ -25,8 +22,11 @@ const checkAuth = (request: NextRequest): boolean => {
 };
 
 const readNotes = async (): Promise<Note[]> => {
+  const store = redis();
+  if (!store) return [];
+
   try {
-    const notes = await redis.get<Note[]>(NOTES_KEY);
+    const notes = await store.get<Note[]>(NOTES_KEY);
     return notes || [];
   } catch {
     return [];
@@ -34,7 +34,9 @@ const readNotes = async (): Promise<Note[]> => {
 };
 
 const writeNotes = async (notes: Note[]): Promise<void> => {
-  await redis.set(NOTES_KEY, notes);
+  const store = redis();
+  if (!store) return;
+  await store.set(NOTES_KEY, notes);
 };
 
 // GET — public (returns published only) or admin (returns all)

@@ -1,4 +1,5 @@
 import React from 'react';
+import PostReads from '@/components/PostReads';
 import Link from 'next/link';
 import WorkTimeline from './WorkTimeline';
 
@@ -12,6 +13,7 @@ const IxigoExperience: React.FC = () => {
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2023-10-10">October 10, 2023</time>
+          <PostReads />
         </div>
       </header>
 

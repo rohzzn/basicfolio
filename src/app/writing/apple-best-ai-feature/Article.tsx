@@ -1,4 +1,5 @@
 import React from 'react';
+import PostReads from '@/components/PostReads';
 import Link from 'next/link';
 import PasswordFixDemo from './PasswordFixDemo';
 import TwoFactorMatrix from './TwoFactorMatrix';
@@ -14,6 +15,7 @@ const AppleBestAIFeature: React.FC = () => {
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2026-06-21">June 21, 2026</time>
+          <PostReads />
         </div>
       </header>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import PostReads from '@/components/PostReads';
 import Link from 'next/link';
 import MoveTimeline from './MoveTimeline';
 
@@ -12,6 +13,7 @@ export default function MovingToCincinnati() {
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2024-08-05">August 24, 2024</time>
+          <PostReads />
         </div>
       </header>
 

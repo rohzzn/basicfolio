@@ -1,4 +1,5 @@
 import React from 'react';
+import PostReads from '@/components/PostReads';
 import Link from 'next/link';
 import ProjectStats from './ProjectStats';
 
@@ -12,6 +13,7 @@ export default function FortyProjects() {
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2026-02-10">February 10, 2026</time>
+          <PostReads />
         </div>
       </header>
 

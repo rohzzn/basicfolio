@@ -1,4 +1,5 @@
 import React from 'react';
+import PostReads from '@/components/PostReads';
 import Link from 'next/link';
 import NetworkWaterfall from './NetworkWaterfall';
 
@@ -12,6 +13,7 @@ export default function WhatThisSiteLoads() {
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2026-05-02">May 2026</time>
+          <PostReads />
         </div>
       </header>
 

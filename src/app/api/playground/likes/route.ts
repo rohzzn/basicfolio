@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Redis } from '@upstash/redis';
+import { getRedis } from '@/lib/redis';
 
 interface PhotoLikes {
   [photoId: string]: number;
 }
 
-const redis = new Redis({
-  url: process.env.KVI_KV_REST_API_URL!,
-  token: process.env.KVI_KV_REST_API_TOKEN!,
-});
+const getStore = () => getRedis();
 
 const LIKES_KEY = 'playground-likes';
 
 // Read likes from Redis
 const readLikes = async (): Promise<PhotoLikes> => {
+  const redis = getStore();
+  if (!redis) return {};
+
   try {
     const likes = await redis.get<PhotoLikes>(LIKES_KEY);
     return likes || {};
@@ -25,6 +25,9 @@ const readLikes = async (): Promise<PhotoLikes> => {
 
 // Write likes to Redis
 const writeLikes = async (likes: PhotoLikes): Promise<void> => {
+  const redis = getStore();
+  if (!redis) return;
+
   try {
     await redis.set(LIKES_KEY, likes);
   } catch (error) {
