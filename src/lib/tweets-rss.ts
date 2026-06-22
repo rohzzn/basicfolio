@@ -169,8 +169,8 @@ export function parseRssItems(xml: string): TweetItem[] {
         link,
         date: isoDate,
         displayDate: pubDate ? formatDisplayDate(pubDate) : '',
-        media: media.length > 0 ? media : undefined,
-      };
+        ...(media.length > 0 ? { media } : {}),
+      } satisfies TweetItem;
     })
     .filter((item): item is TweetItem => item !== null);
 
@@ -203,8 +203,8 @@ export function parseNitterHtml(html: string): TweetItem[] {
         link,
         date: isoDate,
         displayDate,
-        media: media.length > 0 ? media : undefined,
-      };
+        ...(media.length > 0 ? { media } : {}),
+      } satisfies TweetItem;
     })
     .filter((item): item is TweetItem => item !== null);
 
