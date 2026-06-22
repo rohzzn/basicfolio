@@ -78,7 +78,7 @@ export const projects: Project[] = [
     category: "game",
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/catan" },
-      { label: "Live", url: "https://catan.rohan.my" },
+      { label: "Live", url: "https://catan.rohan.run" },
     ],
     image: "/projects/catan.png",
     longDescription: "Building a complete board game from scratch forces you to think about state in a way that CRUD apps never do. The hex grid geometry was the first challenge — pointy-top hexagons have specific offset math that is easy to get slightly wrong. Keeping game state server-authoritative so players cannot cheat required careful thought about what information each client should receive and when. The Web Audio dice sounds were a last-minute addition that made the whole thing feel more alive.",
@@ -99,7 +99,7 @@ export const projects: Project[] = [
     category: "game",
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/hxh" },
-      { label: "Live", url: "https://hxh.rohan.my/" },
+      { label: "Live", url: "https://hxh.rohan.run/" },
     ],
     image: "/projects/hxh.png",
     longDescription: "A complete card catalog for the Greed Island arc from Hunter x Hunter. Every named card with its effects, rarity, and lore. I wanted the visual design to match the source material rather than being a generic list view — the card layout tries to evoke the actual card game aesthetic from the arc.",

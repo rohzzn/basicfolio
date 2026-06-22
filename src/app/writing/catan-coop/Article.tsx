@@ -16,9 +16,9 @@ export default function CatanCoop() {
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2026-05-01">May 2026</time>
           <PostReads />
-          <a href="https://catan.rohan.my" target="_blank" rel="noopener noreferrer"
+          <a href="https://catan.rohan.run" target="_blank" rel="noopener noreferrer"
              className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors text-xs">
-            catan.rohan.my ↗
+            catan.rohan.run ↗
           </a>
         </div>
       </header>
@@ -26,7 +26,7 @@ export default function CatanCoop() {
       <div className="text-sm max-w-3xl">
 
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          I have been playing Catan since high school. My family bought a copy at a mall and that weekend I probably spent six hours placing settlements and arguing about trades. Something about the mix of strategy and luck and player interaction felt different from other board games. When I wanted a project to push my real-time web skills, building an online version seemed like the obvious choice. Complex enough to stay interesting, familiar enough that I would know immediately when something was wrong. The live version is at <a href="https://catan.rohan.my" target="_blank" rel="noopener noreferrer" className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">catan.rohan.my</a>. It supports 2 to 4 players through room codes and implements the full ruleset including dev cards, port trading, longest road, and largest army.
+          I have been playing Catan since high school. My family bought a copy at a mall and that weekend I probably spent six hours placing settlements and arguing about trades. Something about the mix of strategy and luck and player interaction felt different from other board games. When I wanted a project to push my real-time web skills, building an online version seemed like the obvious choice. Complex enough to stay interesting, familiar enough that I would know immediately when something was wrong. The live version is at <a href="https://catan.rohan.run" target="_blank" rel="noopener noreferrer" className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">catan.rohan.run</a>. It supports 2 to 4 players through room codes and implements the full ruleset including dev cards, port trading, longest road, and largest army.
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">Deciding where state lives</h2>
