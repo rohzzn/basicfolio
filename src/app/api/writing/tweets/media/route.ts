@@ -19,8 +19,8 @@ export async function GET(request: NextRequest) {
     return new NextResponse('Bad request', { status: 400 });
   }
 
-  const origin = new URL(getTweetsProfileUrl()).origin;
-  const imageUrl = `${origin}${src}`;
+  const profileUrl = getTweetsProfileUrl();
+  const imageUrl = `${new URL(profileUrl).origin}${src}`;
 
   try {
     const response = await fetch(imageUrl, { next: { revalidate: 86400 } });

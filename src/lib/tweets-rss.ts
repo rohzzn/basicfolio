@@ -211,17 +211,25 @@ export function parseNitterHtml(html: string): TweetItem[] {
   return items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
+const DEFAULT_TWEETS_RSS_URL = 'https://tweets.rohan.my/rohzzn/rss';
+
 export function getTweetsRssUrl(): string {
-  return process.env.TWEETS_RSS_URL ?? 'http://192.168.1.63:8087/rohzzn/rss';
+  return process.env.TWEETS_RSS_URL ?? DEFAULT_TWEETS_RSS_URL;
 }
 
 export function getTweetsProfileUrl(): string {
   return getTweetsRssUrl().replace(/\/rss\/?$/, '');
 }
 
-export async function fetchTweets(): Promise<TweetItem[]> {
+export type TweetsFetchResult = {
+  tweets: TweetItem[];
+  error?: 'unavailable' | 'empty';
+};
+
+export async function fetchTweets(): Promise<TweetsFetchResult> {
   const rssUrl = getTweetsRssUrl();
   const profileUrl = getTweetsProfileUrl();
+  let reachedSource = false;
 
   try {
     const htmlResponse = await fetch(profileUrl, {
@@ -230,8 +238,9 @@ export async function fetchTweets(): Promise<TweetItem[]> {
     });
 
     if (htmlResponse.ok) {
+      reachedSource = true;
       const tweets = parseNitterHtml(await htmlResponse.text());
-      if (tweets.length > 0) return tweets;
+      if (tweets.length > 0) return { tweets };
     }
   } catch (error) {
     console.error('Failed to fetch Nitter profile HTML:', error);
@@ -244,11 +253,13 @@ export async function fetchTweets(): Promise<TweetItem[]> {
     });
 
     if (rssResponse.ok) {
-      return parseRssItems(await rssResponse.text());
+      reachedSource = true;
+      const tweets = parseRssItems(await rssResponse.text());
+      return tweets.length > 0 ? { tweets } : { tweets: [], error: 'empty' };
     }
   } catch (error) {
     console.error('Failed to fetch tweets RSS:', error);
   }
 
-  return [];
+  return { tweets: [], error: reachedSource ? 'empty' : 'unavailable' };
 }
