@@ -26,6 +26,29 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'relay',
+    year: 2026,
+    title: 'Relay',
+    description: 'Self-hosted uptime monitoring with a public status page',
+    tech: ['Go', 'SQLite', 'Docker', 'WebSocket', 'HTMX'],
+    category: 'application',
+    featured: true,
+    links: [
+      { label: 'GitHub', url: 'https://github.com/rohzzn/relay' },
+      { label: 'Live', url: 'https://relay.rohan.run' },
+    ],
+    image: '/projects/relay.png',
+    longDescription: "I built Relay because I was running Uptime Kuma for alerts and still needed something else for a public status page — two tools, two configs, nothing talking to each other. Relay is both: it checks your services on a schedule, opens incidents when things break, and serves a shareable status page your users can subscribe to. It is a single Go binary with SQLite, templates embedded in the binary, and a Docker image under 20 MB. No Node runtime, no Postgres.",
+    highlights: [
+      'HTTP, TCP, TLS, DNS, and heartbeat monitors',
+      'Built-in public status page with incident banners and email subscribers',
+      'Live admin dashboard with WebSocket updates and 90-day uptime bars',
+      'Slack, webhook, and SMTP alert channels with cooldown-aware dispatch',
+      'Distroless Docker image under 20 MB — one command to deploy',
+      'Live at relay.rohan.run',
+    ],
+  },
+  {
     slug: 'keel',
     year: 2023,
     title: "Keel",

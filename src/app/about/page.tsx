@@ -10,7 +10,7 @@ const recentWritings = [...posts]
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   .slice(0, 2);
 
-const recentProjectsPinned = ['dock-poker', 'contests']
+const recentProjectsPinned = ['relay', 'dock-poker']
   .map((slug) => projects.find((x) => x.slug === slug))
   .filter((p): p is Project => p != null);
 

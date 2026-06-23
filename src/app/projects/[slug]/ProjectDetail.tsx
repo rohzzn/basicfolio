@@ -623,6 +623,74 @@ function ShutTabDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Relay — uptime monitoring demo
+// ─────────────────────────────────────────────────────────────────────────────
+
+function RelayDemo() {
+  const [down, setDown] = useState(true);
+  const monitors = [
+    { name: 'API Gateway', ms: 142, up: true },
+    { name: 'Database', ms: 58, up: true },
+    { name: 'Media Server', ms: null as number | null, up: !down },
+  ];
+  const up = monitors.filter(m => m.up).length;
+  const segs = (recentDown: boolean) =>
+    Array.from({ length: 40 }, (_, i) =>
+      i >= 38 && recentDown ? 'bg-red-400' : i >= 36 && recentDown ? 'bg-amber-400' : 'bg-emerald-400/80'
+    );
+  return (
+    <div className="my-8 not-prose">
+      <p className={L}>Interactive Preview</p>
+      <div className={`${CARD} max-w-sm`}>
+        <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-100 dark:border-zinc-800">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-indigo-500/20 flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+            </div>
+            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Relay</span>
+          </div>
+          <span className="text-xs text-zinc-400">{up}/{monitors.length} up</span>
+        </div>
+        <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+          {monitors.map(m => (
+            <div key={m.name} className="px-4 py-3">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${m.up ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                  <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">{m.name}</span>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {m.ms != null && <span className="text-xs font-mono text-zinc-400">{m.ms}ms</span>}
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${m.up ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'}`}>
+                    {m.up ? 'Up' : 'Down'}
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-px h-2">
+                {segs(!m.up).map((c, i) => (
+                  <div key={i} className={`flex-1 rounded-sm ${c}`} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-3">
+          <code className="text-[10px] font-mono text-zinc-400 truncate">docker run ghcr.io/rohzzn/relay</code>
+          <button
+            type="button"
+            onClick={() => setDown(d => !d)}
+            className="text-xs px-2.5 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded hover:opacity-80 flex-shrink-0"
+          >
+            {down ? 'Resolve' : 'Simulate down'}
+          </button>
+        </div>
+      </div>
+      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">Toggle a monitor — admin dashboard and status page stay in sync in the real app</p>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 13. CS Stats — Steam overlay
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1651,6 +1719,7 @@ function getWidget(p: Project): React.ReactNode {
 
   // Apps
   if (slug === 'keel')              return <KeelDemo />;
+  if (slug === 'relay')             return <RelayDemo />;
   if (slug === 'todo-ios')          return <TodoKanbanDemo />;
   if (slug === 'shuttab')           return <ShutTabDemo />;
   if (slug === 'cs-stats')          return <CSStatsDemo />;
