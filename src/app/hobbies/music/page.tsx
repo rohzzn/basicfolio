@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Music, Clock, User, Disc, ExternalLink, Headphones, ListMusic, X } from 'lucide-react';
 import SpotifyPreviewPlayButton from '@/components/SpotifyPreviewPlayButton';
+import { decodeSpotifyText } from '@/lib/spotify-text';
 
 // Define types for Spotify API responses
 interface SpotifyImage {
@@ -916,28 +917,6 @@ const MusicPage: React.FC = () => {
     </div>
   );
 
-  // Custom playlist descriptions
-  const getPlaylistDescription = (name: string, trackCount: number) => {
-    const lowerName = name.toLowerCase();
-    
-    if (lowerName.includes('melodies') || trackCount > 900) {
-      return 'melodies / pop / bittersweet';
-    } else if (lowerName.includes('shaking') || lowerName.includes('braids')) {
-      return 'rap / hip hop';
-    } else if (lowerName.includes('desi')) {
-      return 'telugu / tamil / hindi';
-    } else if (lowerName.includes('her') && trackCount < 50) {
-      return 'lil romantic';
-    } else if (lowerName.includes('low fidelity') || lowerName.includes('lo-fi') || lowerName.includes('lofi')) {
-      return 'chill / study / ambient';
-    } else if (lowerName.includes('adrenaline') || lowerName.includes('energy') || lowerName.includes('pump')) {
-      return 'high energy / workout / intense';
-    }
-    
-    // Fallback to original description or genre-based description
-    return null;
-  };
-
   // Playlists tab content
   const PlaylistsTabContent = () => (
     <div>
@@ -956,8 +935,8 @@ const MusicPage: React.FC = () => {
               }`}
             >
               {playlists.map((playlist) => {
-                const customDescription = getPlaylistDescription(playlist.name, playlist.tracks?.total || 0);
                 const isSelected = selectedPlaylist?.id === playlist.id;
+                const playlistDescription = decodeSpotifyText(playlist.description);
 
                 return (
                   <button
@@ -984,7 +963,7 @@ const MusicPage: React.FC = () => {
                       {playlist.tracks?.total || 0} tracks
                     </p>
                     <p className="line-clamp-2 text-xs text-zinc-400 dark:text-zinc-400">
-                      {customDescription || playlist.description || 'No description'}
+                      {playlistDescription || 'No description'}
                     </p>
                   </button>
                 );
