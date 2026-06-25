@@ -9,6 +9,7 @@ import {
   getCookieOptions,
   getDiscordCallbackUrl,
   getDiscordConfig,
+  getShortLivedCookieOptions,
   serializeDiscordUser,
 } from '@/lib/discord-guestbook';
 
@@ -26,9 +27,9 @@ export async function GET(request: NextRequest) {
   const { configured } = getDiscordConfig();
 
   const clearOAuthCookies = (response: NextResponse) => {
-    response.cookies.delete(GUESTBOOK_DISCORD_RETURN_COOKIE);
-    response.cookies.delete(GUESTBOOK_DISCORD_STATE_COOKIE);
-    response.cookies.delete(GUESTBOOK_DISCORD_REDIRECT_COOKIE);
+    response.cookies.set(GUESTBOOK_DISCORD_RETURN_COOKIE, '', { ...getCookieOptions(request), maxAge: 0 });
+    response.cookies.set(GUESTBOOK_DISCORD_STATE_COOKIE, '', { ...getShortLivedCookieOptions(request), maxAge: 0 });
+    response.cookies.set(GUESTBOOK_DISCORD_REDIRECT_COOKIE, '', { ...getShortLivedCookieOptions(request), maxAge: 0 });
     return response;
   };
 
@@ -59,7 +60,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set(
       GUESTBOOK_DISCORD_USER_COOKIE,
       serializeDiscordUser(discordUser),
-      getCookieOptions()
+      getCookieOptions(request)
     );
     return clearOAuthCookies(response);
   } catch (callbackError) {

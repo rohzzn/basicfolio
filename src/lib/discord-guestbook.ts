@@ -61,29 +61,63 @@ export function isAllowedDiscordHost(host: string): boolean {
   );
 }
 
+const PRODUCTION_OAUTH_ORIGINS: Record<string, string> = {
+  'rohan.run': 'https://rohan.run',
+  'www.rohan.run': 'https://rohan.run',
+  'rohanpothuru.com': 'https://rohanpothuru.com',
+  'www.rohanpothuru.com': 'https://rohanpothuru.com',
+};
+
+export function getProductionOAuthOrigin(request: NextRequest): string | null {
+  const host = getRequestHost(request).split(':')[0];
+  return PRODUCTION_OAUTH_ORIGINS[host] ?? null;
+}
+
+export function getCookieDomain(request: NextRequest): string | undefined {
+  if (process.env.NODE_ENV !== 'production') return undefined;
+  const host = getRequestHost(request).split(':')[0];
+  if (host === 'rohan.run' || host === 'www.rohan.run') return '.rohan.run';
+  if (host === 'rohanpothuru.com' || host === 'www.rohanpothuru.com') return '.rohanpothuru.com';
+  return undefined;
+}
+
 export const getDiscordCallbackUrl = (request: NextRequest): string => {
   if (process.env.NODE_ENV !== 'production') {
     const configured = process.env.DISCORD_REDIRECT_URI?.trim();
     return configured || 'http://localhost:3000/api/guestbook/discord/callback';
   }
+
+  const origin = getProductionOAuthOrigin(request);
+  if (origin) {
+    return `${origin}/api/guestbook/discord/callback`;
+  }
+
   return `${getBaseUrl(request)}/api/guestbook/discord/callback`;
 };
 
-export const getCookieOptions = () => ({
-  httpOnly: true,
-  sameSite: 'lax' as const,
-  secure: process.env.NODE_ENV === 'production',
-  path: '/',
-  maxAge: 60 * 60 * 24,
-});
+export const getCookieOptions = (request?: NextRequest) => {
+  const domain = request ? getCookieDomain(request) : undefined;
+  return {
+    httpOnly: true,
+    sameSite: 'lax' as const,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 60 * 60 * 24,
+    ...(domain && { domain }),
+  };
+};
 
-export const getShortLivedCookieOptions = () => ({
-  httpOnly: true,
-  sameSite: 'lax' as const,
-  secure: process.env.NODE_ENV === 'production',
-  path: '/',
-  maxAge: 60 * 10,
-});
+export const getShortLivedCookieOptions = (request?: NextRequest) => {
+  const domain = request ? getCookieDomain(request) : undefined;
+  return {
+    httpOnly: true,
+    sameSite: 'lax' as const,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 60 * 10,
+    ...(domain && { domain }),
+  };
+};
 
 export function getDiscordConfig() {
   return {

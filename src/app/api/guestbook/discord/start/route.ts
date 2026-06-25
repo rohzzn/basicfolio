@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
   const authUrl = buildDiscordAuthUrl(callbackUrl, state);
 
   const response = NextResponse.redirect(authUrl);
-  response.cookies.set(GUESTBOOK_DISCORD_RETURN_COOKIE, returnTo, getCookieOptions());
-  response.cookies.set(GUESTBOOK_DISCORD_STATE_COOKIE, state, getShortLivedCookieOptions());
-  response.cookies.set(GUESTBOOK_DISCORD_REDIRECT_COOKIE, callbackUrl, getShortLivedCookieOptions());
+  response.cookies.set(GUESTBOOK_DISCORD_RETURN_COOKIE, returnTo, getCookieOptions(request));
+  response.cookies.set(GUESTBOOK_DISCORD_STATE_COOKIE, state, getShortLivedCookieOptions(request));
+  response.cookies.set(GUESTBOOK_DISCORD_REDIRECT_COOKIE, callbackUrl, getShortLivedCookieOptions(request));
   return response;
 }
