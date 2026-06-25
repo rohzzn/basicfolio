@@ -64,10 +64,6 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
 
     let isMounted = true;
 
-    let intervalId: NodeJS.Timeout;
-
-
-
     const fetchCurrentlyPlaying = async () => {
 
       try {
@@ -142,7 +138,7 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
 
     void fetchCurrentlyPlaying();
 
-    intervalId = setInterval(fetchCurrentlyPlaying, 10000);
+    const intervalId = setInterval(fetchCurrentlyPlaying, 10000);
 
 
 
