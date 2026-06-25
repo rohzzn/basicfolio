@@ -10,6 +10,8 @@
     "ping-sitemap": "node scripts/ping-sitemap.js"
   },
   "dependencies": {
+    "@dicebear/adventurer": "^9.4.2",
+    "@dicebear/core": "^9.4.2",
     "@heroicons/react": "^2.2.0",
     "@mapbox/polyline": "^1.2.1",
     "@prisma/client": "^6.1.0",

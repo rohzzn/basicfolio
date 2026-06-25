@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { resolveDiscordAvatarSrc } from "@/lib/guestbook";
+import { dicebearAvatarDataUri, guestbookInitials } from "@/lib/guestbook-avatar";
 
 type Comment = {
   id: number;
@@ -23,48 +24,64 @@ type DiscordSession = {
   avatarUrl: string;
 };
 
-function dicebearAvatarSrc(name: string, id: number) {
-  const seed = encodeURIComponent(`${name}-${id}`.slice(0, 80));
-  return `https://api.dicebear.com/9.x/adventurer/svg?seed=${seed}&size=80&radius=50`;
+function commentAvatarSrc(comment: Comment, size = 80) {
+  if (comment.avatarUrl) return comment.avatarUrl;
+  return dicebearAvatarDataUri(comment.displayName, comment.id, size);
 }
 
-function commentAvatarSrc(comment: Comment) {
-  return comment.avatarUrl || dicebearAvatarSrc(comment.displayName, comment.id);
-}
-
-function GuestbookAvatar({ src, size = 40 }: { src: string; size?: number }) {
+function GuestbookAvatar({
+  src,
+  size = 40,
+  fallbackName = "?",
+}: {
+  src: string;
+  size?: number;
+  fallbackName?: string;
+}) {
   const [pixelRatio, setPixelRatio] = useState(2);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     setPixelRatio(Math.min(window.devicePixelRatio || 2, 3));
   }, []);
 
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
   const displaySrc = useMemo(() => {
     if (src.includes("discordapp.com")) {
       return resolveDiscordAvatarSrc(src, size, pixelRatio);
     }
-    if (src.includes("dicebear.com")) {
-      const url = new URL(src);
-      url.searchParams.set("size", String(Math.ceil(size * pixelRatio)));
-      return url.toString();
-    }
     return src;
   }, [src, size, pixelRatio]);
 
+  const initials = guestbookInitials(fallbackName);
+
   return (
     <div
-      className="shrink-0 overflow-hidden rounded-full mt-0.5 bg-zinc-100 dark:bg-zinc-800"
+      className="shrink-0 overflow-hidden rounded-full mt-0.5 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center"
       style={{ width: size, height: size, minWidth: size, minHeight: size }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={displaySrc}
-        alt=""
-        className="block object-cover"
-        style={{ width: size, height: size }}
-        decoding="sync"
-        draggable={false}
-      />
+      {failed ? (
+        <span
+          className="text-zinc-600 dark:text-zinc-300 font-medium select-none"
+          style={{ fontSize: Math.max(11, size * 0.38) }}
+        >
+          {initials}
+        </span>
+      ) : (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={displaySrc}
+          alt=""
+          className="block object-cover"
+          style={{ width: size, height: size }}
+          decoding="async"
+          draggable={false}
+          onError={() => setFailed(true)}
+        />
+      )}
     </div>
   );
 }
@@ -118,7 +135,11 @@ function GuestbookEntry({
 
   return (
     <article className={nested ? "flex gap-3 py-3" : "flex gap-3 py-4 border-b border-zinc-200/80 dark:border-zinc-800/80 last:border-0"}>
-      <GuestbookAvatar src={commentAvatarSrc(comment)} size={nested ? 32 : 40} />
+      <GuestbookAvatar
+        src={commentAvatarSrc(comment, nested ? 64 : 80)}
+        size={nested ? 32 : 40}
+        fallbackName={comment.displayName}
+      />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2 mb-1 flex-wrap">
           <span className="text-sm font-medium dark:text-white truncate">
