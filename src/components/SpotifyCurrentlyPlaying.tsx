@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Music } from 'lucide-react';
+import SpotifyPreviewPlayButton from './SpotifyPreviewPlayButton';
 
 interface SpotifyImage {
   url: string;
@@ -41,7 +42,6 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Get a safe image URL or fall back to default
   const getSafeImageUrl = (images: SpotifyImage[] | undefined): string => {
     if (!images || images.length === 0) return DEFAULT_COVER;
     return images[0].url;
@@ -50,43 +50,16 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     let intervalId: NodeJS.Timeout;
-    
+
     const fetchSpotifyData = async () => {
       try {
-        // Get access token
-        const getAccessToken = async () => {
-          try {
-            const clientId = '45adef0727fa4c5780c3f7408debee63';
-            const clientSecret = '23257ff89ada446eb418c9b77be72b85';
-            const refreshToken = 'AQDpB5aYyV0IBPO9Zz5TRT0K7RDUevzTEO0pugOZK6Pq-s2TuwiQi1U0ZJ1rXOqRcsvBTfO4_OBW7RJi6k3kGcBr58mPlRveQfCNzW4TrUPzFsGMXGkZbT-G54sLjacjfjE';
-            
-            const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${btoa(`${clientId}:${clientSecret}`)}`
-              },
-              body: new URLSearchParams({
-                grant_type: 'refresh_token',
-                refresh_token: refreshToken
-              })
-            });
-            
-            if (!tokenResponse.ok) {
-              throw new Error(`Failed to get access token: ${tokenResponse.status}`);
-            }
-            
-            const data = await tokenResponse.json();
-            return data.access_token;
-          } catch (error) {
-            console.error('Access token error:', error);
-            return null;
-          }
-        };
-        
-        // Get token first
-        const accessToken = await getAccessToken();
-        
+        const tokenResponse = await fetch('/api/spotify/token');
+        if (!tokenResponse.ok) {
+          throw new Error('Failed to get access token');
+        }
+
+        const { access_token: accessToken } = await tokenResponse.json();
+
         if (!accessToken) {
           if (isMounted) {
             setError('Could not authenticate with Spotify');
@@ -94,46 +67,41 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
           }
           return;
         }
-        
-        // Fetch currently playing
+
         const fetchCurrentlyPlaying = async () => {
           try {
             const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
-              headers: { 'Authorization': `Bearer ${accessToken}` }
+              headers: { Authorization: `Bearer ${accessToken}` },
             });
-            
+
             if (response.status === 204) {
-              // No content - not currently playing
               if (isMounted) setCurrentlyPlaying(null);
               return;
             }
-            
+
             if (!response.ok) {
               throw new Error(`Error fetching currently playing: ${response.status}`);
             }
-            
+
             const data: CurrentlyPlayingResponse = await response.json();
-            
+
             if (isMounted && data.item) {
               setCurrentlyPlaying({
                 isPlaying: data.is_playing,
                 track: data.item,
-                progress_ms: data.progress_ms
+                progress_ms: data.progress_ms,
               });
             }
-          } catch (error) {
-            console.error('Error fetching currently playing:', error);
+          } catch (fetchError) {
+            console.error('Error fetching currently playing:', fetchError);
             if (isMounted) setError('Failed to fetch currently playing track');
           } finally {
             if (isMounted) setLoading(false);
           }
         };
-        
+
         await fetchCurrentlyPlaying();
-        
-        // Set up polling interval (every 10 seconds)
         intervalId = setInterval(fetchCurrentlyPlaying, 10000);
-        
       } catch (err) {
         console.error('Error in Spotify data fetch:', err);
         if (isMounted) {
@@ -142,9 +110,9 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
         }
       }
     };
-    
+
     fetchSpotifyData();
-    
+
     return () => {
       isMounted = false;
       if (intervalId) clearInterval(intervalId);
@@ -179,7 +147,7 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
   return (
     <div className="w-full">
       <div className="flex items-center gap-2">
-        <div className="relative min-w-[40px] w-10 h-10 flex-shrink-0">
+        <div className="relative min-w-[40px] w-10 h-10 flex-shrink-0 group">
           <Image
             src={getSafeImageUrl(currentlyPlaying.track.album.images)}
             alt={currentlyPlaying.track.album.name}
@@ -187,8 +155,20 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
             fill
             sizes="40px"
           />
+          <div className="absolute inset-0 hidden rounded-md bg-black/0 transition-colors group-hover:bg-black/30 lg:flex items-center justify-center">
+            <SpotifyPreviewPlayButton
+              trackId={currentlyPlaying.track.id}
+              trackName={currentlyPlaying.track.name}
+              artists={currentlyPlaying.track.artists.map((artist) => artist.name).join(', ')}
+              imageUrl={getSafeImageUrl(currentlyPlaying.track.album.images)}
+              spotifyUrl={currentlyPlaying.track.external_urls.spotify}
+              durationMs={currentlyPlaying.track.duration_ms}
+              size="sm"
+              className="opacity-0 group-hover:opacity-100"
+            />
+          </div>
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="mb-0.5">
             <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate block">
@@ -196,15 +176,14 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
             </span>
           </div>
           <p className="text-[10px] text-zinc-600 dark:text-zinc-400 truncate">
-            {currentlyPlaying.track.artists.map(a => a.name).join(', ')}
+            {currentlyPlaying.track.artists.map((artist) => artist.name).join(', ')}
           </p>
-          
-          {/* Progress bar */}
+
           <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full mt-1.5 overflow-hidden">
-            <div 
-              className="h-full bg-emerald-500 rounded-full" 
-              style={{ 
-                width: `${(currentlyPlaying.progress_ms / currentlyPlaying.track.duration_ms) * 100}%` 
+            <div
+              className="h-full bg-emerald-500 rounded-full"
+              style={{
+                width: `${(currentlyPlaying.progress_ms / currentlyPlaying.track.duration_ms) * 100}%`,
               }}
             />
           </div>
@@ -214,4 +193,4 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
   );
 };
 
-export default SpotifyCurrentlyPlaying; 
+export default SpotifyCurrentlyPlaying;

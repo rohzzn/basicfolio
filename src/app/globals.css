@@ -351,3 +351,40 @@ html.e-reader-mode pre {
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Opera */
 }
+
+.spotify-preview-progress,
+.spotify-preview-volume {
+  height: 4px;
+}
+
+.spotify-preview-progress::-webkit-slider-thumb,
+.spotify-preview-volume::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: #10b981;
+  border: 2px solid #fafafa;
+  cursor: pointer;
+}
+
+.dark .spotify-preview-progress::-webkit-slider-thumb,
+.dark .spotify-preview-volume::-webkit-slider-thumb {
+  border-color: #18181b;
+}
+
+.spotify-preview-progress::-moz-range-thumb,
+.spotify-preview-volume::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: #10b981;
+  border: 2px solid #fafafa;
+  cursor: pointer;
+}
+
+.dark .spotify-preview-progress::-moz-range-thumb,
+.dark .spotify-preview-volume::-moz-range-thumb {
+  border-color: #18181b;
+}
+

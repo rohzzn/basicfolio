@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Music, Clock, User, Disc, Play, Pause, ExternalLink, Headphones, ListMusic } from 'lucide-react';
+import { Music, Clock, User, Disc, ExternalLink, Headphones, ListMusic, X } from 'lucide-react';
+import SpotifyPreviewPlayButton from '@/components/SpotifyPreviewPlayButton';
 
 // Define types for Spotify API responses
 interface SpotifyImage {
@@ -86,6 +87,21 @@ interface CurrentlyPlayingResponse {
   progress_ms: number;
 }
 
+interface PlaylistTrackItem {
+  added_at: string;
+  track: SpotifyTrack | null;
+}
+
+interface PlaylistTracksResponse {
+  items: PlaylistTrackItem[];
+  next: string | null;
+}
+
+interface PlaylistTrackEntry {
+  track: SpotifyTrack;
+  added_at: string;
+}
+
 const MusicPage: React.FC = () => {
   // Tab state
   const [activeTab, setActiveTab] = useState<MusicTab>('recent');
@@ -128,6 +144,10 @@ const MusicPage: React.FC = () => {
   // Separate loading states for tracks and artists
   const [tracksLoading, setTracksLoading] = useState(false);
   const [artistsLoading, setArtistsLoading] = useState(false);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<SpotifyPlaylist | null>(null);
+  const [playlistTracks, setPlaylistTracks] = useState<PlaylistTrackEntry[]>([]);
+  const [playlistTracksLoading, setPlaylistTracksLoading] = useState(false);
+  const playlistTracksCache = useRef<Map<string, PlaylistTrackEntry[]>>(new Map());
 
   // Initial data fetch (without time range dependency)
   useEffect(() => {
@@ -140,30 +160,15 @@ const MusicPage: React.FC = () => {
         // Safely access token and handle API calls
         const getAccessToken = async () => {
           try {
-            const clientId = '45adef0727fa4c5780c3f7408debee63';
-            const clientSecret = '23257ff89ada446eb418c9b77be72b85';
-            const refreshToken = 'AQDpB5aYyV0IBPO9Zz5TRT0K7RDUevzTEO0pugOZK6Pq-s2TuwiQi1U0ZJ1rXOqRcsvBTfO4_OBW7RJi6k3kGcBr58mPlRveQfCNzW4TrUPzFsGMXGkZbT-G54sLjacjfjE';
-            
-            const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${btoa(`${clientId}:${clientSecret}`)}`
-              },
-              body: new URLSearchParams({
-                grant_type: 'refresh_token',
-                refresh_token: refreshToken
-              })
-            });
-            
+            const tokenResponse = await fetch('/api/spotify/token');
             if (!tokenResponse.ok) {
               throw new Error(`Failed to get access token: ${tokenResponse.status}`);
             }
-            
+
             const data = await tokenResponse.json();
-            return data.access_token;
-          } catch (error) {
-            console.error('Access token error:', error);
+            return data.access_token as string;
+          } catch (tokenError) {
+            console.error('Access token error:', tokenError);
             return null;
           }
         };
@@ -333,26 +338,12 @@ const MusicPage: React.FC = () => {
       // Get access token
       const getAccessToken = async () => {
         try {
-          const clientId = '45adef0727fa4c5780c3f7408debee63';
-          const clientSecret = '23257ff89ada446eb418c9b77be72b85';
-          const refreshToken = 'AQDpB5aYyV0IBPO9Zz5TRT0K7RDUevzTEO0pugOZK6Pq-s2TuwiQi1U0ZJ1rXOqRcsvBTfO4_OBW7RJi6k3kGcBr58mPlRveQfCNzW4TrUPzFsGMXGkZbT-G54sLjacjfjE';
-          
-          const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'Authorization': `Basic ${btoa(`${clientId}:${clientSecret}`)}`
-            },
-            body: new URLSearchParams({
-              grant_type: 'refresh_token',
-              refresh_token: refreshToken
-            })
-          });
-          
+          const tokenResponse = await fetch('/api/spotify/token');
+          if (!tokenResponse.ok) return null;
           const data = await tokenResponse.json();
-          return data.access_token;
-        } catch (error) {
-          console.error('Access token error:', error);
+          return data.access_token as string;
+        } catch (tokenError) {
+          console.error('Access token error:', tokenError);
           return null;
         }
       };
@@ -428,6 +419,170 @@ const MusicPage: React.FC = () => {
       return DEFAULT_COVER;
     }
     return images[0].url;
+  };
+
+  const fetchPlaylistTracks = async (playlist: SpotifyPlaylist) => {
+    const cached = playlistTracksCache.current.get(playlist.id);
+    const expectedTotal = playlist.tracks?.total ?? 0;
+    const cacheLooksTruncated = cached && expectedTotal > 0 && cached.length < expectedTotal;
+
+    if (cached && !cacheLooksTruncated) {
+      setSelectedPlaylist(playlist);
+      setPlaylistTracks(cached);
+      return;
+    }
+
+    setSelectedPlaylist(playlist);
+    setPlaylistTracks([]);
+    setPlaylistTracksLoading(true);
+
+    try {
+      const tokenResponse = await fetch('/api/spotify/token');
+      if (!tokenResponse.ok) {
+        throw new Error('Failed to get access token');
+      }
+
+      const { access_token: accessToken } = await tokenResponse.json();
+      if (!accessToken) {
+        throw new Error('Missing access token');
+      }
+
+      const collected: PlaylistTrackEntry[] = [];
+      let nextUrl: string | null =
+        `https://api.spotify.com/v1/playlists/${playlist.id}/tracks?limit=100`;
+
+      while (nextUrl) {
+        const response = await fetch(nextUrl, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch playlist tracks: ${response.status}`);
+        }
+
+        const data = (await response.json()) as PlaylistTracksResponse;
+
+        for (const item of data.items) {
+          if (item.track?.id) {
+            collected.push({ track: item.track, added_at: item.added_at });
+          }
+        }
+
+        nextUrl = data.next;
+      }
+
+      collected.sort(
+        (a, b) => new Date(b.added_at).getTime() - new Date(a.added_at).getTime()
+      );
+
+      playlistTracksCache.current.set(playlist.id, collected);
+      setPlaylistTracks(collected);
+    } catch (fetchError) {
+      console.error('Failed to load playlist tracks:', fetchError);
+      setPlaylistTracks([]);
+    } finally {
+      setPlaylistTracksLoading(false);
+    }
+  };
+
+  const handlePlaylistClick = (playlist: SpotifyPlaylist) => {
+    if (selectedPlaylist?.id === playlist.id) {
+      setSelectedPlaylist(null);
+      return;
+    }
+
+    void fetchPlaylistTracks(playlist);
+  };
+
+  const renderPlaylistTracksPanel = (playlist: SpotifyPlaylist) => (
+    <section className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/50">
+      <div className="flex items-center gap-3 border-b border-zinc-200 px-4 py-3 dark:border-zinc-700">
+        <div className="relative h-11 w-11 shrink-0">
+          <Image
+            src={getSafeImageUrl(playlist.images)}
+            alt={playlist.name}
+            fill
+            className="rounded-md object-cover"
+            unoptimized
+          />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium dark:text-white">{playlist.name}</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            {playlistTracksLoading
+              ? `Loading ${playlist.tracks?.total || 0} tracks...`
+              : `${playlistTracks.length || playlist.tracks?.total || 0} tracks · newest first`}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={closePlaylistPanel}
+          className="rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-200 hover:text-zinc-800 dark:hover:bg-zinc-700 dark:hover:text-zinc-200"
+          aria-label="Close playlist"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto p-2 sm:p-3 scrollbar-hide xl:max-h-[min(70vh,640px)]">
+        {playlistTracksLoading ? (
+          <div className="flex h-40 items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-zinc-600 dark:border-zinc-400" />
+          </div>
+        ) : playlistTracks.length > 0 ? (
+          <div className="space-y-1">
+            {playlistTracks.map(({ track, added_at }, index) => (
+              <article
+                key={`${track.id}-${added_at}-${index}`}
+                className="group flex items-center gap-3 rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/80"
+              >
+                <div className="relative h-11 w-11 shrink-0">
+                  <Image
+                    src={getSafeImageUrl(track.album?.images)}
+                    alt={track.album?.name || 'Album cover'}
+                    fill
+                    className="rounded-md object-cover"
+                    unoptimized
+                  />
+                  <div className="absolute inset-0 hidden items-center justify-center rounded-md bg-black/0 transition-colors group-hover:bg-black/30 lg:flex">
+                    <SpotifyPreviewPlayButton
+                      trackId={track.id}
+                      trackName={track.name}
+                      artists={track.artists.map((artist) => artist.name).join(', ')}
+                      imageUrl={getSafeImageUrl(track.album?.images)}
+                      spotifyUrl={track.external_urls.spotify}
+                      durationMs={track.duration_ms}
+                      size="sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h5 className="truncate text-sm font-medium dark:text-white">{track.name}</h5>
+                  <p className="truncate text-xs text-zinc-600 dark:text-zinc-400">
+                    {track.artists.map((artist) => artist.name).join(', ')}
+                  </p>
+                </div>
+
+                <span className="hidden shrink-0 text-[11px] tabular-nums text-zinc-500 dark:text-zinc-400 sm:inline">
+                  {formatDuration(track.duration_ms)}
+                </span>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="py-10 text-center text-sm text-zinc-500 dark:text-zinc-400">
+            Could not load tracks for this playlist.
+          </p>
+        )}
+      </div>
+    </section>
+  );
+
+  const closePlaylistPanel = () => {
+    setSelectedPlaylist(null);
   };
 
 
@@ -706,14 +861,10 @@ const MusicPage: React.FC = () => {
       ) : topTracks.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {topTracks.map((track, index) => (
-            <a
+            <article
                     key={`${track.id}-${index}`}
-                        href={track.external_urls.spotify}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-              className="group cursor-pointer block"
+              className="group bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200"
                       >
-              <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200">
                 <div className="flex items-start gap-3">
                   <div className="relative shrink-0 w-16 h-16">
                           <Image
@@ -723,22 +874,34 @@ const MusicPage: React.FC = () => {
                       className="rounded-md object-cover"
                             unoptimized
                           />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-md flex items-center justify-center">
-                      <Play className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 hidden rounded-md bg-black/0 transition-colors group-hover:bg-black/30 lg:flex items-center justify-center">
+                      <SpotifyPreviewPlayButton
+                        trackId={track.id}
+                        trackName={track.name}
+                        artists={track.artists.map((artist) => artist.name).join(', ')}
+                        imageUrl={getSafeImageUrl(track.album?.images)}
+                        spotifyUrl={track.external_urls.spotify}
+                        durationMs={track.duration_ms}
+                        size="sm"
+                      />
                         </div>
                   </div>
                   
-                  <div className="flex-1 min-w-0">
+                  <a
+                    href={track.external_urls.spotify}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 min-w-0"
+                  >
                     <h4 className="text-sm font-medium dark:text-white line-clamp-1 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                       {track.name}
                     </h4>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mt-1">
                             {track.artists.map(a => a.name).join(', ')}
                           </p>
-                        </div>
+                  </a>
                 </div>
               </article>
-            </a>
                 ))}
         </div>
       ) : (
@@ -783,37 +946,57 @@ const MusicPage: React.FC = () => {
       </h3>
       
       {playlists.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {playlists.map(playlist => {
-            const customDescription = getPlaylistDescription(playlist.name, playlist.tracks?.total || 0);
-            
-            return (
-              <a
-                key={playlist.id}
-                href={playlist.external_urls.spotify}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
-              >
-                <div className="relative w-full aspect-square mb-3">
-                  <Image
-                    src={getSafeImageUrl(playlist.images)}
-                    alt={playlist.name}
-                    fill
-                    className="rounded-md object-cover"
-                    unoptimized
-                  />
-                </div>
-                <h4 className="font-medium dark:text-white text-sm mb-1 truncate">{playlist.name}</h4>
-                <p className="text-xs text-zinc-500 dark:text-zinc-500 mb-1">
-                  {playlist.tracks?.total || 0} tracks
-                </p>
-                <p className="text-xs text-zinc-400 dark:text-zinc-400 line-clamp-2">
-                  {customDescription || playlist.description || 'No description'}
-                </p>
-              </a>
-            );
-          })}
+        <div className={`flex flex-col gap-6 ${selectedPlaylist ? 'xl:flex-row xl:items-start' : ''}`}>
+          <div className={selectedPlaylist ? 'xl:w-[min(100%,360px)] xl:shrink-0' : 'w-full'}>
+            <div
+              className={`grid gap-3 ${
+                selectedPlaylist
+                  ? 'grid-cols-2'
+                  : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
+              }`}
+            >
+              {playlists.map((playlist) => {
+                const customDescription = getPlaylistDescription(playlist.name, playlist.tracks?.total || 0);
+                const isSelected = selectedPlaylist?.id === playlist.id;
+
+                return (
+                  <button
+                    key={playlist.id}
+                    type="button"
+                    onClick={() => handlePlaylistClick(playlist)}
+                    className={`rounded-lg p-3 text-left transition-colors ${
+                      isSelected
+                        ? 'bg-zinc-200 ring-1 ring-zinc-300 dark:bg-zinc-800 dark:ring-zinc-600'
+                        : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/80'
+                    }`}
+                  >
+                    <div className="relative mb-3 aspect-square w-full">
+                      <Image
+                        src={getSafeImageUrl(playlist.images)}
+                        alt={playlist.name}
+                        fill
+                        className="rounded-md object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <h4 className="mb-1 truncate text-sm font-medium dark:text-white">{playlist.name}</h4>
+                    <p className="mb-1 text-xs text-zinc-500 dark:text-zinc-500">
+                      {playlist.tracks?.total || 0} tracks
+                    </p>
+                    <p className="line-clamp-2 text-xs text-zinc-400 dark:text-zinc-400">
+                      {customDescription || playlist.description || 'No description'}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {selectedPlaylist && (
+            <div className="min-w-0 flex-1 xl:sticky xl:top-4">
+              {renderPlaylistTracksPanel(selectedPlaylist)}
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
@@ -833,14 +1016,10 @@ const MusicPage: React.FC = () => {
       {recentTracks.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {recentTracks.slice(0, 20).map((track, index) => (
-            <a
+            <article
                     key={`${track.id}-${index}`}
-                        href={track.external_urls.spotify}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-              className="group cursor-pointer block"
+              className="group bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200"
                       >
-              <article className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200">
                 <div className="flex items-start gap-3">
                   <div className="relative shrink-0 w-16 h-16">
                           <Image
@@ -850,22 +1029,34 @@ const MusicPage: React.FC = () => {
                       className="rounded-md object-cover"
                             unoptimized
                           />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-md flex items-center justify-center">
-                      <Play className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 hidden rounded-md bg-black/0 transition-colors group-hover:bg-black/30 lg:flex items-center justify-center">
+                      <SpotifyPreviewPlayButton
+                        trackId={track.id}
+                        trackName={track.name}
+                        artists={track.artists.map((artist) => artist.name).join(', ')}
+                        imageUrl={getSafeImageUrl(track.album?.images)}
+                        spotifyUrl={track.external_urls.spotify}
+                        durationMs={track.duration_ms}
+                        size="sm"
+                      />
                         </div>
                   </div>
                   
-                  <div className="flex-1 min-w-0">
+                  <a
+                    href={track.external_urls.spotify}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 min-w-0"
+                  >
                     <h4 className="text-sm font-medium dark:text-white line-clamp-1 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                       {track.name}
                     </h4>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mt-1">
                             {track.artists.map(a => a.name).join(', ')}
                           </p>
-                        </div>
+                  </a>
                 </div>
               </article>
-            </a>
                 ))}
         </div>
       ) : (
@@ -957,12 +1148,16 @@ const MusicPage: React.FC = () => {
                         className="rounded-md"
                         unoptimized
                       />
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center rounded-md">
-                        {currentlyPlaying.isPlaying ? (
-                          <Pause className="w-10 h-10 text-white" />
-                        ) : (
-                          <Play className="w-10 h-10 text-white" />
-                        )}
+                      <div className="absolute inset-0 hidden rounded-md bg-black/30 lg:flex items-center justify-center">
+                        <SpotifyPreviewPlayButton
+                          trackId={currentlyPlaying.track.id}
+                          trackName={currentlyPlaying.track.name}
+                          artists={currentlyPlaying.track.artists.map((artist) => artist.name).join(', ')}
+                          imageUrl={getSafeImageUrl(currentlyPlaying.track.album.images)}
+                          spotifyUrl={currentlyPlaying.track.external_urls.spotify}
+                          durationMs={currentlyPlaying.track.duration_ms}
+                          size="lg"
+                        />
                       </div>
                     </div>
                     

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
+import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/SpotifyPreviewContext';
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
 import EReaderEasterEgg from "./EReaderEasterEgg";
@@ -265,7 +266,13 @@ const ActivityIcon: React.FC<{
 });
 ActivityIcon.displayName = 'ActivityIcon';
 
-const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
+const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => (
+  <SpotifyPreviewProvider>
+    <PortfolioShell>{children}</PortfolioShell>
+  </SpotifyPreviewProvider>
+);
+
+const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -273,9 +280,11 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLoaded, setAudioLoaded] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const wasPlayingBeforePreviewRef = useRef(false);
   
   const discordId = "407922731645009932";
   const pathname = usePathname();
+  const previewPlayerActive = useSpotifyPreviewActive();
 
   // Restore sun rays preference from localStorage
   useEffect(() => {
@@ -372,6 +381,32 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       console.error('Error initializing audio:', error);
     }
   }, []);
+
+  useEffect(() => {
+    const pauseBackgroundMusic = () => {
+      if (audioRef.current && isPlaying) {
+        wasPlayingBeforePreviewRef.current = true;
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    };
+
+    const resumeBackgroundMusic = () => {
+      if (audioRef.current && wasPlayingBeforePreviewRef.current) {
+        wasPlayingBeforePreviewRef.current = false;
+        audioRef.current.play().catch(() => {});
+        setIsPlaying(true);
+      }
+    };
+
+    window.addEventListener('pause-background-music', pauseBackgroundMusic);
+    window.addEventListener('resume-background-music', resumeBackgroundMusic);
+
+    return () => {
+      window.removeEventListener('pause-background-music', pauseBackgroundMusic);
+      window.removeEventListener('resume-background-music', resumeBackgroundMusic);
+    };
+  }, [isPlaying]);
 
   // Toggle play/pause for background music
   const togglePlay = useCallback(async () => {
@@ -515,7 +550,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      <main className="flex-1 lg:pl-64 w-full">
+      <main className={`flex-1 lg:pl-64 w-full ${previewPlayerActive ? 'lg:pb-20' : ''}`}>
         <div className="max-w-full w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 pt-16 lg:pt-6 sm:pt-16 lg:py-8">
           {children}
         </div>
@@ -523,7 +558,7 @@ const MultiPagePortfolio: React.FC<LayoutProps> = ({ children }) => {
       
       {/* Bottom Controls - Hidden on mobile and on guestbook (desk workspace) */}
       {pathname !== "/guestbook" && (
-      <div className="hidden md:flex fixed bottom-4 right-4 z-40 flex-row items-center gap-1.5">
+      <div className={`hidden md:flex fixed right-4 z-40 flex-row items-center gap-1.5 bottom-4 ${previewPlayerActive ? 'lg:bottom-24' : ''}`}>
         <Link 
           href="/guestbook"
           className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"

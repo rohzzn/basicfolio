@@ -56,7 +56,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "frame-src 'self' https://medal.tv https://*.medal.tv https://www.youtube.com https://youtube.com https://allstar.gg https://*.allstar.gg; frame-ancestors 'self'; media-src 'self' https://f005.backblazeb2.com https://media.allstar.gg;"
+            value: "frame-src 'self' https://medal.tv https://*.medal.tv https://www.youtube.com https://youtube.com https://allstar.gg https://*.allstar.gg; frame-ancestors 'self'; media-src 'self' https://f005.backblazeb2.com https://media.allstar.gg https://p.scdn.co;"
           },
         ],
       },
