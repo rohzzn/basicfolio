@@ -1,8 +1,17 @@
 import { NextResponse } from 'next/server';
 import { containsOffensiveContent, checkRateLimit, cleanText } from '@/utils/moderation';
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
+import {
+  formatGuestbookBody,
+  parseGuestbookBody,
+  type ProcessedComment,
+} from '@/lib/guestbook';
+import {
+  GUESTBOOK_DISCORD_USER_COOKIE,
+  isGuestbookAdmin,
+  parseDiscordUserCookie,
+} from '@/lib/discord-guestbook';
 
-// Define types
 interface GitHubComment {
   id: number;
   body: string;
@@ -13,31 +22,41 @@ interface GitHubComment {
   };
 }
 
-interface ProcessedComment {
-  id: number;
-  createdAt: string;
-  user: {
-    login: string;
-    avatarUrl: string;
-  };
-  displayName: string;
-  messageBody: string;
-}
-
-// Configuration for GitHub API
 const REPO_OWNER = 'rohzzn';
 const REPO_NAME = 'basicfolio';
 const ISSUE_NUMBER = 2;
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Should be set in your .env.local file
-const PER_PAGE = 100; // Maximum allowed by GitHub API
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const PER_PAGE = 100;
+
+function toProcessedComment(comment: GitHubComment): ProcessedComment {
+  const parsed = parseGuestbookBody(comment.body);
+  return {
+    id: comment.id,
+    createdAt: comment.created_at,
+    user: {
+      login: comment.user.login,
+      avatarUrl: comment.user.avatar_url,
+    },
+    displayName: parsed.displayName,
+    messageBody: parsed.messageBody,
+    ...(parsed.avatarUrl && { avatarUrl: parsed.avatarUrl }),
+    ...(parsed.replyTo && { replyTo: parsed.replyTo }),
+    ...(parsed.discord && isGuestbookAdmin(parsed.discord.id) && { isAdmin: true }),
+  };
+}
+
+async function getSignedInDiscordUser() {
+  const cookieStore = await cookies();
+  return parseDiscordUserCookie(
+    cookieStore.get(GUESTBOOK_DISCORD_USER_COOKIE)?.value
+  );
+}
 
 export async function GET(request: Request) {
   try {
-    // Parse the requested page from URL
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get('page') || '1', 10);
-    
-    // Fetch comments from GitHub issue with pagination
+
     const response = await fetch(
       `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments?per_page=${PER_PAGE}&page=${page}`,
       {
@@ -45,7 +64,7 @@ export async function GET(request: Request) {
           ...(GITHUB_TOKEN && { Authorization: `token ${GITHUB_TOKEN}` }),
           'Content-Type': 'application/json',
         },
-        next: { revalidate: 10 }, // Reduce revalidation to 10 seconds
+        next: { revalidate: 10 },
       }
     );
 
@@ -53,33 +72,13 @@ export async function GET(request: Request) {
       throw new Error(`GitHub API error: ${response.status}`);
     }
 
-    // Extract pagination information
     const linkHeader = response.headers.get('link');
     const hasNextPage = linkHeader && linkHeader.includes('rel="next"');
     const hasPrevPage = linkHeader && linkHeader.includes('rel="prev"');
     const totalCount = response.headers.get('X-Total-Count') || 'unknown';
 
     const comments = await response.json() as GitHubComment[];
-    
-    // Process comments to extract name and message
-    const processedComments: ProcessedComment[] = comments.map((comment: GitHubComment) => {
-      const nameMatch = comment.body.match(/^\*\*Name:\*\* (.+)\n\n/);
-      const displayName = nameMatch ? nameMatch[1] : 'Anonymous';
-      const messageBody = comment.body.replace(/^\*\*Name:\*\* .+\n\n/, '');
-      
-      return {
-        id: comment.id,
-        createdAt: comment.created_at,
-        user: {
-          login: comment.user.login,
-          avatarUrl: comment.user.avatar_url,
-        },
-        displayName,
-        messageBody,
-      };
-    });
-    
-    // Sort by most recent first (for consistency)
+    const processedComments = comments.map(toProcessedComment);
     processedComments.reverse();
 
     return NextResponse.json({
@@ -88,8 +87,8 @@ export async function GET(request: Request) {
         currentPage: page,
         hasNextPage,
         hasPrevPage,
-        totalCount
-      }
+        totalCount,
+      },
     });
   } catch (error) {
     console.error('Error fetching guestbook comments:', error);
@@ -102,51 +101,72 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    // Check if GitHub token is set
     if (!GITHUB_TOKEN) {
       return NextResponse.json(
-        { error: 'GitHub token not configured on server' },
-        { status: 500 }
+        { error: 'Guestbook posting is not configured. Add GITHUB_TOKEN to your environment.' },
+        { status: 503 }
       );
     }
 
-    // Parse request body
-    const { name, message } = await request.json();
-    
-    // Validate input
-    if (!name || !message) {
+    const { name, message, useDiscord, replyTo } = await request.json();
+
+    if (!message) {
       return NextResponse.json(
-        { error: 'Name and message are required' },
+        { error: 'Message is required' },
         { status: 400 }
       );
     }
 
-    // Get client IP for rate limiting
-    const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for') || 'unknown';
-    
-    // Check rate limit
-    if (!checkRateLimit(ip)) {
+    const discordUser = await getSignedInDiscordUser();
+    const isAdmin = isGuestbookAdmin(discordUser?.id);
+
+    if (replyTo && !isAdmin) {
       return NextResponse.json(
-        { error: 'Too many submissions. Please try again later.' },
-        { status: 429 }
+        { error: 'Only the admin can reply to entries.' },
+        { status: 403 }
       );
     }
-    
-    // Check for offensive content
-    if (containsOffensiveContent(name) || containsOffensiveContent(message)) {
+
+    const signingWithDiscord = Boolean(useDiscord && discordUser);
+    const displayName = signingWithDiscord
+      ? (discordUser!.globalName || discordUser!.username)
+      : name?.trim();
+
+    if (!displayName) {
+      return NextResponse.json(
+        { error: 'Name is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!replyTo) {
+      const headersList = await headers();
+      const ip = headersList.get('x-forwarded-for') || 'unknown';
+
+      if (!checkRateLimit(ip)) {
+        return NextResponse.json(
+          { error: 'Too many submissions. Please try again later.' },
+          { status: 429 }
+        );
+      }
+    }
+
+    if (containsOffensiveContent(displayName) || containsOffensiveContent(message)) {
       return NextResponse.json(
         { error: 'Your message contains inappropriate content that violates our community guidelines.' },
         { status: 400 }
       );
     }
-    
-    // Clean and format the comment body for GitHub
-    const cleanName = cleanText(name.trim());
+
+    const cleanName = cleanText(displayName);
     const cleanMessage = cleanText(message.trim());
-    const commentBody = `**Name:** ${cleanName}\n\n${cleanMessage}`;
-    
-    // Post to GitHub issue
+    const commentBody = formatGuestbookBody(cleanName, cleanMessage, {
+      ...(signingWithDiscord && {
+        discord: { id: discordUser!.id, avatarHash: discordUser!.avatar },
+      }),
+      ...(replyTo && { replyTo: Number(replyTo) }),
+    });
+
     const response = await fetch(
       `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`,
       {
@@ -158,16 +178,17 @@ export async function POST(request: Request) {
         body: JSON.stringify({ body: commentBody }),
       }
     );
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`GitHub API error: ${response.status} - ${JSON.stringify(errorData)}`);
     }
-    
+
     const commentData = await response.json();
-    
-    return NextResponse.json({ 
-      success: true, 
+    const parsed = parseGuestbookBody(commentBody);
+
+    return NextResponse.json({
+      success: true,
       comment: {
         id: commentData.id,
         createdAt: commentData.created_at,
@@ -175,9 +196,12 @@ export async function POST(request: Request) {
         messageBody: cleanMessage,
         user: {
           login: commentData.user.login,
-          avatarUrl: commentData.user.avatar_url
-        }
-      }
+          avatarUrl: commentData.user.avatar_url,
+        },
+        ...(parsed.avatarUrl && { avatarUrl: parsed.avatarUrl }),
+        ...(parsed.replyTo && { replyTo: parsed.replyTo }),
+        ...(isAdmin && { isAdmin: true }),
+      },
     });
   } catch (error) {
     console.error('Error posting guestbook comment:', error);
@@ -186,4 +210,45 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-} 
+}
+
+export async function DELETE(request: Request) {
+  try {
+    if (!GITHUB_TOKEN) {
+      return NextResponse.json(
+        { error: 'Guestbook is not configured.' },
+        { status: 503 }
+      );
+    }
+
+    const discordUser = await getSignedInDiscordUser();
+    if (!isGuestbookAdmin(discordUser?.id)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    const { commentId } = await request.json();
+    if (!commentId) {
+      return NextResponse.json({ error: 'Comment ID is required' }, { status: 400 });
+    }
+
+    const response = await fetch(
+      `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${commentId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.status}`);
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting guestbook comment:', error);
+    return NextResponse.json({ error: 'Failed to delete comment' }, { status: 500 });
+  }
+}
