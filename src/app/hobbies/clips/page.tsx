@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 
 interface UnifiedClip {
   id: string;

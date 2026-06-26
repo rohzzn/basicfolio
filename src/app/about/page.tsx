@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import GitHubCalendar from 'react-github-calendar';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 import Link from 'next/link';
 import { projects, type Project } from '@/data/projects';
 import { posts } from '@/data/writing';

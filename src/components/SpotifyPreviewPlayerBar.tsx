@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 import { Pause, Play, Volume2, VolumeX, X } from 'lucide-react';
 import { SiSpotify } from 'react-icons/si';
 import { useSpotifyPreview } from '@/contexts/SpotifyPreviewContext';

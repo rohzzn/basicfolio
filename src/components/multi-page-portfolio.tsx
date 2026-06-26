@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, memo, useCallback } from "react";
 import { Menu, X, Gamepad, Music, Loader2, Focus, VolumeX, PenTool } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/SiteImage";
 import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/SpotifyPreviewContext';

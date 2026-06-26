@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 import { Calendar, Play, Eye, ThumbsUp, MessageCircle, X, Wifi, Clock } from 'lucide-react';
 
 interface YouTubeVideo {

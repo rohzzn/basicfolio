@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 import { Music, Clock, User, Disc, ExternalLink, Headphones, ListMusic, X } from 'lucide-react';
 import SpotifyPreviewPlayButton from '@/components/SpotifyPreviewPlayButton';
 import { decodeSpotifyText } from '@/lib/spotify-text';

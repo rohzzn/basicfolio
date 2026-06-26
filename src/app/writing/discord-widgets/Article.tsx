@@ -1,7 +1,7 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 
 const DiscordWidgets: React.FC = () => {
   return (

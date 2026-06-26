@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 
 interface DraggableItem {
   id: string;

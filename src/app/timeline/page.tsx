@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
+import Image from "@/components/SiteImage";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Category = "education" | "work" | "gray" | "tech" | "content" | "achievement";

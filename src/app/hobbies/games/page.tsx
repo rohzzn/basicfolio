@@ -23,12 +23,14 @@ function InventoryCard({ item }: { item: CS2Item }) {
             {item.condition}
           </div>
         )}
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={item.image}
           alt={`${item.name} | ${item.skin}`}
-          fill
-          sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, 12vw"
-          className="object-contain p-2 transition-transform duration-200 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-contain p-2 transition-transform duration-200 group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
+          draggable={false}
         />
       </div>
       <div className="h-[2px] w-full" style={{ background: item.rarityColor }} />
@@ -53,12 +55,14 @@ function ValorantInventoryCard({ item }: { item: ValorantItem }) {
             ✦
           </div>
         )}
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={item.image}
           alt={`${item.name} ${item.weapon}`}
-          fill
-          sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, 12vw"
-          className="object-contain p-2 transition-transform duration-200 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-contain p-2 transition-transform duration-200 group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
+          draggable={false}
         />
       </div>
       <div className="h-[2px] w-full" style={{ background: item.tierColor }} />

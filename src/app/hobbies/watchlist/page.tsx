@@ -1,6 +1,6 @@
 "use client";
 
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 
 interface MediaEntry {
