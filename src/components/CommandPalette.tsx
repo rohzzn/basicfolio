@@ -71,7 +71,7 @@ const mainLinks: PaletteItem[] = [
 ];
 
 const hobbyLinks: PaletteItem[] = [
-  { title: 'Activities', href: '/hobbies/strava', icon: <Activity className="w-4 h-4" />, keywords: ['strava', 'workout', 'running'] },
+  { title: 'Move', href: '/hobbies/move', icon: <Activity className="w-4 h-4" />, keywords: ['strava', 'workout', 'running', 'gym', 'hevy', 'activities'] },
   { title: 'Archive', href: '/hobbies/archive', icon: <Archive className="w-4 h-4" />, keywords: ['archive', 'old', 'history'] },
   { title: 'Ben 10', href: '/hobbies/ben10', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['ben 10', 'savage pursuit', 'flash game', 'childhood'] },
   { title: 'Books', href: '/hobbies/readings', icon: <BookOpen className="w-4 h-4" />, keywords: ['reading', 'books', 'literature'] },

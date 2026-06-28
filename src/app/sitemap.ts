@@ -17,7 +17,7 @@ const STATIC_PATHS: string[] = [
   '/projects',
   '/writing',
   '/hobbies',
-  '/hobbies/strava',
+  '/hobbies/move',
   '/hobbies/readings',
   '/hobbies/games',
   '/hobbies/content',

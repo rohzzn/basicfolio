@@ -79,6 +79,11 @@ const nextConfig = {
         destination: '/hobbies/games',
         permanent: false,
       },
+      {
+        source: '/hobbies/strava',
+        destination: '/hobbies/move',
+        permanent: true,
+      },
     ];
   },
   // ... other configurations
