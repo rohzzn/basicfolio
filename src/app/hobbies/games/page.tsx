@@ -468,7 +468,7 @@ export default function Games() {
       <InventoryRow />
 
       {/* 50/50 split: Left = games + tournaments, Right = clips */}
-      <div className="grid grid-cols-2 gap-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
 
         {/* ── LEFT ── */}
         <div ref={leftColRef} className="space-y-8 min-w-0">

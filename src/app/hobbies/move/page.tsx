@@ -40,37 +40,36 @@ export default function MovePage() {
   const [payload, setPayload] = React.useState<ActivitiesPayload | null>(null);
   const [photos, setPhotos] = React.useState<StravaPhotoMap>({});
   const [loading, setLoading] = React.useState(true);
-  const [fatalError, setFatalError] = React.useState<string | null>(null);
   const [period, setPeriod] = React.useState<StatsPeriod>('month');
 
   React.useEffect(() => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 90_000);
+    let cancelled = false;
 
-    fetch('/api/activities', { signal: controller.signal })
-      .then(async r => {
-        const data = await r.json();
-        if (!r.ok && !data.strava && !data.hevy) {
-          throw new Error(data.error ?? `HTTP ${r.status}`);
+    async function loadActivities() {
+      let delayMs = 2000;
+
+      while (!cancelled) {
+        try {
+          const response = await fetch('/api/activities');
+          const data = (await response.json()) as ActivitiesPayload & { error?: string };
+
+          if (!cancelled) {
+            setPayload(data);
+            setLoading(false);
+          }
+          return;
+        } catch {
+          if (cancelled) return;
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          delayMs = Math.min(Math.round(delayMs * 1.5), 30_000);
         }
-        return data as ActivitiesPayload;
-      })
-      .then(setPayload)
-      .catch(err => {
-        if (err instanceof Error && err.name === 'AbortError') {
-          setFatalError('Activities took too long to load. Try refreshing.');
-        } else {
-          setFatalError(err instanceof Error ? err.message : 'Failed to load activities');
-        }
-      })
-      .finally(() => {
-        clearTimeout(timeout);
-        setLoading(false);
-      });
+      }
+    }
+
+    void loadActivities();
 
     return () => {
-      clearTimeout(timeout);
-      controller.abort();
+      cancelled = true;
     };
   }, []);
 
@@ -144,15 +143,6 @@ export default function MovePage() {
 
   const partialError = payload?.errors.strava || payload?.errors.hevy;
   const showEmpty = !loading && allActivities.length === 0;
-
-  if (fatalError) {
-    return (
-      <div style={{ maxWidth: '75ch' }}>
-        <h2 className="mb-6 text-lg font-medium dark:text-white">Move</h2>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">{fatalError}</p>
-      </div>
-    );
-  }
 
   const statCards = [
     {

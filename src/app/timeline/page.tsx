@@ -465,6 +465,7 @@ export default function TimelinePage() {
   /** Calendar month under the pointer (same vertical scale as bars). */
   const [hoveredYM, setHoveredYM] = useState<{ y: number; m: number } | null>(null);
   const timelineHoverRef = useRef<HTMLDivElement>(null);
+  const detailPanelRef = useRef<HTMLDivElement>(null);
 
   const { minMs, maxMs, years } = useMemo(() => {
     if (events.length === 0) {
@@ -571,6 +572,12 @@ export default function TimelinePage() {
     if (!e || !entryHasDetailPanel(e)) setActiveId(null);
   }, [activeId]);
 
+  useEffect(() => {
+    if (!activeId || !detailPanelRef.current) return;
+    if (window.matchMedia("(min-width: 768px)").matches) return;
+    detailPanelRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [activeId]);
+
   return (
     <div className="w-full min-w-0 max-w-full pb-8 sm:pb-10">
       <div className="max-w-3xl">
@@ -587,7 +594,15 @@ export default function TimelinePage() {
               ref={timelineHoverRef}
               className="flex w-full min-w-0 touch-pan-x sm:min-w-[min(100%,420px)]"
               onMouseMove={(e) => updateHoveredMonthFromClientY(e.clientY)}
+              onPointerMove={(e) => {
+                if (e.pointerType === 'mouse') return;
+                updateHoveredMonthFromClientY(e.clientY);
+              }}
               onMouseLeave={() => setHoveredYM(null)}
+              onPointerLeave={(e) => {
+                if (e.pointerType === 'mouse') return;
+                setHoveredYM(null);
+              }}
             >
           {/* Schedule track */}
           <div
@@ -838,7 +853,7 @@ export default function TimelinePage() {
         </div>
 
         {active ? (
-          <div className="w-full min-w-0 max-w-full sm:max-w-[min(100%,38rem)] sm:shrink-0 lg:max-w-[40rem]">
+          <div ref={detailPanelRef} className="w-full min-w-0 max-w-full sm:max-w-[min(100%,38rem)] sm:shrink-0 lg:max-w-[40rem]">
             <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 sm:rounded-xl sm:p-6">
               <div
                 className={

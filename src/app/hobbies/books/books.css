@@ -1,0 +1,32 @@
+@keyframes books-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.books-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: books-marquee var(--marquee-duration, 200s) linear infinite;
+}
+
+.books-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .books-marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .books-marquee-duplicate {
+    display: none;
+  }
+}

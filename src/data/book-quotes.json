@@ -1,0 +1,423 @@
+{
+  "note": "Copyright-safe JSON. These are original quote-style takeaways inspired by each book, not verbatim book quotes.",
+  "total_books": 26,
+  "quotes_per_book": 10,
+  "books": [
+    {
+      "id": 1,
+      "book_name": "12 Rules for Life",
+      "quotes": [
+        "Order your room before you try to order the world.",
+        "Respect yourself enough to act like your future matters.",
+        "Truth shrinks chaos faster than clever excuses ever can.",
+        "Aim at something worthy, then let discipline carry the weight.",
+        "Small habits become moral architecture when repeated with care.",
+        "Do not make your pain the center of your identity.",
+        "Responsibility is not a cage; it is a spine.",
+        "The person you could become is watching what you tolerate today.",
+        "Speak clearly, especially when silence would protect your comfort.",
+        "Stand where life asks you to stand, then improve what you can."
+      ]
+    },
+    {
+      "id": 2,
+      "book_name": "Freakonomics",
+      "quotes": [
+        "Look past the official story; incentives usually tell the truth.",
+        "The obvious answer is often just the easiest hiding place.",
+        "Good questions make invisible systems suddenly visible.",
+        "Data is most powerful when it challenges what everyone already believes.",
+        "People respond less to speeches than to rewards and consequences.",
+        "Averages can comfort you while exceptions explain the world.",
+        "Curiosity becomes intelligence when it refuses to accept surface explanations.",
+        "Follow the incentives and you will find the engine of behavior.",
+        "The world is stranger, simpler, and more measurable than it appears.",
+        "Question the question before you trust the answer."
+      ]
+    },
+    {
+      "id": 3,
+      "book_name": "The Subtle Art of Not Giving a F*ck",
+      "quotes": [
+        "Choose your problems carefully; your life becomes the price you accept.",
+        "Maturity is caring deeply about fewer, better things.",
+        "You cannot avoid struggle, but you can choose a struggle with meaning.",
+        "Comfort is a weak compass for a life that needs courage.",
+        "Stop trying to feel special; start becoming useful and honest.",
+        "Your values are revealed by what you are willing to suffer for.",
+        "Freedom begins when approval stops being your oxygen.",
+        "A better life is built by better things to care about.",
+        "Pain is not proof of failure; it is often the cost of clarity.",
+        "Say no loudly enough that your real yes can survive."
+      ]
+    },
+    {
+      "id": 4,
+      "book_name": "Shoe Dog",
+      "quotes": [
+        "Build before you are ready; confidence often arrives late.",
+        "A dream becomes a company only when someone keeps showing up.",
+        "Risk feels reckless until history calls it vision.",
+        "The road rewards the stubborn more often than the certain.",
+        "Great brands begin as unreasonable belief under pressure.",
+        "When cash is short, conviction must do extra work.",
+        "Move fast, learn brutally, and keep the mission breathing.",
+        "People remember the spirit behind the product more than the pitch.",
+        "Entrepreneurship is uncertainty negotiated one impossible week at a time.",
+        "Do not worship the plan; protect the momentum."
+      ]
+    },
+    {
+      "id": 5,
+      "book_name": "Make Time",
+      "quotes": [
+        "Design your day before distraction designs it for you.",
+        "One clear priority beats a calendar full of minor victories.",
+        "Energy management is time management with a better name.",
+        "Protect attention like it is the rarest currency you own.",
+        "The day improves when your phone stops being the boss.",
+        "Make space for what matters before urgency fills every corner.",
+        "A focused hour can rescue a scattered week.",
+        "Do less on purpose so the important work can breathe.",
+        "Reflection turns productivity from a sprint into a system.",
+        "Your schedule should serve your values, not your anxiety."
+      ]
+    },
+    {
+      "id": 6,
+      "book_name": "Show Your Work",
+      "quotes": [
+        "Share the process, not just the polished trophy.",
+        "Visibility grows when generosity becomes part of the craft.",
+        "Teach what you are learning before you feel like an expert.",
+        "Small public steps build trust faster than private perfection.",
+        "Your work becomes more useful when people can see how it was made.",
+        "Document the journey; the path is often the most valuable part.",
+        "Creativity compounds when you connect your influences openly.",
+        "Do not wait to be discovered; make your work discoverable.",
+        "Consistency turns ordinary updates into a body of work.",
+        "Let people watch you think, build, revise, and improve."
+      ]
+    },
+    {
+      "id": 7,
+      "book_name": "The Song of Achilles",
+      "quotes": [
+        "Love can make even a doomed life feel fully chosen.",
+        "Greatness without tenderness is only another form of ruin.",
+        "The heart remembers the person, not the legend.",
+        "War steals many things, but it cannot erase devotion freely given.",
+        "To be seen completely is one of life's rarest forms of mercy.",
+        "Fate may decide the ending, but love decides the meaning.",
+        "Beauty becomes tragic when pride is allowed to govern it.",
+        "The quiet witness often understands the hero better than the crowd.",
+        "A brief life can still contain an immortal kind of love.",
+        "What survives us is not power alone, but how deeply we loved."
+      ]
+    },
+    {
+      "id": 8,
+      "book_name": "The Sailor Who Fell from Grace with the Sea",
+      "quotes": [
+        "When ideals harden, they can become colder than cruelty.",
+        "Innocence can turn dangerous when it worships purity over compassion.",
+        "A person is never only the myth others build around them.",
+        "The sea promises freedom, but it also teaches distance.",
+        "Disillusionment is sharpest when fantasy meets ordinary human need.",
+        "Beauty without empathy can become a terrifying discipline.",
+        "To reject weakness completely is to reject humanity itself.",
+        "The hunger for meaning can become destructive when it refuses softness.",
+        "Adolescence can mistake severity for truth and violence for clarity.",
+        "The fall from grace often begins with refusing to be human."
+      ]
+    },
+    {
+      "id": 9,
+      "book_name": "The Psychology of Money",
+      "quotes": [
+        "Wealth is built as much by behavior as by income.",
+        "The best financial plan is one you can actually survive emotionally.",
+        "Saving is freedom stored in a bank account.",
+        "Compounding rewards patience more reliably than brilliance.",
+        "Money decisions are never just math; they are biography in motion.",
+        "Enough is not weakness; it is protection from endless hunger.",
+        "Getting rich and staying rich are different skills.",
+        "Control over your time is the highest dividend money can pay.",
+        "Luck and risk are siblings; respect both before judging outcomes.",
+        "Financial peace begins when comparison stops setting your goals."
+      ]
+    },
+    {
+      "id": 10,
+      "book_name": "The Design of Everyday Things",
+      "quotes": [
+        "Good design explains itself before frustration has to ask.",
+        "When users fail, first inspect the system that failed them.",
+        "Clarity is not decoration; it is respect made visible.",
+        "The best interface feels obvious only because someone thought deeply.",
+        "Design succeeds when intention and action meet without friction.",
+        "A confusing door is not a small problem; it is a design lesson.",
+        "Feedback turns action into understanding.",
+        "Human error often begins where design stopped caring.",
+        "Useful things should invite the right behavior and forgive the wrong one.",
+        "Simplicity is achieved when complexity is handled by the maker, not the user."
+      ]
+    },
+    {
+      "id": 11,
+      "book_name": "Man's Search for Meaning",
+      "quotes": [
+        "Meaning can survive where comfort cannot.",
+        "A person can lose nearly everything and still choose a stance toward life.",
+        "Suffering becomes heavier when it feels empty of purpose.",
+        "Hope is not denial; it is direction under extreme darkness.",
+        "Dignity begins in the inner freedom no prison can fully reach.",
+        "The question is not only what life gives, but what life asks.",
+        "Purpose can turn endurance into testimony.",
+        "Even pain can be transformed when it serves something beyond the self.",
+        "Human beings are not finished by circumstance alone.",
+        "Meaning is often found by serving, loving, and bearing the unavoidable bravely."
+      ]
+    },
+    {
+      "id": 12,
+      "book_name": "Beyond Good and Evil",
+      "quotes": [
+        "Examine the values you inherited before you let them govern you.",
+        "A strong mind can question even its favorite beliefs.",
+        "Morality becomes dangerous when it forgets its own origins.",
+        "Depth begins where easy certainty ends.",
+        "The free spirit is not careless; it is disciplined in suspicion.",
+        "Do not confuse popular virtue with examined truth.",
+        "Every philosophy also reveals the philosopher behind it.",
+        "To think deeply is to risk becoming less convenient to others.",
+        "Self-overcoming is the highest form of intellectual honesty.",
+        "The hardest chains are often the ideas we call obvious."
+      ]
+    },
+    {
+      "id": 13,
+      "book_name": "Die with Zero",
+      "quotes": [
+        "Life is not maximized by hoarding money until time runs out.",
+        "Spend deliberately on memories while you are still able to live them.",
+        "Unused wealth can become a museum of postponed living.",
+        "The right experience at the right age is worth more than delayed perfection.",
+        "Money should serve your life, not quietly replace it.",
+        "Your calendar is a more honest wealth statement than your balance sheet.",
+        "Give while the gift can still change both lives.",
+        "A rich life is measured in lived moments, not just retained assets.",
+        "Optimization means nothing if it forgets mortality.",
+        "Plan your resources around the seasons of your life."
+      ]
+    },
+    {
+      "id": 14,
+      "book_name": "The Four Agreements",
+      "quotes": [
+        "Let your words become clean enough to build trust.",
+        "Other people's storms do not have to become your weather.",
+        "Ask before you assume; clarity is kinder than imagination.",
+        "Give your best today, not yesterday's best or tomorrow's fantasy.",
+        "Freedom grows when you stop personalizing every shadow around you.",
+        "Integrity begins where careless speech ends.",
+        "Peace is easier when you refuse to make stories from silence.",
+        "Your effort matters most when it is honest, not perfect.",
+        "Do not let borrowed opinions become your identity.",
+        "A disciplined mind can turn ordinary days into clean agreements."
+      ]
+    },
+    {
+      "id": 15,
+      "book_name": "Creative Confidence",
+      "quotes": [
+        "Creativity is not a gift reserved for others; it is a muscle you train.",
+        "Start with empathy and the solution becomes more human.",
+        "Prototype early so reality can join the conversation.",
+        "Failure teaches faster when you keep the experiment small.",
+        "Confidence grows when action proves fear negotiable.",
+        "The best ideas often arrive after permission is no longer needed.",
+        "Design thinking begins by caring enough to notice real people.",
+        "Momentum beats imagination that never leaves the notebook.",
+        "Make the idea tangible before you judge its future.",
+        "Creative courage is built by doing before feeling ready."
+      ]
+    },
+    {
+      "id": 16,
+      "book_name": "The Black Swan",
+      "quotes": [
+        "The rare event matters most because it refuses to fit the model.",
+        "Confidence can be the most dangerous error in a fragile system.",
+        "What you do not know may shape your life more than what you measure.",
+        "Prediction is weakest exactly where consequences are strongest.",
+        "Humility is a risk strategy, not just a virtue.",
+        "Do not mistake a clean story for a true explanation.",
+        "Robust lives are built to survive surprises, not merely forecast them.",
+        "The map is useful until reality tears through it.",
+        "Knowledge should make you careful, not arrogant.",
+        "Prepare for what seems unlikely if its impact would be enormous."
+      ]
+    },
+    {
+      "id": 17,
+      "book_name": "The Creative Act",
+      "quotes": [
+        "Creativity begins by listening before trying to control.",
+        "The artist's job is to notice what others rush past.",
+        "A work improves when ego becomes less important than attention.",
+        "Make space for mystery; not every answer should arrive on command.",
+        "The creative life is a practice of receptivity and refinement.",
+        "Your taste is a compass; your discipline is the journey.",
+        "Art asks for presence before it asks for performance.",
+        "The best ideas are often received, then shaped with patience.",
+        "Protect the signal from the noise of needing to be understood immediately.",
+        "Creation is less about forcing magic than preparing a place for it."
+      ]
+    },
+    {
+      "id": 18,
+      "book_name": "Steal Like an Artist",
+      "quotes": [
+        "Study what you love until your influences become ingredients, not costumes.",
+        "Originality often begins as honest remixing with better taste.",
+        "Collect ideas like a craftsman, then build something unmistakably yours.",
+        "Do not copy the surface; understand the engine underneath.",
+        "Your creative lineage is a toolbox, not a prison.",
+        "Make the work you wish already existed.",
+        "Boredom can become fuel when you use it to create.",
+        "Share your sources and your work gains depth instead of losing mystery.",
+        "Creativity thrives when curiosity is allowed to wander widely.",
+        "Borrow widely, transform honestly, and leave fingerprints everywhere."
+      ]
+    },
+    {
+      "id": 19,
+      "book_name": "Keep Going",
+      "quotes": [
+        "A creative life is maintained by rhythm, not constant inspiration.",
+        "Make the next small thing when the big picture feels impossible.",
+        "Protect your attention from the endless emergency of the feed.",
+        "Routine gives your imagination a reliable place to return.",
+        "Do not measure the work only by the world's immediate reaction.",
+        "Rest is not quitting; it is maintenance for the long game.",
+        "Keep a corner of your life untouched by performance.",
+        "The work continues when you learn how to begin again.",
+        "Ordinary days are where extraordinary bodies of work are assembled.",
+        "Stay human first; the art depends on it."
+      ]
+    },
+    {
+      "id": 20,
+      "book_name": "The Almanack of Naval Ravikant",
+      "quotes": [
+        "Seek wealth by owning systems, not by renting every hour of your life.",
+        "Specific knowledge grows where curiosity, talent, and obsession overlap.",
+        "Judgment is leverage when everyone else is busy copying tactics.",
+        "A calm mind is a competitive advantage in a noisy world.",
+        "Play long-term games with people who compound trust.",
+        "Freedom is the real product of wealth.",
+        "Learn to build, learn to sell, and keep learning how to think.",
+        "Happiness is easier when desire stops multiplying faster than gratitude.",
+        "Escape competition by becoming too distinct to compare cleanly.",
+        "Read, reflect, decide, and let compounding work quietly."
+      ]
+    },
+    {
+      "id": 21,
+      "book_name": "The Book of Five Rings",
+      "quotes": [
+        "Mastery is calm action under pressure.",
+        "Know the rhythm of the opponent, the moment, and yourself.",
+        "Technique matters, but perception wins before movement begins.",
+        "The strategist trains until hesitation has nowhere to hide.",
+        "Simplicity becomes powerful when backed by relentless practice.",
+        "Do not cling to one weapon, one method, or one victory.",
+        "See broadly, act precisely, and remain difficult to disturb.",
+        "A disciplined mind turns chaos into timing.",
+        "Victory favors the person who understands both form and emptiness.",
+        "Train beyond comfort until readiness becomes ordinary."
+      ]
+    },
+    {
+      "id": 22,
+      "book_name": "Flowers for Algernon",
+      "quotes": [
+        "Intelligence without kindness can leave the soul starving.",
+        "To be understood is a human need, not a luxury.",
+        "Progress can be heartbreaking when it forgets the person inside the experiment.",
+        "A life is not less worthy because others fail to see its depth.",
+        "Knowledge changes pain, but it does not always erase it.",
+        "Compassion is the only genius that never becomes obsolete.",
+        "Memory can be both a gift and a wound.",
+        "Do not measure a person only by speed, skill, or cleverness.",
+        "The mind may rise and fall, but dignity should remain protected.",
+        "Love people carefully; you may never know the whole struggle they carry."
+      ]
+    },
+    {
+      "id": 23,
+      "book_name": "Atomic Habits",
+      "quotes": [
+        "Tiny improvements become identity when repeated without drama.",
+        "You do not rise to goals you never systematize.",
+        "Make the good path obvious and the bad path inconvenient.",
+        "Every action is a vote for the person you are becoming.",
+        "Success is often the delayed evidence of boring consistency.",
+        "Environment shapes behavior more quietly than motivation does.",
+        "Do not chase transformation; design repetition.",
+        "A habit is easier to keep when it fits the identity you respect.",
+        "The compound effect of discipline hides inside ordinary days.",
+        "Change becomes real when it survives a low-motivation day."
+      ]
+    },
+    {
+      "id": 24,
+      "book_name": "Why We Sleep",
+      "quotes": [
+        "Sleep is not lost time; it is the system repairing the operator.",
+        "A tired brain makes poor decisions with great confidence.",
+        "Rest protects learning, mood, memory, and long-term resilience.",
+        "Treat sleep as infrastructure, not as the leftover part of the day.",
+        "The night before matters as much as the ambition after sunrise.",
+        "Better sleep is one of the most practical forms of self-respect.",
+        "Performance begins long before the workday, in the quality of recovery.",
+        "Your body keeps accounts even when your schedule ignores the debt.",
+        "Protect darkness, routine, and quiet if you want a sharper mind.",
+        "Sleep is the daily reset that ambition cannot afford to skip."
+      ]
+    },
+    {
+      "id": 25,
+      "book_name": "The 4-Hour Workweek",
+      "quotes": [
+        "Question the default life before you optimize it.",
+        "Efficiency is useless if it accelerates you toward the wrong life.",
+        "Automate, eliminate, and delegate before you glorify being busy.",
+        "Freedom requires designing systems that do not constantly require you.",
+        "Income matters most when it buys time, mobility, and choice.",
+        "Do not postpone living until a distant retirement approves it.",
+        "The goal is not less work; it is more life per unit of work.",
+        "Test bold assumptions cheaply before fear turns them into rules.",
+        "Busy can become a disguise for avoiding important decisions.",
+        "Build a life that does not need escape as its reward."
+      ]
+    },
+    {
+      "id": 26,
+      "book_name": "Sapiens",
+      "quotes": [
+        "Human power grew from stories shared at scale.",
+        "Civilization is built on imagined orders that feel completely real.",
+        "Progress often gives with one hand and takes with the other.",
+        "The species that tells stories can also be trapped by them.",
+        "History is not a straight line toward happiness.",
+        "Culture turns fiction into cooperation.",
+        "To understand humanity, study both our myths and our machinery.",
+        "The future belongs to those who notice which stories are changing.",
+        "Agriculture, money, empire, and science all reshaped what humans could imagine.",
+        "Ask not only what humans can do, but what kind of beings we become by doing it."
+      ]
+    }
+  ]
+}

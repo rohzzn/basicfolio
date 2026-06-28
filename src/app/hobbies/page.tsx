@@ -16,18 +16,13 @@ const hobbies: Hobby[] = [
   },
   {
     title: "Seen",
-    description: ".heic",
+    description: "Photos worth keeping",
     href: "/hobbies/seen",
-  },
-  {
-    title: "Ben 10",
-    description: "Childhood game archived",
-    href: "/hobbies/ben10",
   },
   {
     title: "Books",
     description: "Reading list & reviews",
-    href: "/hobbies/readings",
+    href: "/hobbies/books",
   },
   {
     title: "Content",

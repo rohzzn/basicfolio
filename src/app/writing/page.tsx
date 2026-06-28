@@ -53,12 +53,14 @@ const WritingPage = () => {
 
   return (
     <div style={{ maxWidth: '75ch' }}>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <h2 className="text-lg font-medium dark:text-white">Writing</h2>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-x-4 gap-y-2" role="tablist" aria-label="Writing categories">
           {categories.map((cat) => (
             <button
               key={cat}
+              role="tab"
+              aria-selected={selectedCategory === cat}
               onClick={() => setSelectedCategory(cat)}
               className={`text-sm capitalize transition-colors ${
                 selectedCategory === cat

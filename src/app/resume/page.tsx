@@ -1,31 +1,7 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-
-interface LeetCodeStats {
-  totalSolved: number;
-  totalQuestions: number;
-  easySolved: number;
-  totalEasy: number;
-  mediumSolved: number;
-  totalMedium: number;
-  hardSolved: number;
-  totalHard: number;
-  acceptanceRate: number;
-  ranking: number;
-  contributionPoints: number;
-  reputation: number;
-}
+import React from 'react';
 
 const Stack = () => {
-  const [leetcodeStats, setLeetcodeStats] = useState<LeetCodeStats | null>(null);
-
-  useEffect(() => {
-    fetch('/api/leetcode')
-      .then(res => res.json())
-      .then(data => setLeetcodeStats(data))
-      .catch(error => console.error('Error fetching LeetCode stats:', error));
-  }, []);
-
   const experience = [
     {
       company: 'CCHMC',
@@ -265,32 +241,6 @@ const Stack = () => {
             </div>
           </section>
 
-          {/* LeetCode Stats */}
-          {leetcodeStats && (
-            <section>
-              <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
-                LEETCODE STATS
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
-                  <p className="text-lg font-bold text-zinc-900 dark:text-white">{leetcodeStats.totalSolved}</p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Total Solved</p>
-                </div>
-                <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
-                  <p className="text-lg font-bold text-green-600 dark:text-green-400">{leetcodeStats.easySolved}</p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Easy</p>
-                </div>
-                <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
-                  <p className="text-lg font-bold text-yellow-600 dark:text-yellow-400">{leetcodeStats.mediumSolved}</p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Medium</p>
-                </div>
-                <div className="text-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded">
-                  <p className="text-lg font-bold text-red-600 dark:text-red-400">{leetcodeStats.hardSolved}</p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Hard</p>
-                </div>
-              </div>
-            </section>
-          )}
         </div>
 
         {/* Resume Footer */}

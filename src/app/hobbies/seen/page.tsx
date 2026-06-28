@@ -859,25 +859,41 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
               Close <span aria-hidden>·</span> Esc
             </button>
 
-            <Image
-              src={
-                lightbox.media_type === "VIDEO"
-                  ? lightbox.thumbnail_url ?? lightbox.media_url
-                  : lightbox.media_url
-              }
-              alt={lightboxCaption ?? "Photo"}
-              width={1600}
-              height={1600}
-              className="h-auto max-h-[min(85vh,calc(100vw-2rem))] w-auto max-w-full object-contain"
-              unoptimized
-              priority
-            />
+            {lightbox.media_type === "VIDEO" ? (
+              <video
+                src={lightbox.media_url}
+                poster={lightbox.thumbnail_url ?? undefined}
+                controls
+                autoPlay
+                playsInline
+                className="h-auto max-h-[min(85vh,calc(100vw-2rem))] w-auto max-w-full object-contain"
+              />
+            ) : (
+              <Image
+                src={lightbox.media_url}
+                alt={lightboxCaption ?? "Photo"}
+                width={1600}
+                height={1600}
+                className="h-auto max-h-[min(85vh,calc(100vw-2rem))] w-auto max-w-full object-contain"
+                unoptimized
+                priority
+              />
+            )}
 
             {lightboxCaption ? (
               <p className="mt-4 max-w-2xl self-start text-left text-sm lowercase leading-relaxed text-zinc-200">
                 {lightboxCaption}
               </p>
             ) : null}
+
+            <a
+              href={lightbox.permalink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 self-start text-xs text-zinc-400 underline-offset-2 hover:text-zinc-200 hover:underline"
+            >
+              View on Instagram
+            </a>
           </div>
         </div>
       ) : null}
@@ -936,7 +952,7 @@ export default function SeenPage() {
       <div className="mb-6 space-y-3">
         <h2 className="text-lg font-medium dark:text-white">Seen</h2>
         <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-          An archive of images I liked.
+          Photos worth keeping.
         </p>
       </div>
 

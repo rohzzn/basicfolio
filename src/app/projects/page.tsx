@@ -17,12 +17,14 @@ const Projects = () => {
 
   return (
     <div style={{ maxWidth: "75ch" }}>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <h2 className="text-lg font-medium dark:text-white">Projects</h2>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-x-4 gap-y-2" role="tablist" aria-label="Project categories">
           {displayCategories.map((cat) => (
             <button
               key={cat.id}
+              role="tab"
+              aria-selected={activeTab === cat.id}
               onClick={() => setActiveTab(cat.id)}
               className={`text-sm capitalize transition-colors ${
                 activeTab === cat.id

@@ -80,6 +80,11 @@ const nextConfig = {
         permanent: false,
       },
       {
+        source: '/hobbies/readings',
+        destination: '/hobbies/books',
+        permanent: true,
+      },
+      {
         source: '/hobbies/strava',
         destination: '/hobbies/move',
         permanent: true,

@@ -13,12 +13,11 @@ const STATIC_PATHS: string[] = [
   '/links',
   '/resume',
   '/timeline',
-  '/focus',
   '/projects',
   '/writing',
   '/hobbies',
   '/hobbies/move',
-  '/hobbies/readings',
+  '/hobbies/books',
   '/hobbies/games',
   '/hobbies/content',
   '/hobbies/hackathons',
@@ -26,7 +25,6 @@ const STATIC_PATHS: string[] = [
   '/hobbies/seen',
   '/hobbies/watchlist',
   '/hobbies/typing',
-  '/hobbies/archive',
   '/hobbies/art',
   '/hobbies/music',
   '/hobbies/uses',
@@ -34,7 +32,6 @@ const STATIC_PATHS: string[] = [
   '/hobbies/screen',
   '/hobbies/myanimelist',
   '/hobbies/letterboxd',
-  '/hobbies/ben10',
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
