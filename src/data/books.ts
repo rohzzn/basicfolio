@@ -41,8 +41,19 @@ export const BOOK_CATEGORY_LABELS: Record<BookCategory, string> = {
 };
 
 /** Medium cover — smaller payload than -L, still sharp in the grid. */
-export function bookCoverUrl(isbn: string, size: 'S' | 'M' = 'M'): string {
+export function bookCoverUrl(isbn: string, size: 'S' | 'M' | 'L' = 'M'): string {
   return `https://covers.openlibrary.org/b/isbn/${isbn}-${size}.jpg`;
+}
+
+/** Ordered fallbacks when a cover URL fails (Open Library 302s to archive.org). */
+export function bookCoverSources(isbn: string): string[] {
+  return [
+    bookCoverUrl(isbn, 'M'),
+    bookCoverUrl(isbn, 'L'),
+    `https://images-na.ssl-images-amazon.com/images/P/${isbn}.01.L.jpg`,
+    `https://m.media-amazon.com/images/P/${isbn}.01._SCLZZZZZZZ_.jpg`,
+    bookCoverUrl(isbn, 'S'),
+  ];
 }
 
 export const books: Book[] = [

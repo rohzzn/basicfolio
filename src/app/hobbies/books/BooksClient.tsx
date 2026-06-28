@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import bookQuotesData from '@/data/book-quotes.json';
 import {
   books,
   BOOK_CATEGORY_LABELS,
-  bookCoverUrl,
+  bookCoverSources,
   marqueeQuotes,
   type Book,
   type BookQuotesData,
@@ -82,29 +82,58 @@ function QuoteMarquee({ quotes }: { quotes: string[] }) {
   );
 }
 
-function BookCover({
+function BookCoverImage({
   book,
   priority = false,
   className = '',
-  sizes = '(max-width: 640px) 42vw, 180px',
+  hoverZoom = false,
 }: {
   book: Book;
   priority?: boolean;
   className?: string;
-  sizes?: string;
+  hoverZoom?: boolean;
 }) {
+  const sources = useMemo(() => bookCoverSources(book.isbn), [book.isbn]);
+  const [sourceIndex, setSourceIndex] = useState(0);
+
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [book.isbn]);
+
+  const exhausted = sourceIndex >= sources.length;
+  const src = sources[sourceIndex];
+
   return (
     <div className={`relative aspect-[2/3] overflow-hidden bg-zinc-200 dark:bg-zinc-800 ${className}`}>
-      <Image
-        src={bookCoverUrl(book.isbn, 'M')}
-        alt={book.title}
-        fill
-        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-        sizes={sizes}
-        priority={priority}
-      />
+      {exhausted ? (
+        <div className="absolute inset-0 flex items-center justify-center p-2 text-center text-[10px] font-medium leading-snug text-zinc-500 dark:text-zinc-400">
+          {book.title}
+        </div>
+      ) : (
+        <Image
+          key={src}
+          src={src}
+          alt={book.title}
+          fill
+          priority={priority}
+          className={`object-cover${hoverZoom ? ' transition-transform duration-500 ease-out group-hover:scale-[1.04]' : ''}`}
+          onError={() => setSourceIndex((i) => i + 1)}
+        />
+      )}
     </div>
   );
+}
+
+function BookCover({
+  book,
+  priority = false,
+  className = '',
+}: {
+  book: Book;
+  priority?: boolean;
+  className?: string;
+}) {
+  return <BookCoverImage book={book} priority={priority} className={className} hoverZoom />;
 }
 
 function BookDetailModal({ book, onClose }: { book: Book; onClose: () => void }) {
@@ -146,15 +175,7 @@ function BookDetailModal({ book, onClose }: { book: Book; onClose: () => void })
       >
         <div className="flex min-h-[280px] sm:min-h-[320px]">
           <div className="hidden w-[38%] shrink-0 border-r border-zinc-200/80 bg-zinc-100/60 p-4 dark:border-zinc-700 dark:bg-zinc-800/50 sm:flex sm:flex-col sm:justify-between">
-            <div className="relative mx-auto aspect-[2/3] w-full max-w-[140px] overflow-hidden rounded shadow-md ring-1 ring-black/5">
-              <Image
-                src={bookCoverUrl(book.isbn, 'M')}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="140px"
-              />
-            </div>
+            <BookCoverImage book={book} className="mx-auto w-full max-w-[140px] rounded shadow-md ring-1 ring-black/5" />
             <StarRow score={book.score} className="mt-4 justify-center" />
           </div>
 
