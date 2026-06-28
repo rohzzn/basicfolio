@@ -29,6 +29,10 @@ function commentAvatarSrc(comment: Comment, size = 80) {
   return dicebearAvatarDataUri(comment.displayName, comment.id, size);
 }
 
+function isDiscordAvatar(src: string): boolean {
+  return src.includes("discordapp.com");
+}
+
 function GuestbookAvatar({
   src,
   size = 40,
@@ -40,6 +44,7 @@ function GuestbookAvatar({
 }) {
   const [pixelRatio, setPixelRatio] = useState(2);
   const [failed, setFailed] = useState(false);
+  const isDiscord = isDiscordAvatar(src);
 
   useEffect(() => {
     setPixelRatio(Math.min(window.devicePixelRatio || 2, 3));
@@ -50,17 +55,21 @@ function GuestbookAvatar({
   }, [src]);
 
   const displaySrc = useMemo(() => {
-    if (src.includes("discordapp.com")) {
+    if (isDiscord) {
       return resolveDiscordAvatarSrc(src, size, pixelRatio);
     }
     return src;
-  }, [src, size, pixelRatio]);
+  }, [src, size, pixelRatio, isDiscord]);
 
   const initials = guestbookInitials(fallbackName);
 
   return (
     <div
-      className="shrink-0 overflow-hidden rounded-full mt-0.5 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center"
+      className={
+        isDiscord
+          ? "shrink-0 overflow-hidden rounded-full mt-0.5 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center"
+          : "shrink-0 mt-0.5"
+      }
       style={{ width: size, height: size, minWidth: size, minHeight: size }}
     >
       {failed ? (
@@ -75,7 +84,7 @@ function GuestbookAvatar({
         <img
           src={displaySrc}
           alt=""
-          className="block object-cover"
+          className={isDiscord ? "block object-cover" : "block"}
           style={{ width: size, height: size }}
           decoding="async"
           draggable={false}
@@ -409,7 +418,7 @@ export default function GuestbookPage() {
     <div style={{ maxWidth: "75ch" }}>
       <h2 className="text-lg font-medium dark:text-white mb-2">Guestbook</h2>
       <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8">
-        Leave a note. Signed-in Discord visitors show their profile picture.
+        Say hello if you&apos;ve stopped by. I read every message.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 mb-10">

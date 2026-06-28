@@ -10,7 +10,7 @@ export function dicebearAvatarDataUri(name: string, id: number, size = 80): stri
   const svg = createAvatar(adventurer, {
     seed: guestbookAvatarSeed(name, id),
     size,
-    radius: 50,
+    radius: 0,
   }).toString();
 
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
