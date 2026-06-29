@@ -8,6 +8,7 @@ import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/SpotifyPreviewContext';
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
+import CustomCursor from './CustomCursor';
 import EReaderEasterEgg from "./EReaderEasterEgg";
 
 interface NavLinkProps {
@@ -432,6 +433,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
       <CommandPalette />
+      <CustomCursor />
       <CursorSound />
       <EReaderEasterEgg />
 
