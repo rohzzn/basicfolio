@@ -6,7 +6,7 @@ export async function fetchAllHevyWorkouts(): Promise<HevyWorkout[]> {
     throw new Error('Hevy API key not configured');
   }
 
-  const PAGE_SIZE = 50;
+  const PAGE_SIZE = 10;
   const all: HevyWorkout[] = [];
   let page = 1;
 
@@ -17,7 +17,12 @@ export async function fetchAllHevyWorkouts(): Promise<HevyWorkout[]> {
     );
 
     if (!response.ok) {
-      throw new Error(`Hevy HTTP ${response.status}`);
+      const detail = await response.text().catch(() => '');
+      throw new Error(
+        detail
+          ? `Hevy HTTP ${response.status}: ${detail.slice(0, 200)}`
+          : `Hevy HTTP ${response.status}`
+      );
     }
 
     const data = await response.json();

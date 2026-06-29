@@ -4,7 +4,7 @@ import { fetchAllHevyWorkouts } from '@/lib/hevy-workouts';
 import { fetchAllStravaActivities } from '@/lib/strava';
 import { getRedis } from '@/lib/redis';
 
-const CACHE_KEY = 'activities:combined:v4';
+const CACHE_KEY = 'activities:combined:v5';
 /** Serve cached data for 1 hour; stale copy kept for fallback. */
 const CACHE_TTL_SECONDS = 60 * 60;
 
