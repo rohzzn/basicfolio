@@ -125,14 +125,6 @@ const MusicPage: React.FC = () => {
     'long_term': 'All Time'
   };
   
-  // Track which API endpoints have authorization issues
-  const [authIssues, setAuthIssues] = useState({
-    recentTracks: false,
-    topTracks: false,
-    topArtists: false,
-    currentlyPlaying: false
-  });
-
   // Object to track which sections loaded successfully
   const [loadedSections, setLoadedSections] = useState({
     recentTracks: false,
@@ -198,18 +190,6 @@ const MusicPage: React.FC = () => {
             // Specifically handle 401 authorization errors
             if (response.status === 401) {
               console.log(`Authorization error for ${endpoint} - Missing required scopes`);
-              
-              // Track which endpoint had auth issues
-              if (endpoint.includes('/recently-played')) {
-                setAuthIssues(prev => ({ ...prev, recentTracks: true }));
-              } else if (endpoint.includes('/top/artists')) {
-                setAuthIssues(prev => ({ ...prev, topArtists: true }));
-              } else if (endpoint.includes('/top/tracks')) {
-                setAuthIssues(prev => ({ ...prev, topTracks: true }));
-              } else if (endpoint.includes('/currently-playing')) {
-                setAuthIssues(prev => ({ ...prev, currentlyPlaying: true }));
-              }
-              
               return null;
             }
             
