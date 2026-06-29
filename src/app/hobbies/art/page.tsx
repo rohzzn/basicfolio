@@ -4,17 +4,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import Image from "@/components/SiteImage";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { behanceArtItems, type ArtWorkItem } from "@/data/behance-art";
 import "./art.css";
-
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  platform: "Behance" | "Dribbble";
-  imageUrl: string;
-  projectUrl: string;
-  tags: string[];
-}
 
 /** Design disciplines — edit this list to change what scrolls in the strip. */
 const MARQUEE_TAGS = [
@@ -25,6 +16,7 @@ const MARQUEE_TAGS = [
   "Character Design",
   "Mascot Design",
   "UI Design",
+  "3D Design",
   "Packaging",
   "Merchandise",
   "Game Art",
@@ -34,72 +26,9 @@ const MARQUEE_TAGS = [
   "Mobile Design",
 ];
 
-const projects: Project[] = [
+const dribbbleProjects: ArtWorkItem[] = [
   {
-    id: 1,
-    title: "Sarojini Gastro",
-    description: "Branding design for Hospital.",
-    platform: "Behance",
-    imageUrl: "/images/design/sarojini.png",
-    projectUrl: "https://www.behance.net/gallery/127106007/Sarojini-Gastro-BRANDING",
-    tags: ["Branding", "Logo Design", "Hospital"],
-  },
-  {
-    id: 2,
-    title: "Kōhī",
-    description: "Brand identity design for a Japanese-inspired coffee beans.",
-    platform: "Behance",
-    imageUrl: "/images/design/kohi2.png",
-    projectUrl: "https://www.behance.net/gallery/109291517/Kohi-BRANDING",
-    tags: ["Branding", "Japanese", "Coffee"],
-  },
-  {
-    id: 3,
-    title: "Merch Design",
-    description: "Collection of merchandise designs featuring unique illustrations and patterns.",
-    platform: "Behance",
-    imageUrl: "/images/design/merch.png",
-    projectUrl: "https://www.behance.net/gallery/109299665/Merch-Design",
-    tags: ["Merchandise", "Illustration", "Fashion"],
-  },
-  {
-    id: 4,
-    title: "Mascots Folio",
-    description: "A collection of character mascots designed for various brands and projects.",
-    platform: "Behance",
-    imageUrl: "/images/design/mascots.png",
-    projectUrl: "https://www.behance.net/gallery/97663207/Mascots-01",
-    tags: ["Character Design", "Mascots", "Illustration"],
-  },
-  {
-    id: 5,
-    title: "Game Backgrounds",
-    description: "Environmental designs and background artwork for gaming projects.",
-    platform: "Behance",
-    imageUrl: "/images/design/gamebg.png",
-    projectUrl: "https://www.behance.net/gallery/107259111/Game-Backgrounds",
-    tags: ["Game Art", "Environment Design", "Digital Art"],
-  },
-  {
-    id: 6,
-    title: "Logofolio 01",
-    description: "Collection of logo designs and brand marks for various clients.",
-    platform: "Behance",
-    imageUrl: "/images/design/logofolio.png",
-    projectUrl: "https://www.behance.net/gallery/96981231/Logofolio-01",
-    tags: ["Logo Design", "Branding", "Identity"],
-  },
-  {
-    id: 7,
-    title: "Pirate King",
-    description: "Illustration of Pirate King YouTuber.",
-    platform: "Behance",
-    imageUrl: "/images/design/pirateking.png",
-    projectUrl: "https://www.behance.net/gallery/134277689/Pirate-King-BANNER",
-    tags: ["Cover Art", "Branding", "Identity"],
-  },
-  {
-    id: 8,
+    id: 101,
     title: "Zenitsu",
     description: "Character illustration inspired by Demon Slayer.",
     platform: "Dribbble",
@@ -108,7 +37,7 @@ const projects: Project[] = [
     tags: ["Illustration", "Anime", "Character Design"],
   },
   {
-    id: 9,
+    id: 102,
     title: "Sushi",
     description: "Food illustration and packaging design concept.",
     platform: "Dribbble",
@@ -117,7 +46,7 @@ const projects: Project[] = [
     tags: ["Food", "Illustration", "Packaging"],
   },
   {
-    id: 10,
+    id: 103,
     title: "Taj Mahal",
     description: "Architectural illustration of the iconic monument.",
     platform: "Dribbble",
@@ -126,7 +55,7 @@ const projects: Project[] = [
     tags: ["Architecture", "Illustration", "Landmarks"],
   },
   {
-    id: 11,
+    id: 104,
     title: "Cat Illustration",
     description: "Playful cat character design and illustration.",
     platform: "Dribbble",
@@ -135,7 +64,7 @@ const projects: Project[] = [
     tags: ["Character Design", "Animals", "Illustration"],
   },
   {
-    id: 12,
+    id: 105,
     title: "Dog Illustration",
     description: "Playful dog Illustration design.",
     platform: "Dribbble",
@@ -144,7 +73,7 @@ const projects: Project[] = [
     tags: ["Mascot", "Character Design", "Branding"],
   },
   {
-    id: 13,
+    id: 106,
     title: "Wallpaper Engine UI",
     description: "User interface design for a wallpaper customization app.",
     platform: "Dribbble",
@@ -153,7 +82,7 @@ const projects: Project[] = [
     tags: ["UI Design", "Desktop", "Application"],
   },
   {
-    id: 14,
+    id: 107,
     title: "Delivery App UI",
     description: "Modern interface design for a food delivery application.",
     platform: "Dribbble",
@@ -162,7 +91,7 @@ const projects: Project[] = [
     tags: ["UI Design", "Mobile", "Food Delivery"],
   },
   {
-    id: 15,
+    id: 108,
     title: "Finance App UI",
     description: "Clean and modern finance application interface.",
     platform: "Dribbble",
@@ -171,7 +100,7 @@ const projects: Project[] = [
     tags: ["UI Design", "Finance", "Mobile"],
   },
   {
-    id: 16,
+    id: 109,
     title: "Rohan Mascot",
     description: "Personal brand mascot design.",
     platform: "Dribbble",
@@ -180,6 +109,8 @@ const projects: Project[] = [
     tags: ["Mascot", "Personal Brand", "Character Design"],
   },
 ];
+
+const projects: ArtWorkItem[] = [...behanceArtItems, ...dribbbleProjects];
 
 type Filter = "all" | "Behance" | "Dribbble";
 
