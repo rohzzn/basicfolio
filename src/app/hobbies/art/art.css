@@ -1,0 +1,24 @@
+@keyframes art-tag-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.art-tag-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: art-tag-marquee var(--marquee-duration, 80s) linear infinite;
+}
+
+.art-tag-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art-tag-marquee-track {
+    animation: none;
+  }
+}
