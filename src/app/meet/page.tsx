@@ -62,26 +62,23 @@ function CincinnatiLocalTime() {
   }).format(tick);
 
   return (
-    <div className="rounded-lg border border-zinc-200/90 bg-zinc-50/90 px-4 py-3.5 dark:border-zinc-800/90 dark:bg-zinc-900/35">
-      <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
+    <div className="rounded-lg border border-zinc-100 px-4 py-3.5 dark:border-zinc-800/80">
+      <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
         Cincinnati
       </p>
       <p
-        className="text-2xl font-medium tracking-tight text-zinc-900 tabular-nums dark:text-zinc-50 sm:text-[1.65rem]"
+        className="text-xl font-medium tabular-nums tracking-tight text-zinc-900 dark:text-zinc-50"
         suppressHydrationWarning
       >
         {timeStr}
       </p>
-      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{dateLong}</p>
-      <p className="mt-2 border-t border-zinc-200/80 pt-2 text-[11px] text-zinc-400 dark:border-zinc-800/80 dark:text-zinc-500">
-        Eastern Time · {CINCINNATI_TZ.replace(/_/g, " ")}
-      </p>
+      <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{dateLong}</p>
     </div>
   );
 }
 
 const inputClass =
-  "w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-600";
+  "w-full rounded-lg border border-zinc-200 bg-transparent px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-1 focus:ring-zinc-400 dark:border-zinc-800 dark:text-white dark:focus:ring-zinc-600";
 
 function BookingFieldControl({
   field,
@@ -572,7 +569,7 @@ export default function MeetPage() {
 
   if (loadTypesError === "missing_api_key") {
     return (
-      <div style={{ maxWidth: "52ch" }} className="space-y-4">
+      <div className="w-full min-w-0 max-w-5xl">
         <h1 className="text-lg font-medium dark:text-white">Book a meet</h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
           Scheduling on this page needs a server API key. Add{" "}
@@ -600,7 +597,7 @@ export default function MeetPage() {
 
   if (loadingTypes) {
     return (
-      <div style={{ maxWidth: "52ch" }}>
+      <div className="w-full min-w-0 max-w-5xl">
         <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading…</p>
       </div>
     );
@@ -608,7 +605,7 @@ export default function MeetPage() {
 
   if (loadTypesError || eventTypes.length === 0) {
     return (
-      <div style={{ maxWidth: "52ch" }} className="space-y-4">
+      <div className="w-full min-w-0 max-w-5xl">
         <h1 className="text-lg font-medium dark:text-white">Book a meet</h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
           No bookable event types were found, or the calendar request failed. Try{" "}
@@ -632,13 +629,13 @@ export default function MeetPage() {
   if (confirmation) {
     const c = confirmation;
     return (
-      <div style={{ maxWidth: "52ch" }} className="space-y-8">
+      <div className="w-full min-w-0 max-w-5xl space-y-8">
         <h1 className="text-lg font-medium dark:text-white">Booking confirmed</h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
           Here is a summary of what you submitted. You should also receive a confirmation email.
         </p>
 
-        <div className="rounded-lg border border-zinc-200/90 bg-zinc-50/90 px-4 py-4 dark:border-zinc-800/90 dark:bg-zinc-900/35 space-y-4">
+        <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-zinc-800/60 space-y-4">
           <div>
             <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
               Event
@@ -689,193 +686,197 @@ export default function MeetPage() {
   const totalSlots = dates.reduce((n, d) => n + (slotsByDate[d]?.length ?? 0), 0);
 
   return (
-    <div style={{ maxWidth: "52ch" }} className="space-y-8">
-      <div className="space-y-4">
+    <div className="w-full min-w-0 max-w-5xl">
+      <header className="mb-8">
         <h1 className="text-lg font-medium dark:text-white">Book a meet</h1>
-        <CincinnatiLocalTime />
-      </div>
+      </header>
 
-      <div>
-        <div className="mb-3">
-          <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Event</span>
-        </div>
-        <div className="flex flex-col gap-2">
-          {eventTypes.map((et) => (
-            <button
-              key={et.id}
-              type="button"
-              onClick={() => setSelectedId(et.id)}
-              className={`w-full text-left rounded-md border px-3 py-2.5 text-sm transition-colors ${
-                selectedId === et.id
-                  ? "border-zinc-400 bg-zinc-100 text-zinc-900 dark:border-zinc-500 dark:bg-zinc-800 dark:text-white"
-                  : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-700"
-              }`}
-            >
-              <span className="font-medium">{et.title}</span>
-              <span className="text-zinc-500 dark:text-zinc-400"> · {et.lengthInMinutes} min</span>
-            </button>
-          ))}
-        </div>
-        {selectedType?.lengthInMinutesOptions && selectedType.lengthInMinutesOptions.length > 1 ? (
-          <div className="mt-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-              Length
-            </span>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {selectedType.lengthInMinutesOptions.map((len) => (
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:gap-12">
+        <aside className="space-y-8">
+          <CincinnatiLocalTime />
+
+          <div>
+            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              Event
+            </p>
+            <div className="space-y-2">
+              {eventTypes.map((et) => (
                 <button
-                  key={len}
+                  key={et.id}
                   type="button"
-                  onClick={() => setDuration(len)}
-                  className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
-                    duration === len
-                      ? "border-zinc-400 bg-zinc-100 dark:border-zinc-500 dark:bg-zinc-800"
-                      : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+                  onClick={() => setSelectedId(et.id)}
+                  className={`w-full rounded-lg border px-3 py-3 text-left text-sm transition-colors ${
+                    selectedId === et.id
+                      ? "border-zinc-300 bg-zinc-50 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800/60 dark:text-white"
+                      : "border-zinc-100 text-zinc-700 hover:border-zinc-200 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700"
                   }`}
                 >
-                  {len} min
+                  <span className="block font-medium">{et.title}</span>
+                  <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                    {et.lengthInMinutes} min
+                  </span>
                 </button>
               ))}
             </div>
-          </div>
-        ) : null}
-      </div>
-
-      <div>
-        <div className="mb-3 flex items-baseline justify-between gap-2">
-          <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-            {selectedStart ? "Your time" : "Available times"}
-          </span>
-          {loadingSlots ? (
-            <span className="text-xs text-zinc-400 dark:text-zinc-500">Updating…</span>
-          ) : null}
-        </div>
-        {slotsError ? (
-          <div className="space-y-1">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">Could not load slots. Try again later.</p>
-            {slotsErrorDetail ? (
-              <p className="text-xs text-zinc-400 dark:text-zinc-500 break-words">{slotsErrorDetail}</p>
-            ) : null}
-          </div>
-        ) : totalSlots === 0 && !loadingSlots ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">No open slots in the next few weeks for this event.</p>
-        ) : selectedStart ? (
-          <div className="rounded-lg border border-zinc-200/90 bg-zinc-50/90 px-4 py-4 dark:border-zinc-800/90 dark:bg-zinc-900/35">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
-              Selected
-            </p>
-            <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
-              {slotFormatter.format(new Date(selectedStart))}
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Timezone: {tz}</p>
-            <button
-              type="button"
-              onClick={clearSlotSelection}
-              className="mt-3 text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-            >
-              Choose a different time
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-6 max-h-[min(420px,50vh)] overflow-y-auto pr-1">
-            {dates.map((date) => (
-              <div key={date}>
-                <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mb-2">
-                  {(() => {
-                    try {
-                      const [y, mo, da] = date.split("-").map(Number);
-                      const ref = new Date(Date.UTC(y, mo - 1, da, 12, 0, 0));
-                      return new Intl.DateTimeFormat(undefined, {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        timeZone: tz,
-                      }).format(ref);
-                    } catch {
-                      return date;
-                    }
-                  })()}
+            {selectedType?.lengthInMinutesOptions && selectedType.lengthInMinutesOptions.length > 1 ? (
+              <div className="mt-4">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                  Length
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {(slotsByDate[date] ?? []).map((startIso) => (
+                  {selectedType.lengthInMinutesOptions.map((len) => (
                     <button
-                      key={startIso}
+                      key={len}
                       type="button"
-                      onClick={() => pickSlot(startIso)}
-                      className="rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/40"
+                      onClick={() => setDuration(len)}
+                      className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
+                        duration === len
+                          ? "border-zinc-300 bg-zinc-50 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800/60 dark:text-white"
+                          : "border-zinc-100 text-zinc-500 hover:border-zinc-200 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700"
+                      }`}
                     >
-                      {slotFormatter.format(new Date(startIso))}
+                      {len} min
                     </button>
                   ))}
                 </div>
               </div>
-            ))}
+            ) : null}
           </div>
-        )}
-      </div>
+        </aside>
 
-      {selectedStart ? (
-        <form onSubmit={handleBook} className="space-y-6 border-t border-zinc-100 dark:border-zinc-800/60 pt-8">
-          <div className="mb-1">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-              Your details
-            </span>
+        <div className="min-w-0 space-y-8">
+          <div>
+            <div className="mb-3 flex items-baseline justify-between gap-2">
+              <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                {selectedStart ? "Your time" : "Available times"}
+              </span>
+              {loadingSlots ? (
+                <span className="text-xs text-zinc-400 dark:text-zinc-500">Updating…</span>
+              ) : null}
+            </div>
+            {slotsError ? (
+              <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-zinc-800/80">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">Could not load slots. Try again later.</p>
+                {slotsErrorDetail ? (
+                  <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500 break-words">{slotsErrorDetail}</p>
+                ) : null}
+              </div>
+            ) : totalSlots === 0 && !loadingSlots ? (
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">No open slots in the next few weeks for this event.</p>
+            ) : selectedStart ? (
+              <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-zinc-800/80">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  {slotFormatter.format(new Date(selectedStart))}
+                </p>
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Timezone: {tz}</p>
+                <button
+                  type="button"
+                  onClick={clearSlotSelection}
+                  className="mt-3 text-xs text-zinc-500 underline underline-offset-2 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                >
+                  Choose a different time
+                </button>
+              </div>
+            ) : (
+              <div className="max-h-[min(420px,50vh)] space-y-6 overflow-y-auto rounded-lg border border-zinc-100 p-4 dark:border-zinc-800/80">
+                {dates.map((date) => (
+                  <div key={date}>
+                    <p className="mb-2 text-xs font-medium text-zinc-400 dark:text-zinc-500">
+                      {(() => {
+                        try {
+                          const [y, mo, da] = date.split("-").map(Number);
+                          const ref = new Date(Date.UTC(y, mo - 1, da, 12, 0, 0));
+                          return new Intl.DateTimeFormat(undefined, {
+                            weekday: "long",
+                            month: "long",
+                            day: "numeric",
+                            timeZone: tz,
+                          }).format(ref);
+                        } catch {
+                          return date;
+                        }
+                      })()}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {(slotsByDate[date] ?? []).map((startIso) => (
+                        <button
+                          key={startIso}
+                          type="button"
+                          onClick={() => pickSlot(startIso)}
+                          className="rounded-md border border-zinc-100 px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/40"
+                        >
+                          {slotFormatter.format(new Date(startIso))}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {loadingExtraFields ? (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading form…</p>
+          {selectedStart ? (
+            <form onSubmit={handleBook} className="space-y-5 rounded-lg border border-zinc-100 p-4 dark:border-zinc-800/80">
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                Your details
+              </p>
+
+              {loadingExtraFields ? (
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading form…</p>
+              ) : null}
+
+              <div>
+                <label htmlFor="meet-name" className="mb-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="meet-name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label htmlFor="meet-email" className="mb-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="meet-email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+
+              {!loadingExtraFields &&
+                extraFields.map((f) => (
+                  <BookingFieldControl
+                    key={f.slug}
+                    field={f}
+                    value={bookingFieldValues[f.slug] ?? ""}
+                    onChange={setField}
+                  />
+                ))}
+
+              {bookError ? <p className="text-sm text-red-600 dark:text-red-400">{bookError}</p> : null}
+              <button
+                type="submit"
+                disabled={booking || loadingExtraFields}
+                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
+              >
+                {booking ? "Booking…" : "Confirm booking"}
+              </button>
+            </form>
           ) : null}
 
-          <div>
-            <label htmlFor="meet-name" className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
-              Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="meet-name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label htmlFor="meet-email" className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="meet-email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          {!loadingExtraFields &&
-            extraFields.map((f) => (
-              <BookingFieldControl
-                key={f.slug}
-                field={f}
-                value={bookingFieldValues[f.slug] ?? ""}
-                onChange={setField}
-              />
-            ))}
-
-          {bookError ? <p className="text-sm text-red-600 dark:text-red-400">{bookError}</p> : null}
-          <button
-            type="submit"
-            disabled={booking || loadingExtraFields}
-            className="rounded-md border border-zinc-200 bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-800 transition-colors hover:border-zinc-300 hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/60"
-          >
-            {booking ? "Booking…" : "Confirm booking"}
-          </button>
-        </form>
-      ) : null}
-
-      <Link href="/about" className="inline-block text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
-        ← About
-      </Link>
+          <Link href="/about" className="inline-block text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            ← About
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

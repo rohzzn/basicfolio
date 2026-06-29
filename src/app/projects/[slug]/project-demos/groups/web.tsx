@@ -4,7 +4,7 @@ import { Check } from 'lucide-react';
 import type { Project } from '@/data/projects';
 import { CARD, L } from '../demo-utils';
 
-// 7. Interactions — micro-interaction demos
+// 7. Interactions: micro-interaction demos
 // ─────────────────────────────────────────────────────────────────────────────
 
 function InteractionsDemo() {
@@ -74,7 +74,7 @@ function InteractionsDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8. Margin — typography playground
+// 8. Margin: typography playground
 // ─────────────────────────────────────────────────────────────────────────────
 
 function MarginDemo() {
@@ -101,7 +101,7 @@ function MarginDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 9. Contests — countdown timer cards
+// 9. Contests: countdown timer cards
 // ─────────────────────────────────────────────────────────────────────────────
 
 function useCountdown(target: Date) {
@@ -143,7 +143,7 @@ function ContestCard({name,platform,target}:{name:string;platform:string;target:
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-// 19. API Clinic — request builder
+// 19. API Clinic: request builder
 // ─────────────────────────────────────────────────────────────────────────────
 
 const API_PRESETS=[
@@ -179,7 +179,7 @@ function ApiClinicDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 20. DSA Roadmap — topic progress
+// 20. DSA Roadmap: topic progress
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DSA_TOPICS=[{t:'Arrays',d:'Beginner'},{t:'Linked Lists',d:'Beginner'},{t:'Stacks & Queues',d:'Beginner'},{t:'Hash Maps',d:'Intermediate'},{t:'Binary Trees',d:'Intermediate'},{t:'Graphs',d:'Intermediate'},{t:'Heaps',d:'Intermediate'},{t:'Dynamic Programming',d:'Advanced'},{t:'Greedy Algorithms',d:'Advanced'},{t:'Backtracking',d:'Advanced'}];
@@ -208,7 +208,7 @@ function DSARoadmapDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 22. Dekho Car — search & filter
+// 22. Dekho Car: search & filter
 // ─────────────────────────────────────────────────────────────────────────────
 
 const CARS=[{make:'Toyota',type:'Sedan',price:2200},{make:'Toyota',type:'SUV',price:3500},{make:'Honda',type:'Sedan',price:1800},{make:'Honda',type:'SUV',price:2800},{make:'Ford',type:'Truck',price:4200},{make:'BMW',type:'Sedan',price:5500},{make:'BMW',type:'SUV',price:7200},{make:'Hyundai',type:'Hatchback',price:1200},{make:'Hyundai',type:'Sedan',price:1900},{make:'Tesla',type:'SUV',price:6800}];
@@ -220,7 +220,7 @@ function DekhoCarDemo() {
   const filtered=CARS.filter(c=>(make==='All'||c.make===make)&&(type==='All'||c.type===type));
   return (
     <div className="my-8 not-prose">
-      <p className={L}>Car Search — {filtered.length} results</p>
+      <p className={L}>Car Search: {filtered.length} results</p>
       <div className="flex gap-2 mb-3 flex-wrap">
         <select value={make} onChange={e=>setMake(e.target.value)} className="text-xs px-2.5 py-1.5 border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 focus:outline-none">
           {makes.map(m=><option key={m} value={m}>{m}</option>)}
@@ -244,7 +244,7 @@ function DekhoCarDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 23. QR Generator — live grid pattern
+// 23. QR Generator: live grid pattern
 // ─────────────────────────────────────────────────────────────────────────────
 
 function qrHash(text:string,idx:number):boolean {
@@ -321,7 +321,7 @@ function YoutubeThumbnailDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 25. Customer Management — CRM table
+// 25. Customer Management: CRM table
 // ─────────────────────────────────────────────────────────────────────────────
 
 const CUSTOMERS=[{name:'Sarah Johnson',company:'TechCorp',status:'Active',value:'$12,400'},{name:'Marcus Lee',company:'StartupXYZ',status:'Active',value:'$8,200'},{name:'Priya Sharma',company:'DataCo',status:'Lead',value:'$3,500'},{name:'James Wilson',company:'RetailInc',status:'Inactive',value:'$1,200'},{name:'Ana Rodriguez',company:'FinTech Ltd',status:'Active',value:'$21,000'},{name:'Kevin Park',company:'CloudBase',status:'Lead',value:'$6,800'}];
@@ -331,7 +331,7 @@ function CustomerManagementDemo() {
   const STATUS={Active:'text-green-600 dark:text-green-400',Lead:'text-amber-600 dark:text-amber-400',Inactive:'text-zinc-400'};
   return (
     <div className="my-8 not-prose">
-      <p className={L}>CRM Demo — {filtered.length} customers</p>
+      <p className={L}>CRM Demo: {filtered.length} customers</p>
       <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search customers or companies…"
         className="w-full mb-3 px-3 py-2 text-sm border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none" />
       <div className={`${CARD} divide-y divide-zinc-100 dark:divide-zinc-800`}>
@@ -348,7 +348,7 @@ function CustomerManagementDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 26. CodeChef MREC — event stats
+// 26. CodeChef MREC: event stats
 // ─────────────────────────────────────────────────────────────────────────────
 
 const EVENTS=[{n:'Algorithm Challenge 1.0',p:1100,type:'Contest'},{n:'Hackathon 2.0',p:1100,type:'Hackathon'},{n:'Advanced DSA 2023',p:1100,type:'Contest'},{n:'CP Bootcamp 2022',p:320,type:'Workshop'},{n:'AI Algorithms Workshop',p:310,type:'Workshop'},{n:'Data Science Workshop',p:350,type:'Workshop'},{n:'Git & GitHub',p:1100,type:'Workshop'}];
@@ -357,7 +357,7 @@ function CodeChefDemo() {
   const TYPE_C={Contest:'bg-blue-500',Hackathon:'bg-purple-500',Workshop:'bg-amber-500'};
   return (
     <div className="my-8 not-prose">
-      <p className={L}>Events — {EVENTS.reduce((s,e)=>s+e.p,0).toLocaleString()} total participants</p>
+      <p className={L}>Events: {EVENTS.reduce((s,e)=>s+e.p,0).toLocaleString()} total participants</p>
       <div className="space-y-2.5">
         {EVENTS.map(e=>(
           <div key={e.n}>
@@ -376,7 +376,7 @@ function CodeChefDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 27. MCU Timeline — horizontal scroll
+// 27. MCU Timeline: horizontal scroll
 // ─────────────────────────────────────────────────────────────────────────────
 
 const MCU=[{year:2008,t:'Iron Man',phase:1},{year:2008,t:'The Incredible Hulk',phase:1},{year:2010,t:'Iron Man 2',phase:1},{year:2011,t:'Thor',phase:1},{year:2011,t:'Captain America: TFA',phase:1},{year:2012,t:'The Avengers',phase:1},{year:2013,t:'Iron Man 3',phase:2},{year:2013,t:'Thor: The Dark World',phase:2},{year:2014,t:'Captain America: TWS',phase:2},{year:2014,t:'Guardians of the Galaxy',phase:2},{year:2015,t:'Avengers: Age of Ultron',phase:2},{year:2015,t:'Ant-Man',phase:2}];

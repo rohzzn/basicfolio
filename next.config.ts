@@ -77,7 +77,7 @@ const nextConfig = {
       {
         source: '/hobbies/clips',
         destination: '/hobbies/games',
-        permanent: false,
+        permanent: true,
       },
       {
         source: '/hobbies/readings',

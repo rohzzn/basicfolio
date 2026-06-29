@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, memo, useCallback } from "react";
-import { Menu, X, Gamepad, Music, Loader2, Focus, VolumeX, PenTool } from "lucide-react";
+import { Menu, X, Gamepad, Music, Loader2, Focus, VolumeX } from "lucide-react";
 import Link from "next/link";
 import Image from "@/components/SiteImage";
 import { usePathname } from "next/navigation";
@@ -559,14 +559,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
       {/* Bottom Controls - Hidden on mobile and on guestbook (desk workspace) */}
       {pathname !== "/guestbook" && (
       <div className={`hidden md:flex fixed right-4 z-40 flex-row items-center gap-1.5 bottom-4 ${previewPlayerActive ? 'lg:bottom-24' : ''}`}>
-        <Link 
-          href="/guestbook"
-          className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"
-          aria-label="Guest Book"
-        >
-          <PenTool className="w-3.5 h-3.5" />
-        </Link>
-        
         <button
           onClick={togglePlay}
           disabled={!audioLoaded}

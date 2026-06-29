@@ -4,7 +4,7 @@ import type { Project } from '@/data/projects';
 import { CARD, L, useCopy } from '../demo-utils';
 import { CommandList, TerminalInstall } from '../shared-widgets';
 
-// 10. Keel — subscription billing tracker
+// 10. Keel: React Native subscription tracker
 // ─────────────────────────────────────────────────────────────────────────────
 
 const KEEL_SUBS=[{n:'Netflix',icon:'🎬',mo:15.99},{n:'Spotify',icon:'🎵',mo:9.99},{n:'iCloud+',icon:'☁️',mo:2.99},{n:'GitHub Pro',icon:'🐙',mo:4.00},{n:'Duolingo',icon:'🦜',mo:6.99}];
@@ -43,7 +43,7 @@ function KeelDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 11. Todo iOS — kanban board
+// 11. Todo iOS: kanban board
 // ─────────────────────────────────────────────────────────────────────────────
 
 type KStatus='todo'|'doing'|'done';
@@ -79,7 +79,7 @@ function TodoKanbanDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 12. ShutTab — blocker demo (EXISTING, kept)
+// 12. ShutTab: blocker demo (EXISTING, kept)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DEFAULT_SITES=[{domain:'twitter.com',blocked:true},{domain:'reddit.com',blocked:true},{domain:'youtube.com',blocked:false},{domain:'instagram.com',blocked:false}];
@@ -125,7 +125,7 @@ function ShutTabDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Relay — uptime monitoring demo
+// Relay: uptime monitoring demo
 // ─────────────────────────────────────────────────────────────────────────────
 
 function RelayDemo() {
@@ -187,13 +187,13 @@ function RelayDemo() {
           </button>
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">Toggle a monitor — admin dashboard and status page stay in sync in the real app</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">Toggle a monitor: admin dashboard and status page stay in sync in the real app</p>
     </div>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 13. CS Stats — Steam overlay
+// 13. CS Stats: Steam overlay
 // ─────────────────────────────────────────────────────────────────────────────
 
 function CSStatsDemo() {
@@ -220,7 +220,7 @@ function CSStatsDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 14. Zenitsu Bot — Discord chat demo
+// 14. Zenitsu Bot: Discord chat demo
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BOT_RES: Record<string,{title:string;body:string;color:string}> = {
@@ -256,7 +256,7 @@ function ZenitsuBotDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 15. Tanoshi — color palette + syntax preview
+// 15. Tanoshi: color palette + syntax preview
 // ─────────────────────────────────────────────────────────────────────────────
 
 function TanoshiColorPalette({ colors }: { colors: NonNullable<Project['colors']> }) {
@@ -329,7 +329,7 @@ function TanoshiSyntaxPreview({ colors }:{ colors: NonNullable<Project['colors']
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 16. Pages (Figma) — reorderable page list
+// 16. Pages (Figma): reorderable page list
 // ─────────────────────────────────────────────────────────────────────────────
 
 const INIT_PAGES=['Onboarding','Dashboard','Settings','Components','Icons','Prototype','Archive'];
@@ -362,7 +362,7 @@ function PagesReorderDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 17. Meet — video call room
+// 17. Meet: video call room
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PARTICIPANTS=[{n:'Rohan P.',you:true},{n:'Vanshita M.',you:false},{n:'Alex M.',you:false},{n:'Priya R.',you:false}];
@@ -401,7 +401,7 @@ function MeetDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 18. Git Time Machine — commit browser
+// 18. Git Time Machine: commit browser
 // ─────────────────────────────────────────────────────────────────────────────
 
 const GTM_COMMITS=[{hash:'a3f9c2b',msg:'feat: add animated transitions',time:'2h'},{hash:'8e1d054',msg:'fix: keyboard navigation in tree',time:'1d'},{hash:'c4b7e12',msg:'refactor: extract diff renderer',time:'3d'},{hash:'2a9f831',msg:'feat: add branch selector',time:'5d'},{hash:'f10cc3e',msg:'init: project setup',time:'1w'}];
@@ -417,7 +417,7 @@ function GitTimeMachineDemo() {
           <span className="text-xs font-mono text-zinc-500">git time machine</span>
         </div>
         <div className="p-3 font-mono text-xs">
-          <p className="text-zinc-500 mb-3">$ gtm — 5 commits on main</p>
+          <p className="text-zinc-500 mb-3">$ gtm: 5 commits on main</p>
           {GTM_COMMITS.map((c,i)=>(
             <button key={c.hash} onClick={()=>setSel(sel===c.hash?null:c.hash)}
               className={`w-full flex items-center gap-3 px-2 py-1.5 rounded transition-colors text-left ${sel===c.hash?'bg-zinc-700':'hover:bg-zinc-900'}`}>
@@ -436,7 +436,7 @@ function GitTimeMachineDemo() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-// 21. Hexr — color picker grid
+// 21. Hexr: color picker grid
 // ─────────────────────────────────────────────────────────────────────────────
 
 function hslToHex(h:number,s:number,l:number):string {
@@ -472,7 +472,7 @@ function HexrDemo() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-// 30. Anomaly Detection — traffic SVG chart
+// 30. Anomaly Detection: traffic SVG chart
 // ─────────────────────────────────────────────────────────────────────────────
 
 const TRAFFIC=[12,14,13,15,16,14,13,52,15,14,16,13,48,14,15,16,13,14,56,15,14,13,16,15];
@@ -484,7 +484,7 @@ function AnomalyDetectionDemo() {
   const anomalies=TRAFFIC.map((v,i)=>({v,i,anm:v>40})).filter(x=>x.anm);
   return (
     <div className="my-8 not-prose">
-      <p className={L}>Network Traffic — Anomaly Detection</p>
+      <p className={L}>Network Traffic: Anomaly Detection</p>
       <div className={`${CARD} p-4`}>
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{height:100}}>
           <polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-400 dark:text-zinc-500"/>
@@ -506,10 +506,10 @@ function AnomalyDetectionDemo() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-// 35. Scrapetron — URL scraper mock
+// 35. Scrapetron: URL scraper mock
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MOCK_SCRAPED=[{selector:'h1',count:1,sample:'Home — Rohan P. Pothuru'},{selector:'p',count:12,sample:'Software engineer and CS grad student...'},{selector:'a',count:47,sample:'LinkedIn, GitHub, Resume...'},{selector:'img',count:3,sample:'profile.png, project-keel.png...'}];
+const MOCK_SCRAPED=[{selector:'h1',count:1,sample:'Home: Rohan P. Pothuru'},{selector:'p',count:12,sample:'Software engineer and CS grad student...'},{selector:'a',count:47,sample:'LinkedIn, GitHub, Resume...'},{selector:'img',count:3,sample:'profile.png, project-keel.png...'}];
 function ScrapetronDemo() {
   const [url,setUrl]=useState('https://Rohan P..run');
   const [loading,setLoading]=useState(false);
@@ -535,7 +535,7 @@ function ScrapetronDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 36. Ipynb Image Extractor — notebook extraction
+// 36. Ipynb Image Extractor: notebook extraction
 // ─────────────────────────────────────────────────────────────────────────────
 
 const CELL_COLORS=['bg-blue-200 dark:bg-blue-900/40','bg-green-200 dark:bg-green-900/40','bg-purple-200 dark:bg-purple-900/40','bg-amber-200 dark:bg-amber-900/40','bg-rose-200 dark:bg-rose-900/40'];

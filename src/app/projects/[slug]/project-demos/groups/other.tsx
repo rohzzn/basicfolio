@@ -4,7 +4,7 @@ import type { Project } from '@/data/projects';
 import { CARD, L } from '../demo-utils';
 import { TerminalInstall } from '../shared-widgets';
 
-// 28. Smart Agriculture — sensor dashboard
+// 28. Smart Agriculture: sensor dashboard
 // ─────────────────────────────────────────────────────────────────────────────
 
 function SmartAgricultureDemo() {
@@ -42,7 +42,7 @@ function SmartAgricultureDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 29. Automobile Analytics — bar chart
+// 29. Automobile Analytics: bar chart
 // ─────────────────────────────────────────────────────────────────────────────
 
 const AUTO_DATA=[{brand:'Toyota',sales:1204,color:'bg-red-500'},{brand:'Honda',sales:987,color:'bg-blue-500'},{brand:'Ford',sales:856,color:'bg-indigo-500'},{brand:'Chevrolet',sales:723,color:'bg-green-500'},{brand:'BMW',sales:445,color:'bg-amber-500'}];
@@ -51,7 +51,7 @@ function AutomobileAnalyticsDemo() {
   const max=Math.max(...AUTO_DATA.map(d=>d.sales));
   return (
     <div className="my-8 not-prose">
-      <p className={L}>Sales by Brand — Q1 2023</p>
+      <p className={L}>Sales by Brand: Q1 2023</p>
       <div className="space-y-3">
         {AUTO_DATA.map(d=>(
           <div key={d.brand} onMouseEnter={()=>setHover(d.brand)} onMouseLeave={()=>setHover(null)}>
@@ -70,7 +70,7 @@ function AutomobileAnalyticsDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 31. Block Steam Invites — notification demo
+// 31. Block Steam Invites: notification demo
 // ─────────────────────────────────────────────────────────────────────────────
 
 function BlockSteamDemo() {
@@ -100,7 +100,7 @@ function BlockSteamDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 32. OverTheWire — terminal challenge
+// 32. OverTheWire: terminal challenge
 // ─────────────────────────────────────────────────────────────────────────────
 
 const OTW_RESPONSES: Record<string, string> = {
@@ -126,7 +126,7 @@ function OverTheWireDemo() {
   };
   return (
     <div className="my-8 not-prose">
-      <p className={L}>Bandit Level 0 — try to find the password</p>
+      <p className={L}>Bandit Level 0: try to find the password</p>
       <div className="bg-zinc-950 rounded-lg overflow-hidden border border-zinc-800" onClick={()=>ref.current?.focus()}>
         <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-900">
           <div className="flex gap-1.5">{['bg-red-400','bg-yellow-400','bg-green-400'].map(c=><div key={c} className={`w-2.5 h-2.5 rounded-full ${c} opacity-70`}/>)}</div>
@@ -153,10 +153,10 @@ function OverTheWireDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 33. Discord Mirror — channel mapping
+// 33. Discord Mirror: channel mapping
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MIRROR_MSGS=['Maintenance window tonight at 2AM UTC','v2.3.1 is now live — see changelog','Server will be down for upgrades Friday'];
+const MIRROR_MSGS=['Maintenance window tonight at 2AM UTC','v2.3.1 is now live: see changelog','Server will be down for upgrades Friday'];
 function DiscordMirrorDemo() {
   const [step,setStep]=useState(0);
   const visible=MIRROR_MSGS.slice(0,step);
@@ -189,7 +189,7 @@ function DiscordMirrorDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 34. GitHub Any Year — contribution graph
+// 34. GitHub Any Year: contribution graph
 // ─────────────────────────────────────────────────────────────────────────────
 
 const YEAR_SEEDS: Record<number, number> = {2020:12345,2021:67890,2022:11111,2023:99999,2024:54321,2025:77777};

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { projects } from '@/data/projects';
+import { generateProjectMetadata } from '@/lib/project-metadata';
 import ProjectDetail from './ProjectDetail';
 
 interface Props {
@@ -13,18 +14,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
-  if (!project) return {};
-  return {
-    title: `${project.title} — Rohan`,
-    description: project.longDescription ?? project.description,
-    openGraph: {
-      title: project.title,
-      description: project.longDescription ?? project.description,
-      url: `https://rohan.run/projects/${slug}`,
-    },
-    alternates: { canonical: `https://rohan.run/projects/${slug}` },
-  };
+  return generateProjectMetadata(slug);
 }
 
 export default async function ProjectPage({ params }: Props) {

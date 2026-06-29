@@ -1,92 +1,53 @@
 "use client";
-import React from 'react';
-import Link from 'next/link';
 
-interface Hobby {
-  title: string;
-  description: string;
-  href: string;
+import React from "react";
+import Link from "next/link";
+
+const hobbies = [
+  { title: "Move", description: "Strava & Hevy", href: "/hobbies/move" },
+  { title: "Typing", description: "Speed test · 115 WPM", href: "/hobbies/typing" },
+  { title: "Seen", description: "Images I like", href: "/hobbies/seen" },
+  { title: "Books", description: "Reading list & notes", href: "/hobbies/books" },
+  { title: "Content", description: "YouTube uploads", href: "/hobbies/content" },
+  { title: "Watchlist", description: "Movies, TV & anime", href: "/hobbies/watchlist" },
+  { title: "Music", description: "Spotify stats & playlists", href: "/hobbies/music" },
+  { title: "Designs", description: "UI/UX & Behance", href: "/hobbies/art" },
+  { title: "Hackathons", description: "Events & sprint builds", href: "/hobbies/hackathons" },
+  { title: "Gaming", description: "CS2 stats & clips", href: "/hobbies/games" },
+  { title: "Setup", description: "Desk, PC & gear", href: "/hobbies/uses" },
+];
+
+function HobbyRow({ hobby }: { hobby: (typeof hobbies)[number] }) {
+  return (
+    <Link
+      href={hobby.href}
+      className="group block border-b border-zinc-100 py-3 last:border-0 dark:border-zinc-800/60 sm:py-2.5"
+    >
+      <div className="flex items-baseline justify-between gap-4">
+        <span className="text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-white">
+          {hobby.title}
+        </span>
+        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-zinc-500">
+          {hobby.description}
+        </span>
+      </div>
+      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-zinc-500">{hobby.description}</p>
+    </Link>
+  );
 }
 
-const hobbies: Hobby[] = [
-  {
-    title: "Move",
-    description: "Runs, rides, lifts",
-    href: "/hobbies/move",
-  },
-  {
-    title: "Seen",
-    description: "Photos worth keeping",
-    href: "/hobbies/seen",
-  },
-  {
-    title: "Books",
-    description: "Reading list & reviews",
-    href: "/hobbies/books",
-  },
-  {
-    title: "Content",
-    description: "Videos & tutorials",
-    href: "/hobbies/content",
-  },
-  {
-    title: "Designs",
-    description: "UI/UX & creative work",
-    href: "/hobbies/art",
-  },
-  {
-    title: "Watchlist",
-    description: "Movies, TV & anime",
-    href: "/hobbies/watchlist",
-  },
-  {
-    title: "Gaming",
-    description: "Stats, clips & achievements",
-    href: "/hobbies/games",
-  },
-  {
-    title: "Hackathons",
-    description: "Projects & achievements",
-    href: "/hobbies/hackathons",
-  },
-  {
-    title: "Music",
-    description: "Playlists & favorites",
-    href: "/hobbies/music",
-  },
-  {
-    title: "Setup",
-    description: "Gear & tools",
-    href: "/hobbies/uses",
-  },
-  {
-    title: "Typing",
-    description: "Speed test (115 WPM)",
-    href: "/hobbies/typing",
-  },
-].sort((a, b) => a.title.localeCompare(b.title));
+export default function HobbiesPage() {
+  return (
+    <div style={{ maxWidth: "75ch" }}>
+      <header className="mb-8">
+        <h2 className="text-lg font-medium dark:text-white">Hobbies</h2>
+      </header>
 
-const Hobbies: React.FC = () => (
-  <div style={{ maxWidth: '75ch' }}>
-    <h2 className="text-lg font-medium mb-8 dark:text-white">Hobbies</h2>
-
-    <div>
-      {hobbies.map((hobby) => (
-        <Link
-          key={hobby.href}
-          href={hobby.href}
-          className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
-        >
-          <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-            {hobby.title}
-          </span>
-          <span className="text-sm text-zinc-400 dark:text-zinc-500 flex-shrink-0 ml-4">
-            {hobby.description}
-          </span>
-        </Link>
-      ))}
+      <div>
+        {hobbies.map((hobby) => (
+          <HobbyRow key={hobby.href} hobby={hobby} />
+        ))}
+      </div>
     </div>
-  </div>
-);
-
-export default Hobbies;
+  );
+}

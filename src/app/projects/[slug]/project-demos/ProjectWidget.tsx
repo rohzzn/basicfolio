@@ -49,7 +49,6 @@ const GROUP_SLUGS: Record<string, string[]> = {
     "github-any-year"
   ],
   "portfolios": [
-    "portfolio-v5",
     "portfolio-v4",
     "portfolio-v3",
     "portfolio-v2",

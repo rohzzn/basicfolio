@@ -43,7 +43,7 @@ export default function FortyProjects() {
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">Technology choices mostly do not matter at the start</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-          My older projects use a completely different stack from my recent ones. Early JavaScript, then React, then Next.js, then TypeScript everywhere. A bunch of Python CLI tools. One Go service. Two Swift apps. Looking back at the old code is humbling. The structure is different, the patterns are different, some of it is embarrassing. None of that matters because the projects shipped and people used them.
+          My older projects use a completely different stack from my recent ones. Early JavaScript, then React, then Next.js, then TypeScript everywhere. A bunch of Python CLI tools. One Go service. A React Native app and a Swift app. Looking back at the old code is humbling. The structure is different, the patterns are different, some of it is embarrassing. None of that matters because the projects shipped and people used them.
         </p>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
           I spent a lot of energy early on debating what to build with instead of just building. Whether to use React or Vue. Whether to use a CSS framework or write my own styles. Whether to use MongoDB or PostgreSQL. These decisions feel important at the start and they are almost never the thing that determines whether a project succeeds or fails. Execution and shipping are what determine that. The technology is usually fine either way.
@@ -51,7 +51,7 @@ export default function FortyProjects() {
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">The ones I am proudest of are not the most popular</h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-          Keel, the iOS subscription tracker, has fewer users than several of my other projects. But building a real iOS app that went through App Review and got into the App Store taught me more than any of the web projects. SwiftUI, StoreKit, the constraints of building on a mobile platform, the specific ways Apple wants you to handle data — none of that transfers from web development. It was a genuinely new domain.
+          Keel, the React Native subscription tracker, has fewer users than several of my other projects. But building a React Native app that went through App Review and got into the App Store taught me more than any of the web projects. Mobile navigation patterns, in-app purchases, the constraints of building on a phone, the specific ways Apple wants you to handle data. None of that transfers cleanly from web development. It was a genuinely new domain.
         </p>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
           Same with the Catan game. Nobody was asking for another online Catan. But building a real-time multiplayer board game from scratch forced me to think carefully about game state, server architecture, and the specific challenges of distributed state in a way that building another CRUD app would not have. The skills compounded in useful directions.

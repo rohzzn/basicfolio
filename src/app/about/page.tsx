@@ -189,14 +189,15 @@ const Home: React.FC = () => {
 
       {/* Bio */}
       <div className="mb-10">
+        <h1
+          className={`text-lg font-medium mb-5 dark:text-white ${isDesktop ? 'cursor-pointer hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors' : ''}`}
+          onClick={handleNameClick}
+        >
+          Rohan Pothuru
+        </h1>
+
         <div className="mb-6 flex items-start gap-6">
           <div className="flex-1 min-w-0">
-            <h1
-              className={`text-lg font-medium mb-5 dark:text-white ${isDesktop ? 'cursor-pointer hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors' : ''}`}
-              onClick={handleNameClick}
-            >
-              Rohan Pothuru
-            </h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-3">
               Software engineer and CS grad student who loves building things that matter. <span ref={ageRef} style={{ fontVariantNumeric: 'tabular-nums' }} /> years old, currently pursuing my Masters at the University of Cincinnati while working part-time in healthcare tech.
             </p>
@@ -230,32 +231,20 @@ const Home: React.FC = () => {
         </div>
 
         <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-          <a href="https://www.linkedin.com/in/rohzzn/" target="_blank" rel="noopener noreferrer"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
-            LinkedIn
-          </a>
-          {' '}and my{' '}
-          <Link href="/resume"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
-            resume
-          </Link>
-          {' '}cover the work.{' '}
-          <a href="https://x.com/rohzzn" target="_blank" rel="noopener noreferrer"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
-            X
-          </a>
-          {' '}and my{' '}
+          See my{' '}
           <Link
-            href="/timeline"
+            href="/resume"
             className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
-            timeline
+            resume
           </Link>
-          {' '}cover the person behind it.{' '}
+          ,{' '}
           <span className="relative inline-block">
-            <span onClick={copyEmail}
-              className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer">
-              Email me
+            <span
+              onClick={copyEmail}
+              className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+            >
+              email me
             </span>
             {emailCopied && (
               <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs px-2.5 py-1 rounded-md pointer-events-none z-10">
@@ -263,14 +252,21 @@ const Home: React.FC = () => {
               </span>
             )}
           </span>
-          {' '}or{' '}
+          ,{' '}
           <Link
             href="/meet"
             className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
             book a meet
           </Link>
-          {' '}if you want to start a real conversation.
+          , or sign the{' '}
+          <Link
+            href="/guestbook"
+            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+          >
+            guestbook
+          </Link>
+          .
         </p>
       </div>
 
@@ -279,10 +275,16 @@ const Home: React.FC = () => {
 
       {/* Recent */}
       <div className="mb-10">
-        <div className="mb-4">
-          <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <span className="text-xs font-medium uppercase leading-none tracking-wider text-zinc-400 dark:text-zinc-500">
             Recent
           </span>
+          <Link
+            href="/timeline"
+            className="text-xs font-medium uppercase leading-none tracking-wider text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-400"
+          >
+            Timeline
+          </Link>
         </div>
         <div>
           {recentItems.map((item) => (

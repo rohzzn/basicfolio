@@ -3,22 +3,8 @@ import React, { useState } from 'react';
 import type { Project } from '@/data/projects';
 import { CARD, L, useCopy } from '../demo-utils';
 
-// 37–41. Portfolio versions
+// 37–40. Portfolio versions
 // ─────────────────────────────────────────────────────────────────────────────
-
-function Portfolio5Demo() {
-  const stats=[{l:'Static pages',v:'68'},{l:'API routes',v:'19'},{l:'Writing posts',v:'18'},{l:'Projects',v:'41'},{l:'Hobbies pages',v:'15'},{l:'Integrations',v:'13'}];
-  return (
-    <div className="my-8 not-prose">
-      <p className={L}>Site Stats</p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {stats.map(({l,v})=>(
-          <div key={l} className={`${CARD} p-3`}><p className="text-lg font-medium dark:text-white tabular-nums">{v}</p><p className="text-xs text-zinc-400 dark:text-zinc-500">{l}</p></div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function Portfolio4Demo() {
   const [open,setOpen]=useState(true);
@@ -49,17 +35,18 @@ function Portfolio4Demo() {
 }
 
 function Portfolio3Demo() {
-  const scale=[{size:40,label:'Display',weight:'700'},{size:28,label:'Title'},{size:20,label:'Heading'},{size:16,label:'Body'},{size:14,label:'Small'},{size:12,label:'Caption'}];
+  const sections = ['Intro', 'Work', 'About', 'Contact'];
+  const [active, setActive] = useState(0);
   return (
     <div className="my-8 not-prose">
-      <p className={L}>Typographic Scale</p>
-      <div className="space-y-3 border border-zinc-100 dark:border-zinc-800 rounded-lg p-4">
-        {scale.map(({size,label,weight})=>(
-          <div key={label} className="flex items-baseline gap-4">
-            <span className="text-xs text-zinc-400 dark:text-zinc-500 w-14 flex-shrink-0">{label}</span>
-            <span className="text-zinc-700 dark:text-zinc-300" style={{fontSize:size,fontWeight:weight||'400',lineHeight:1.2}}>The quick brown fox</span>
-          </div>
+      <p className={L}>One-page scroll sections</p>
+      <div className="flex gap-2 mb-3">
+        {sections.map((s, i) => (
+          <button key={s} onClick={() => setActive(i)} className={`text-xs px-2 py-1 rounded ${active === i ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'text-zinc-500 border border-zinc-200 dark:border-zinc-700'}`}>{s}</button>
         ))}
+      </div>
+      <div className={`${CARD} p-6 min-h-[120px] flex items-center justify-center`}>
+        <p className="text-sm text-zinc-600 dark:text-zinc-300">Full-viewport {sections[active].toLowerCase()} panel · snap scroll between sections</p>
       </div>
     </div>
   );
@@ -109,7 +96,6 @@ function Portfolio1Demo() {
 
 export function getWidget(p: Project): React.ReactNode {
   const slug = p.slug;
-  if (slug === 'portfolio-v5') return <Portfolio5Demo />;
   if (slug === 'portfolio-v4') return <Portfolio4Demo />;
   if (slug === 'portfolio-v3') return <Portfolio3Demo />;
   if (slug === 'portfolio-v2') return <Portfolio2Demo />;

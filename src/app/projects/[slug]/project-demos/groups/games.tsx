@@ -5,7 +5,7 @@ import type { Project } from '@/data/projects';
 import { CARD, L } from '../demo-utils';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1. Dock Poker — deal & evaluate a 5-card hand
+// 1. Dock Poker: deal & evaluate a 5-card hand
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SUITS = ['♠','♥','♦','♣'], RANKS = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
@@ -60,7 +60,7 @@ function DockPokerDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. Catan Online — dice probability visualizer
+// 2. Catan Online: dice probability visualizer
 // ─────────────────────────────────────────────────────────────────────────────
 
 const CATAN_PROB: Record<number,{ways:number;pct:string}> = {
@@ -87,7 +87,7 @@ function CatanProbabilityDemo() {
       </div>
       {sel && (
         <div className="text-sm text-zinc-600 dark:text-zinc-400 p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg">
-          Rolling <strong className="dark:text-white">{sel}</strong> — {CATAN_PROB[sel].ways} of 36 combinations — probability: <strong className="dark:text-white">{CATAN_PROB[sel].pct}</strong>
+          Rolling <strong className="dark:text-white">{sel}</strong>: {CATAN_PROB[sel].ways} of 36 combinations: probability: <strong className="dark:text-white">{CATAN_PROB[sel].pct}</strong>
         </div>
       )}
     </div>
@@ -95,7 +95,7 @@ function CatanProbabilityDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. Wordle — mini playable game
+// 3. Wordle: mini playable game
 // ─────────────────────────────────────────────────────────────────────────────
 
 const W_LIST = ['stack','codes','pixel','craft','build','debug','bytes','shell','react','swift','query','frame','array','class','input','loops','scope','token','patch','merge'];
@@ -168,7 +168,7 @@ function MiniWordle() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. Pokedex — type effectiveness chart
+// 4. Pokedex: type effectiveness chart
 // ─────────────────────────────────────────────────────────────────────────────
 
 const TYPE_DATA: Record<string,{strong:string[];weak:string[];immune:string[]}> = {
@@ -224,7 +224,7 @@ function PokedexTypeDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. Pokemon Platformer — keyboard + mini map
+// 5. Pokemon Platformer: keyboard + mini map
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PokemonKeyDemo() {
@@ -280,7 +280,7 @@ function PokemonKeyDemo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. Greed Island Dex — card search
+// 6. Greed Island Dex: card search
 // ─────────────────────────────────────────────────────────────────────────────
 
 const GI_CARDS = ['Accompany','Beautify','Blue Planet','Clone','Copy','Cure','Dark Hole','Dice','Ecstasy','Eden','Embalm','Experiment','Fake','Free Time','Gold Dust','Green Planet','Guidemap','Herb','Holy Blade','Kamaitachi','Kite','Land Hexapod','Magnetic Force','Miniature Rose','Mobility Tablet','Ohana','Old Card','Patch of Forest','Patch of Ocean','Piece of Fortress','Planet','Rebirth','Return','Ring','Risky Dice','Six Sided Poem','Space Needle','Spider Cider','Sword of Truth','Trace','Transfer','Tree of Plenty','Ultra Wizard','Unmarked Envelope','Wild Card'];
@@ -289,7 +289,7 @@ function GreedIslandDemo() {
   const filtered=GI_CARDS.filter(c=>c.toLowerCase().includes(q.toLowerCase()));
   return (
     <div className="my-8 not-prose">
-      <p className={L}>Card Catalog — {filtered.length} of {GI_CARDS.length} cards</p>
+      <p className={L}>Card Catalog: {filtered.length} of {GI_CARDS.length} cards</p>
       <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search cards…"
         className="w-full mb-3 px-3 py-2 text-sm border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-700" />
       <div className={`${CARD} divide-y divide-zinc-100 dark:divide-zinc-800 max-h-48 overflow-y-auto`}>

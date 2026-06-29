@@ -246,7 +246,7 @@ interface MediaGridProps {
 
 const MediaGrid: React.FC<MediaGridProps> = ({ groups, emptyLabel, isLoading }) => {
   const gridClassName =
-    'grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6';
+    'grid grid-cols-3 gap-x-3 gap-y-7 sm:grid-cols-4 lg:grid-cols-5';
 
   if (isLoading) {
     return (
@@ -271,55 +271,50 @@ const MediaGrid: React.FC<MediaGridProps> = ({ groups, emptyLabel, isLoading }) 
       {groups.map((group) => (
         <section key={group.key}>
           {group.yearLabel ? (
-            <div className="mb-4 text-xs text-zinc-400 dark:text-zinc-500">
+            <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
               {group.yearLabel}
-            </div>
+            </h3>
           ) : null}
 
           <div className={gridClassName}>
             {group.entries.map((entry) => (
-              <article key={entry.url} className="min-w-0">
-                <div className="relative aspect-[2/3] overflow-hidden rounded-sm bg-zinc-200 dark:bg-zinc-800">
+              <a
+                key={entry.url}
+                href={entry.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group min-w-0"
+              >
+                <div className="relative aspect-[2/3] overflow-hidden rounded-sm bg-zinc-200 transition-opacity group-hover:opacity-90 dark:bg-zinc-800">
                   {entry.posterImageUrl ? (
                     <Image
                       src={entry.posterImageUrl}
                       alt={entry.title}
                       fill
                       unoptimized
-                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, (max-width: 1280px) 18vw, 15vw"
+                      sizes="(max-width: 640px) 30vw, (max-width: 1024px) 22vw, 18vw"
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+                    <div className="flex h-full items-center justify-center px-2 text-center text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                       No cover
                     </div>
                   )}
                 </div>
 
-                <div className="mt-2.5">
-                  <p className="truncate text-xs font-medium text-zinc-800 dark:text-zinc-200">
+                <div className="mt-2">
+                  <p className="truncate text-xs font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-white">
                     {entry.title}
                   </p>
                   {entry.ratingValue !== null ? (
-                    <div className="mt-1 flex items-center gap-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => {
-                        const full = i < Math.floor(entry.ratingValue!);
-                        const half = !full && i < entry.ratingValue!;
-                        return (
-                          <span
-                            key={i}
-                            className={`text-[10px] ${full || half ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'}`}
-                          >
-                            {half ? '½' : '★'}
-                          </span>
-                        );
-                      })}
-                    </div>
+                    <p className="mt-0.5 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500">
+                      {entry.ratingValue.toFixed(1)}/5
+                    </p>
                   ) : (
-                    <p className="mt-1 text-[10px] text-zinc-400 dark:text-zinc-600">Unrated</p>
+                    <p className="mt-0.5 text-[10px] text-zinc-400 dark:text-zinc-600">Unrated</p>
                   )}
                 </div>
-              </article>
+              </a>
             ))}
           </div>
         </section>
@@ -420,72 +415,71 @@ const WatchlistPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl">
-      {/* Header row: title + search */}
-      <div className="flex items-center justify-between mb-6 gap-4">
+    <div className="w-full min-w-0 max-w-5xl">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-medium dark:text-white">Watchlist</h2>
         <input
           type="text"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
           placeholder="Search…"
-          className="w-32 sm:w-44 bg-transparent text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 border-b border-zinc-200 dark:border-zinc-700 pb-0.5 transition focus:border-zinc-500 dark:focus:border-zinc-400"
+          className="w-full max-w-[12rem] bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500 sm:text-right"
         />
       </div>
 
-      {/* Tab row */}
-      <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 mb-4">
-        <div className="flex gap-5 overflow-x-auto no-scrollbar">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-x-4 gap-y-2" role="tablist" aria-label="Media type">
           {mediaTypeFilters.map((filter) => {
             const isActive = activeMediaType === filter.id;
             return (
               <button
                 key={filter.id}
                 type="button"
-                onClick={() => { setActiveMediaType(filter.id); setSearchTerm(''); }}
-                className={`relative pb-2.5 text-sm font-medium transition-colors flex-shrink-0 ${
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => {
+                  setActiveMediaType(filter.id);
+                  setSearchTerm("");
+                }}
+                className={`text-sm capitalize transition-colors ${
                   isActive
-                    ? 'text-zinc-900 dark:text-white'
-                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    ? "font-medium text-zinc-900 dark:text-white"
+                    : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
                 }`}
               >
-                {filter.label}
-                {!isLoading && counts[filter.id] > 0 && (
-                  <span className="ml-1.5 text-xs tabular-nums opacity-50">{counts[filter.id]}</span>
-                )}
-                {isActive && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-zinc-900 dark:bg-white" />
-                )}
+                {filter.label.toLowerCase()}
+                {!isLoading && counts[filter.id] > 0 ? (
+                  <span className="ml-1 text-xs tabular-nums opacity-50">{counts[filter.id]}</span>
+                ) : null}
               </button>
             );
           })}
         </div>
 
-        {/* Sort controls */}
-        <div className="flex items-center gap-4 pb-2.5 flex-shrink-0 ml-4">
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
           <button
             type="button"
-            onClick={() => setSortOption(sortOption === 'newest' ? 'oldest' : 'newest')}
-            className={`text-sm transition-colors ${
-              sortOption === 'newest' || sortOption === 'oldest'
-                ? 'font-medium text-zinc-900 dark:text-white'
-                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+            onClick={() => setSortOption(sortOption === "newest" ? "oldest" : "newest")}
+            className={`text-sm capitalize transition-colors ${
+              sortOption === "newest" || sortOption === "oldest"
+                ? "font-medium text-zinc-900 dark:text-white"
+                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
             }`}
           >
-            Year {sortOption === 'newest' ? '↓' : sortOption === 'oldest' ? '↑' : ''}
+            year {sortOption === "newest" ? "↓" : sortOption === "oldest" ? "↑" : ""}
           </button>
           <button
             type="button"
             onClick={() =>
-              setSortOption(sortOption === 'highest-rated' ? 'lowest-rated' : 'highest-rated')
+              setSortOption(sortOption === "highest-rated" ? "lowest-rated" : "highest-rated")
             }
-            className={`text-sm transition-colors ${
-              sortOption === 'highest-rated' || sortOption === 'lowest-rated'
-                ? 'font-medium text-zinc-900 dark:text-white'
-                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+            className={`text-sm capitalize transition-colors ${
+              sortOption === "highest-rated" || sortOption === "lowest-rated"
+                ? "font-medium text-zinc-900 dark:text-white"
+                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
             }`}
           >
-            Rating {sortOption === 'highest-rated' ? '↓' : sortOption === 'lowest-rated' ? '↑' : ''}
+            rating {sortOption === "highest-rated" ? "↓" : sortOption === "lowest-rated" ? "↑" : ""}
           </button>
         </div>
       </div>
