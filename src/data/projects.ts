@@ -25,6 +25,22 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'beam',
+    year: 2026,
+    title: 'Beam',
+    description: 'Screen recording for Windows',
+    tech: ['Electron', 'React', 'TypeScript', 'FFmpeg', 'Whisper'],
+    category: 'application',
+    featured: true,
+    links: [
+      { label: 'GitHub', url: 'https://github.com/rohzzn/beam' },
+      { label: 'Live', url: 'https://beam.rohan.run/' },
+    ],
+    image: '/projects/beam.svg',
+    longDescription:
+      "Tools like Loom and Screen Studio are good, but they are subscriptions and your recordings pass through someone else's server before they land on your hard drive. I built Beam to do the same job entirely on your machine: no account, no cloud upload, nothing leaving your PC. Capture full screen, a single window, or a custom region. A draggable webcam bubble composites automatically. Auto-zoom follows your clicks, with optional click ripples and a keystroke overlay for tutorials. Trim in a real editor, export to MP4 or GIF, copy to clipboard, or run offline AI transcription with a local Whisper model. Global hotkeys, mic and system audio, quality presets, and GitHub-only update checks. macOS and Linux builds are next; the core is already cross-platform Electron.",
+  },
+  {
     slug: 'relay',
     year: 2026,
     title: 'Relay',
@@ -122,7 +138,7 @@ export const projects: Project[] = [
     category: "other",
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/interactions" },
-      { label: "Live", url: "https://interactions.rohan.host/" },
+      { label: "Live", url: "https://interactions.rohan.run/" },
     ],
     image: "/projects/interactions.png",
     longDescription: "Seven days, seven UI interaction concepts. one per day. Custom cursor behaviors, physics-based animations, magnetic hover effects, gesture-driven menus. The one-day constraint forced rapid decisions over polish, which is actually a useful mode for exploring interaction ideas.",

@@ -14,7 +14,7 @@ const categories: { id: CategoryFilter; label: string }[] = [
   { id: "other", label: "other" },
 ];
 
-const FEATURED_ORDER = ["relay", "dock-poker", "contests", "catan-online"] as const;
+const FEATURED_ORDER = ["beam", "relay", "dock-poker", "contests", "catan-online"] as const;
 
 function sortByLatest(list: Project[]): Project[] {
   return [...list].sort((a, b) => {
