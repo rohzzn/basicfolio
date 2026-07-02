@@ -193,7 +193,7 @@ function LinksSection({ links }: { links: Project['links'] }) {
       {gh && (
         <a href={gh.url} target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-sm text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-          <Github className="w-3.5 h-3.5" />Source
+          <Github className="w-3.5 h-3.5" />source
         </a>
       )}
     </div>

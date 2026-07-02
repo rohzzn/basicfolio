@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { posts } from '@/data/writing';
 import ArticleJsonLd from '@/components/ArticleJsonLd';
 import { generatePostMetadata, getPost } from '@/lib/post-metadata';
+import { loadArticle } from '@/lib/writing-articles';
 
 export async function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
@@ -24,7 +25,9 @@ export default async function WritingPostPage({
   const { slug } = await params;
   if (!getPost(slug)) notFound();
 
-  const { default: Article } = await import(`@/app/writing/${slug}/Article`);
+  const articleModule = await loadArticle(slug);
+  if (!articleModule) notFound();
+  const { default: Article } = articleModule;
 
   return (
     <>

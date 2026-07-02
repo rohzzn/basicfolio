@@ -10,6 +10,15 @@ export type Post = {
 
 export const posts: Post[] = [
   {
+    slug: 'telugumovies-in',
+    title: 'Why I Built telugumovies.in',
+    description:
+      'I wanted a NAS full of Tollywood films and Jellyfin on my parents\' TV. Storage math said no, so I built telugumovies.in, a Telugu movie catalog with cinema listings and 500+ free YouTube links. Here is why I paused it.',
+    date: '2026-06-28',
+    displayDate: 'Jun 2026',
+    category: 'life',
+  },
+  {
     slug: 'apple-best-ai-feature',
     title: "Apple's Best AI Feature Is Not Siri",
     description: 'WWDC 2026 buried the most useful agentic AI feature in the Passwords app. A look at what it actually does, why it works, and where it breaks.',
