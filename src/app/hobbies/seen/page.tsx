@@ -16,6 +16,7 @@ interface InstagramPost {
 interface InstagramResponse {
   data: InstagramPost[];
   error?: string;
+  code?: string;
 }
 
 function captionForDisplay(raw: string | undefined): string | undefined {
@@ -935,12 +936,16 @@ export default function SeenPage() {
   const [posts, setPosts] = useState<InstagramPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/instagram")
       .then((r) => r.json())
       .then((data: InstagramResponse) => {
-        if (data.error) throw new Error(data.error);
+        if (data.error) {
+          setErrorCode(data.code ?? null);
+          throw new Error(data.error);
+        }
         setPosts(data.data ?? []);
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load photos"))
@@ -961,13 +966,36 @@ export default function SeenPage() {
       ) : error ? (
         <div className="rounded-xl border border-zinc-200/90 bg-zinc-50/60 px-4 py-8 dark:border-zinc-800/80 dark:bg-zinc-900/25">
           <p className="text-sm text-zinc-600 dark:text-zinc-300">{error}</p>
-          <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-            Add{" "}
-            <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-              INSTAGRAM_ACCESS_TOKEN
-            </code>{" "}
-            to your environment to load this gallery.
-          </p>
+          {errorCode === "token_expired" ? (
+            <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+              Your Instagram access token expired. Generate a new long-lived token in{" "}
+              <a
+                href="https://developers.facebook.com/apps/"
+                className="underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Meta for Developers
+              </a>
+              , then update{" "}
+              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                INSTAGRAM_ACCESS_TOKEN
+              </code>{" "}
+              locally and in your deployment env. Run{" "}
+              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                node scripts/refresh-instagram-token.mjs
+              </code>{" "}
+              to refresh before expiry next time.
+            </p>
+          ) : (
+            <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+              Add{" "}
+              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                INSTAGRAM_ACCESS_TOKEN
+              </code>{" "}
+              to your environment to load this gallery.
+            </p>
+          )}
         </div>
       ) : posts.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-200/90 py-12 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
