@@ -29,7 +29,7 @@ const DigitalClock: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex items-center text-zinc-700 dark:text-zinc-300">
+    <div className="flex items-center text-zinc-700 dark:text-neutral-300">
       <span className="text-xs font-medium">{time}</span>
     </div>
   );

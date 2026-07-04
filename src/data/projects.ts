@@ -164,7 +164,6 @@ export const projects: Project[] = [
     description: "Contest and hackathon calendar",
     tech: ["Next.js", "React", "Tailwind CSS", "TypeScript"],
     category: "web",
-    featured: true,
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/contests" },
       { label: "Live", url: "http://contests.dev/" },

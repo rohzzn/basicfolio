@@ -78,14 +78,14 @@ export default function ManualVsAgent() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Manual vs one tap</p>
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-        <div className="flex border-b border-zinc-200 dark:border-zinc-800">
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Manual vs one tap</p>
+      <div className="border border-zinc-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+        <div className="flex border-b border-zinc-200 dark:border-neutral-800">
           <button
             onClick={() => start('manual')}
             disabled={mode === 'manual' && !finished}
             className={`flex-1 py-2.5 text-xs font-medium transition-colors ${
-              mode === 'manual' ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+              mode === 'manual' ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900' : 'text-zinc-500 dark:text-neutral-400 hover:bg-zinc-50 dark:hover:bg-neutral-800/50'
             }`}
           >
             Manual (6 accounts)
@@ -93,8 +93,8 @@ export default function ManualVsAgent() {
           <button
             onClick={() => start('agent')}
             disabled={mode === 'agent' && !finished}
-            className={`flex-1 py-2.5 text-xs font-medium transition-colors border-l border-zinc-200 dark:border-zinc-800 ${
-              mode === 'agent' ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+            className={`flex-1 py-2.5 text-xs font-medium transition-colors border-l border-zinc-200 dark:border-neutral-800 ${
+              mode === 'agent' ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900' : 'text-zinc-500 dark:text-neutral-400 hover:bg-zinc-50 dark:hover:bg-neutral-800/50'
             }`}
           >
             iOS 27 agent
@@ -103,22 +103,22 @@ export default function ManualVsAgent() {
 
         <div className="p-4 min-h-[200px]">
           {mode === null ? (
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center py-8">
+            <p className="text-xs text-zinc-500 dark:text-neutral-400 text-center py-8">
               Pick a workflow to simulate fixing 6 flagged accounts
             </p>
           ) : (
             <>
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                <span className="text-xs text-zinc-500 dark:text-neutral-400">
                   Step {Math.min(step + 1, steps.length)} of {steps.length}
                 </span>
-                <span className="text-xs font-mono text-zinc-600 dark:text-zinc-300">{formatTime(elapsed)}</span>
+                <span className="text-xs font-mono text-zinc-600 dark:text-neutral-300">{formatTime(elapsed)}</span>
               </div>
 
-              <div className="h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden mb-4">
+              <div className="h-1.5 bg-zinc-100 dark:bg-neutral-800 rounded-full overflow-hidden mb-4">
                 <div
                   className={`h-full rounded-full transition-all duration-300 ${
-                    mode === 'agent' ? 'bg-emerald-500' : 'bg-zinc-500 dark:bg-zinc-400'
+                    mode === 'agent' ? 'bg-emerald-500' : 'bg-zinc-500 dark:bg-neutral-400'
                   }`}
                   style={{ width: `${Math.min((step / steps.length) * 100, 100)}%` }}
                 />
@@ -132,15 +132,15 @@ export default function ManualVsAgent() {
                     <div
                       key={i}
                       className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${
-                        current ? 'bg-zinc-100 dark:bg-zinc-800' : done ? 'opacity-60' : 'opacity-30'
+                        current ? 'bg-zinc-100 dark:bg-neutral-800' : done ? 'opacity-60' : 'opacity-30'
                       }`}
                     >
                       <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] flex-shrink-0 ${
-                        done ? 'bg-emerald-500 text-white' : current ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'bg-zinc-200 dark:bg-zinc-700'
+                        done ? 'bg-emerald-500 text-white' : current ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900' : 'bg-zinc-200 dark:bg-neutral-700'
                       }`}>
                         {done ? '✓' : i + 1}
                       </span>
-                      <span className={current ? 'dark:text-white font-medium' : 'text-zinc-600 dark:text-zinc-400'}>
+                      <span className={current ? 'dark:text-paper font-medium' : 'text-zinc-600 dark:text-neutral-400'}>
                         {label}
                       </span>
                     </div>
@@ -149,14 +149,14 @@ export default function ManualVsAgent() {
               </div>
 
               {finished && (
-                <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-neutral-800 flex items-center justify-between">
+                  <p className="text-xs text-zinc-600 dark:text-neutral-400">
                     {mode === 'manual'
-                      ? <>And that was <span className="font-medium dark:text-white">one</span> account. Multiply by six.</>
+                      ? <>And that was <span className="font-medium dark:text-paper">one</span> account. Multiply by six.</>
                       : <>All eligible accounts handled in the background.</>
                     }
                   </p>
-                  <button onClick={reset} className="text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300">
+                  <button onClick={reset} className="text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-neutral-300">
                     Reset
                   </button>
                 </div>

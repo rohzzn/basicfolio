@@ -293,9 +293,9 @@ function blockTheme(c: Category): { bar: string; box: string; title: string } {
       };
     case "gray":
       return {
-        bar: "border-l-[5px] border-l-zinc-500 dark:border-l-zinc-400",
-        box: "border border-zinc-300/90 bg-zinc-100/90 dark:border-zinc-600/90 dark:bg-zinc-800/80",
-        title: "text-zinc-900 dark:text-zinc-100",
+        bar: "border-l-[5px] border-l-zinc-500 dark:border-l-neutral-400",
+        box: "border border-zinc-300/90 bg-zinc-100/90 dark:border-neutral-600/90 dark:bg-neutral-800/80",
+        title: "text-zinc-900 dark:text-neutral-100",
       };
     case "tech":
       return {
@@ -318,8 +318,8 @@ function blockTheme(c: Category): { bar: string; box: string; title: string } {
     default:
       return {
         bar: "border-l-[5px] border-l-zinc-600",
-        box: "border border-zinc-300 bg-zinc-100/85 dark:border-zinc-600 dark:bg-zinc-800/76",
-        title: "text-zinc-900 dark:text-zinc-50",
+        box: "border border-zinc-300 bg-zinc-100/85 dark:border-neutral-600 dark:bg-neutral-800/76",
+        title: "text-zinc-900 dark:text-neutral-50",
       };
   }
 }
@@ -581,15 +581,15 @@ export default function TimelinePage() {
   return (
     <div className="w-full min-w-0 max-w-full pb-8 sm:pb-10">
       <div className="max-w-3xl">
-        <h2 className="text-base font-medium tracking-tight text-zinc-900 dark:text-white sm:text-lg">Timeline</h2>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-base font-medium tracking-tight text-zinc-900 dark:text-paper sm:text-lg">Timeline</h2>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-500 dark:text-neutral-400">
           A long narrow autobiography.
         </p>
       </div>
 
       <div className="mt-6 flex min-w-0 flex-col gap-6 sm:mt-8 sm:gap-8 md:flex-row md:items-start md:gap-10 lg:gap-12">
         <div className="w-full min-w-0 max-w-3xl shrink-0">
-          <div className="overflow-x-auto overflow-y-visible overscroll-x-contain rounded-lg border border-zinc-200 bg-zinc-50/50 shadow-sm [-webkit-overflow-scrolling:touch] dark:border-zinc-800 dark:bg-zinc-950/40 sm:rounded-xl">
+          <div className="overflow-x-auto overflow-y-visible overscroll-x-contain rounded-lg border border-zinc-200 bg-zinc-50/50 shadow-sm [-webkit-overflow-scrolling:touch] dark:border-neutral-800 dark:bg-neutral-950/40 sm:rounded-xl">
             <div
               ref={timelineHoverRef}
               className="flex w-full min-w-0 touch-pan-x sm:min-w-[min(100%,420px)]"
@@ -606,7 +606,7 @@ export default function TimelinePage() {
             >
           {/* Schedule track */}
           <div
-            className="relative flex-1 border-r border-zinc-200 bg-[length:100%_28px] bg-[linear-gradient(to_bottom,transparent_27px,rgba(0,0,0,0.05)_28px)] dark:border-zinc-800 dark:bg-zinc-950/70 dark:bg-[linear-gradient(to_bottom,transparent_27px,rgba(255,255,255,0.04)_28px)]"
+            className="relative flex-1 border-r border-zinc-200 bg-[length:100%_28px] bg-[linear-gradient(to_bottom,transparent_27px,rgba(0,0,0,0.05)_28px)] dark:border-neutral-800 dark:bg-neutral-950/70 dark:bg-[linear-gradient(to_bottom,transparent_27px,rgba(255,255,255,0.04)_28px)]"
             style={{ height: TRACK_HEIGHT_PX }}
           >
             {monthSlices.map(({ y, m }) => {
@@ -620,8 +620,8 @@ export default function TimelinePage() {
                   key={`grid-m-${y}-${m}`}
                   className={`pointer-events-none absolute right-0 left-0 border-t ${
                     isJan
-                      ? "border-zinc-300/90 dark:border-zinc-600/90"
-                      : "border-zinc-200/45 dark:border-zinc-700/45"
+                      ? "border-zinc-300/90 dark:border-neutral-600/90"
+                      : "border-zinc-200/45 dark:border-neutral-700/45"
                   }`}
                   style={{ bottom }}
                 />
@@ -630,7 +630,7 @@ export default function TimelinePage() {
 
             {yearOnlyFadeBand ? (
               <div
-                className="pointer-events-none absolute left-0 right-0 bg-gradient-to-t from-zinc-100/35 via-zinc-100/60 to-zinc-100/88 dark:from-zinc-950/30 dark:via-zinc-950/58 dark:to-zinc-950/88"
+                className="pointer-events-none absolute left-0 right-0 bg-gradient-to-t from-zinc-100/35 via-zinc-100/60 to-zinc-100/88 dark:from-neutral-950/30 dark:via-neutral-950/58 dark:to-neutral-950/88"
                 style={{ bottom: yearOnlyFadeBand.bottom, height: yearOnlyFadeBand.height }}
               />
             ) : null}
@@ -655,7 +655,7 @@ export default function TimelinePage() {
                   className={`absolute flex flex-col items-stretch justify-start overflow-hidden rounded-md px-2 pt-2 pb-1.5 text-left shadow-sm transition-[box-shadow,transform,opacity] sm:px-2.5 ${th.bar} ${th.box} ${
                     hasDetail ? "cursor-pointer hover:z-20 hover:shadow-md" : "cursor-default"
                   } disabled:opacity-100 ${
-                    evSelected ? "z-10 opacity-100 ring-2 ring-zinc-400/80 dark:ring-zinc-500" : baseZ
+                    evSelected ? "z-10 opacity-100 ring-2 ring-zinc-400/80 dark:ring-neutral-500" : baseZ
                   } ${faded ? "opacity-[0.82] hover:opacity-100" : ""}`}
                   style={{
                     bottom,
@@ -766,7 +766,7 @@ export default function TimelinePage() {
 
           {/* Year + single hovered month (under pointer), same vertical scale */}
           <div
-            className="relative shrink-0 overflow-visible border-l border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/50"
+            className="relative shrink-0 overflow-visible border-l border-zinc-200 bg-zinc-100/80 dark:border-neutral-800 dark:bg-neutral-900/50"
             style={{ width: YEAR_AXIS_W, height: TRACK_HEIGHT_PX }}
           >
             <AnimatePresence mode="sync">
@@ -786,7 +786,7 @@ export default function TimelinePage() {
                     label = String(y);
                     motionKey = `axis-y-${y}`;
                     spanClass =
-                      "select-none text-xs font-bold tabular-nums leading-none text-zinc-700 dark:text-zinc-200";
+                      "select-none text-xs font-bold tabular-nums leading-none text-zinc-700 dark:text-neutral-200";
                   } else {
                     const slice = monthSlices.find((s) => s.y === y && s.m === m);
                     const tStart = dayStart(startOfMonth(y, m));
@@ -797,7 +797,7 @@ export default function TimelinePage() {
                     label = slice?.label ?? MONTH_ABBREV[m - 1];
                     motionKey = `axis-m-${y}-${m}`;
                     spanClass =
-                      "select-none text-[11px] font-semibold leading-none tracking-tight text-zinc-600 dark:text-zinc-300";
+                      "select-none text-[11px] font-semibold leading-none tracking-tight text-zinc-600 dark:text-neutral-300";
                   }
                   const b0 = distFromBottom(t0);
                   const b1 = distFromBottom(t1);
@@ -843,7 +843,7 @@ export default function TimelinePage() {
                   className="pointer-events-none absolute right-0 z-10 flex h-4 items-end justify-end pr-0.5"
                   style={{ bottom }}
                 >
-                  <span className="text-[10px] font-bold tabular-nums text-zinc-600 dark:text-zinc-300">{y}</span>
+                  <span className="text-[10px] font-bold tabular-nums text-zinc-600 dark:text-neutral-300">{y}</span>
                 </div>
               );
             })}
@@ -854,7 +854,7 @@ export default function TimelinePage() {
 
         {active ? (
           <div ref={detailPanelRef} className="w-full min-w-0 max-w-full sm:max-w-[min(100%,38rem)] sm:shrink-0 lg:max-w-[40rem]">
-            <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 sm:rounded-xl sm:p-6">
+            <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60 sm:rounded-xl sm:p-6">
               <div
                 className={
                   active.detailImage
@@ -869,17 +869,17 @@ export default function TimelinePage() {
                       : ""
                   }
                 >
-                  <p className="break-words text-sm font-semibold leading-snug text-zinc-900 dark:text-white sm:text-base sm:leading-normal">
+                  <p className="break-words text-sm font-semibold leading-snug text-zinc-900 dark:text-paper sm:text-base sm:leading-normal">
                     {active.detailTitle ?? active.description[0] ?? active.dateLabel}
                   </p>
                   {active.detailLead?.length ? (
                     active.detailLead.map((line, i) => (
-                      <p key={i} className="mt-1 break-words text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 sm:mt-1 sm:text-[13px]">
+                      <p key={i} className="mt-1 break-words text-xs leading-relaxed text-zinc-500 dark:text-neutral-400 sm:mt-1 sm:text-[13px]">
                         {line}
                       </p>
                     ))
                   ) : (
-                    <p className="mt-1 break-words text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 sm:text-[13px]">{active.dateLabel}</p>
+                    <p className="mt-1 break-words text-xs leading-relaxed text-zinc-500 dark:text-neutral-400 sm:text-[13px]">{active.dateLabel}</p>
                   )}
                 </div>
                 {active.detailImage ? (
@@ -897,13 +897,13 @@ export default function TimelinePage() {
                 ) : null}
               </div>
               {active.detailBody?.length ? (
-                <div className="space-y-2.5 text-[13px] leading-relaxed break-words text-zinc-600 dark:text-zinc-300 sm:space-y-3 sm:text-sm">
+                <div className="space-y-2.5 text-[13px] leading-relaxed break-words text-zinc-600 dark:text-neutral-300 sm:space-y-3 sm:text-sm">
                   {active.detailBody.map((para, i) => (
                     <p key={i}>{para}</p>
                   ))}
                 </div>
               ) : (
-                <ul className="list-disc space-y-1.5 break-words pl-5 text-[13px] leading-relaxed text-zinc-600 marker:text-zinc-400 dark:text-zinc-300 dark:marker:text-zinc-500 sm:space-y-2 sm:text-sm sm:leading-normal">
+                <ul className="list-disc space-y-1.5 break-words pl-5 text-[13px] leading-relaxed text-zinc-600 marker:text-zinc-400 dark:text-neutral-300 dark:marker:text-neutral-500 sm:space-y-2 sm:text-sm sm:leading-normal">
                   {active.description.map((line, i) => (
                     <li key={i}>{line}</li>
                   ))}

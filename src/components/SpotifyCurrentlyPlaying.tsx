@@ -264,7 +264,7 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
 
           <div className="mb-0.5">
 
-            <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate block">
+            <span className="text-xs font-medium text-zinc-700 dark:text-neutral-300 truncate block">
 
               {track.name}
 
@@ -272,7 +272,7 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
 
           </div>
 
-          <p className="text-[10px] text-zinc-600 dark:text-zinc-400 truncate">
+          <p className="text-[10px] text-zinc-600 dark:text-neutral-400 truncate">
 
             {track.artists}
 
@@ -280,7 +280,7 @@ const SpotifyCurrentlyPlaying: React.FC = () => {
 
 
 
-          <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full mt-1.5 overflow-hidden">
+          <div className="w-full h-1 bg-zinc-200 dark:bg-neutral-700 rounded-full mt-1.5 overflow-hidden">
 
             <div
 

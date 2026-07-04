@@ -52,14 +52,14 @@ export default function ChatDemo() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Custom ChatGPT UI</p>
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-        <div className="bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2.5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Custom ChatGPT UI</p>
+      <div className="border border-zinc-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+        <div className="bg-zinc-50 dark:bg-neutral-800/50 px-4 py-2.5 border-b border-zinc-200 dark:border-neutral-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="text-xs text-zinc-600 dark:text-zinc-400">gpt-4o</span>
+            <span className="text-xs text-zinc-600 dark:text-neutral-400">gpt-4o</span>
           </div>
-          <button onClick={next} className="text-xs text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
+          <button onClick={next} className="text-xs text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors">
             try another →
           </button>
         </div>
@@ -67,17 +67,17 @@ export default function ChatDemo() {
         <div className="p-4 space-y-4 min-h-[120px]">
           {(phase === 'user' || phase === 'ai' || phase === 'done') && (
             <div className="flex justify-end">
-              <div className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs px-3 py-2 rounded-xl rounded-tr-sm max-w-[80%]">
+              <div className="bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs px-3 py-2 rounded-xl rounded-tr-sm max-w-[80%]">
                 {convo[0].text}
               </div>
             </div>
           )}
           {(phase === 'ai' || phase === 'done') && (
             <div className="flex items-start gap-2">
-              <div className="w-5 h-5 rounded-full bg-zinc-900 dark:bg-zinc-100 flex-shrink-0 flex items-center justify-center mt-0.5">
-                <span className="text-white dark:text-zinc-900 text-[9px] font-bold">G</span>
+              <div className="w-5 h-5 rounded-full bg-zinc-900 dark:bg-neutral-100 flex-shrink-0 flex items-center justify-center mt-0.5">
+                <span className="text-white dark:text-neutral-900 text-[9px] font-bold">G</span>
               </div>
-              <div className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap max-w-[85%]">
+              <div className="text-xs text-zinc-700 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap max-w-[85%]">
                 <TypedText key={convoIdx} text={convo[1].text} onDone={() => setPhase('done')} />
               </div>
             </div>
@@ -86,10 +86,10 @@ export default function ChatDemo() {
         </div>
 
         <div className="px-4 pb-4">
-          <div className="flex items-center gap-2 border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-800/50">
-            <span className="text-xs text-zinc-400 dark:text-zinc-400 flex-1">Message...</span>
-            <div className="w-5 h-5 rounded bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-white dark:text-zinc-900 text-[9px]">↑</span>
+          <div className="flex items-center gap-2 border border-zinc-200 dark:border-neutral-700 rounded-lg px-3 py-2 bg-white dark:bg-neutral-800/50">
+            <span className="text-xs text-zinc-400 dark:text-neutral-400 flex-1">Message...</span>
+            <div className="w-5 h-5 rounded bg-zinc-900 dark:bg-neutral-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-white dark:text-neutral-900 text-[9px]">↑</span>
             </div>
           </div>
         </div>

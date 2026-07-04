@@ -32,21 +32,21 @@ export default function WorkTimeline() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Projects at Abhibus</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Projects at Abhibus</p>
       <div className="flex gap-2 mb-4 flex-wrap">
         {(['all', ...ALL_TAGS] as const).map(t => (
           <button key={t} onClick={() => setFilter(t)}
-            className={`text-xs px-2.5 py-1 rounded-md border transition-colors capitalize ${filter === t ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100' : 'border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-zinc-400'}`}>
+            className={`text-xs px-2.5 py-1 rounded-md border transition-colors capitalize ${filter === t ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 border-zinc-900 dark:border-neutral-100' : 'border-zinc-200 dark:border-neutral-700 text-zinc-500 dark:text-neutral-400 hover:border-zinc-400'}`}>
             {t === 'all' ? `All (${PROJECTS.length})` : `${t} (${PROJECTS.filter(p => p.tags.includes(t)).length})`}
           </button>
         ))}
       </div>
       <div className="space-y-2">
         {visible.map((p, i) => (
-          <div key={i} className="flex items-start gap-3 p-3 border border-zinc-100 dark:border-zinc-800 rounded-lg">
+          <div key={i} className="flex items-start gap-3 p-3 border border-zinc-100 dark:border-neutral-800 rounded-lg">
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium dark:text-white mb-1">{p.name}</p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">{p.detail}</p>
+              <p className="text-xs font-medium dark:text-paper mb-1">{p.name}</p>
+              <p className="text-xs text-zinc-500 dark:text-neutral-400">{p.detail}</p>
             </div>
             <div className="flex gap-1 flex-shrink-0 flex-wrap justify-end">
               {p.tags.map(t => (

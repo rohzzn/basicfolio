@@ -29,22 +29,22 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
           className="rounded-full"
         />
         <div>
-          <h3 className="text-lg font-medium dark:text-white">{profile.personaname}</h3>
+          <h3 className="text-lg font-medium dark:text-paper">{profile.personaname}</h3>
           <div className="flex items-center gap-3 mt-0.5">
             <a
               href={profile.profileurl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+              className="text-sm text-zinc-500 dark:text-neutral-400 hover:text-zinc-900 dark:hover:text-paper transition-colors"
             >
               Steam ↗
             </a>
-            <span className="text-zinc-300 dark:text-zinc-500">·</span>
+            <span className="text-zinc-300 dark:text-neutral-500">·</span>
             <a
               href="https://settings.gg/rohzzn"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+              className="text-sm text-zinc-500 dark:text-neutral-400 hover:text-zinc-900 dark:hover:text-paper transition-colors"
             >
               Config ↗
             </a>
@@ -62,8 +62,8 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
               className="object-contain"
             />
           </div>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-1">CS:GO</p>
-          <p className="text-sm font-medium dark:text-white">DMG</p>
+          <p className="text-xs text-zinc-600 dark:text-neutral-400 mb-1">CS:GO</p>
+          <p className="text-sm font-medium dark:text-paper">DMG</p>
         </div>
         
         <div className="flex flex-col items-center">
@@ -75,8 +75,8 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
               className="object-contain"
             />
           </div>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-1">Valorant</p>
-          <p className="text-sm font-medium dark:text-white">Immortal 1</p>
+          <p className="text-xs text-zinc-600 dark:text-neutral-400 mb-1">Valorant</p>
+          <p className="text-sm font-medium dark:text-paper">Immortal 1</p>
         </div>
         
         <div className="flex flex-col items-center">
@@ -88,8 +88,8 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
               className="object-contain"
             />
           </div>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-1">Overwatch</p>
-          <p className="text-sm font-medium dark:text-white">Diamond</p>
+          <p className="text-xs text-zinc-600 dark:text-neutral-400 mb-1">Overwatch</p>
+          <p className="text-sm font-medium dark:text-paper">Diamond</p>
         </div>
       </div>
     </div>

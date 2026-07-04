@@ -21,7 +21,7 @@ function StarRow({ score, className = '' }: { score: number; className?: string 
       {Array.from({ length: 5 }).map((_, i) => (
         <span
           key={i}
-          className={`text-[11px] leading-none ${i < score ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-500'}`}
+          className={`text-[11px] leading-none ${i < score ? 'text-amber-400' : 'text-zinc-300 dark:text-neutral-500'}`}
         >
           ★
         </span>
@@ -60,11 +60,11 @@ function QuoteMarquee({ quotes }: { quotes: string[] }) {
 
   return (
     <div
-      className="relative mb-6 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50/90 py-3.5 dark:border-zinc-800 dark:bg-zinc-900/50"
+      className="relative mb-6 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50/90 py-3.5 dark:border-neutral-800 dark:bg-neutral-900/50"
       aria-hidden
     >
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-zinc-50/98 to-transparent dark:from-zinc-950/98" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-zinc-50/98 to-transparent dark:from-zinc-950/98" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-zinc-50/98 to-transparent dark:from-neutral-950/98" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-zinc-50/98 to-transparent dark:from-neutral-950/98" />
       <div
         className="books-marquee-track"
         style={{ animationDelay: delay, ['--marquee-duration' as string]: duration }}
@@ -72,7 +72,7 @@ function QuoteMarquee({ quotes }: { quotes: string[] }) {
         {items.map((line, i) => (
           <span
             key={`${line}-${i}`}
-            className={`mx-10 shrink-0 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300 ${i >= items.length / 2 ? 'books-marquee-duplicate' : ''}`}
+            className={`mx-10 shrink-0 text-sm leading-relaxed text-zinc-600 dark:text-neutral-300 ${i >= items.length / 2 ? 'books-marquee-duplicate' : ''}`}
           >
             {line}
           </span>
@@ -104,9 +104,9 @@ function BookCoverImage({
   const src = sources[sourceIndex];
 
   return (
-    <div className={`relative aspect-[2/3] overflow-hidden bg-zinc-200 dark:bg-zinc-800 ${className}`}>
+    <div className={`relative aspect-[2/3] overflow-hidden bg-zinc-200 dark:bg-neutral-800 ${className}`}>
       {exhausted ? (
-        <div className="absolute inset-0 flex items-center justify-center p-2 text-center text-[10px] font-medium leading-snug text-zinc-500 dark:text-zinc-400">
+        <div className="absolute inset-0 flex items-center justify-center p-2 text-center text-[10px] font-medium leading-snug text-zinc-500 dark:text-neutral-400">
           {book.title}
         </div>
       ) : (
@@ -167,14 +167,14 @@ function BookDetailModal({ book, onClose }: { book: Book; onClose: () => void })
         role="dialog"
         aria-modal="true"
         aria-labelledby="book-detail-title"
-        className="relative z-10 w-full max-w-lg overflow-hidden rounded-xl border border-zinc-200 bg-[#faf8f5] shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-xl border border-zinc-200 bg-[#faf8f5] shadow-2xl dark:border-neutral-700 dark:bg-neutral-900"
         initial={{ opacity: 0, y: 24, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 16, scale: 0.98 }}
         transition={{ type: 'spring', stiffness: 420, damping: 32 }}
       >
         <div className="flex min-h-[280px] sm:min-h-[320px]">
-          <div className="hidden w-[38%] shrink-0 border-r border-zinc-200/80 bg-zinc-100/60 p-4 dark:border-zinc-700 dark:bg-zinc-800/50 sm:flex sm:flex-col sm:justify-between">
+          <div className="hidden w-[38%] shrink-0 border-r border-zinc-200/80 bg-zinc-100/60 p-4 dark:border-neutral-700 dark:bg-neutral-800/50 sm:flex sm:flex-col sm:justify-between">
             <BookCoverImage book={book} className="mx-auto w-full max-w-[140px] rounded shadow-md ring-1 ring-black/5" />
             <StarRow score={book.score} className="mt-4 justify-center" />
           </div>
@@ -185,31 +185,31 @@ function BookDetailModal({ book, onClose }: { book: Book; onClose: () => void })
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-200/80 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-200/80 hover:text-zinc-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+            <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
               {BOOK_CATEGORY_LABELS[book.category]}
             </p>
             <h3
               id="book-detail-title"
-              className="font-serif text-lg font-medium leading-snug text-zinc-900 dark:text-white"
+              className="font-serif text-lg font-medium leading-snug text-zinc-900 dark:text-paper"
             >
               {book.title}
             </h3>
-            <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+            <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-neutral-300">
               {book.review}
             </p>
-            <div className="mt-5 flex items-center justify-between gap-3 border-t border-zinc-200/80 pt-4 dark:border-zinc-700">
+            <div className="mt-5 flex items-center justify-between gap-3 border-t border-zinc-200/80 pt-4 dark:border-neutral-700">
               <StarRow score={book.score} className="hidden sm:flex" />
               <a
                 href={`https://openlibrary.org/isbn/${book.isbn}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-800 hover:underline dark:hover:text-zinc-200"
+                className="text-xs text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-800 hover:underline dark:hover:text-neutral-200"
               >
                 Open Library ↗
               </a>
@@ -220,7 +220,7 @@ function BookDetailModal({ book, onClose }: { book: Book; onClose: () => void })
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-3 top-3 hidden rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-200/80 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 sm:block"
+          className="absolute right-3 top-3 hidden rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-200/80 hover:text-zinc-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 sm:block"
           aria-label="Close"
         >
           <X className="h-4 w-4" />
@@ -248,8 +248,8 @@ export default function BooksClient() {
   return (
     <div className="w-full min-w-0 max-w-[75ch]">
       <header className="mb-5">
-        <h2 className="text-lg font-medium dark:text-white">Books</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-lg font-medium dark:text-paper">Books</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">
           A few books I&apos;ve read
         </p>
       </header>
@@ -262,7 +262,7 @@ export default function BooksClient() {
             key={book.id}
             type="button"
             onClick={() => setSelected(book)}
-            className="group relative overflow-hidden rounded-lg text-left ring-1 ring-zinc-100 transition-shadow hover:shadow-lg dark:ring-zinc-800"
+            className="group relative overflow-hidden rounded-lg text-left ring-1 ring-zinc-100 transition-shadow hover:shadow-lg dark:ring-neutral-800"
           >
             <BookCover book={book} priority={i < 8} />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-2.5 pt-8 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
@@ -275,7 +275,7 @@ export default function BooksClient() {
         ))}
       </div>
 
-      <p className="mt-6 text-xs text-zinc-400 dark:text-zinc-400">
+      <p className="mt-6 text-xs text-zinc-400 dark:text-neutral-400">
         {displayed.length} books · tap for notes
       </p>
 

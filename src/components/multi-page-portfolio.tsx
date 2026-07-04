@@ -9,7 +9,6 @@ import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/Spot
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
 import EReaderEasterEgg from "./EReaderEasterEgg";
-import { getStoredTheme, applyTheme } from '@/lib/theme-mode';
 
 interface NavLinkProps {
   href: string;
@@ -71,8 +70,8 @@ const NavLink: React.FC<NavLinkProps> = memo(({ href, children }) => {
       aria-current={isActive ? "page" : undefined}
       className={`block px-4 py-3 text-sm sm:text-sm font-medium rounded-md transition-colors capitalize w-full text-left
         ${isActive
-          ? "bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white"
-          : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+          ? "bg-zinc-100 dark:bg-neutral-800 text-black dark:text-paper"
+          : "text-zinc-600 dark:text-neutral-400 hover:text-black dark:hover:text-paper hover:bg-zinc-50 dark:hover:bg-neutral-800/50"
         }`}
     >
       {children}
@@ -233,7 +232,7 @@ const ActivityIcon: React.FC<{
 
   if (!currentImageUrl || allImagesFailed || imageUrls.length === 0) {
     return (
-      <div className="w-10 h-10 rounded-md bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0">
+      <div className="w-10 h-10 rounded-md bg-zinc-200 dark:bg-neutral-700 flex items-center justify-center flex-shrink-0">
         {getActivityIcon(activity.type)}
       </div>
     );
@@ -251,7 +250,7 @@ const ActivityIcon: React.FC<{
         onError={handleImageError}
       />
       {smallImageUrl && !smallImageError && (
-        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center ring-2 ring-white dark:ring-zinc-900">
+        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-zinc-900 dark:bg-neutral-100 flex items-center justify-center ring-2 ring-white dark:ring-neutral-900">
           <Image 
             src={smallImageUrl}
             alt={activity.assets?.small_text || ""}
@@ -294,21 +293,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
     }
   }, []);
 
-  // Keep theme in sync with OS-level changes, unless the user picked one explicitly.
-  // The initial theme itself is already applied by the blocking script in layout.tsx
-  // (before paint), so this only needs to react to *future* system changes.
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-      const isEReaderActive = document.documentElement.classList.contains('e-reader-mode');
-      if (getStoredTheme() === null && !isEReaderActive) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    };
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
-  }, []);
-
+  // Theme is light by default; only changes via explicit user toggle (stored in localStorage).
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
@@ -446,7 +431,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
   }, [isPlaying]);
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-900">
+    <div className="flex min-h-screen bg-zinc-50 dark:bg-neutral-950">
       <CommandPalette />
       <CursorSound />
       <EReaderEasterEgg />
@@ -462,7 +447,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
       <button
         id="menu-button"
         onClick={useCallback(() => setIsMenuOpen(prev => !prev), [])}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 text-zinc-600 dark:text-zinc-400 bg-zinc-50/90 dark:bg-zinc-800/90 rounded-md shadow-md backdrop-blur-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 text-zinc-600 dark:text-neutral-400 bg-zinc-50/90 dark:bg-neutral-800/90 rounded-md shadow-md backdrop-blur-sm hover:bg-zinc-100 dark:hover:bg-neutral-700 transition-colors"
         aria-label="Toggle Menu"
       >
         {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -471,8 +456,8 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
       <div
         id="sidebar"
         className={`
-          fixed top-0 bottom-0 left-0 w-[280px] sm:w-[300px] lg:w-64 bg-zinc-50/95 dark:bg-zinc-900/95
-          border-r border-zinc-200 dark:border-zinc-800 
+          fixed top-0 bottom-0 left-0 w-[280px] sm:w-[300px] lg:w-64 bg-zinc-50/95 dark:bg-neutral-900/95
+          border-r border-zinc-200 dark:border-neutral-800 
           flex flex-col h-screen backdrop-blur-sm
           transform transition-transform duration-300 ease-in-out
           ${isMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
@@ -496,7 +481,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </nav>
 
-          <div className="p-4 sm:p-5 lg:p-6 border-t border-zinc-200 dark:border-zinc-800 flex-shrink-0">
+          <div className="p-4 sm:p-5 lg:p-6 border-t border-zinc-200 dark:border-neutral-800 flex-shrink-0">
             {isLoading ? (
               <div className="flex items-center justify-center py-2">
                 <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
@@ -515,7 +500,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
                       boxShadow: `0 0 8px ${getStatusColor(lanyardData.discord_status)}`,
                     }}
                   />
-                  <span className="text-xs text-zinc-600 dark:text-zinc-400 capitalize">
+                  <span className="text-xs text-zinc-600 dark:text-neutral-400 capitalize">
                     {lanyardData.discord_status === "offline" ? "offline" : lanyardData.discord_status}
                   </span>
                 </div>
@@ -536,21 +521,21 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
                         <div className="flex items-center gap-2">
                             <ActivityIcon activity={activity} />
                             <div className="flex-1">
-                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 line-clamp-1">
+                          <span className="text-xs font-medium text-zinc-700 dark:text-neutral-300 line-clamp-1">
                             {activity.name}
                           </span>
                         {activity.state && (
-                                <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+                                <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-neutral-400 line-clamp-1">
                             {activity.state}
                           </p>
                         )}
                         {activity.details && (
-                                <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+                                <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-neutral-400 line-clamp-1">
                             {activity.details}
                           </p>
                         )}
                         {activity.timestamps?.start && (
-                                <p className="text-[10px] text-zinc-500 dark:text-zinc-500 mt-0.5">
+                                <p className="text-[10px] text-zinc-500 dark:text-neutral-500 mt-0.5">
                                   <ActivityElapsedTime startTimestamp={activity.timestamps.start} />
                           </p>
                         )}
@@ -578,7 +563,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
         <button
           onClick={togglePlay}
           disabled={!audioLoaded}
-          className={`flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300 ${!audioLoaded ? 'opacity-50' : ''}`}
+          className={`flex items-center gap-1.5 text-zinc-700 dark:text-neutral-300 ${!audioLoaded ? 'opacity-50' : ''}`}
           aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
         >
           {isPlaying ? (

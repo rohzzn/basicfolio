@@ -197,8 +197,8 @@ export default function TypingTest() {
   return (
     <div className="max-w-2xl">
       <div className="flex items-baseline justify-between mb-8">
-        <h2 className="text-lg font-medium dark:text-white">Typing</h2>
-        <span className="text-xs text-zinc-400 dark:text-zinc-400">
+        <h2 className="text-lg font-medium dark:text-paper">Typing</h2>
+        <span className="text-xs text-zinc-400 dark:text-neutral-400">
           my best — {ROHAN_WPM} wpm
         </span>
       </div>
@@ -212,8 +212,8 @@ export default function TypingTest() {
                 <button key={t} onClick={() => switchTime(t)}
                   className={`text-sm transition-colors ${
                     timeOpt === t
-                      ? 'text-zinc-900 dark:text-white font-medium'
-                      : 'text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                      ? 'text-zinc-900 dark:text-paper font-medium'
+                      : 'text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'
                   }`}
                 >
                   {t}s
@@ -222,18 +222,18 @@ export default function TypingTest() {
             </div>
             <div className="flex items-center gap-3 text-sm tabular-nums">
               {liveWpm > 0 && (
-                <span className="text-zinc-400 dark:text-zinc-400">{liveWpm}</span>
+                <span className="text-zinc-400 dark:text-neutral-400">{liveWpm}</span>
               )}
               <span className={`font-medium ${
                 phase === 'running' && timeLeft <= 5
                   ? 'text-red-500'
-                  : 'text-zinc-900 dark:text-white'
+                  : 'text-zinc-900 dark:text-paper'
               }`}>
                 {timeLeft}s
               </span>
               <button
                 onClick={restart}
-                className="text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                className="text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors"
                 aria-label="restart"
               >
                 <RefreshCcw className="w-3.5 h-3.5" />
@@ -267,11 +267,11 @@ export default function TypingTest() {
                     className={
                       isDone
                         ? isOk
-                          ? 'text-zinc-400 dark:text-zinc-400'
+                          ? 'text-zinc-400 dark:text-neutral-400'
                           : 'text-red-400 dark:text-red-500'
                         : isCurrent
-                          ? 'text-zinc-900 dark:text-zinc-100'
-                          : 'text-zinc-300 dark:text-zinc-500'
+                          ? 'text-zinc-900 dark:text-neutral-100'
+                          : 'text-zinc-300 dark:text-neutral-500'
                     }
                   >
                     {isCurrent && phase !== 'idle'
@@ -284,11 +284,11 @@ export default function TypingTest() {
                                 <span
                                   key={ci}
                                   className={[
-                                    isCursor ? 'border-l-2 border-zinc-800 dark:border-zinc-200' : '',
+                                    isCursor ? 'border-l-2 border-zinc-800 dark:border-neutral-200' : '',
                                     t === undefined
-                                      ? 'text-zinc-400 dark:text-zinc-400'
+                                      ? 'text-zinc-400 dark:text-neutral-400'
                                       : t === ch
-                                        ? 'text-zinc-900 dark:text-zinc-100'
+                                        ? 'text-zinc-900 dark:text-neutral-100'
                                         : 'text-red-500 dark:text-red-400',
                                   ].filter(Boolean).join(' ')}
                                 >
@@ -297,7 +297,7 @@ export default function TypingTest() {
                               );
                             })}
                             {typed.length >= word.length && (
-                              <span className="border-r-2 border-zinc-800 dark:border-zinc-200 inline-block w-0 h-[1em] align-baseline" />
+                              <span className="border-r-2 border-zinc-800 dark:border-neutral-200 inline-block w-0 h-[1em] align-baseline" />
                             )}
                           </>
                         )
@@ -310,7 +310,7 @@ export default function TypingTest() {
 
             {phase === 'idle' && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <p className="text-xs text-zinc-400 dark:text-zinc-400">
+                <p className="text-xs text-zinc-400 dark:text-neutral-400">
                   start typing to begin
                 </p>
               </div>
@@ -320,7 +320,7 @@ export default function TypingTest() {
           {capsLock && (
             <p className="text-xs text-amber-500 mb-2">caps lock is on</p>
           )}
-          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-6">
+          <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-6">
             tab — reset · space — next word
           </p>
 
@@ -341,8 +341,8 @@ export default function TypingTest() {
                     key={key}
                     className={`w-8 sm:w-9 h-8 sm:h-9 flex items-center justify-center rounded font-mono text-xs transition-all duration-75 ${
                       activeKey === key
-                        ? 'bg-zinc-800 dark:bg-zinc-100 text-white dark:text-zinc-900 scale-95 shadow-sm'
-                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+                        ? 'bg-zinc-800 dark:bg-neutral-100 text-white dark:text-neutral-900 scale-95 shadow-sm'
+                        : 'bg-zinc-100 dark:bg-neutral-800 text-zinc-500 dark:text-neutral-400'
                     }`}
                   >
                     {key}
@@ -354,8 +354,8 @@ export default function TypingTest() {
               <div
                 className={`h-8 sm:h-9 w-44 sm:w-56 rounded font-mono text-xs transition-all duration-75 ${
                   activeKey === ' '
-                    ? 'bg-zinc-800 dark:bg-zinc-100 scale-95 shadow-sm'
-                    : 'bg-zinc-100 dark:bg-zinc-800'
+                    ? 'bg-zinc-800 dark:bg-neutral-100 scale-95 shadow-sm'
+                    : 'bg-zinc-100 dark:bg-neutral-800'
                 }`}
               />
             </div>
@@ -390,11 +390,11 @@ export default function TypingTest() {
                 color: wpm >= ROHAN_WPM ? 'text-green-500' : 'text-red-500',
               },
             ].map(({ label, val, color }) => (
-              <div key={label} className="border border-zinc-100 dark:border-zinc-800 rounded-lg p-4">
-                <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">
+              <div key={label} className="border border-zinc-100 dark:border-neutral-800 rounded-lg p-4">
+                <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-2">
                   {label}
                 </p>
-                <p className={`text-2xl font-medium tabular-nums ${color || 'text-zinc-900 dark:text-white'}`}>
+                <p className={`text-2xl font-medium tabular-nums ${color || 'text-zinc-900 dark:text-paper'}`}>
                   {val}
                 </p>
               </div>
@@ -404,12 +404,12 @@ export default function TypingTest() {
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={restart}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors text-zinc-700 dark:text-zinc-300"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-zinc-200 dark:border-neutral-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-neutral-800/60 transition-colors text-zinc-700 dark:text-neutral-300"
             >
               <RefreshCcw className="w-3.5 h-3.5" />
               Try again
             </button>
-            <p className="text-xs text-zinc-400 dark:text-zinc-400">or press tab</p>
+            <p className="text-xs text-zinc-400 dark:text-neutral-400">or press tab</p>
           </div>
         </div>
       )}

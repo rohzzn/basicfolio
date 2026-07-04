@@ -62,23 +62,23 @@ function CincinnatiLocalTime() {
   }).format(tick);
 
   return (
-    <div className="rounded-lg border border-zinc-100 px-4 py-3.5 dark:border-zinc-800/80">
-      <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+    <div className="rounded-lg border border-zinc-100 px-4 py-3.5 dark:border-neutral-800/80">
+      <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
         Cincinnati
       </p>
       <p
-        className="text-xl font-medium tabular-nums tracking-tight text-zinc-900 dark:text-zinc-50"
+        className="text-xl font-medium tabular-nums tracking-tight text-zinc-900 dark:text-neutral-50"
         suppressHydrationWarning
       >
         {timeStr}
       </p>
-      <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{dateLong}</p>
+      <p className="mt-0.5 text-xs text-zinc-500 dark:text-neutral-400">{dateLong}</p>
     </div>
   );
 }
 
 const inputClass =
-  "w-full rounded-lg border border-zinc-200 bg-transparent px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-1 focus:ring-zinc-400 dark:border-zinc-800 dark:text-white dark:focus:ring-zinc-600";
+  "w-full rounded-lg border border-zinc-200 bg-transparent px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-1 focus:ring-zinc-400 dark:border-neutral-800 dark:text-paper dark:focus:ring-neutral-600";
 
 function BookingFieldControl({
   field,
@@ -97,7 +97,7 @@ function BookingFieldControl({
   ) {
     return (
       <div>
-        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-neutral-400 mb-1">
           {field.label}
           {field.required ? <span className="text-red-500"> *</span> : null}
         </label>
@@ -122,7 +122,7 @@ function BookingFieldControl({
   if (field.type === "textarea") {
     return (
       <div>
-        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-neutral-400 mb-1">
           {field.label}
           {field.required ? <span className="text-red-500"> *</span> : null}
         </label>
@@ -147,9 +147,9 @@ function BookingFieldControl({
           type="checkbox"
           checked={value === "true"}
           onChange={(e) => onChange(field.slug, e.target.checked ? "true" : "false")}
-          className="mt-1 h-3.5 w-3.5 rounded border-zinc-300 text-zinc-900 dark:border-zinc-600"
+          className="mt-1 h-3.5 w-3.5 rounded border-zinc-300 text-zinc-900 dark:border-neutral-600"
         />
-        <label htmlFor={id} className="text-sm text-zinc-600 dark:text-zinc-300 leading-snug">
+        <label htmlFor={id} className="text-sm text-zinc-600 dark:text-neutral-300 leading-snug">
           {field.label}
           {field.required ? <span className="text-red-500"> *</span> : null}
         </label>
@@ -160,7 +160,7 @@ function BookingFieldControl({
   if (field.type === "number") {
     return (
       <div>
-        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-neutral-400 mb-1">
           {field.label}
           {field.required ? <span className="text-red-500"> *</span> : null}
         </label>
@@ -180,7 +180,7 @@ function BookingFieldControl({
   if (field.type === "phone" || field.slug === "attendeePhoneNumber") {
     return (
       <div>
-        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-neutral-400 mb-1">
           {field.label}
           {field.required ? <span className="text-red-500"> *</span> : null}
         </label>
@@ -200,7 +200,7 @@ function BookingFieldControl({
   if (field.type === "url") {
     return (
       <div>
-        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-neutral-400 mb-1">
           {field.label}
           {field.required ? <span className="text-red-500"> *</span> : null}
         </label>
@@ -220,7 +220,7 @@ function BookingFieldControl({
   if (field.type === "multiemail") {
     return (
       <div>
-        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+        <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-neutral-400 mb-1">
           {field.label}
           {field.required ? <span className="text-red-500"> *</span> : null}
         </label>
@@ -239,7 +239,7 @@ function BookingFieldControl({
 
   return (
     <div>
-      <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+      <label htmlFor={id} className="block text-xs text-zinc-500 dark:text-neutral-400 mb-1">
         {field.label}
         {field.required ? <span className="text-red-500"> *</span> : null}
       </label>
@@ -570,25 +570,25 @@ export default function MeetPage() {
   if (loadTypesError === "missing_api_key") {
     return (
       <div className="w-full min-w-0 max-w-5xl">
-        <h1 className="text-lg font-medium dark:text-white">Book a meet</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+        <h1 className="text-lg font-medium dark:text-paper">Book a meet</h1>
+        <p className="text-sm text-zinc-500 dark:text-neutral-400 leading-relaxed">
           Scheduling on this page needs a server API key. Add{" "}
-          <code className="text-xs text-zinc-700 dark:text-zinc-300">CAL_API_KEY</code> to your environment, then restart
+          <code className="text-xs text-zinc-700 dark:text-neutral-300">CAL_API_KEY</code> to your environment, then restart
           the dev server.
         </p>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-500 dark:text-neutral-400 leading-relaxed">
           Until then, you can still{" "}
           <a
             href="https://cal.me/rohzzn"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            className="text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors"
           >
             book on Cal.me
           </a>
           .
         </p>
-        <Link href="/about" className="text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
+        <Link href="/about" className="text-sm text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors">
           ← About
         </Link>
       </div>
@@ -598,7 +598,7 @@ export default function MeetPage() {
   if (loadingTypes) {
     return (
       <div className="w-full min-w-0 max-w-5xl">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading…</p>
+        <p className="text-sm text-zinc-500 dark:text-neutral-400">Loading…</p>
       </div>
     );
   }
@@ -606,20 +606,20 @@ export default function MeetPage() {
   if (loadTypesError || eventTypes.length === 0) {
     return (
       <div className="w-full min-w-0 max-w-5xl">
-        <h1 className="text-lg font-medium dark:text-white">Book a meet</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+        <h1 className="text-lg font-medium dark:text-paper">Book a meet</h1>
+        <p className="text-sm text-zinc-500 dark:text-neutral-400 leading-relaxed">
           No bookable event types were found, or the calendar request failed. Try{" "}
           <a
             href="https://cal.me/rohzzn"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            className="text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors"
           >
             cal.me/rohzzn
           </a>{" "}
           instead.
         </p>
-        <Link href="/about" className="text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
+        <Link href="/about" className="text-sm text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors">
           ← About
         </Link>
       </div>
@@ -630,52 +630,52 @@ export default function MeetPage() {
     const c = confirmation;
     return (
       <div className="w-full min-w-0 max-w-5xl space-y-8">
-        <h1 className="text-lg font-medium dark:text-white">Booking confirmed</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+        <h1 className="text-lg font-medium dark:text-paper">Booking confirmed</h1>
+        <p className="text-sm text-zinc-500 dark:text-neutral-400 leading-relaxed">
           Here is a summary of what you submitted. You should also receive a confirmation email.
         </p>
 
-        <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-zinc-800/60 space-y-4">
+        <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-neutral-800/60 space-y-4">
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-1">
               Event
             </p>
-            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{c.eventTitle}</p>
+            <p className="text-sm font-medium text-zinc-900 dark:text-neutral-100">{c.eventTitle}</p>
           </div>
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-1">
               Date & time
             </p>
-            <p className="text-sm text-zinc-800 dark:text-zinc-200">{c.whenLong}</p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            <p className="text-sm text-zinc-800 dark:text-neutral-200">{c.whenLong}</p>
+            <p className="text-xs text-zinc-500 dark:text-neutral-400 mt-0.5">
               {c.whenShort} · your timezone: {c.timeZone}
             </p>
           </div>
-          <div className="border-t border-zinc-200/80 pt-4 dark:border-zinc-800/80 space-y-3">
+          <div className="border-t border-zinc-200/80 pt-4 dark:border-neutral-800/80 space-y-3">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-1">
                 Name
               </p>
-              <p className="text-sm text-zinc-800 dark:text-zinc-200">{c.name}</p>
+              <p className="text-sm text-zinc-800 dark:text-neutral-200">{c.name}</p>
             </div>
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-1">
                 Email
               </p>
-              <p className="text-sm text-zinc-800 dark:text-zinc-200 break-all">{c.email}</p>
+              <p className="text-sm text-zinc-800 dark:text-neutral-200 break-all">{c.email}</p>
             </div>
             {c.rows.map((row) => (
               <div key={row.label}>
-                <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-1">
                   {row.label}
                 </p>
-                <p className="text-sm text-zinc-800 dark:text-zinc-200 whitespace-pre-wrap break-words">{row.value}</p>
+                <p className="text-sm text-zinc-800 dark:text-neutral-200 whitespace-pre-wrap break-words">{row.value}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <Link href="/about" className="inline-block text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
+        <Link href="/about" className="inline-block text-sm text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors">
           ← About
         </Link>
       </div>
@@ -688,7 +688,7 @@ export default function MeetPage() {
   return (
     <div className="w-full min-w-0 max-w-5xl">
       <header className="mb-8">
-        <h1 className="text-lg font-medium dark:text-white">Book a meet</h1>
+        <h1 className="text-lg font-medium dark:text-paper">Book a meet</h1>
       </header>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:gap-12">
@@ -696,7 +696,7 @@ export default function MeetPage() {
           <CincinnatiLocalTime />
 
           <div>
-            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
               Event
             </p>
             <div className="space-y-2">
@@ -707,12 +707,12 @@ export default function MeetPage() {
                   onClick={() => setSelectedId(et.id)}
                   className={`w-full rounded-lg border px-3 py-3 text-left text-sm transition-colors ${
                     selectedId === et.id
-                      ? "border-zinc-300 bg-zinc-50 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800/60 dark:text-white"
-                      : "border-zinc-100 text-zinc-700 hover:border-zinc-200 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700"
+                      ? "border-zinc-300 bg-zinc-50 text-zinc-900 dark:border-neutral-600 dark:bg-neutral-800/60 dark:text-paper"
+                      : "border-zinc-100 text-zinc-700 hover:border-zinc-200 dark:border-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-700"
                   }`}
                 >
                   <span className="block font-medium">{et.title}</span>
-                  <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                  <span className="mt-0.5 block text-xs text-zinc-500 dark:text-neutral-400">
                     {et.lengthInMinutes} min
                   </span>
                 </button>
@@ -720,7 +720,7 @@ export default function MeetPage() {
             </div>
             {selectedType?.lengthInMinutesOptions && selectedType.lengthInMinutesOptions.length > 1 ? (
               <div className="mt-4">
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
                   Length
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -731,8 +731,8 @@ export default function MeetPage() {
                       onClick={() => setDuration(len)}
                       className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
                         duration === len
-                          ? "border-zinc-300 bg-zinc-50 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800/60 dark:text-white"
-                          : "border-zinc-100 text-zinc-500 hover:border-zinc-200 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700"
+                          ? "border-zinc-300 bg-zinc-50 text-zinc-900 dark:border-neutral-600 dark:bg-neutral-800/60 dark:text-paper"
+                          : "border-zinc-100 text-zinc-500 hover:border-zinc-200 dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-700"
                       }`}
                     >
                       {len} min
@@ -747,41 +747,41 @@ export default function MeetPage() {
         <div className="min-w-0 space-y-8">
           <div>
             <div className="mb-3 flex items-baseline justify-between gap-2">
-              <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+              <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
                 {selectedStart ? "Your time" : "Available times"}
               </span>
               {loadingSlots ? (
-                <span className="text-xs text-zinc-400 dark:text-zinc-400">Updating…</span>
+                <span className="text-xs text-zinc-400 dark:text-neutral-400">Updating…</span>
               ) : null}
             </div>
             {slotsError ? (
-              <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-zinc-800/80">
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">Could not load slots. Try again later.</p>
+              <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-neutral-800/80">
+                <p className="text-sm text-zinc-500 dark:text-neutral-400">Could not load slots. Try again later.</p>
                 {slotsErrorDetail ? (
-                  <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-400 break-words">{slotsErrorDetail}</p>
+                  <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-400 break-words">{slotsErrorDetail}</p>
                 ) : null}
               </div>
             ) : totalSlots === 0 && !loadingSlots ? (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">No open slots in the next few weeks for this event.</p>
+              <p className="text-sm text-zinc-500 dark:text-neutral-400">No open slots in the next few weeks for this event.</p>
             ) : selectedStart ? (
-              <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-zinc-800/80">
-                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-neutral-800/80">
+                <p className="text-sm font-medium text-zinc-900 dark:text-neutral-100">
                   {slotFormatter.format(new Date(selectedStart))}
                 </p>
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Timezone: {tz}</p>
+                <p className="mt-1 text-xs text-zinc-500 dark:text-neutral-400">Timezone: {tz}</p>
                 <button
                   type="button"
                   onClick={clearSlotSelection}
-                  className="mt-3 text-xs text-zinc-500 underline underline-offset-2 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  className="mt-3 text-xs text-zinc-500 underline underline-offset-2 hover:text-zinc-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                 >
                   Choose a different time
                 </button>
               </div>
             ) : (
-              <div className="max-h-[min(420px,50vh)] space-y-6 overflow-y-auto rounded-lg border border-zinc-100 p-4 dark:border-zinc-800/80">
+              <div className="max-h-[min(420px,50vh)] space-y-6 overflow-y-auto rounded-lg border border-zinc-100 p-4 dark:border-neutral-800/80">
                 {dates.map((date) => (
                   <div key={date}>
-                    <p className="mb-2 text-xs font-medium text-zinc-400 dark:text-zinc-400">
+                    <p className="mb-2 text-xs font-medium text-zinc-400 dark:text-neutral-400">
                       {(() => {
                         try {
                           const [y, mo, da] = date.split("-").map(Number);
@@ -803,7 +803,7 @@ export default function MeetPage() {
                           key={startIso}
                           type="button"
                           onClick={() => pickSlot(startIso)}
-                          className="rounded-md border border-zinc-100 px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/40"
+                          className="rounded-md border border-zinc-100 px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-200 hover:bg-zinc-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-700 dark:hover:bg-neutral-800/40"
                         >
                           {slotFormatter.format(new Date(startIso))}
                         </button>
@@ -816,17 +816,17 @@ export default function MeetPage() {
           </div>
 
           {selectedStart ? (
-            <form onSubmit={handleBook} className="space-y-5 rounded-lg border border-zinc-100 p-4 dark:border-zinc-800/80">
-              <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+            <form onSubmit={handleBook} className="space-y-5 rounded-lg border border-zinc-100 p-4 dark:border-neutral-800/80">
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
                 Your details
               </p>
 
               {loadingExtraFields ? (
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading form…</p>
+                <p className="text-sm text-zinc-500 dark:text-neutral-400">Loading form…</p>
               ) : null}
 
               <div>
-                <label htmlFor="meet-name" className="mb-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                <label htmlFor="meet-name" className="mb-1 block text-xs text-zinc-500 dark:text-neutral-400">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -838,7 +838,7 @@ export default function MeetPage() {
                 />
               </div>
               <div>
-                <label htmlFor="meet-email" className="mb-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                <label htmlFor="meet-email" className="mb-1 block text-xs text-zinc-500 dark:text-neutral-400">
                   Email <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -865,14 +865,14 @@ export default function MeetPage() {
               <button
                 type="submit"
                 disabled={booking || loadingExtraFields}
-                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
+                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
               >
                 {booking ? "Booking…" : "Confirm booking"}
               </button>
             </form>
           ) : null}
 
-          <Link href="/about" className="inline-block text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
+          <Link href="/about" className="inline-block text-sm text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors">
             ← About
           </Link>
         </div>

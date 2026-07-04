@@ -17,5 +17,5 @@ export function useCopy(ms = 1400) {
 }
 
 export const L =
-  'text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3';
-export const CARD = 'border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hidden';
+  'text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3';
+export const CARD = 'border border-zinc-100 dark:border-neutral-800 rounded-lg overflow-hidden';

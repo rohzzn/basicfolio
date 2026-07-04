@@ -180,8 +180,8 @@ const Hackathons = () => {
   return (
     <div style={{ maxWidth: "75ch" }}>
       <header className="mb-8">
-        <h2 className="text-lg font-medium dark:text-white">Hackathons</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-lg font-medium dark:text-paper">Hackathons</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">
           Hackathon builds and events I helped organize at MREC.
         </p>
       </header>
@@ -194,8 +194,8 @@ const Hackathons = () => {
             onClick={() => setActiveTab(tab)}
             className={`text-sm capitalize transition-colors ${
               activeTab === tab
-                ? "font-medium text-zinc-900 dark:text-white"
-                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                ? "font-medium text-zinc-900 dark:text-paper"
+                : "text-zinc-500 hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300"
             }`}
           >
             {tab}
@@ -205,39 +205,39 @@ const Hackathons = () => {
 
       {activeTab === "participated" && (
         <>
-          <div className="mb-8 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800">
+          <div className="mb-8 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-zinc-100 dark:border-neutral-800">
             {[
               { label: "Hackathons", value: hackathonsParticipated.length },
               { label: "Awards", value: awards },
               { label: "Total hours", value: totalHours },
             ].map(({ label, value }) => (
-              <div key={label} className="bg-zinc-50 p-3 dark:bg-zinc-900/50">
-                <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400">{label}</p>
-                <p className="text-base font-medium tabular-nums dark:text-white">{value}</p>
+              <div key={label} className="bg-zinc-50 p-3 dark:bg-neutral-900/50">
+                <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-neutral-400">{label}</p>
+                <p className="text-base font-medium tabular-nums dark:text-paper">{value}</p>
               </div>
             ))}
           </div>
 
-          <div className="relative space-y-8 border-l border-zinc-200 pl-4 dark:border-zinc-700">
+          <div className="relative space-y-8 border-l border-zinc-200 pl-4 dark:border-neutral-700">
             {hackathonsParticipated.map((h) => (
               <div key={h.title} className="relative">
-                <div className="absolute -left-[21px] mt-1 h-2.5 w-2.5 rounded-full border-2 border-zinc-300 bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900" />
+                <div className="absolute -left-[21px] mt-1 h-2.5 w-2.5 rounded-full border-2 border-zinc-300 bg-zinc-50 dark:border-neutral-600 dark:bg-neutral-900" />
                 <div className="mb-1 flex items-baseline justify-between gap-4">
-                  <h3 className="text-sm font-medium leading-snug dark:text-white">{h.title}</h3>
-                  <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-400">{h.date}</span>
+                  <h3 className="text-sm font-medium leading-snug dark:text-paper">{h.title}</h3>
+                  <span className="shrink-0 text-xs text-zinc-400 dark:text-neutral-400">{h.date}</span>
                 </div>
                 <div className="mb-2 flex flex-wrap gap-2">
                   {h.achievement ? (
-                    <span className="rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                    <span className="rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500 dark:bg-neutral-800 dark:text-neutral-400">
                       {h.achievement}
                     </span>
                   ) : null}
-                  {h.role ? <span className="text-[10px] text-zinc-400 dark:text-zinc-400">{h.role}</span> : null}
-                  {h.time ? <span className="text-[10px] text-zinc-400 dark:text-zinc-400">{h.time}</span> : null}
+                  {h.role ? <span className="text-[10px] text-zinc-400 dark:text-neutral-400">{h.role}</span> : null}
+                  {h.time ? <span className="text-[10px] text-zinc-400 dark:text-neutral-400">{h.time}</span> : null}
                 </div>
-                <p className="mb-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">{h.description}</p>
+                <p className="mb-2 text-xs leading-relaxed text-zinc-500 dark:text-neutral-400">{h.description}</p>
                 {h.technologies?.length ? (
-                  <p className="text-xs text-zinc-400 dark:text-zinc-400">{h.technologies.join(" · ")}</p>
+                  <p className="text-xs text-zinc-400 dark:text-neutral-400">{h.technologies.join(" · ")}</p>
                 ) : null}
                 {h.projectUrl || h.liveDemo ? (
                   <div className="mt-2 flex gap-4">
@@ -246,7 +246,7 @@ const Hackathons = () => {
                         href={h.projectUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                        className="text-xs text-zinc-500 transition-colors hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                       >
                         {h.projectUrl.includes("devpost") ? "Devpost" : "Source"} ↗
                       </a>
@@ -256,7 +256,7 @@ const Hackathons = () => {
                         href={h.liveDemo}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                        className="text-xs text-zinc-500 transition-colors hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                       >
                         Live demo ↗
                       </a>
@@ -271,32 +271,32 @@ const Hackathons = () => {
 
       {activeTab === "organized" && (
         <>
-          <div className="mb-8 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800">
+          <div className="mb-8 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-zinc-100 dark:border-neutral-800">
             {[
               { label: "Events", value: eventsOrganized.length },
               { label: "Total participants", value: `${(totalParticipants / 1000).toFixed(0)}k+` },
               { label: "Workshops", value: eventsOrganized.filter((e) => !e.achievement).length },
             ].map(({ label, value }) => (
-              <div key={label} className="bg-zinc-50 p-3 dark:bg-zinc-900/50">
-                <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400">{label}</p>
-                <p className="text-base font-medium tabular-nums dark:text-white">{value}</p>
+              <div key={label} className="bg-zinc-50 p-3 dark:bg-neutral-900/50">
+                <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-neutral-400">{label}</p>
+                <p className="text-base font-medium tabular-nums dark:text-paper">{value}</p>
               </div>
             ))}
           </div>
 
-          <div className="relative space-y-6 border-l border-zinc-200 pl-4 dark:border-zinc-700">
+          <div className="relative space-y-6 border-l border-zinc-200 pl-4 dark:border-neutral-700">
             {eventsOrganized.map((e) => (
               <div key={e.title} className="relative">
-                <div className="absolute -left-[21px] mt-1 h-2.5 w-2.5 rounded-full border-2 border-zinc-300 bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900" />
+                <div className="absolute -left-[21px] mt-1 h-2.5 w-2.5 rounded-full border-2 border-zinc-300 bg-zinc-50 dark:border-neutral-600 dark:bg-neutral-900" />
                 <div className="mb-1 flex items-baseline justify-between gap-4">
-                  <h3 className="text-sm font-medium leading-snug dark:text-white">{e.title}</h3>
-                  <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-400">{e.date}</span>
+                  <h3 className="text-sm font-medium leading-snug dark:text-paper">{e.title}</h3>
+                  <span className="shrink-0 text-xs text-zinc-400 dark:text-neutral-400">{e.date}</span>
                 </div>
-                <div className="mb-1.5 flex flex-wrap gap-3 text-[10px] text-zinc-400 dark:text-zinc-400">
+                <div className="mb-1.5 flex flex-wrap gap-3 text-[10px] text-zinc-400 dark:text-neutral-400">
                   {e.participants ? <span>{e.participants.toLocaleString()} participants</span> : null}
-                  {e.achievement ? <span className="font-medium text-zinc-500 dark:text-zinc-400">{e.achievement}</span> : null}
+                  {e.achievement ? <span className="font-medium text-zinc-500 dark:text-neutral-400">{e.achievement}</span> : null}
                 </div>
-                <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">{e.description}</p>
+                <p className="text-xs leading-relaxed text-zinc-500 dark:text-neutral-400">{e.description}</p>
               </div>
             ))}
           </div>

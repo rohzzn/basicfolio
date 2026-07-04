@@ -39,7 +39,7 @@ export default function RouteMap({ polyline }: RouteMapProps) {
   const [ex, ey] = toXY(points[points.length - 1][0], points[points.length - 1][1]);
 
   return (
-    <div className="overflow-hidden bg-zinc-100 dark:bg-zinc-800/60">
+    <div className="overflow-hidden bg-zinc-100 dark:bg-neutral-800/60">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 100 }}>
         <path
           d={d}
@@ -47,10 +47,10 @@ export default function RouteMap({ polyline }: RouteMapProps) {
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="stroke-zinc-600 dark:stroke-zinc-300"
+          className="stroke-zinc-600 dark:stroke-neutral-300"
         />
-        <circle cx={sx} cy={sy} r="4" className="fill-zinc-500 dark:fill-zinc-400" />
-        <circle cx={ex} cy={ey} r="4" className="fill-zinc-700 dark:fill-zinc-200" />
+        <circle cx={sx} cy={sy} r="4" className="fill-zinc-500 dark:fill-neutral-400" />
+        <circle cx={ex} cy={ey} r="4" className="fill-zinc-700 dark:fill-neutral-200" />
       </svg>
     </div>
   );

@@ -47,31 +47,31 @@ const CSGOStatsComponent: React.FC<CSGOStatsProps> = ({ statsData }) => {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
-      <p className="text-zinc-600 dark:text-zinc-400">
+      <p className="text-zinc-600 dark:text-neutral-400">
           <span className="font-medium">Rank:</span> DMG
         </p>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-zinc-600 dark:text-neutral-400">
           <span className="font-medium">Kills:</span> {formatNumber(totalKills)}
         </p>
         
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-zinc-600 dark:text-neutral-400">
           <span className="font-medium">K/D Ratio:</span> {kd}
         </p>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-zinc-600 dark:text-neutral-400">
           <span className="font-medium">Win Rate:</span> {winRate}%
         </p>
       </div>
       <div>
-      <p className="text-zinc-600 dark:text-zinc-400">
+      <p className="text-zinc-600 dark:text-neutral-400">
           <span className="font-medium">Wingman Rank:</span> MGE
         </p>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-zinc-600 dark:text-neutral-400">
           <span className="font-medium">MVPs:</span> {formatNumber(mvps)}
         </p>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-zinc-600 dark:text-neutral-400">
           <span className="font-medium">Headshots:</span> {formatNumber(headshots)}
         </p>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-zinc-600 dark:text-neutral-400">
           <span className="font-medium">HS Rate:</span> {hsPercentage}%
         </p>
       </div>

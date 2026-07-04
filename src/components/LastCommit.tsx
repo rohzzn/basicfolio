@@ -52,11 +52,11 @@ export default function LastCommit() {
   if (!commit) return null;
 
   return (
-    <p className="mb-10 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-      <span className="font-mono text-zinc-600 dark:text-zinc-300">
+    <p className="mb-10 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs leading-relaxed text-zinc-500 dark:text-neutral-400">
+      <span className="font-mono text-zinc-600 dark:text-neutral-300">
         {commit.shortSha}
       </span>
-      <span aria-hidden className="text-zinc-300 dark:text-zinc-500">
+      <span aria-hidden className="text-zinc-300 dark:text-neutral-500">
         ·
       </span>
       <span className="font-mono tabular-nums">
@@ -67,7 +67,7 @@ export default function LastCommit() {
           +{commit.additions.toLocaleString()}
         </span>
       </span>
-      <span aria-hidden className="text-zinc-300 dark:text-zinc-500">
+      <span aria-hidden className="text-zinc-300 dark:text-neutral-500">
         ·
       </span>
       <span>{relativeTime ?? '…'}</span>

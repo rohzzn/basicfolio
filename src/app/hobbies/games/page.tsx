@@ -16,10 +16,10 @@ const RARITY_ORDER: Record<string, number> = {
 function InventoryCard({ item }: { item: CS2Item }) {
   if (!item.image) return null;
   return (
-    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 cursor-default group">
+    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-neutral-800 bg-zinc-50 dark:bg-neutral-900 cursor-default group">
       <div className="relative w-full aspect-[4/3]">
         {item.condition && (
-          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-zinc-400">
+          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-neutral-400">
             {item.condition}
           </div>
         )}
@@ -38,7 +38,7 @@ function InventoryCard({ item }: { item: CS2Item }) {
         <p className="text-[10px] font-medium leading-tight line-clamp-1" style={{ color: item.rarityColor }}>
           {item.skin}
         </p>
-        <p className="text-[9px] text-zinc-400 dark:text-zinc-400 mt-0.5 line-clamp-1">
+        <p className="text-[9px] text-zinc-400 dark:text-neutral-400 mt-0.5 line-clamp-1">
           {item.name}
         </p>
       </div>
@@ -48,10 +48,10 @@ function InventoryCard({ item }: { item: CS2Item }) {
 
 function ValorantInventoryCard({ item }: { item: ValorantItem }) {
   return (
-    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 cursor-default group">
+    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-neutral-800 bg-zinc-50 dark:bg-neutral-900 cursor-default group">
       <div className="relative w-full aspect-[4/3]">
         {item.isAlt && (
-          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-zinc-400">
+          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-neutral-400">
             ✦
           </div>
         )}
@@ -70,7 +70,7 @@ function ValorantInventoryCard({ item }: { item: ValorantItem }) {
         <p className="text-[10px] font-medium leading-tight line-clamp-1" style={{ color: item.tierColor }}>
           {item.name}
         </p>
-        <p className="text-[9px] text-zinc-400 dark:text-zinc-400 mt-0.5 line-clamp-1">
+        <p className="text-[9px] text-zinc-400 dark:text-neutral-400 mt-0.5 line-clamp-1">
           {item.weapon}
         </p>
       </div>
@@ -87,13 +87,13 @@ function InventoryRow() {
   return (
     <section className="mb-8">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Inventory</h3>
+        <h3 className="text-xs font-medium text-zinc-500 dark:text-neutral-400 uppercase tracking-wider">Inventory</h3>
         <div className="flex gap-3">
           {(['cs2', 'valorant'] as const).map(g => (
             <button key={g} onClick={() => setGame(g)}
               className={`text-xs uppercase tracking-wide transition-colors ${game === g
-                ? 'text-zinc-900 dark:text-white font-medium'
-                : 'text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>
+                ? 'text-zinc-900 dark:text-paper font-medium'
+                : 'text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'}`}>
               {g === 'cs2' ? 'CS2' : 'Valorant'}
             </button>
           ))}
@@ -276,9 +276,9 @@ function GameRow({ name, iconSrc, href, label }: { name: string; iconSrc: string
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2.5 py-1.5 px-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors group"
+      className="flex items-center gap-2.5 py-1.5 px-2 rounded-md hover:bg-zinc-100 dark:hover:bg-neutral-800/60 transition-colors group"
     >
-      <div className="w-5 h-5 flex-shrink-0 rounded overflow-hidden bg-zinc-100 dark:bg-zinc-700/50 flex items-center justify-center">
+      <div className="w-5 h-5 flex-shrink-0 rounded overflow-hidden bg-zinc-100 dark:bg-neutral-700/50 flex items-center justify-center">
         <Image
           src={iconSrc}
           alt={name}
@@ -288,10 +288,10 @@ function GameRow({ name, iconSrc, href, label }: { name: string; iconSrc: string
           className="w-full h-full object-contain"
         />
       </div>
-      <span className="text-xs text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors line-clamp-1 flex-1 min-w-0">
+      <span className="text-xs text-zinc-600 dark:text-neutral-400 group-hover:text-zinc-900 dark:group-hover:text-paper transition-colors line-clamp-1 flex-1 min-w-0">
         {name}
       </span>
-      <span className="text-[10px] text-zinc-400 dark:text-zinc-400 flex-shrink-0 tabular-nums">
+      <span className="text-[10px] text-zinc-400 dark:text-neutral-400 flex-shrink-0 tabular-nums">
         {label}
       </span>
     </a>
@@ -455,7 +455,7 @@ export default function Games() {
 
   return (
     <div className="max-w-7xl">
-      <h2 className="text-lg font-medium mb-6 dark:text-white">Gaming</h2>
+      <h2 className="text-lg font-medium mb-6 dark:text-paper">Gaming</h2>
 
       {/* Steam Profile */}
       {!gamesLoading && profile && (
@@ -476,13 +476,13 @@ export default function Games() {
           {/* Recently played */}
           {(gamesLoading || byRecent.length > 0) && (
             <div>
-              <h3 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+              <h3 className="text-xs font-medium text-zinc-500 dark:text-neutral-400 uppercase tracking-wider mb-2">
                 Recently Played
               </h3>
               {gamesLoading ? (
                 <div className="space-y-1">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded-md animate-pulse" />
+                    <div key={i} className="h-8 bg-zinc-100 dark:bg-neutral-800 rounded-md animate-pulse" />
                   ))}
                 </div>
               ) : (
@@ -503,13 +503,13 @@ export default function Games() {
 
           {/* Top games — all Steam + manual merged */}
           <div>
-            <h3 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+            <h3 className="text-xs font-medium text-zinc-500 dark:text-neutral-400 uppercase tracking-wider mb-2">
               Top Games
             </h3>
             {gamesLoading ? (
               <div className="space-y-1">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded-md animate-pulse" />
+                  <div key={i} className="h-8 bg-zinc-100 dark:bg-neutral-800 rounded-md animate-pulse" />
                 ))}
               </div>
             ) : (
@@ -539,19 +539,19 @@ export default function Games() {
 
           {/* Tournaments */}
           <div>
-            <h3 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+            <h3 className="text-xs font-medium text-zinc-500 dark:text-neutral-400 uppercase tracking-wider mb-2">
               Tournaments
             </h3>
             <div>
               {achievements.map((a, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between py-1.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
+                  className="flex items-center justify-between py-1.5 border-b border-zinc-100 dark:border-neutral-800/60 last:border-0"
                 >
-                  <span className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mr-2">{a.tournament}</span>
+                  <span className="text-xs text-zinc-600 dark:text-neutral-400 line-clamp-1 mr-2">{a.tournament}</span>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-[10px] text-zinc-400 dark:text-zinc-400">{a.year}</span>
-                    <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400">{a.result}</span>
+                    <span className="text-[10px] text-zinc-400 dark:text-neutral-400">{a.year}</span>
+                    <span className="text-[10px] font-medium text-zinc-500 dark:text-neutral-400">{a.result}</span>
                   </div>
                 </div>
               ))}
@@ -562,7 +562,7 @@ export default function Games() {
         {/* ── RIGHT: clips ── */}
         <div className="min-w-0">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium dark:text-white">Clips</h3>
+            <h3 className="text-sm font-medium dark:text-paper">Clips</h3>
             <div className="flex gap-3">
               {FILTERS.map(({ id, label }) => (
                 <button
@@ -570,8 +570,8 @@ export default function Games() {
                   onClick={() => setActiveFilter(id)}
                   className={`text-xs transition-colors ${
                     activeFilter === id
-                      ? 'text-zinc-900 dark:text-white font-medium'
-                      : 'text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                      ? 'text-zinc-900 dark:text-paper font-medium'
+                      : 'text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'
                   }`}
                 >
                   {label}
@@ -584,18 +584,18 @@ export default function Games() {
             <div className="grid grid-cols-2 gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="aspect-video bg-zinc-200 dark:bg-zinc-800 rounded-lg mb-2" />
-                  <div className="w-3/4 h-3 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                  <div className="aspect-video bg-zinc-200 dark:bg-neutral-800 rounded-lg mb-2" />
+                  <div className="w-3/4 h-3 bg-zinc-200 dark:bg-neutral-800 rounded" />
                 </div>
               ))}
             </div>
           ) : filteredClips.length === 0 ? (
             <div className="py-6">
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">No clips matching this filter.</p>
+              <p className="text-sm text-zinc-500 dark:text-neutral-400">No clips matching this filter.</p>
               {activeFilter !== 'all' && (
                 <button
                   onClick={() => setActiveFilter('all')}
-                  className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors mt-1"
+                  className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-neutral-300 transition-colors mt-1"
                 >
                   Show all
                 </button>
@@ -616,7 +616,7 @@ export default function Games() {
                   onClick={() => openClip(clip)}
                   className="group cursor-pointer"
                 >
-                  <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-800 mb-1.5">
+                  <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-neutral-800 mb-1.5">
                     {clip.thumbnail ? (
                       <Image
                         src={clip.thumbnail}
@@ -626,7 +626,7 @@ export default function Games() {
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-zinc-300 dark:bg-zinc-700" />
+                      <div className="absolute inset-0 bg-zinc-300 dark:bg-neutral-700" />
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -640,7 +640,7 @@ export default function Games() {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors line-clamp-1">
+                  <p className="text-xs font-medium text-zinc-600 dark:text-neutral-400 group-hover:text-zinc-900 dark:group-hover:text-paper transition-colors line-clamp-1">
                     {clip.title}
                   </p>
                 </div>

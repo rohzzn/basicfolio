@@ -172,7 +172,7 @@ interface RecentCommand {
 }
 
 const itemClassName =
-  'flex items-center justify-between gap-2 px-2 py-2 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-zinc-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100';
+  'flex items-center justify-between gap-2 px-2 py-2 text-sm rounded-lg cursor-pointer text-zinc-700 dark:text-neutral-200 hover:bg-zinc-200 dark:hover:bg-neutral-700 aria-selected:bg-zinc-200 dark:aria-selected:bg-neutral-700 aria-selected:!text-zinc-900 dark:aria-selected:!text-zinc-100';
 
 export default function CommandPalette({ links = defaultLinks }: CommandPaletteProps) {
   const [open, setOpen] = useState(false);
@@ -344,7 +344,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
     <>
       {pathname !== '/guestbook' && (
         <kbd
-          className="fixed right-4 top-4 hidden h-6 items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 font-mono text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 md:flex"
+          className="fixed right-4 top-4 hidden h-6 items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 font-mono text-xs text-zinc-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 md:flex"
           onClick={() => setOpen(true)}
         >
           {!isMounted ? (
@@ -376,26 +376,26 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
           label="Command Menu"
           filter={customFilter}
           loop
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-zinc-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden z-[10000]"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-zinc-100 dark:bg-neutral-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-200 dark:border-neutral-700 overflow-hidden z-[10000]"
           style={{ transform: 'translate(-50%, -50%)' }}
         >
           <div className="sr-only">
             <h2>Command Menu</h2>
           </div>
 
-          <div className="border-b border-zinc-200 dark:border-zinc-700 flex items-center px-3 gap-2">
+          <div className="border-b border-zinc-200 dark:border-neutral-700 flex items-center px-3 gap-2">
             {currentPage && !isSearching && (
               <button
                 onClick={goBack}
-                className="flex items-center p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400"
+                className="flex items-center p-1 hover:bg-zinc-200 dark:hover:bg-neutral-700 rounded text-zinc-500 dark:text-neutral-400"
                 aria-label="Go back"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
             )}
-            <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400 flex-shrink-0" />
+            <Search className="w-4 h-4 text-zinc-500 dark:text-neutral-400 flex-shrink-0" />
             {currentPage && !isSearching && (
-              <span className="text-xs text-zinc-500 dark:text-zinc-400 flex-shrink-0">
+              <span className="text-xs text-zinc-500 dark:text-neutral-400 flex-shrink-0">
                 {PAGE_LABELS[currentPage]}
               </span>
             )}
@@ -404,13 +404,13 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
               value={inputValue}
               onValueChange={setInputValue}
               placeholder={placeholder}
-              className="w-full h-12 bg-transparent text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 outline-none"
+              className="w-full h-12 bg-transparent text-zinc-700 dark:text-neutral-200 placeholder:text-zinc-500 dark:placeholder:text-neutral-400 outline-none"
             />
           </div>
 
-          <Command.List className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-            <Command.Empty className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400 flex flex-col items-center justify-center">
-              <Sparkles className="w-5 h-5 mb-2 text-zinc-400 dark:text-zinc-400" />
+          <Command.List className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-neutral-700 scrollbar-track-transparent">
+            <Command.Empty className="py-6 text-center text-sm text-zinc-500 dark:text-neutral-400 flex flex-col items-center justify-center">
+              <Sparkles className="w-5 h-5 mb-2 text-zinc-400 dark:text-neutral-400" />
               <p>No results found for &ldquo;{inputValue}&rdquo;</p>
             </Command.Empty>
 
@@ -419,7 +419,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
                 <Command.Group
                   key={`search-${page}`}
                   heading={heading}
-                  className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2"
+                  className="text-[11px] font-medium text-zinc-500 dark:text-neutral-400 px-2 pb-1 pt-2"
                 >
                   {renderItems(sectionItems[page], `search-${page}`)}
                 </Command.Group>
@@ -429,7 +429,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
               <>
                 {recentItems.length > 0 && (
                   <>
-                    <Command.Group heading="Recent" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+                    <Command.Group heading="Recent" className="text-[11px] font-medium text-zinc-500 dark:text-neutral-400 px-2 pb-1 pt-2">
                       {recentItems.map((item, index) => (
                         <Command.Item
                           key={`recent-${index}`}
@@ -444,11 +444,11 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
                         </Command.Item>
                       ))}
                     </Command.Group>
-                    <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
+                    <Command.Separator className="my-2 h-px bg-zinc-200 dark:bg-neutral-700" />
                   </>
                 )}
 
-                <Command.Group heading="Browse" className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2">
+                <Command.Group heading="Browse" className="text-[11px] font-medium text-zinc-500 dark:text-neutral-400 px-2 pb-1 pt-2">
                   {categories.map((category) => (
                     <Command.Item
                       key={category.id}
@@ -460,7 +460,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
                         {category.icon}
                         <span>{category.title}</span>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0 text-zinc-400 dark:text-zinc-400">
+                      <div className="flex items-center gap-2 flex-shrink-0 text-zinc-400 dark:text-neutral-400">
                         <span className="text-[11px]">{category.count}</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </div>
@@ -473,26 +473,26 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
             {!isSearching && currentPage && (
               <Command.Group
                 heading={PAGE_LABELS[currentPage]}
-                className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-2 pb-1 pt-2"
+                className="text-[11px] font-medium text-zinc-500 dark:text-neutral-400 px-2 pb-1 pt-2"
               >
                 {renderItems(sectionItems[currentPage], currentPage)}
               </Command.Group>
             )}
 
-            <div className="py-2 px-2 text-xs border-t border-zinc-200 dark:border-zinc-700 mt-2 text-zinc-500 dark:text-zinc-400 flex justify-between">
+            <div className="py-2 px-2 text-xs border-t border-zinc-200 dark:border-neutral-700 mt-2 text-zinc-500 dark:text-neutral-400 flex justify-between">
               <div className="flex gap-2">
                 <div className="flex items-center gap-1">
-                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">↑</kbd>
-                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">↓</kbd>
+                  <kbd className="bg-zinc-200 dark:bg-neutral-700 px-1.5 py-0.5 text-[10px] rounded">↑</kbd>
+                  <kbd className="bg-zinc-200 dark:bg-neutral-700 px-1.5 py-0.5 text-[10px] rounded">↓</kbd>
                   <span className="text-[10px]">Navigate</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">Enter</kbd>
+                  <kbd className="bg-zinc-200 dark:bg-neutral-700 px-1.5 py-0.5 text-[10px] rounded">Enter</kbd>
                   <span className="text-[10px]">Select</span>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <kbd className="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 text-[10px] rounded">Esc</kbd>
+                <kbd className="bg-zinc-200 dark:bg-neutral-700 px-1.5 py-0.5 text-[10px] rounded">Esc</kbd>
                 <span className="text-[10px]">{currentPage && !isSearching ? 'Back' : 'Close'}</span>
               </div>
             </div>

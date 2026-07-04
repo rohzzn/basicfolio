@@ -67,14 +67,14 @@ function GuestbookAvatar({
     <div
       className={
         isDiscord
-          ? "shrink-0 overflow-hidden rounded-full mt-0.5 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center"
+          ? "shrink-0 overflow-hidden rounded-full mt-0.5 bg-zinc-200 dark:bg-neutral-800 flex items-center justify-center"
           : "shrink-0 mt-0.5"
       }
       style={{ width: size, height: size, minWidth: size, minHeight: size }}
     >
       {failed ? (
         <span
-          className="text-zinc-600 dark:text-zinc-300 font-medium select-none"
+          className="text-zinc-600 dark:text-neutral-300 font-medium select-none"
           style={{ fontSize: Math.max(11, size * 0.38) }}
         >
           {initials}
@@ -143,7 +143,7 @@ function GuestbookEntry({
   const isReplyOpen = replyingTo === comment.id;
 
   return (
-    <article className={nested ? "flex gap-3 py-3" : "flex gap-3 py-4 border-b border-zinc-200/80 dark:border-zinc-800/80 last:border-0"}>
+    <article className={nested ? "flex gap-3 py-3" : "flex gap-3 py-4 border-b border-zinc-200/80 dark:border-neutral-800/80 last:border-0"}>
       <GuestbookAvatar
         src={commentAvatarSrc(comment, nested ? 64 : 80)}
         size={nested ? 32 : 40}
@@ -151,19 +151,19 @@ function GuestbookEntry({
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-          <span className="text-sm font-medium dark:text-white truncate">
+          <span className="text-sm font-medium dark:text-paper truncate">
             {comment.displayName || "Anonymous"}
           </span>
           {comment.isAdmin && (
-            <span className="text-[10px] uppercase tracking-wide text-zinc-400 dark:text-zinc-400">
+            <span className="text-[10px] uppercase tracking-wide text-zinc-400 dark:text-neutral-400">
               admin
             </span>
           )}
-          <time className="text-xs text-zinc-400 dark:text-zinc-400 tabular-nums shrink-0">
+          <time className="text-xs text-zinc-400 dark:text-neutral-400 tabular-nums shrink-0">
             {relativeTime(comment.createdAt)}
           </time>
         </div>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-wrap break-words">
+        <p className="text-sm text-zinc-600 dark:text-neutral-400 leading-relaxed whitespace-pre-wrap break-words">
           {comment.messageBody}
         </p>
 
@@ -173,7 +173,7 @@ function GuestbookEntry({
               <button
                 type="button"
                 onClick={() => onReply(comment.id)}
-                className="text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+                className="text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-neutral-200 transition-colors"
               >
                 Reply
               </button>
@@ -196,14 +196,14 @@ function GuestbookEntry({
               placeholder="Write a reply…"
               rows={2}
               disabled={replySending}
-              className="bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 resize-none"
+              className="bg-transparent border border-zinc-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-sm dark:text-paper placeholder-zinc-400 dark:placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-neutral-600 resize-none"
             />
             <div className="flex gap-2">
               <button
                 type="button"
                 disabled={replySending || !replyText.trim()}
                 onClick={() => void onSubmitReply(comment.id, replyText).then(() => setReplyText(""))}
-                className="px-3 py-1.5 text-xs bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 disabled:opacity-40"
+                className="px-3 py-1.5 text-xs bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80 disabled:opacity-40"
               >
                 {replySending ? "Sending…" : "Post reply"}
               </button>
@@ -211,7 +211,7 @@ function GuestbookEntry({
                 type="button"
                 onClick={onCancelReply}
                 disabled={replySending}
-                className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-neutral-300"
               >
                 Cancel
               </button>
@@ -416,8 +416,8 @@ export default function GuestbookPage() {
 
   return (
     <div style={{ maxWidth: "75ch" }}>
-      <h2 className="text-lg font-medium dark:text-white mb-2">Guestbook</h2>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8">
+      <h2 className="text-lg font-medium dark:text-paper mb-2">Guestbook</h2>
+      <p className="text-sm text-zinc-500 dark:text-neutral-400 mb-8">
         Say hello if you&apos;ve stopped by. I read every message.
       </p>
 
@@ -430,7 +430,7 @@ export default function GuestbookPage() {
             placeholder="Your name"
             required
             disabled={sending}
-            className="bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600"
+            className="bg-transparent border border-zinc-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-sm dark:text-paper placeholder-zinc-400 dark:placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-neutral-600"
           />
         )}
         <textarea
@@ -440,14 +440,14 @@ export default function GuestbookPage() {
           required
           disabled={sending}
           rows={3}
-          className="bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 resize-none"
+          className="bg-transparent border border-zinc-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-sm dark:text-paper placeholder-zinc-400 dark:placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-neutral-600 resize-none"
         />
         {formError && <p className="text-xs text-red-500">{formError}</p>}
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="submit"
             disabled={sending || !canSubmit}
-            className="px-4 py-2 text-sm bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-40"
+            className="px-4 py-2 text-sm bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-40"
           >
             {sending ? "Sending…" : "Leave a note"}
           </button>
@@ -461,7 +461,7 @@ export default function GuestbookPage() {
                   setDiscordUser(null);
                   setIsAdmin(false);
                 }}
-                className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-neutral-300"
               >
                 Sign out
               </button>
@@ -469,7 +469,7 @@ export default function GuestbookPage() {
           ) : (
             <a
               href="/api/guestbook/discord/start?returnTo=/guestbook"
-              className="px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
+              className="px-4 py-2 text-sm border border-zinc-200 dark:border-neutral-800 text-zinc-600 dark:text-neutral-400 rounded-lg hover:border-zinc-300 dark:hover:border-neutral-700 hover:text-zinc-900 dark:hover:text-neutral-200 transition-colors"
             >
               Sign with Discord
             </a>
@@ -481,10 +481,10 @@ export default function GuestbookPage() {
         <div className="space-y-4">
           {[0, 1, 2].map(i => (
             <div key={i} className="flex gap-3 py-4 animate-pulse">
-              <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0" />
+              <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-neutral-800 shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 w-24 bg-zinc-100 dark:bg-zinc-800 rounded" />
-                <div className="h-3 w-full bg-zinc-100 dark:bg-zinc-800 rounded" />
+                <div className="h-3 w-24 bg-zinc-100 dark:bg-neutral-800 rounded" />
+                <div className="h-3 w-full bg-zinc-100 dark:bg-neutral-800 rounded" />
               </div>
             </div>
           ))}
@@ -492,7 +492,7 @@ export default function GuestbookPage() {
       ) : error ? (
         <p className="text-sm text-red-400">{error}</p>
       ) : threads.length === 0 ? (
-        <p className="text-sm text-zinc-400 dark:text-zinc-400">No entries yet — be the first.</p>
+        <p className="text-sm text-zinc-400 dark:text-neutral-400">No entries yet — be the first.</p>
       ) : (
         <>
           <div>
@@ -509,7 +509,7 @@ export default function GuestbookPage() {
                   replySending={replySending}
                 />
                 {thread.replies.length > 0 && (
-                  <div className="ml-6 pl-4 border-l border-zinc-200/80 dark:border-zinc-800/80 mb-2">
+                  <div className="ml-6 pl-4 border-l border-zinc-200/80 dark:border-neutral-800/80 mb-2">
                     {thread.replies.map(reply => (
                       <GuestbookEntry
                         key={reply.id}
@@ -535,7 +535,7 @@ export default function GuestbookPage() {
                 type="button"
                 onClick={() => fetchPage(page + 1, true)}
                 disabled={loadingMore}
-                className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors disabled:opacity-40"
+                className="text-sm text-zinc-500 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-200 transition-colors disabled:opacity-40"
               >
                 {loadingMore ? "Loading…" : "Load more"}
               </button>

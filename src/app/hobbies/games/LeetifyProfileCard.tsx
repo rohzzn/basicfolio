@@ -136,51 +136,51 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
 
 
   return (
-    <div className="bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
+    <div className="bg-zinc-50 dark:bg-neutral-800/50 border border-zinc-200 dark:border-neutral-700 rounded-lg p-4">
       <div>
         {loading ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading stats…</p>
+          <p className="text-sm text-zinc-500 dark:text-neutral-400">Loading stats…</p>
         ) : error ? (
-          <div className="bg-yellow-50 dark:bg-zinc-800 p-3 rounded-md">
+          <div className="bg-yellow-50 dark:bg-neutral-800 p-3 rounded-md">
             <p className="text-sm text-yellow-800 dark:text-yellow-400">
               Could not load stats ({error}). If your profile is private/hidden, the public API may not
               return data.
             </p>
           </div>
         ) : !data ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">No CS2 data found.</p>
+          <p className="text-sm text-zinc-500 dark:text-neutral-400">No CS2 data found.</p>
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Wingman</p>
-                <p className="text-sm font-medium dark:text-white">{getWingmanRankName(data?.ranks?.wingman)}</p>
+              <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Wingman</p>
+                <p className="text-sm font-medium dark:text-paper">{getWingmanRankName(data?.ranks?.wingman)}</p>
               </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Premier</p>
-                <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.ranks?.premier)}</p>
+              <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Premier</p>
+                <p className="text-sm font-medium dark:text-paper">{formatMaybeNumber(data?.ranks?.premier)}</p>
               </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">CS2 Matches</p>
-                <p className="text-sm font-medium dark:text-white">
+              <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-neutral-400">CS2 Matches</p>
+                <p className="text-sm font-medium dark:text-paper">
                   {typeof data?.total_matches === "number" ? new Intl.NumberFormat().format(data.total_matches) : "—"}
                 </p>
               </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">FACEIT Level</p>
-                <p className="text-sm font-medium dark:text-white">{formatMaybeNumber(data?.ranks?.faceit)}</p>
+              <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-neutral-400">FACEIT Level</p>
+                <p className="text-sm font-medium dark:text-paper">{formatMaybeNumber(data?.ranks?.faceit)}</p>
               </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Peak Rank</p>
-                <p className="text-sm font-medium dark:text-white">{valorantData?.data?.peak?.tier?.name || "—"}</p>
+              <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Peak Rank</p>
+                <p className="text-sm font-medium dark:text-paper">{valorantData?.data?.peak?.tier?.name || "—"}</p>
               </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Current Rank</p>
-                <p className="text-sm font-medium dark:text-white">{valorantData?.data?.current?.tier?.name || "—"}</p>
+              <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Current Rank</p>
+                <p className="text-sm font-medium dark:text-paper">{valorantData?.data?.current?.tier?.name || "—"}</p>
               </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Valorant Matches</p>
-                <p className="text-sm font-medium dark:text-white">
+              <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Valorant Matches</p>
+                <p className="text-sm font-medium dark:text-paper">
                   {valorantData?.data?.seasonal
                     ? new Intl.NumberFormat().format(
                         valorantData.data.seasonal.reduce((total, season) => total + (season.games || 0), 0)
@@ -188,9 +188,9 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
                     : "—"}
                 </p>
               </div>
-              <div className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/20 p-3">
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Total Hours</p>
-                <p className="text-sm font-medium dark:text-white">
+              <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
+                <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Total Hours</p>
+                <p className="text-sm font-medium dark:text-paper">
                   {totalSteamHours > 0 ? new Intl.NumberFormat().format(totalSteamHours + 4000) : "—"}
                 </p>
               </div>

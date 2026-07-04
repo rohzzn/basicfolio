@@ -80,7 +80,7 @@ function ProseGitHubCalendar({ isDark }: { isDark: boolean }) {
         colorScheme={isDark ? 'dark' : 'light'}
         theme={{
           light: ['#e4e4e7', '#a1a1aa', '#71717a', '#52525b', '#3f3f46'],
-          dark: ['#3f3f46', '#52525b', '#71717a', '#a1a1aa', '#d4d4d8'],
+          dark: ['#262626', '#525252', '#737373', '#d4d4d4', '#F5F1EC'],
         }}
         blockSize={blockSize}
         blockMargin={CAL_MARGIN}
@@ -168,7 +168,7 @@ const Home: React.FC = () => {
       {/* Bio */}
       <div className="mb-10">
         <h1
-          className={`text-lg font-medium mb-5 dark:text-white ${isDesktop ? 'cursor-pointer hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors' : ''}`}
+          className={`text-lg font-medium mb-5 dark:text-paper ${isDesktop ? 'cursor-pointer hover:text-zinc-500 dark:hover:text-neutral-400 transition-colors' : ''}`}
           onClick={handleNameClick}
         >
           Rohan Pothuru
@@ -176,10 +176,10 @@ const Home: React.FC = () => {
 
         <div className="mb-6 flex items-start gap-6">
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-3">
+            <p className="text-sm text-zinc-500 dark:text-neutral-400 leading-relaxed mb-3">
               Software engineer and CS grad student who loves building things that matter. <span ref={ageRef} style={{ fontVariantNumeric: 'tabular-nums' }} /> years old, currently pursuing my Masters at the University of Cincinnati while working part-time in healthcare tech.
             </p>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            <p className="text-sm text-zinc-500 dark:text-neutral-400 leading-relaxed">
               When I&apos;m not coding, you&apos;ll find me taking photos, gaming with friends, or working on random design projects. I also spend way too much time tweaking my setup.
             </p>
           </div>
@@ -208,11 +208,11 @@ const Home: React.FC = () => {
           )}
         </div>
 
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-500 dark:text-neutral-400 leading-relaxed">
           See my{' '}
           <Link
             href="/resume"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            className="text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors"
           >
             resume
           </Link>
@@ -220,12 +220,12 @@ const Home: React.FC = () => {
           <span className="relative inline-block">
             <span
               onClick={copyEmail}
-              className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+              className="text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors cursor-pointer"
             >
               email me
             </span>
             {emailCopied && (
-              <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs px-2.5 py-1 rounded-md pointer-events-none z-10">
+              <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs px-2.5 py-1 rounded-md pointer-events-none z-10">
                 copied
               </span>
             )}
@@ -233,14 +233,14 @@ const Home: React.FC = () => {
           ,{' '}
           <Link
             href="/meet"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            className="text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors"
           >
             book a meet
           </Link>
           , or sign the{' '}
           <Link
             href="/guestbook"
-            className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            className="text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors"
           >
             guestbook
           </Link>

@@ -54,7 +54,7 @@ export default function HexBoard() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Interactive Board</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Interactive Board</p>
       <div className="flex flex-col sm:flex-row gap-6 items-start">
         <svg viewBox="0 0 420 310" className="w-full max-w-xs sm:max-w-sm flex-shrink-0" style={{ overflow: 'visible' }}>
           {positions.map((pos, i) => {
@@ -98,39 +98,39 @@ export default function HexBoard() {
 
         <div className="flex-1 w-full">
           {h && info ? (
-            <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
+            <div className="border border-zinc-200 dark:border-neutral-700 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl">{info.emoji}</span>
-                <span className="text-sm font-medium dark:text-white">{info.label}</span>
+                <span className="text-sm font-medium dark:text-paper">{info.label}</span>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">{info.note}</p>
+              <p className="text-xs text-zinc-500 dark:text-neutral-400 mb-2">{info.note}</p>
               {h.num ? (
                 <>
                   <div className="flex items-center gap-2 mt-3">
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">Rolls on</span>
-                    <span className={`text-sm font-bold ${h.num === 6 || h.num === 8 ? 'text-red-500' : 'dark:text-white'}`}>{h.num}</span>
+                    <span className="text-xs text-zinc-500 dark:text-neutral-400">Rolls on</span>
+                    <span className={`text-sm font-bold ${h.num === 6 || h.num === 8 ? 'text-red-500' : 'dark:text-paper'}`}>{h.num}</span>
                   </div>
                   <div className="mt-2">
                     <div className="flex gap-0.5 items-center">
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <div key={i} className={`h-1.5 w-4 rounded-sm ${i < (PROB[h.num!] ?? 0) ? (h.num === 6 || h.num === 8 ? 'bg-red-500' : 'bg-zinc-600 dark:bg-zinc-300') : 'bg-zinc-200 dark:bg-zinc-700'}`} />
+                        <div key={i} className={`h-1.5 w-4 rounded-sm ${i < (PROB[h.num!] ?? 0) ? (h.num === 6 || h.num === 8 ? 'bg-red-500' : 'bg-zinc-600 dark:bg-neutral-300') : 'bg-zinc-200 dark:bg-neutral-700'}`} />
                       ))}
-                      <span className="text-xs text-zinc-400 dark:text-zinc-400 ml-1.5">{((PROB[h.num!] ?? 0) / 36 * 100).toFixed(0)}% of rolls</span>
+                      <span className="text-xs text-zinc-400 dark:text-neutral-400 ml-1.5">{((PROB[h.num!] ?? 0) / 36 * 100).toFixed(0)}% of rolls</span>
                     </div>
                   </div>
                 </>
               ) : (
-                <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">No number token. Robber lives here at game start.</p>
+                <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-2">No number token. Robber lives here at game start.</p>
               )}
             </div>
           ) : (
-            <div className="border border-dashed border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
-              <p className="text-xs text-zinc-400 dark:text-zinc-400">Hover any tile to see its resource type, what it produces, and how often that number rolls.</p>
+            <div className="border border-dashed border-zinc-200 dark:border-neutral-700 rounded-lg p-4">
+              <p className="text-xs text-zinc-400 dark:text-neutral-400">Hover any tile to see its resource type, what it produces, and how often that number rolls.</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {(Object.entries(RESOURCES) as [ResKey, typeof RESOURCES[ResKey]][]).filter(([k]) => k !== 'desert').map(([key, val]) => (
                   <div key={key} className="flex items-center gap-1">
                     <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: val.fill }} />
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">{val.label}</span>
+                    <span className="text-xs text-zinc-500 dark:text-neutral-400">{val.label}</span>
                   </div>
                 ))}
               </div>

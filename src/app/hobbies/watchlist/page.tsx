@@ -116,9 +116,9 @@ const fetchWatchlistCatalog = async (): Promise<WatchlistCatalog> => {
 
 const PosterSkeleton: React.FC = () => (
   <div className="animate-pulse">
-    <div className="aspect-[2/3] rounded-sm bg-zinc-200 dark:bg-zinc-800" />
-    <div className="mt-3 h-3.5 w-4/5 rounded bg-zinc-200 dark:bg-zinc-800" />
-    <div className="mt-2 h-3 w-1/2 rounded bg-zinc-200 dark:bg-zinc-800" />
+    <div className="aspect-[2/3] rounded-sm bg-zinc-200 dark:bg-neutral-800" />
+    <div className="mt-3 h-3.5 w-4/5 rounded bg-zinc-200 dark:bg-neutral-800" />
+    <div className="mt-2 h-3 w-1/2 rounded bg-zinc-200 dark:bg-neutral-800" />
   </div>
 );
 
@@ -263,7 +263,7 @@ const MediaGrid: React.FC<MediaGridProps> = ({ groups, emptyLabel, isLoading }) 
   const hasEntries = groups.some((group) => group.entries.length > 0);
 
   if (!hasEntries) {
-    return <p className="pt-6 text-sm text-zinc-500 dark:text-zinc-400">{emptyLabel}</p>;
+    return <p className="pt-6 text-sm text-zinc-500 dark:text-neutral-400">{emptyLabel}</p>;
   }
 
   return (
@@ -271,7 +271,7 @@ const MediaGrid: React.FC<MediaGridProps> = ({ groups, emptyLabel, isLoading }) 
       {groups.map((group) => (
         <section key={group.key}>
           {group.yearLabel ? (
-            <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+            <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
               {group.yearLabel}
             </h3>
           ) : null}
@@ -285,7 +285,7 @@ const MediaGrid: React.FC<MediaGridProps> = ({ groups, emptyLabel, isLoading }) 
                 rel="noopener noreferrer"
                 className="group min-w-0"
               >
-                <div className="relative aspect-[2/3] overflow-hidden rounded-sm bg-zinc-200 transition-opacity group-hover:opacity-90 dark:bg-zinc-800">
+                <div className="relative aspect-[2/3] overflow-hidden rounded-sm bg-zinc-200 transition-opacity group-hover:opacity-90 dark:bg-neutral-800">
                   {entry.posterImageUrl ? (
                     <Image
                       src={entry.posterImageUrl}
@@ -296,22 +296,22 @@ const MediaGrid: React.FC<MediaGridProps> = ({ groups, emptyLabel, isLoading }) 
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center px-2 text-center text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                    <div className="flex h-full items-center justify-center px-2 text-center text-[10px] uppercase tracking-wider text-zinc-500 dark:text-neutral-400">
                       No cover
                     </div>
                   )}
                 </div>
 
                 <div className="mt-2">
-                  <p className="truncate text-xs font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-white">
+                  <p className="truncate text-xs font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">
                     {entry.title}
                   </p>
                   {entry.ratingValue !== null ? (
-                    <p className="mt-0.5 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-400">
+                    <p className="mt-0.5 text-[10px] tabular-nums text-zinc-400 dark:text-neutral-400">
                       {entry.ratingValue.toFixed(1)}/5
                     </p>
                   ) : (
-                    <p className="mt-0.5 text-[10px] text-zinc-400 dark:text-zinc-400">Unrated</p>
+                    <p className="mt-0.5 text-[10px] text-zinc-400 dark:text-neutral-400">Unrated</p>
                   )}
                 </div>
               </a>
@@ -417,13 +417,13 @@ const WatchlistPage: React.FC = () => {
   return (
     <div className="w-full min-w-0 max-w-5xl">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-medium dark:text-white">Watchlist</h2>
+        <h2 className="text-lg font-medium dark:text-paper">Watchlist</h2>
         <input
           type="text"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
           placeholder="Search…"
-          className="w-full max-w-[12rem] bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500 sm:text-right"
+          className="w-full max-w-[12rem] bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-paper dark:placeholder:text-neutral-500 sm:text-right"
         />
       </div>
 
@@ -443,8 +443,8 @@ const WatchlistPage: React.FC = () => {
                 }}
                 className={`text-sm capitalize transition-colors ${
                   isActive
-                    ? "font-medium text-zinc-900 dark:text-white"
-                    : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                    ? "font-medium text-zinc-900 dark:text-paper"
+                    : "text-zinc-500 hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                 }`}
               >
                 {filter.label.toLowerCase()}
@@ -462,8 +462,8 @@ const WatchlistPage: React.FC = () => {
             onClick={() => setSortOption(sortOption === "newest" ? "oldest" : "newest")}
             className={`text-sm capitalize transition-colors ${
               sortOption === "newest" || sortOption === "oldest"
-                ? "font-medium text-zinc-900 dark:text-white"
-                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                ? "font-medium text-zinc-900 dark:text-paper"
+                : "text-zinc-500 hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300"
             }`}
           >
             year {sortOption === "newest" ? "↓" : sortOption === "oldest" ? "↑" : ""}
@@ -475,8 +475,8 @@ const WatchlistPage: React.FC = () => {
             }
             className={`text-sm capitalize transition-colors ${
               sortOption === "highest-rated" || sortOption === "lowest-rated"
-                ? "font-medium text-zinc-900 dark:text-white"
-                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                ? "font-medium text-zinc-900 dark:text-paper"
+                : "text-zinc-500 hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300"
             }`}
           >
             rating {sortOption === "highest-rated" ? "↓" : sortOption === "lowest-rated" ? "↑" : ""}
@@ -485,7 +485,7 @@ const WatchlistPage: React.FC = () => {
       </div>
 
       {error ? (
-        <p className="py-16 text-sm text-zinc-500 dark:text-zinc-400">{error}</p>
+        <p className="py-16 text-sm text-zinc-500 dark:text-neutral-400">{error}</p>
       ) : (
         <MediaGrid
           groups={activeGroups}

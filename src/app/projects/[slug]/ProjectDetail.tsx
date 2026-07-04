@@ -53,12 +53,12 @@ function LinksSection({ links }: { links: Project["links"] }) {
     <div className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1 text-sm">
       {rest.map((link, index) => (
         <React.Fragment key={link.url}>
-          {index > 0 ? <span className="text-zinc-300 dark:text-zinc-500">·</span> : null}
+          {index > 0 ? <span className="text-zinc-300 dark:text-neutral-500">·</span> : null}
           <a
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
+            className="text-zinc-700 transition-colors hover:text-zinc-900 dark:text-neutral-300 dark:hover:text-paper"
           >
             {externalLinkLabel(link.url, link.label)}
           </a>
@@ -66,12 +66,12 @@ function LinksSection({ links }: { links: Project["links"] }) {
       ))}
       {gh ? (
         <>
-          {rest.length > 0 ? <span className="text-zinc-300 dark:text-zinc-500">·</span> : null}
+          {rest.length > 0 ? <span className="text-zinc-300 dark:text-neutral-500">·</span> : null}
           <a
             href={gh.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+            className="inline-flex items-center gap-1 text-zinc-500 transition-colors hover:text-zinc-800 dark:text-neutral-400 dark:hover:text-neutral-200"
           >
             Source
             <Github className="h-3.5 w-3.5" aria-hidden />
@@ -88,7 +88,7 @@ function StoryBlock({ text }: { text: string }) {
   return (
     <div className="mt-6 space-y-4">
       {paragraphs.map((paragraph, index) => (
-        <p key={index} className="text-sm leading-[1.75] text-zinc-700 dark:text-zinc-300">
+        <p key={index} className="text-sm leading-[1.75] text-zinc-700 dark:text-neutral-300">
           {paragraph}
         </p>
       ))}
@@ -106,10 +106,10 @@ export default function ProjectDetail({ project: p }: { project: Project }) {
     <article className="pb-12">
       <div className="max-w-prose">
         <header>
-          <h1 className="text-lg font-medium dark:text-white">{p.title}</h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{p.description}</p>
+          <h1 className="text-lg font-medium dark:text-paper">{p.title}</h1>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">{p.description}</p>
           {techLine || meta ? (
-            <p className="mt-3 text-xs text-zinc-400 dark:text-zinc-400">
+            <p className="mt-3 text-xs text-zinc-400 dark:text-neutral-400">
               {[techLine, meta].filter(Boolean).join(" · ")}
             </p>
           ) : null}
@@ -125,7 +125,7 @@ export default function ProjectDetail({ project: p }: { project: Project }) {
 
       <Link
         href="/projects"
-        className="mt-10 inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+        className="mt-10 inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-800 dark:text-neutral-400 dark:hover:text-neutral-200"
       >
         <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
         Projects

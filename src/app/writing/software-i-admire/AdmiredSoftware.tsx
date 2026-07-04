@@ -155,8 +155,8 @@ export default function AdmiredSoftware() {
             onClick={() => setFilter(l)}
             className={`px-3 py-1.5 text-xs rounded-md transition-colors font-mono ${
               filter === l
-                ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900'
+                : 'bg-zinc-100 dark:bg-neutral-800 text-zinc-600 dark:text-neutral-400 hover:bg-zinc-200 dark:hover:bg-neutral-700'
             }`}
           >
             {l === 'all' ? `all (${SOFTWARE.length})` : `${l} (${counts[l]})`}
@@ -171,33 +171,33 @@ export default function AdmiredSoftware() {
           return (
             <div
               key={sw.name}
-              className="border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hidden"
+              className="border border-zinc-100 dark:border-neutral-800 rounded-lg overflow-hidden"
             >
               <button
-                className="w-full flex items-center justify-between px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors text-left"
+                className="w-full flex items-center justify-between px-4 py-3 hover:bg-zinc-50 dark:hover:bg-neutral-800/40 transition-colors text-left"
                 onClick={() => setExpanded(isOpen ? null : sw.name)}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 flex-shrink-0">
+                  <span className="text-sm font-medium text-zinc-800 dark:text-neutral-200 flex-shrink-0">
                     {sw.name}
                   </span>
                   <span className={`text-xs px-2 py-0.5 rounded font-mono flex-shrink-0 ${LANG_COLORS[sw.lang]}`}>
                     {sw.lang}
                   </span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-400 hidden sm:block truncate">
+                  <span className="text-xs text-zinc-400 dark:text-neutral-400 hidden sm:block truncate">
                     {sw.tagline}
                   </span>
                 </div>
-                <span className="text-xs text-zinc-400 dark:text-zinc-400 flex-shrink-0 ml-3">
+                <span className="text-xs text-zinc-400 dark:text-neutral-400 flex-shrink-0 ml-3">
                   {sw.year}
                 </span>
               </button>
               {isOpen && (
-                <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800">
-                  <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3 mb-2 uppercase tracking-wider font-medium">
+                <div className="px-4 pb-4 border-t border-zinc-100 dark:border-neutral-800">
+                  <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-3 mb-2 uppercase tracking-wider font-medium">
                     {sw.category}
                   </p>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm text-zinc-600 dark:text-neutral-400 leading-relaxed">
                     {sw.reason}
                   </p>
                 </div>
@@ -207,7 +207,7 @@ export default function AdmiredSoftware() {
         })}
       </div>
 
-      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-4">
+      <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-4">
         {shown.length} of {SOFTWARE.length} · click any row to expand
       </p>
     </div>

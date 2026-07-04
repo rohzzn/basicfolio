@@ -27,12 +27,12 @@ export default function TrafficGraph() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Concurrent Users (millions)</p>
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-        <div className="flex border-b border-zinc-200 dark:border-zinc-800">
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Concurrent Users (millions)</p>
+      <div className="border border-zinc-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+        <div className="flex border-b border-zinc-200 dark:border-neutral-800">
           {(['normal', 'launch'] as const).map(v => (
             <button key={v} onClick={() => setView(v)}
-              className={`flex-1 py-2.5 text-xs font-medium transition-colors ${view === v ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'}`}>
+              className={`flex-1 py-2.5 text-xs font-medium transition-colors ${view === v ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900' : 'text-zinc-500 dark:text-neutral-400 hover:bg-zinc-50 dark:hover:bg-neutral-800/50'}`}>
               {v === 'normal' ? 'Normal day' : 'Starfield launch day'}
             </button>
           ))}
@@ -42,21 +42,21 @@ export default function TrafficGraph() {
             {data.map((v, i) => (
               <div key={i} className="flex flex-col items-center flex-1 h-full justify-end group relative">
                 <div
-                  className={`w-full rounded-t-sm transition-all duration-500 ease-out ${view === 'launch' && (i === 10 || i === 11) ? 'bg-red-500' : view === 'launch' && i >= 9 && i <= 15 ? 'bg-amber-500 dark:bg-amber-400' : 'bg-zinc-300 dark:bg-zinc-600'}`}
+                  className={`w-full rounded-t-sm transition-all duration-500 ease-out ${view === 'launch' && (i === 10 || i === 11) ? 'bg-red-500' : view === 'launch' && i >= 9 && i <= 15 ? 'bg-amber-500 dark:bg-amber-400' : 'bg-zinc-300 dark:bg-neutral-600'}`}
                   style={{ height: `${(v / 100) * 120}px` }}
                 />
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:block bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap z-10">
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:block bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap z-10">
                   {(v / 10).toFixed(1)}M
                 </div>
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-[9px] text-zinc-400 dark:text-zinc-400">
+          <div className="flex justify-between text-[9px] text-zinc-400 dark:text-neutral-400">
             <span>12am</span><span>6am</span><span>12pm</span><span>6pm</span><span>12am</span>
           </div>
           <div className="mt-3 flex items-center justify-between">
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Peak: <span className="font-medium dark:text-white">{(peak / 10).toFixed(1)}M users</span>
+            <p className="text-xs text-zinc-500 dark:text-neutral-400">
+              Peak: <span className="font-medium dark:text-paper">{(peak / 10).toFixed(1)}M users</span>
             </p>
             {view === 'launch' && (
               <span className="text-xs text-red-500">Peak at game launch (10–11am)</span>

@@ -104,9 +104,9 @@ const bookmarks: GearItem[] = [
 function GearLink({ item }: { item: GearItem }) {
   const row = (
     <div className="flex items-baseline justify-between gap-3 py-1.5">
-      <span className="min-w-0 text-sm text-zinc-800 dark:text-zinc-200">{item.name}</span>
+      <span className="min-w-0 text-sm text-zinc-800 dark:text-neutral-200">{item.name}</span>
       {item.description ? (
-        <span className="shrink-0 text-right text-xs text-zinc-500 dark:text-zinc-400">{item.description}</span>
+        <span className="shrink-0 text-right text-xs text-zinc-500 dark:text-neutral-400">{item.description}</span>
       ) : null}
     </div>
   );
@@ -125,7 +125,7 @@ function GearLink({ item }: { item: GearItem }) {
 function GearGroup({ label, items }: { label: string; items: GearItem[] }) {
   return (
     <div>
-      <h4 className="mb-2 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+      <h4 className="mb-2 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
         {label}
       </h4>
       <div className="space-y-0.5">
@@ -141,8 +141,8 @@ function SectionBlock({ title, subtitle, children }: { title: string; subtitle?:
   return (
     <section>
       <div className="mb-4">
-        <h3 className="text-sm font-medium text-zinc-900 dark:text-white">{title}</h3>
-        {subtitle ? <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{subtitle}</p> : null}
+        <h3 className="text-sm font-medium text-zinc-900 dark:text-paper">{title}</h3>
+        {subtitle ? <p className="mt-1 text-xs text-zinc-500 dark:text-neutral-400">{subtitle}</p> : null}
       </div>
       {children}
     </section>
@@ -153,8 +153,8 @@ export default function UsesPage() {
   return (
     <div className="w-full min-w-0 max-w-6xl">
       <header className="mb-6 max-w-xl">
-        <h2 className="text-lg font-medium dark:text-white">Setup</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-lg font-medium dark:text-paper">Setup</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">
           The desk, the tower, and the software that keeps me going.
         </p>
       </header>
@@ -163,7 +163,7 @@ export default function UsesPage() {
         {SETUP_PHOTOS.map((photo, i) => (
           <div
             key={photo.src}
-            className="relative aspect-[4/3] overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800"
+            className="relative aspect-[4/3] overflow-hidden rounded-lg bg-zinc-100 dark:bg-neutral-800"
           >
             <Image
               src={photo.src}
@@ -179,7 +179,7 @@ export default function UsesPage() {
 
       <div className="space-y-12">
         <div>
-          <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400 dark:text-zinc-400">
+          <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400 dark:text-neutral-400">
             Hardware
           </p>
 
@@ -193,16 +193,16 @@ export default function UsesPage() {
             </SectionBlock>
 
             <SectionBlock title="PC build" subtitle="The tower on the floor.">
-              <div className="rounded-lg border border-zinc-100 px-4 py-2 dark:border-zinc-800">
+              <div className="rounded-lg border border-zinc-100 px-4 py-2 dark:border-neutral-800">
                 {pcSpecs.map((item) => (
                   <div
                     key={item.name}
-                    className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-2.5 last:border-0 dark:border-zinc-800/80"
+                    className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-2.5 last:border-0 dark:border-neutral-800/80"
                   >
-                    <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+                    <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
                       {item.name}
                     </span>
-                    <span className="text-right text-sm text-zinc-700 dark:text-zinc-300">{item.description}</span>
+                    <span className="text-right text-sm text-zinc-700 dark:text-neutral-300">{item.description}</span>
                   </div>
                 ))}
               </div>
@@ -211,7 +211,7 @@ export default function UsesPage() {
         </div>
 
         <div>
-          <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400 dark:text-zinc-400">
+          <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400 dark:text-neutral-400">
             Software
           </p>
 

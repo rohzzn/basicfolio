@@ -48,9 +48,9 @@ export default function ProjectStats() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">The {total} Projects</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">The {total} Projects</p>
 
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden mb-4">
+      <div className="border border-zinc-200 dark:border-neutral-800 rounded-lg overflow-hidden mb-4">
         <div className="p-4">
           <div className="flex h-3 rounded-full overflow-hidden mb-4 gap-0.5">
             {CATEGORIES.map(c => (
@@ -61,18 +61,18 @@ export default function ProjectStats() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {CATEGORIES.map(c => (
               <button key={c.label} onClick={() => setActive(active === c.label ? null : c.label)}
-                className={`text-left p-3 rounded-md border transition-colors ${active === c.label ? 'border-zinc-300 dark:border-zinc-500 bg-zinc-50 dark:bg-zinc-800/50' : 'border-zinc-100 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700'}`}>
+                className={`text-left p-3 rounded-md border transition-colors ${active === c.label ? 'border-zinc-300 dark:border-neutral-500 bg-zinc-50 dark:bg-neutral-800/50' : 'border-zinc-100 dark:border-neutral-800 hover:border-zinc-200 dark:hover:border-neutral-700'}`}>
                 <div className="flex items-center gap-1.5 mb-1">
                   <div className={`w-2 h-2 rounded-full ${c.color}`} />
-                  <span className="text-xs text-zinc-500 dark:text-zinc-400">{c.label}</span>
+                  <span className="text-xs text-zinc-500 dark:text-neutral-400">{c.label}</span>
                 </div>
-                <p className="text-xl font-bold dark:text-white">{c.count}</p>
+                <p className="text-xl font-bold dark:text-paper">{c.count}</p>
               </button>
             ))}
           </div>
           {active && (
-            <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-              <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-2">Examples</p>
+            <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-neutral-800">
+              <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-2">Examples</p>
               <div className="flex flex-wrap gap-1.5">
                 {CATEGORIES.find(c => c.label === active)?.examples.map(e => (
                   <span key={e} className={`text-xs px-2 py-0.5 rounded ${CATEGORIES.find(c => c.label === active)!.light}`}>{e}</span>
@@ -83,16 +83,16 @@ export default function ProjectStats() {
         </div>
       </div>
 
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Projects that got traction</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Projects that got traction</p>
       <div className="space-y-1.5">
         {NOTABLE.map(n => (
           <a key={n.name} href={n.url} target="_blank" rel="noopener noreferrer"
-            className="group flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
+            className="group flex items-center justify-between py-2 border-b border-zinc-100 dark:border-neutral-800/60 last:border-0">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{n.name}</span>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-400">{n.type}</span>
+              <span className="text-xs font-medium text-zinc-700 dark:text-neutral-300 group-hover:text-zinc-900 dark:group-hover:text-paper transition-colors">{n.name}</span>
+              <span className="text-[10px] text-zinc-400 dark:text-neutral-400">{n.type}</span>
             </div>
-            <span className="text-xs text-zinc-400 dark:text-zinc-400 flex-shrink-0">{n.metric}</span>
+            <span className="text-xs text-zinc-400 dark:text-neutral-400 flex-shrink-0">{n.metric}</span>
           </a>
         ))}
       </div>

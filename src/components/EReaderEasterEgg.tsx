@@ -117,12 +117,12 @@ export default function EReaderEasterEgg() {
 
       {showToast && (
         <div
-          className="easteregg-toast fixed left-1/2 top-4 z-[80] w-[92vw] max-w-md -translate-x-1/2 rounded-xl border border-zinc-200/70 bg-zinc-50/90 px-4 py-3 text-sm text-zinc-800 shadow-lg backdrop-blur-md dark:border-zinc-800/70 dark:bg-zinc-900/80 dark:text-zinc-200"
+          className="easteregg-toast fixed left-1/2 top-4 z-[80] w-[92vw] max-w-md -translate-x-1/2 rounded-xl border border-zinc-200/70 bg-zinc-50/90 px-4 py-3 text-sm text-zinc-800 shadow-lg backdrop-blur-md dark:border-neutral-800/70 dark:bg-neutral-900/80 dark:text-neutral-200"
           role="status"
           aria-live="polite"
         >
           <div className="font-medium">You found the easter egg.</div>
-          <div className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">
+          <div className="mt-0.5 text-xs text-zinc-600 dark:text-neutral-400">
             E‑reader mode enabled. Press <span className="font-medium">Esc</span> to
             turn it off.
           </div>

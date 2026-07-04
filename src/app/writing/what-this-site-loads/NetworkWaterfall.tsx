@@ -231,15 +231,15 @@ const R_COLORS: Record<Resource['type'], { bar: string; dot: string; badge: stri
   css:      { bar: 'bg-violet-400 dark:bg-violet-500',dot: 'bg-violet-400', badge: 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400' },
   font:     { bar: 'bg-amber-400 dark:bg-amber-500',  dot: 'bg-amber-400',  badge: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' },
   script:   { bar: 'bg-yellow-400 dark:bg-yellow-500',dot: 'bg-yellow-400', badge: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-600' },
-  api:      { bar: 'bg-green-400 dark:bg-green-500',  dot: 'bg-green-400',  badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-zinc-200' },
+  api:      { bar: 'bg-green-400 dark:bg-green-500',  dot: 'bg-green-400',  badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-neutral-200' },
 };
 
 const C_COLORS: Record<Category, { dot: string; badge: string }> = {
   gaming:        { dot: 'bg-violet-400',  badge: 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400' },
-  activity:      { dot: 'bg-green-400',   badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-zinc-200' },
+  activity:      { dot: 'bg-green-400',   badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-neutral-200' },
   entertainment: { dot: 'bg-amber-400',   badge: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' },
   social:        { dot: 'bg-blue-400',    badge: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' },
-  infra:         { dot: 'bg-zinc-400',    badge: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400' },
+  infra:         { dot: 'bg-zinc-400',    badge: 'bg-zinc-100 dark:bg-neutral-800 text-zinc-600 dark:text-neutral-400' },
 };
 
 type Tab = 'waterfall' | 'apis';
@@ -278,15 +278,15 @@ export default function NetworkWaterfall() {
     <div className="my-8 not-prose">
 
       {/* Tab bar */}
-      <div className="flex border-b border-zinc-100 dark:border-zinc-800 mb-6">
+      <div className="flex border-b border-zinc-100 dark:border-neutral-800 mb-6">
         {([['waterfall', 'Page Load'], ['apis', `API Integrations (${APIS.length})`]] as [Tab, string][]).map(([t, label]) => (
           <button
             key={t}
             onClick={() => switchTab(t)}
             className={`text-xs px-4 py-2.5 -mb-px border-b-2 transition-colors ${
               tab === t
-                ? 'border-zinc-800 dark:border-zinc-200 text-zinc-900 dark:text-white font-medium'
-                : 'border-transparent text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                ? 'border-zinc-800 dark:border-neutral-200 text-zinc-900 dark:text-paper font-medium'
+                : 'border-transparent text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'
             }`}
           >
             {label}
@@ -301,16 +301,16 @@ export default function NetworkWaterfall() {
             {(Object.entries(R_COLORS) as [Resource['type'], typeof R_COLORS[Resource['type']]][]).map(([type, c]) => (
               <div key={type} className="flex items-center gap-1.5">
                 <div className={`w-2 h-2 rounded-full ${c.dot}`} />
-                <span className="text-xs text-zinc-500 dark:text-zinc-400">{type}</span>
+                <span className="text-xs text-zinc-500 dark:text-neutral-400">{type}</span>
               </div>
             ))}
           </div>
 
-          <div className="border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hidden">
+          <div className="border border-zinc-100 dark:border-neutral-800 rounded-lg overflow-hidden">
             {/* Time axis */}
-            <div className="flex border-b border-zinc-100 dark:border-zinc-800 px-4 py-2 bg-zinc-50/60 dark:bg-zinc-800/20">
+            <div className="flex border-b border-zinc-100 dark:border-neutral-800 px-4 py-2 bg-zinc-50/60 dark:bg-neutral-800/20">
               <div className="w-36 sm:w-44 flex-shrink-0" />
-              <div className="flex-1 flex justify-between text-xs font-mono text-zinc-400 dark:text-zinc-400">
+              <div className="flex-1 flex justify-between text-xs font-mono text-zinc-400 dark:text-neutral-400">
                 <span>0</span>
                 <span>{Math.round(TOTAL_MS / 3)}ms</span>
                 <span>{Math.round((TOTAL_MS / 3) * 2)}ms</span>
@@ -329,14 +329,14 @@ export default function NetworkWaterfall() {
                   key={r.name}
                   className={`w-full flex items-center px-4 py-2.5 gap-3 text-left transition-colors ${
                     isAct
-                      ? 'bg-zinc-50 dark:bg-zinc-800/60'
-                      : 'hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30'
-                  } ${i < RESOURCES.length - 1 ? 'border-b border-zinc-100 dark:border-zinc-800' : ''}`}
+                      ? 'bg-zinc-50 dark:bg-neutral-800/60'
+                      : 'hover:bg-zinc-50/60 dark:hover:bg-neutral-800/30'
+                  } ${i < RESOURCES.length - 1 ? 'border-b border-zinc-100 dark:border-neutral-800' : ''}`}
                   onClick={() => setActiveRes(isAct ? null : r.name)}
                 >
                   <div className="w-36 sm:w-44 flex-shrink-0 flex items-center gap-2 min-w-0">
                     <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.dot}`} />
-                    <span className="text-xs font-mono text-zinc-700 dark:text-zinc-300 truncate">{r.name}</span>
+                    <span className="text-xs font-mono text-zinc-700 dark:text-neutral-300 truncate">{r.name}</span>
                   </div>
                   <div className="flex-1 relative h-4">
                     <div
@@ -351,23 +351,23 @@ export default function NetworkWaterfall() {
                     />
                   </div>
                   <div className="w-16 flex-shrink-0 text-right">
-                    <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400">{r.size.toFixed(1)}KB</span>
+                    <span className="text-xs font-mono text-zinc-400 dark:text-neutral-400">{r.size.toFixed(1)}KB</span>
                   </div>
                 </button>
               );
             })}
 
-            <div className="flex items-center px-4 py-2.5 gap-3 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/40">
+            <div className="flex items-center px-4 py-2.5 gap-3 border-t border-zinc-200 dark:border-neutral-700 bg-zinc-50 dark:bg-neutral-800/40">
               <div className="w-36 sm:w-44 flex-shrink-0">
-                <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Total</span>
+                <span className="text-xs font-medium text-zinc-600 dark:text-neutral-400">Total</span>
               </div>
               <div className="flex-1">
-                <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400">
+                <span className="text-xs font-mono text-zinc-400 dark:text-neutral-400">
                   {RESOURCES.length} requests · {totalTime}ms finish
                 </span>
               </div>
               <div className="w-16 flex-shrink-0 text-right">
-                <span className="text-xs font-medium font-mono text-zinc-700 dark:text-zinc-300">
+                <span className="text-xs font-medium font-mono text-zinc-700 dark:text-neutral-300">
                   {totalSize.toFixed(1)}KB
                 </span>
               </div>
@@ -375,27 +375,27 @@ export default function NetworkWaterfall() {
           </div>
 
           {activeResItem && (
-            <div className="mt-3 border border-zinc-100 dark:border-zinc-800 rounded-lg p-4">
+            <div className="mt-3 border border-zinc-100 dark:border-neutral-800 rounded-lg p-4">
               <div className="flex items-center justify-between gap-3 mb-2">
-                <p className="text-xs font-medium text-zinc-800 dark:text-zinc-200">{activeResItem.name}</p>
+                <p className="text-xs font-medium text-zinc-800 dark:text-neutral-200">{activeResItem.name}</p>
                 <span className={`text-xs px-2 py-0.5 rounded flex-shrink-0 ${R_COLORS[activeResItem.type].badge}`}>
                   {activeResItem.type}
                 </span>
               </div>
-              <p className="text-xs font-mono text-zinc-400 dark:text-zinc-400 mb-3 break-all">{activeResItem.url}</p>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">{activeResItem.note}</p>
-              <div className="flex gap-6 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+              <p className="text-xs font-mono text-zinc-400 dark:text-neutral-400 mb-3 break-all">{activeResItem.url}</p>
+              <p className="text-xs text-zinc-600 dark:text-neutral-400 leading-relaxed">{activeResItem.note}</p>
+              <div className="flex gap-6 mt-3 pt-3 border-t border-zinc-100 dark:border-neutral-800">
                 {[['Start', `${activeResItem.start}ms`], ['Duration', `${activeResItem.duration}ms`], ['Size', `${activeResItem.size.toFixed(1)}KB`]].map(([label, val]) => (
                   <div key={label}>
-                    <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">{label}</p>
-                    <p className="text-xs font-mono text-zinc-700 dark:text-zinc-300">{val}</p>
+                    <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-0.5">{label}</p>
+                    <p className="text-xs font-mono text-zinc-700 dark:text-neutral-300">{val}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3">
+          <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-3">
             Click any row for details · sizes are compressed transfer size · timings from fast broadband
           </p>
         </>
@@ -411,8 +411,8 @@ export default function NetworkWaterfall() {
                 onClick={() => setCatFilter(c)}
                 className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
                   catFilter === c
-                    ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                    ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900'
+                    : 'bg-zinc-100 dark:bg-neutral-800 text-zinc-600 dark:text-neutral-400 hover:bg-zinc-200 dark:hover:bg-neutral-700'
                 }`}
               >
                 {c === 'all' ? `all (${APIS.length})` : `${c} (${catCounts[c]})`}
@@ -427,59 +427,59 @@ export default function NetworkWaterfall() {
               return (
                 <div
                   key={api.service}
-                  className="border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hidden"
+                  className="border border-zinc-100 dark:border-neutral-800 rounded-lg overflow-hidden"
                 >
                   <button
                     className={`w-full flex items-center justify-between px-4 py-3 text-left transition-colors ${
                       isAct
-                        ? 'bg-zinc-50 dark:bg-zinc-800/60'
-                        : 'hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30'
+                        ? 'bg-zinc-50 dark:bg-neutral-800/60'
+                        : 'hover:bg-zinc-50/60 dark:hover:bg-neutral-800/30'
                     }`}
                     onClick={() => setActiveApi(isAct ? null : api.service)}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`w-2 h-2 rounded-full flex-shrink-0 ${cc.dot}`} />
-                      <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 flex-shrink-0">
+                      <span className="text-sm font-medium text-zinc-800 dark:text-neutral-200 flex-shrink-0">
                         {api.service}
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded flex-shrink-0 hidden sm:inline ${cc.badge}`}>
                         {api.category}
                       </span>
-                      <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400 truncate hidden md:block">
+                      <span className="text-xs font-mono text-zinc-400 dark:text-neutral-400 truncate hidden md:block">
                         {api.internalRoute.split(' · ')[0]}
                       </span>
                     </div>
                     <div className="flex items-center gap-4 flex-shrink-0 ml-3">
-                      <span className="text-xs text-zinc-400 dark:text-zinc-400 hidden sm:block">
+                      <span className="text-xs text-zinc-400 dark:text-neutral-400 hidden sm:block">
                         {api.usedOn}
                       </span>
-                      <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400 whitespace-nowrap">
+                      <span className="text-xs font-mono text-zinc-400 dark:text-neutral-400 whitespace-nowrap">
                         {api.cache}
                       </span>
                     </div>
                   </button>
 
                   {isAct && (
-                    <div className="px-4 pb-4 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <div className="px-4 pb-4 pt-2 border-t border-zinc-100 dark:border-neutral-800">
                       <div className="flex flex-wrap gap-x-6 gap-y-3 mb-3">
                         <div>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">Route</p>
-                          <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{api.internalRoute}</p>
+                          <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-0.5">Route</p>
+                          <p className="text-xs font-mono text-zinc-600 dark:text-neutral-400">{api.internalRoute}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">Upstream</p>
-                          <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{api.upstream}</p>
+                          <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-0.5">Upstream</p>
+                          <p className="text-xs font-mono text-zinc-600 dark:text-neutral-400">{api.upstream}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">Cache</p>
-                          <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{api.cache}</p>
+                          <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-0.5">Cache</p>
+                          <p className="text-xs font-mono text-zinc-600 dark:text-neutral-400">{api.cache}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">Used on</p>
-                          <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{api.usedOn}</p>
+                          <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-0.5">Used on</p>
+                          <p className="text-xs font-mono text-zinc-600 dark:text-neutral-400">{api.usedOn}</p>
                         </div>
                       </div>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">{api.note}</p>
+                      <p className="text-sm text-zinc-600 dark:text-neutral-400 leading-relaxed">{api.note}</p>
                     </div>
                   )}
                 </div>
@@ -487,7 +487,7 @@ export default function NetworkWaterfall() {
             })}
           </div>
 
-          <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-4">
+          <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-4">
             {filteredApis.length} of {APIS.length} integrations · click any row to expand
           </p>
         </>

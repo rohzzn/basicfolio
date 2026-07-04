@@ -238,7 +238,7 @@ function FramesHeroImageStack({
       />
       {post.media_type === "VIDEO" && (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-md dark:bg-zinc-900/90 dark:text-zinc-100">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-md dark:bg-neutral-900/90 dark:text-neutral-100">
             <span className="ml-0.5 text-xs" aria-hidden>
               ▶
             </span>
@@ -718,9 +718,9 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                 <button
                   type="button"
                   onClick={() => setLightbox(activePost)}
-                  className="group relative mx-auto block w-full max-w-sm outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] md:mx-0 dark:focus-visible:ring-zinc-500"
+                  className="group relative mx-auto block w-full max-w-sm outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] md:mx-0 dark:focus-visible:ring-neutral-500"
                 >
-                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-zinc-200/90 shadow-md ring-1 ring-zinc-200/90 dark:bg-zinc-800/70 dark:ring-zinc-700/60">
+                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-zinc-200/90 shadow-md ring-1 ring-zinc-200/90 dark:bg-neutral-800/70 dark:ring-neutral-700/60">
                     <FramesHeroImageStack
                       duplex={heroDuplexForUi}
                       altA={heroAltA ? heroAltA.slice(0, 120) : "Photo"}
@@ -788,9 +788,9 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                           if (!postForLightbox) return;
                           centerRenderedThumbnailThen(ri, () => setLightbox(postForLightbox));
                         }}
-                        className="group block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:focus-visible:ring-zinc-500"
+                        className="group block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:focus-visible:ring-neutral-500"
                       >
-                        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-zinc-200/90 shadow-sm ring-1 ring-zinc-200/90 dark:bg-zinc-800/70 dark:ring-zinc-700/60">
+                        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-zinc-200/90 shadow-sm ring-1 ring-zinc-200/90 dark:bg-neutral-800/70 dark:ring-neutral-700/60">
                           <Image
                             src={imgUrl}
                             alt={alt}
@@ -803,7 +803,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
 
                           {post.media_type === "VIDEO" && (
                             <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/88 text-[10px] text-zinc-900 shadow-md dark:bg-zinc-900/88 dark:text-zinc-100">
+                              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/88 text-[10px] text-zinc-900 shadow-md dark:bg-neutral-900/88 dark:text-neutral-100">
                                 <span className="ml-px" aria-hidden>
                                   ▶
                                 </span>
@@ -831,7 +831,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
             </div>
 
               <p
-                className="max-w-prose text-left text-sm font-normal lowercase leading-snug tracking-tight text-zinc-700 transition-opacity duration-200 ease-out motion-reduce:transition-none dark:text-zinc-300"
+                className="max-w-prose text-left text-sm font-normal lowercase leading-snug tracking-tight text-zinc-700 transition-opacity duration-200 ease-out motion-reduce:transition-none dark:text-neutral-300"
                 aria-live="polite"
               >
                 {activeCaption ?? "\u00a0"}
@@ -908,26 +908,26 @@ function SkeletonStrip() {
     <div className="flex w-full min-w-0 flex-col items-stretch gap-4 animate-pulse">
       <div className="flex min-w-0 w-full flex-col items-center gap-5 md:flex-row md:items-start md:gap-4">
         <div className="mx-auto w-full max-w-sm shrink-0 md:mx-0 md:max-w-none md:w-[min(100%,24rem)]">
-          <div className="aspect-[3/4] w-full rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+          <div className="aspect-[3/4] w-full rounded-2xl bg-zinc-200 dark:bg-neutral-800" />
         </div>
         {stripHorizontal ? (
           <div className="flex h-[5.75rem] w-full min-w-0 flex-row gap-2 overflow-hidden px-0 py-0.5 sm:h-[6rem]">
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="aspect-[3/4] h-full w-[4.25rem] shrink-0 rounded-xl bg-zinc-200 dark:bg-zinc-800 sm:w-[4.75rem]"
+                className="aspect-[3/4] h-full w-[4.25rem] shrink-0 rounded-xl bg-zinc-200 dark:bg-neutral-800 sm:w-[4.75rem]"
               />
             ))}
           </div>
         ) : (
           <div className="flex h-[min(28rem,min(52vh,32rem))] w-[4.25rem] shrink-0 flex-col gap-2 overflow-hidden px-0.5 sm:h-[min(32rem,72vh)] sm:w-[4.75rem]">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="aspect-[3/4] w-full shrink-0 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+              <div key={i} className="aspect-[3/4] w-full shrink-0 rounded-xl bg-zinc-200 dark:bg-neutral-800" />
             ))}
           </div>
         )}
       </div>
-      <div className="h-14 max-w-prose rounded-md bg-zinc-200 dark:bg-zinc-800" />
+      <div className="h-14 max-w-prose rounded-md bg-zinc-200 dark:bg-neutral-800" />
     </div>
   );
 }
@@ -955,8 +955,8 @@ export default function SeenPage() {
   return (
     <div className="w-full min-w-0 max-w-[min(100%,75ch)]">
       <div className="mb-6 space-y-3">
-        <h2 className="text-lg font-medium dark:text-white">Seen</h2>
-        <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-lg font-medium dark:text-paper">Seen</h2>
+        <p className="text-sm leading-relaxed text-zinc-500 dark:text-neutral-400">
           Photos worth keeping.
         </p>
       </div>
@@ -964,33 +964,33 @@ export default function SeenPage() {
       {loading ? (
         <SkeletonStrip />
       ) : error ? (
-        <div className="rounded-xl border border-zinc-200/90 bg-zinc-50/60 px-4 py-8 dark:border-zinc-800/80 dark:bg-zinc-900/25">
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">{error}</p>
+        <div className="rounded-xl border border-zinc-200/90 bg-zinc-50/60 px-4 py-8 dark:border-neutral-800/80 dark:bg-neutral-900/25">
+          <p className="text-sm text-zinc-600 dark:text-neutral-300">{error}</p>
           {errorCode === "token_expired" ? (
-            <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+            <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-neutral-400">
               Your Instagram access token expired. Generate a new long-lived token in{" "}
               <a
                 href="https://developers.facebook.com/apps/"
-                className="underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200"
+                className="underline underline-offset-2 hover:text-zinc-700 dark:hover:text-neutral-200"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Meta for Developers
               </a>
               , then update{" "}
-              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-neutral-800 dark:text-neutral-300">
                 INSTAGRAM_ACCESS_TOKEN
               </code>{" "}
               locally and in your deployment env. Run{" "}
-              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-neutral-800 dark:text-neutral-300">
                 node scripts/refresh-instagram-token.mjs
               </code>{" "}
               to refresh before expiry next time.
             </p>
           ) : (
-            <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+            <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-neutral-400">
               Add{" "}
-              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+              <code className="rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-700 dark:bg-neutral-800 dark:text-neutral-300">
                 INSTAGRAM_ACCESS_TOKEN
               </code>{" "}
               to your environment to load this gallery.
@@ -998,7 +998,7 @@ export default function SeenPage() {
           )}
         </div>
       ) : posts.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-200/90 py-12 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+        <p className="rounded-xl border border-dashed border-zinc-200/90 py-12 text-sm text-zinc-500 dark:border-neutral-800 dark:text-neutral-400">
           No photos yet.
         </p>
       ) : (

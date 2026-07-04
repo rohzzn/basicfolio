@@ -34,7 +34,7 @@ function Toggle({
   onChange: (next: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 text-[11px] text-zinc-600 dark:text-zinc-400">
+    <div className="flex items-center justify-between gap-3 text-[11px] text-zinc-600 dark:text-neutral-400">
       <span>{label}</span>
       <button
         type="button"
@@ -43,7 +43,7 @@ function Toggle({
         aria-label={label}
         onClick={() => onChange(!checked)}
         className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 ${
-          checked ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'
+          checked ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-neutral-700'
         }`}
       >
         <span
@@ -334,14 +334,14 @@ export function BeamDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Interactive Preview</p>
       <div className={`${CARD} overflow-hidden`}>
-        <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-100 dark:border-zinc-800">
+        <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-50 dark:bg-neutral-800/60 border-b border-zinc-100 dark:border-neutral-800">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-md bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center">
+            <div className="w-5 h-5 rounded-md bg-zinc-900 dark:bg-neutral-100 flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
             </div>
-            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Beam</span>
+            <span className="text-xs font-semibold text-zinc-700 dark:text-neutral-300">Beam</span>
           </div>
-          <div className="flex rounded-lg bg-zinc-100 dark:bg-zinc-900 p-0.5">
+          <div className="flex rounded-lg bg-zinc-100 dark:bg-neutral-900 p-0.5">
             {(['record', 'edit'] as Phase[]).map(tab => (
               <button
                 key={tab}
@@ -350,8 +350,8 @@ export function BeamDemo() {
                 onClick={() => setPhase(tab)}
                 className={`px-2.5 py-1 text-[10px] rounded-md capitalize transition-colors disabled:opacity-35 ${
                   phase === tab
-                    ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
-                    : 'text-zinc-500 dark:text-zinc-400'
+                    ? 'bg-white dark:bg-neutral-800 text-zinc-900 dark:text-paper shadow-sm'
+                    : 'text-zinc-500 dark:text-neutral-400'
                 }`}
               >
                 {tab}
@@ -361,9 +361,9 @@ export function BeamDemo() {
         </div>
 
         <div className="grid lg:grid-cols-[220px_minmax(0,1fr)]">
-          <aside className="border-b lg:border-b-0 lg:border-r border-zinc-100 dark:border-zinc-800 p-4 space-y-4 bg-zinc-50/50 dark:bg-zinc-900/20">
+          <aside className="border-b lg:border-b-0 lg:border-r border-zinc-100 dark:border-neutral-800 p-4 space-y-4 bg-zinc-50/50 dark:bg-neutral-900/20">
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">Capture</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-2">Capture</p>
               <div className="space-y-1">
                 {MODES.map(m => (
                   <button
@@ -372,8 +372,8 @@ export function BeamDemo() {
                     onClick={() => setMode(m.id)}
                     className={`w-full text-left text-[11px] px-2.5 py-1.5 rounded-md transition-colors ${
                       mode === m.id
-                        ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                        ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900'
+                        : 'text-zinc-600 dark:text-neutral-400 hover:bg-zinc-100 dark:hover:bg-neutral-800'
                     }`}
                   >
                     {m.label}
@@ -383,7 +383,7 @@ export function BeamDemo() {
             </div>
 
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">Inputs</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-2">Inputs</p>
               <div className="space-y-2">
                 <Toggle label="Webcam bubble" checked={webcam} onChange={setWebcam} />
                 <Toggle label="Microphone" checked={mic} onChange={setMic} />
@@ -393,7 +393,7 @@ export function BeamDemo() {
             </div>
 
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">Quality</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-2">Quality</p>
               <div className="space-y-1">
                 {QUALITY.map(q => (
                   <button
@@ -402,12 +402,12 @@ export function BeamDemo() {
                     onClick={() => setQuality(q.id)}
                     className={`w-full text-left px-2.5 py-1.5 rounded-md transition-colors ${
                       quality === q.id
-                        ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-                        : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                        ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900'
+                        : 'hover:bg-zinc-100 dark:hover:bg-neutral-800'
                     }`}
                   >
                     <span className="block text-[11px]">{q.label}</span>
-                    <span className={`block text-[9px] ${quality === q.id ? 'text-zinc-300 dark:text-zinc-500' : 'text-zinc-400'}`}>{q.hint}</span>
+                    <span className={`block text-[9px] ${quality === q.id ? 'text-zinc-300 dark:text-neutral-500' : 'text-zinc-400'}`}>{q.hint}</span>
                   </button>
                 ))}
               </div>
@@ -415,7 +415,7 @@ export function BeamDemo() {
 
             {recording && mic && (
               <div className="pt-1">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">Mic level</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-2">Mic level</p>
                 <div className="flex items-end gap-0.5 h-8">
                   {waveBars.map((h, i) => (
                     <span
@@ -467,12 +467,12 @@ export function BeamDemo() {
                     max={100}
                     value={playhead}
                     onChange={e => setPlayhead(Number(e.target.value))}
-                    className="w-full accent-zinc-700 dark:accent-zinc-300"
+                    className="w-full accent-zinc-700 dark:accent-neutral-300"
                   />
-                  <div className="mt-1 flex gap-1 h-1.5 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                    <div className="flex-[3] bg-zinc-400/70 dark:bg-zinc-500/70" />
-                    <div className="w-px bg-zinc-300 dark:bg-zinc-600" />
-                    <div className="flex-[2] bg-zinc-300/80 dark:bg-zinc-600/80" />
+                  <div className="mt-1 flex gap-1 h-1.5 rounded-full overflow-hidden bg-zinc-100 dark:bg-neutral-800">
+                    <div className="flex-[3] bg-zinc-400/70 dark:bg-neutral-500/70" />
+                    <div className="w-px bg-zinc-300 dark:bg-neutral-600" />
+                    <div className="flex-[2] bg-zinc-300/80 dark:bg-neutral-600/80" />
                   </div>
                 </div>
 
@@ -489,7 +489,7 @@ export function BeamDemo() {
                         setExportFlash(done);
                         if (label === 'Transcript') setTranscriptOpen(true);
                       }}
-                      className="text-[11px] px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                      className="text-[11px] px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-neutral-700 hover:bg-zinc-50 dark:hover:bg-neutral-800 transition-colors"
                     >
                       Export {label}
                     </button>
@@ -497,14 +497,14 @@ export function BeamDemo() {
                 </div>
 
                 {transcriptOpen && (
-                  <div className="rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-3 space-y-1.5">
+                  <div className="rounded-lg border border-zinc-100 dark:border-neutral-800 bg-zinc-50 dark:bg-neutral-900/40 p-3 space-y-1.5">
                     <p className="text-[10px] uppercase tracking-wider text-zinc-400 mb-1">Offline transcript</p>
                     {[
                       '[00:02] Starting the walkthrough of Beam.',
                       '[00:08] Click anywhere and the recorder auto-zooms toward it.',
                       '[00:14] Everything stays on your machine — no upload step.',
                     ].map(line => (
-                      <p key={line} className="text-[11px] text-zinc-600 dark:text-zinc-400 font-mono">{line}</p>
+                      <p key={line} className="text-[11px] text-zinc-600 dark:text-neutral-400 font-mono">{line}</p>
                     ))}
                   </div>
                 )}

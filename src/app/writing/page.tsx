@@ -54,7 +54,7 @@ const WritingPage = () => {
   return (
     <div style={{ maxWidth: '75ch' }}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
-        <h2 className="text-lg font-medium dark:text-white">Writing</h2>
+        <h2 className="text-lg font-medium dark:text-paper">Writing</h2>
         <div className="flex flex-wrap gap-x-4 gap-y-2" role="tablist" aria-label="Writing categories">
           {categories.map((cat) => (
             <button
@@ -64,8 +64,8 @@ const WritingPage = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`text-sm capitalize transition-colors ${
                 selectedCategory === cat
-                  ? 'text-zinc-900 dark:text-white font-medium'
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                  ? 'text-zinc-900 dark:text-paper font-medium'
+                  : 'text-zinc-500 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'
               }`}
             >
               {cat}
@@ -77,21 +77,21 @@ const WritingPage = () => {
       {selectedCategory === 'tweets' ? (
         <div>
           {tweetsLoading && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-zinc-400 py-2">Loading tweets…</p>
+            <p className="text-sm text-zinc-400 dark:text-neutral-400 py-2">Loading tweets…</p>
           )}
 
           {!tweetsLoading && tweetsError && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-zinc-400 py-2">Tweets unavailable right now.</p>
+            <p className="text-sm text-zinc-400 dark:text-neutral-400 py-2">Tweets unavailable right now.</p>
           )}
 
           {!tweetsLoading && !tweetsError && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-zinc-400 py-2">No tweets yet.</p>
+            <p className="text-sm text-zinc-400 dark:text-neutral-400 py-2">No tweets yet.</p>
           )}
 
           {tweets.map((tweet) => (
             <div
               key={tweet.id}
-              className="py-3 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
+              className="py-3 border-b border-zinc-100 dark:border-neutral-800/60 last:border-0"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1 space-y-2">
@@ -100,7 +100,7 @@ const WritingPage = () => {
                       href={tweet.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="block text-sm font-medium text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors"
                     >
                       {tweet.text}
                     </a>
@@ -113,7 +113,7 @@ const WritingPage = () => {
                       {tweet.media.map((item) => (
                         <div
                           key={item.previewUrl}
-                          className={`relative rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 ${
+                          className={`relative rounded-md border border-zinc-200 dark:border-neutral-800 bg-zinc-100 dark:bg-neutral-900 ${
                             item.type === 'video' ? '' : 'overflow-hidden'
                           }`}
                         >
@@ -145,7 +145,7 @@ const WritingPage = () => {
                       href={tweet.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="block text-sm font-medium text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper transition-colors"
                     >
                       Post
                     </a>
@@ -157,7 +157,7 @@ const WritingPage = () => {
                     href={tweet.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-zinc-400 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors flex-shrink-0"
+                    className="text-xs text-zinc-400 dark:text-neutral-400 hover:text-zinc-600 dark:hover:text-neutral-400 transition-colors flex-shrink-0"
                   >
                     {tweet.displayDate}
                   </a>
@@ -172,12 +172,12 @@ const WritingPage = () => {
             <Link
               key={item.slug}
               href={`/writing/${item.slug}`}
-              className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
+              className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-neutral-800/60 last:border-0"
             >
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+              <span className="text-sm font-medium text-zinc-700 dark:text-neutral-300 group-hover:text-zinc-900 dark:group-hover:text-paper transition-colors">
                 {item.title}
               </span>
-              <span className="text-xs text-zinc-400 dark:text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors flex-shrink-0 ml-4">
+              <span className="text-xs text-zinc-400 dark:text-neutral-400 group-hover:text-zinc-600 dark:group-hover:text-neutral-400 transition-colors flex-shrink-0 ml-4">
                 {item.displayDate}
               </span>
             </Link>

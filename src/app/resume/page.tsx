@@ -104,17 +104,17 @@ const Stack = () => {
   return (
     <div className="max-w-4xl">
       {/* Resume PDF Container */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm">
+      <div className="bg-white dark:bg-neutral-900 border border-zinc-200 dark:border-neutral-800 rounded-lg shadow-sm">
         {/* Resume Header */}
-        <div className="p-5 pb-4 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="p-5 pb-4 border-b border-zinc-200 dark:border-neutral-800">
           <div className="text-center">
-            <h1 className="text-lg font-medium text-zinc-900 dark:text-white mb-1">
+            <h1 className="text-lg font-medium text-zinc-900 dark:text-paper mb-1">
               Rohan Pothuru
             </h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+            <p className="text-sm text-zinc-600 dark:text-neutral-400 mb-2">
               Software Engineer
             </p>
-            <div className="flex flex-wrap justify-center gap-3 text-xs text-zinc-500 dark:text-zinc-500">
+            <div className="flex flex-wrap justify-center gap-3 text-xs text-zinc-500 dark:text-neutral-500">
               <span>hi@rohanpothuru.com</span>
 
               <span>•</span>
@@ -129,7 +129,7 @@ const Stack = () => {
         <div className="p-5 space-y-5">
           {/* Experience Section */}
           <section>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-paper mb-3 pb-1 border-b border-zinc-200 dark:border-neutral-800">
               EXPERIENCE
             </h3>
             
@@ -138,14 +138,14 @@ const Stack = () => {
                 <div key={index}>
                   <div className="flex items-start justify-between mb-1">
                     <div className="flex-1">
-                      <h4 className="text-sm font-medium text-zinc-900 dark:text-white">
+                      <h4 className="text-sm font-medium text-zinc-900 dark:text-paper">
                         {exp.role}
                       </h4>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      <p className="text-sm text-zinc-600 dark:text-neutral-400">
                         {exp.company}
                       </p>
                     </div>
-                    <time className="text-xs text-zinc-500 dark:text-zinc-500 font-medium">
+                    <time className="text-xs text-zinc-500 dark:text-neutral-500 font-medium">
                       {exp.duration}
                     </time>
                   </div>
@@ -156,7 +156,7 @@ const Stack = () => {
 
           {/* Education Section */}
           <section>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-paper mb-3 pb-1 border-b border-zinc-200 dark:border-neutral-800">
               EDUCATION
             </h3>
 
@@ -165,18 +165,18 @@ const Stack = () => {
                 <div key={index}>
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <h4 className="text-sm font-medium text-zinc-900 dark:text-white">
+                      <h4 className="text-sm font-medium text-zinc-900 dark:text-paper">
                         {edu.degree}
                       </h4>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      <p className="text-sm text-zinc-600 dark:text-neutral-400">
                         {edu.school}
                       </p>
                     </div>
-                    <time className="text-xs text-zinc-500 dark:text-zinc-500 font-medium">
+                    <time className="text-xs text-zinc-500 dark:text-neutral-500 font-medium">
                       {edu.duration}
                     </time>
                   </div>
-                  <div className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                  <div className="text-xs text-zinc-500 dark:text-neutral-500 leading-relaxed">
                     <strong>Relevant Coursework:</strong> {edu.coursework.join(', ')}
                   </div>
                 </div>
@@ -186,7 +186,7 @@ const Stack = () => {
 
           {/* Skills Section */}
           <section>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-paper mb-3 pb-1 border-b border-zinc-200 dark:border-neutral-800">
               TECHNICAL SKILLS
             </h3>
 
@@ -194,12 +194,12 @@ const Stack = () => {
               {Object.entries(skills).map(([category, items]) => (
                 <div key={category} className="flex items-start gap-4">
                   <div className="w-24 flex-shrink-0">
-                    <h4 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 uppercase tracking-wide">
+                    <h4 className="text-xs font-medium text-zinc-700 dark:text-neutral-300 uppercase tracking-wide">
                       {category}
                     </h4>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                    <p className="text-sm text-zinc-600 dark:text-neutral-400">
                       {items.join(', ')}
                     </p>
                   </div>
@@ -210,7 +210,7 @@ const Stack = () => {
 
           {/* Certifications Section */}
           <section>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-3 pb-1 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-paper mb-3 pb-1 border-b border-zinc-200 dark:border-neutral-800">
               CERTIFICATIONS
             </h3>
 
@@ -221,18 +221,18 @@ const Stack = () => {
                   href={cert.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group cursor-pointer block hover:bg-zinc-50 dark:hover:bg-zinc-800/50 p-2 -m-2 rounded transition-colors"
+                  className="group cursor-pointer block hover:bg-zinc-50 dark:hover:bg-neutral-800/50 p-2 -m-2 rounded transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h4 className="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <h4 className="text-sm font-medium text-zinc-900 dark:text-paper group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {cert.name}
                       </h4>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-500">
+                      <p className="text-xs text-zinc-500 dark:text-neutral-500">
                         {cert.issuer}
                       </p>
                     </div>
-                    <div className="text-xs text-zinc-400 dark:text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <div className="text-xs text-zinc-400 dark:text-neutral-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       ↗
                     </div>
                   </div>
@@ -244,19 +244,19 @@ const Stack = () => {
         </div>
 
         {/* Resume Footer */}
-        <div className="p-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/30">
+        <div className="p-4 pt-3 border-t border-zinc-200 dark:border-neutral-800 bg-zinc-50 dark:bg-neutral-800/30">
           <div className="flex justify-center gap-8">
             <a
               href="https://drive.google.com/file/d/1rVCn-bsEeeL8y_M0zpFmdNECoX3uEI3X/view"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper bg-white dark:bg-neutral-800 border border-zinc-200 dark:border-neutral-700 rounded-md hover:bg-zinc-50 dark:hover:bg-neutral-700 transition-colors"
             >
               Download PDF
             </a>
             <a
               href="mailto:hi@rohanpothuru.com"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-zinc-900 dark:bg-white dark:text-zinc-900 rounded-md hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-zinc-900 dark:bg-paper dark:text-neutral-900 rounded-md hover:bg-zinc-800 dark:hover:bg-neutral-100 transition-colors"
             >
               Get in Touch
             </a>

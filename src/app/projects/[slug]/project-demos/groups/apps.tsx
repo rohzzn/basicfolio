@@ -18,26 +18,26 @@ function KeelDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Subscription Tracker</p>
       <div className={`${CARD} max-w-xs`}>
-        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-neutral-800">
           <div>
-            <p className="text-xs text-zinc-400 dark:text-zinc-400">{annual?'Annual':'Monthly'} total</p>
-            <p className="text-xl font-semibold dark:text-white tabular-nums">${total.toFixed(2)}</p>
+            <p className="text-xs text-zinc-400 dark:text-neutral-400">{annual?'Annual':'Monthly'} total</p>
+            <p className="text-xl font-semibold dark:text-paper tabular-nums">${total.toFixed(2)}</p>
             {annual&&<p className="text-xs text-green-500">Saving ${savings.toFixed(2)}/yr vs monthly</p>}
           </div>
-          <button onClick={()=>setAnnual(a=>!a)} className={`text-xs px-2.5 py-1 rounded-full transition-colors ${annual?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`}>{annual?'Annual':'Monthly'}</button>
+          <button onClick={()=>setAnnual(a=>!a)} className={`text-xs px-2.5 py-1 rounded-full transition-colors ${annual?'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900':'bg-zinc-100 dark:bg-neutral-800 text-zinc-500 dark:text-neutral-400'}`}>{annual?'Annual':'Monthly'}</button>
         </div>
-        <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+        <div className="divide-y divide-zinc-100 dark:divide-neutral-800">
           {subs.map(s=>(
             <div key={s.n} className="flex items-center justify-between px-4 py-2.5 group">
-              <div className="flex items-center gap-2"><span>{s.icon}</span><span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{s.n}</span></div>
+              <div className="flex items-center gap-2"><span>{s.icon}</span><span className="text-xs font-medium text-zinc-700 dark:text-neutral-300">{s.n}</span></div>
               <div className="flex items-center gap-2">
-                <span className="text-xs tabular-nums dark:text-white">${(annual?s.mo*12:s.mo).toFixed(2)}</span>
+                <span className="text-xs tabular-nums dark:text-paper">${(annual?s.mo*12:s.mo).toFixed(2)}</span>
                 <button onClick={()=>setSubs(ss=>ss.filter(r=>r.n!==s.n))} className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-500 transition-all text-sm leading-none">×</button>
               </div>
             </div>
           ))}
         </div>
-        <div className="px-4 py-2 bg-zinc-50 dark:bg-zinc-800/40 text-xs text-zinc-400 dark:text-zinc-400 text-center">{subs.length} subscriptions · hover to remove</div>
+        <div className="px-4 py-2 bg-zinc-50 dark:bg-neutral-800/40 text-xs text-zinc-400 dark:text-neutral-400 text-center">{subs.length} subscriptions · hover to remove</div>
       </div>
     </div>
   );
@@ -58,17 +58,17 @@ function TodoKanbanDemo() {
       <p className={L}>Task Board</p>
       <div className="grid grid-cols-3 gap-2">
         {COLS.map(col=>(
-          <div key={col.s} className="bg-zinc-50 dark:bg-zinc-800/40 rounded-lg p-2">
-            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-2 px-1">{col.label} <span className="text-zinc-400 dark:text-zinc-400">({tasks.filter(t=>t.s===col.s).length})</span></p>
+          <div key={col.s} className="bg-zinc-50 dark:bg-neutral-800/40 rounded-lg p-2">
+            <p className="text-xs font-medium text-zinc-500 dark:text-neutral-400 mb-2 px-1">{col.label} <span className="text-zinc-400 dark:text-neutral-400">({tasks.filter(t=>t.s===col.s).length})</span></p>
             <div className="space-y-1.5">
               {tasks.filter(t=>t.s===col.s).map(t=>(
-                <div key={t.id} className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-700 rounded-md p-2 text-xs text-zinc-600 dark:text-zinc-400 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-500 transition-colors"
+                <div key={t.id} className="bg-white dark:bg-neutral-900 border border-zinc-100 dark:border-neutral-700 rounded-md p-2 text-xs text-zinc-600 dark:text-neutral-400 cursor-pointer hover:border-zinc-300 dark:hover:border-neutral-500 transition-colors"
                   onClick={()=>{
                     const idx=COLS.findIndex(c=>c.s===t.s);
                     if(idx<COLS.length-1) move(t.id,COLS[idx+1].s);
                     else move(t.id,COLS[0].s);
                   }}>
-                  {t.t}<p className="text-zinc-400 dark:text-zinc-400 mt-0.5">click → move</p>
+                  {t.t}<p className="text-zinc-400 dark:text-neutral-400 mt-0.5">click → move</p>
                 </div>
               ))}
             </div>
@@ -93,14 +93,14 @@ function ShutTabDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Extension Demo</p>
       <div className={`${CARD} max-w-xs`}>
-        <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-100 dark:border-zinc-800">
-          <div className="flex items-center gap-2"><div className="w-5 h-5 rounded bg-zinc-800 dark:bg-zinc-200 flex items-center justify-center"><span className="text-white dark:text-zinc-900 text-xs font-bold">S</span></div><span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">ShutTab</span></div>
+        <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-50 dark:bg-neutral-800/60 border-b border-zinc-100 dark:border-neutral-800">
+          <div className="flex items-center gap-2"><div className="w-5 h-5 rounded bg-zinc-800 dark:bg-neutral-200 flex items-center justify-center"><span className="text-white dark:text-neutral-900 text-xs font-bold">S</span></div><span className="text-xs font-semibold text-zinc-700 dark:text-neutral-300">ShutTab</span></div>
           <span className="text-xs text-zinc-400">{sites.filter(s=>s.blocked).length} blocked</span>
         </div>
-        <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+        <div className="divide-y divide-zinc-100 dark:divide-neutral-800">
           {sites.map(s=>(
             <div key={s.domain} className="flex items-center justify-between px-4 py-2.5">
-              <span className="text-xs font-mono text-zinc-700 dark:text-zinc-300">{s.domain}</span>
+              <span className="text-xs font-mono text-zinc-700 dark:text-neutral-300">{s.domain}</span>
               <button
                 type="button"
                 role="switch"
@@ -116,9 +116,9 @@ function ShutTabDemo() {
             </div>
           ))}
         </div>
-        <div className="flex gap-2 px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
-          <input value={adding} onChange={e=>setAdding(e.target.value)} onKeyDown={e=>e.key==='Enter'&&add()} placeholder="site.com" className="flex-1 text-xs font-mono px-2 py-1.5 border border-zinc-200 dark:border-zinc-700 rounded bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none" />
-          <button onClick={add} className="text-xs px-2.5 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded hover:opacity-80">+ Block</button>
+        <div className="flex gap-2 px-4 py-3 border-t border-zinc-100 dark:border-neutral-800">
+          <input value={adding} onChange={e=>setAdding(e.target.value)} onKeyDown={e=>e.key==='Enter'&&add()} placeholder="site.com" className="flex-1 text-xs font-mono px-2 py-1.5 border border-zinc-200 dark:border-neutral-700 rounded bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none" />
+          <button onClick={add} className="text-xs px-2.5 py-1.5 bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded hover:opacity-80">+ Block</button>
         </div>
       </div>
     </div>
@@ -145,22 +145,22 @@ function RelayDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Interactive Preview</p>
       <div className={`${CARD} max-w-sm`}>
-        <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-100 dark:border-zinc-800">
+        <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-50 dark:bg-neutral-800/60 border-b border-zinc-100 dark:border-neutral-800">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-full bg-indigo-500/20 flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
             </div>
-            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Relay</span>
+            <span className="text-xs font-semibold text-zinc-700 dark:text-neutral-300">Relay</span>
           </div>
           <span className="text-xs text-zinc-400">{up}/{monitors.length} up</span>
         </div>
-        <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+        <div className="divide-y divide-zinc-100 dark:divide-neutral-800">
           {monitors.map(m => (
             <div key={m.name} className="px-4 py-3">
               <div className="flex items-center justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${m.up ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                  <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">{m.name}</span>
+                  <span className="text-xs font-medium text-zinc-700 dark:text-neutral-300 truncate">{m.name}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {m.ms != null && <span className="text-xs font-mono text-zinc-400">{m.ms}ms</span>}
@@ -177,18 +177,18 @@ function RelayDemo() {
             </div>
           ))}
         </div>
-        <div className="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-3">
+        <div className="px-4 py-3 border-t border-zinc-100 dark:border-neutral-800 flex items-center justify-between gap-3">
           <code className="text-[10px] font-mono text-zinc-400 truncate">docker run ghcr.io/rohzzn/relay</code>
           <button
             type="button"
             onClick={() => setDown(d => !d)}
-            className="text-xs px-2.5 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded hover:opacity-80 flex-shrink-0"
+            className="text-xs px-2.5 py-1.5 bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded hover:opacity-80 flex-shrink-0"
           >
             {down ? 'Resolve' : 'Simulate down'}
           </button>
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3">Toggle a monitor: admin dashboard and status page stay in sync in the real app</p>
+      <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-3">Toggle a monitor: admin dashboard and status page stay in sync in the real app</p>
     </div>
   );
 }
@@ -215,7 +215,7 @@ function CSStatsDemo() {
           </div>
         )}
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3">Click to toggle the stats overlay the extension injects</p>
+      <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-3">Click to toggle the stats overlay the extension injects</p>
     </div>
   );
 }
@@ -237,19 +237,19 @@ function ZenitsuBotDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Bot Demo</p>
       <div className={CARD}>
-        <div className="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800/60 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"/><span className="text-xs font-medium text-zinc-600 dark:text-zinc-400"># general</span></div>
-        <div className="bg-zinc-50 dark:bg-zinc-900 min-h-[160px] p-4 space-y-3">
-          {msgs.length===0&&<p className="text-xs text-zinc-400 dark:text-zinc-400 italic">Click a command to see the bot respond</p>}
+        <div className="px-4 py-2.5 bg-zinc-100 dark:bg-neutral-800/60 border-b border-zinc-100 dark:border-neutral-800 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"/><span className="text-xs font-medium text-zinc-600 dark:text-neutral-400"># general</span></div>
+        <div className="bg-zinc-50 dark:bg-neutral-900 min-h-[160px] p-4 space-y-3">
+          {msgs.length===0&&<p className="text-xs text-zinc-400 dark:text-neutral-400 italic">Click a command to see the bot respond</p>}
           {msgs.map((m,i)=>{ const r=BOT_RES[m.cmd]; return (
             <div key={i} className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white">Z</div>
-              <div className="min-w-0"><div className="flex items-baseline gap-2 mb-1"><span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Zenitsu Bot</span><span className="text-xs text-zinc-400">{m.ts}</span></div>
-              <div className="border-l-4 rounded-r-lg p-2.5 bg-zinc-100 dark:bg-zinc-800" style={{borderColor:r.color}}><p className="text-xs font-semibold mb-1" style={{color:r.color}}>{r.title}</p><p className="text-xs text-zinc-600 dark:text-zinc-400 whitespace-pre-line">{r.body}</p></div></div>
+              <div className="min-w-0"><div className="flex items-baseline gap-2 mb-1"><span className="text-xs font-semibold text-zinc-800 dark:text-neutral-200">Zenitsu Bot</span><span className="text-xs text-zinc-400">{m.ts}</span></div>
+              <div className="border-l-4 rounded-r-lg p-2.5 bg-zinc-100 dark:bg-neutral-800" style={{borderColor:r.color}}><p className="text-xs font-semibold mb-1" style={{color:r.color}}>{r.title}</p><p className="text-xs text-zinc-600 dark:text-neutral-400 whitespace-pre-line">{r.body}</p></div></div>
             </div>
           );})}
         </div>
-        <div className="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800 flex flex-wrap gap-2 bg-zinc-50/50 dark:bg-zinc-900/50">
-          {Object.keys(BOT_RES).map(cmd=><button key={cmd} onClick={()=>send(cmd)} className="px-3 py-1.5 text-xs font-mono bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">{cmd}</button>)}
+        <div className="px-4 py-3 border-t border-zinc-100 dark:border-neutral-800 flex flex-wrap gap-2 bg-zinc-50/50 dark:bg-neutral-900/50">
+          {Object.keys(BOT_RES).map(cmd=><button key={cmd} onClick={()=>send(cmd)} className="px-3 py-1.5 text-xs font-mono bg-zinc-100 dark:bg-neutral-800 text-zinc-600 dark:text-neutral-400 rounded-md hover:bg-zinc-200 dark:hover:bg-neutral-700 transition-colors">{cmd}</button>)}
         </div>
       </div>
     </div>
@@ -269,11 +269,11 @@ function TanoshiColorPalette({ colors }: { colors: NonNullable<Project['colors']
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {unique.map(c => (
           <button key={c.hex + c.name} onClick={() => copy(c.hex, c.hex)}
-            className="group flex items-center gap-3 p-3 border border-zinc-100 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors text-left">
-            <div className="w-8 h-8 rounded-md flex-shrink-0 ring-1 ring-zinc-200 dark:ring-zinc-700 ring-offset-2 ring-offset-white dark:ring-offset-zinc-950 group-hover:ring-2 transition-all" style={{ backgroundColor: c.hex }} />
+            className="group flex items-center gap-3 p-3 border border-zinc-100 dark:border-neutral-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-neutral-800/40 transition-colors text-left">
+            <div className="w-8 h-8 rounded-md flex-shrink-0 ring-1 ring-zinc-200 dark:ring-neutral-700 ring-offset-2 ring-offset-white dark:ring-offset-neutral-950 group-hover:ring-2 transition-all" style={{ backgroundColor: c.hex }} />
             <div className="min-w-0">
-              <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">{c.name}</p>
-              <p className="text-xs font-mono text-zinc-400 dark:text-zinc-400">{copied === c.hex ? <span className="text-green-500">copied!</span> : c.hex}</p>
+              <p className="text-xs font-medium text-zinc-700 dark:text-neutral-300 truncate">{c.name}</p>
+              <p className="text-xs font-mono text-zinc-400 dark:text-neutral-400">{copied === c.hex ? <span className="text-green-500">copied!</span> : c.hex}</p>
             </div>
           </button>
         ))}
@@ -312,7 +312,7 @@ function TanoshiSyntaxPreview({ colors }:{ colors: NonNullable<Project['colors']
     <div className="my-8 not-prose">
       <div className="flex items-center justify-between mb-3">
         <p className={L} style={{marginBottom:0}}>Syntax Preview</p>
-        <div className="flex gap-1">{(['ts','py'] as const).map(l=><button key={l} onClick={()=>setLang(l)} className={`px-2.5 py-1 text-xs font-mono rounded transition-colors ${lang===l?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>{l==='ts'?'TypeScript':'Python'}</button>)}</div>
+        <div className="flex gap-1">{(['ts','py'] as const).map(l=><button key={l} onClick={()=>setLang(l)} className={`px-2.5 py-1 text-xs font-mono rounded transition-colors ${lang===l?'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900':'text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'}`}>{l==='ts'?'TypeScript':'Python'}</button>)}</div>
       </div>
       <div className="rounded-lg overflow-hidden border border-zinc-800">
         <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800" style={{ backgroundColor: bg }}>
@@ -345,19 +345,19 @@ function PagesReorderDemo() {
   return (
     <div className="my-8 not-prose">
       <p className={L}>Page Manager</p>
-      <div className={`${CARD} divide-y divide-zinc-100 dark:divide-zinc-800 mb-3`}>
+      <div className={`${CARD} divide-y divide-zinc-100 dark:divide-neutral-800 mb-3`}>
         {pages.map((p,i)=>(
           <div key={p} className="flex items-center justify-between px-4 py-2.5 group">
-            <div className="flex items-center gap-2"><span className="text-zinc-400 dark:text-zinc-400 text-xs select-none">{String(i+1).padStart(2,'0')}</span><span className="text-sm text-zinc-700 dark:text-zinc-300">{p}</span></div>
+            <div className="flex items-center gap-2"><span className="text-zinc-400 dark:text-neutral-400 text-xs select-none">{String(i+1).padStart(2,'0')}</span><span className="text-sm text-zinc-700 dark:text-neutral-300">{p}</span></div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={()=>mv(i,-1)} disabled={i===0} className="w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-20 transition-colors text-xs">↑</button>
-              <button onClick={()=>mv(i,1)} disabled={i===pages.length-1} className="w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-20 transition-colors text-xs">↓</button>
-              <button onClick={()=>setPages(pp=>pp.filter((_,j)=>j!==i))} className="w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-xs">×</button>
+              <button onClick={()=>mv(i,-1)} disabled={i===0} className="w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 dark:hover:bg-neutral-800 disabled:opacity-20 transition-colors text-xs">↑</button>
+              <button onClick={()=>mv(i,1)} disabled={i===pages.length-1} className="w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 dark:hover:bg-neutral-800 disabled:opacity-20 transition-colors text-xs">↓</button>
+              <button onClick={()=>setPages(pp=>pp.filter((_,j)=>j!==i))} className="w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-neutral-800 transition-colors text-xs">×</button>
             </div>
           </div>
         ))}
       </div>
-      <div className="flex gap-2"><input value={adding} onChange={e=>setAdding(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&adding.trim()){setPages(pp=>[...pp,adding.trim()]);setAdding('');}}} placeholder="New page name…" className="flex-1 px-3 py-2 text-sm border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none" /><button onClick={()=>{if(adding.trim()){setPages(pp=>[...pp,adding.trim()]);setAdding('');}}} className="px-3 py-2 text-sm bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80">Add</button></div>
+      <div className="flex gap-2"><input value={adding} onChange={e=>setAdding(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&adding.trim()){setPages(pp=>[...pp,adding.trim()]);setAdding('');}}} placeholder="New page name…" className="flex-1 px-3 py-2 text-sm border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none" /><button onClick={()=>{if(adding.trim()){setPages(pp=>[...pp,adding.trim()]);setAdding('');}}} className="px-3 py-2 text-sm bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80">Add</button></div>
     </div>
   );
 }
@@ -396,7 +396,7 @@ function MeetDemo() {
           ))}
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">Mute yourself or remove participants</p>
+      <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-2">Mute yourself or remove participants</p>
     </div>
   );
 }
@@ -464,8 +464,8 @@ function HexrDemo() {
         ))}
       </div>
       <div className="flex items-center gap-3">
-        {hov&&<div className="w-6 h-6 rounded border border-zinc-200 dark:border-zinc-700" style={{backgroundColor:hov}}/>}
-        <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">{copied?`${copied} copied!`:hov||'Hover to preview · click to copy'}</span>
+        {hov&&<div className="w-6 h-6 rounded border border-zinc-200 dark:border-neutral-700" style={{backgroundColor:hov}}/>}
+        <span className="text-xs font-mono text-zinc-500 dark:text-neutral-400">{copied?`${copied} copied!`:hov||'Hover to preview · click to copy'}</span>
       </div>
     </div>
   );
@@ -488,7 +488,7 @@ function AnomalyDetectionDemo() {
       <p className={L}>Network Traffic: Anomaly Detection</p>
       <div className={`${CARD} p-4`}>
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{height:100}}>
-          <polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-400 dark:text-zinc-400"/>
+          <polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-400 dark:text-neutral-400"/>
           {anomalies.map(({v,i})=>{ const x=pad+i*(W-pad*2)/(TRAFFIC.length-1),y=H-pad-(v-min)/(max-min)*(H-pad*2);
             return <circle key={i} cx={x} cy={y} r={hov===i?5:3.5} fill="#ef4444" onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)} className="cursor-pointer transition-all"/>;
           })}
@@ -496,7 +496,7 @@ function AnomalyDetectionDemo() {
             <text x={pad+hov*(W-pad*2)/(TRAFFIC.length-1)} y={H-pad-(TRAFFIC[hov]-min)/(max-min)*(H-pad*2)-8} textAnchor="middle" fontSize="9" fill="#ef4444">{TRAFFIC[hov]} pkts/s</text>
           )}
         </svg>
-        <div className="flex items-center gap-4 mt-2 text-xs text-zinc-400 dark:text-zinc-400">
+        <div className="flex items-center gap-4 mt-2 text-xs text-zinc-400 dark:text-neutral-400">
           <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"/>{anomalies.length} anomalies detected</div>
           <span>hover red dots for details</span>
         </div>
@@ -519,14 +519,14 @@ function ScrapetronDemo() {
   return (
     <div className="my-8 not-prose">
       <p className={L}>Scraper Demo</p>
-      <div className="flex gap-2 mb-3"><input value={url} onChange={e=>setUrl(e.target.value)} className="flex-1 px-3 py-2 text-sm font-mono border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none" placeholder="https://…" /><button onClick={run} disabled={loading} className="px-4 py-2 text-sm bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 disabled:opacity-50">{loading?'…':'Scrape'}</button></div>
+      <div className="flex gap-2 mb-3"><input value={url} onChange={e=>setUrl(e.target.value)} className="flex-1 px-3 py-2 text-sm font-mono border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none" placeholder="https://…" /><button onClick={run} disabled={loading} className="px-4 py-2 text-sm bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80 disabled:opacity-50">{loading?'…':'Scrape'}</button></div>
       {done&&(
-        <div className={`${CARD} divide-y divide-zinc-100 dark:divide-zinc-800`}>
-          <div className="px-4 py-2 bg-zinc-50 dark:bg-zinc-800/40 text-xs text-zinc-500 dark:text-zinc-400 flex justify-between"><span>Scraped {url}</span><span className="text-green-500">200 OK</span></div>
+        <div className={`${CARD} divide-y divide-zinc-100 dark:divide-neutral-800`}>
+          <div className="px-4 py-2 bg-zinc-50 dark:bg-neutral-800/40 text-xs text-zinc-500 dark:text-neutral-400 flex justify-between"><span>Scraped {url}</span><span className="text-green-500">200 OK</span></div>
           {MOCK_SCRAPED.map(r=>(
             <div key={r.selector} className="px-4 py-2.5 text-xs">
               <div className="flex justify-between mb-0.5"><code className="text-amber-600 dark:text-amber-400">{r.selector}</code><span className="text-zinc-400">{r.count} found</span></div>
-              <p className="text-zinc-500 dark:text-zinc-500 truncate">{r.sample}</p>
+              <p className="text-zinc-500 dark:text-neutral-500 truncate">{r.sample}</p>
             </div>
           ))}
         </div>
@@ -553,15 +553,15 @@ function IpynbDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Image Extractor Demo</p>
       <div className="flex gap-2 mb-3">
-        <input value={file} onChange={e=>setFile(e.target.value)} placeholder="analysis.ipynb" className="flex-1 px-3 py-2 text-sm font-mono border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none" />
-        <button onClick={run} disabled={extracting||!file} className="px-4 py-2 text-sm bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 disabled:opacity-50">{extracting?'…':'Extract'}</button>
+        <input value={file} onChange={e=>setFile(e.target.value)} placeholder="analysis.ipynb" className="flex-1 px-3 py-2 text-sm font-mono border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none" />
+        <button onClick={run} disabled={extracting||!file} className="px-4 py-2 text-sm bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80 disabled:opacity-50">{extracting?'…':'Extract'}</button>
       </div>
       {images.length>0&&(
         <>
-          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-2">{images.length} images extracted to ./images/</p>
+          <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-2">{images.length} images extracted to ./images/</p>
           <div className="grid grid-cols-5 gap-2">
             {images.map((c,i)=>(
-              <div key={i} className={`aspect-square rounded-lg ${c} flex items-center justify-center text-xs text-zinc-500 dark:text-zinc-400`}>img_{i+1}</div>
+              <div key={i} className={`aspect-square rounded-lg ${c} flex items-center justify-center text-xs text-zinc-500 dark:text-neutral-400`}>img_{i+1}</div>
             ))}
           </div>
         </>

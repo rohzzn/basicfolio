@@ -21,17 +21,17 @@ function HobbyRow({ hobby }: { hobby: (typeof hobbies)[number] }) {
   return (
     <Link
       href={hobby.href}
-      className="group block border-b border-zinc-100 py-3 last:border-0 dark:border-zinc-800/60 sm:py-2.5"
+      className="group block border-b border-zinc-100 py-3 last:border-0 dark:border-neutral-800/60 sm:py-2.5"
     >
       <div className="flex items-baseline justify-between gap-4">
-        <span className="text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-white">
+        <span className="text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">
           {hobby.title}
         </span>
-        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-zinc-400">
+        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-neutral-400">
           {hobby.description}
         </span>
       </div>
-      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-zinc-400">{hobby.description}</p>
+      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-neutral-400">{hobby.description}</p>
     </Link>
   );
 }
@@ -40,7 +40,7 @@ export default function HobbiesPage() {
   return (
     <div style={{ maxWidth: "75ch" }}>
       <header className="mb-8">
-        <h2 className="text-lg font-medium dark:text-white">Hobbies</h2>
+        <h2 className="text-lg font-medium dark:text-paper">Hobbies</h2>
       </header>
 
       <div>

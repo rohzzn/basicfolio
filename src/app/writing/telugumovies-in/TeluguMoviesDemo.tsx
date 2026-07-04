@@ -222,7 +222,7 @@ export function TeluguMoviesDemo() {
 
   return (
     <div
-      className="telugu-movies-demo my-8 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 [&_img]:![transition:none]"
+      className="telugu-movies-demo my-8 overflow-hidden rounded-xl border border-zinc-200 dark:border-neutral-800 [&_img]:![transition:none]"
       style={{ background: '#141414', fontFamily: 'system-ui, -apple-system, sans-serif' }}
     >
       <header

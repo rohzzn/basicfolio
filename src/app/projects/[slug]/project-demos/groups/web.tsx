@@ -41,32 +41,32 @@ function InteractionsDemo() {
       <div className="flex gap-1 mb-4">
         {(['magnetic','ripple','scramble'] as const).map(t=>(
           <button key={t} onClick={()=>setTab(t)}
-            className={`px-3 py-1.5 text-xs rounded-md capitalize transition-colors ${tab===t?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`}>{t}</button>
+            className={`px-3 py-1.5 text-xs rounded-md capitalize transition-colors ${tab===t?'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900':'bg-zinc-100 dark:bg-neutral-800 text-zinc-500 dark:text-neutral-400'}`}>{t}</button>
         ))}
       </div>
       {tab==='magnetic'&&(
         <div className="flex flex-col items-center py-8" onMouseMove={onMouseMove} onMouseLeave={()=>setOffset({x:0,y:0})}>
-          <button ref={btnRef} className="px-6 py-3 text-sm font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg transition-transform duration-200 ease-out"
+          <button ref={btnRef} className="px-6 py-3 text-sm font-medium bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg transition-transform duration-200 ease-out"
             style={{transform:`translate(${offset.x}px,${offset.y}px)`}}>Hover near me</button>
-          <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-4">Move your cursor around the button</p>
+          <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-4">Move your cursor around the button</p>
         </div>
       )}
       {tab==='ripple'&&(
-        <div className="relative overflow-hidden h-32 bg-zinc-50 dark:bg-zinc-900 rounded-lg cursor-pointer flex items-center justify-center" onClick={addRipple}>
+        <div className="relative overflow-hidden h-32 bg-zinc-50 dark:bg-neutral-900 rounded-lg cursor-pointer flex items-center justify-center" onClick={addRipple}>
           {ripples.map(r=>(
-            <span key={r.id} className="absolute w-4 h-4 rounded-full bg-zinc-400 dark:bg-zinc-500 opacity-50 animate-ping pointer-events-none" style={{left:r.x-8,top:r.y-8}} />
+            <span key={r.id} className="absolute w-4 h-4 rounded-full bg-zinc-400 dark:bg-neutral-500 opacity-50 animate-ping pointer-events-none" style={{left:r.x-8,top:r.y-8}} />
           ))}
-          <p className="text-xs text-zinc-400 dark:text-zinc-400 pointer-events-none">Click anywhere</p>
+          <p className="text-xs text-zinc-400 dark:text-neutral-400 pointer-events-none">Click anywhere</p>
         </div>
       )}
       {tab==='scramble'&&(
         <div className="space-y-3">
           <div className="flex gap-2">
             <input value={text} onChange={e=>setText(e.target.value)} placeholder="Type something…"
-              className="flex-1 px-3 py-2 text-sm border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none" />
-            <button onClick={scramble} className="px-3 py-2 text-sm bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80">Scramble</button>
+              className="flex-1 px-3 py-2 text-sm border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none" />
+            <button onClick={scramble} className="px-3 py-2 text-sm bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80">Scramble</button>
           </div>
-          {scrambled&&<p className="text-sm font-mono text-zinc-700 dark:text-zinc-300 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg">{scrambled}</p>}
+          {scrambled&&<p className="text-sm font-mono text-zinc-700 dark:text-neutral-300 p-3 bg-zinc-50 dark:bg-neutral-900 rounded-lg">{scrambled}</p>}
         </div>
       )}
     </div>
@@ -85,14 +85,14 @@ function MarginDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Typography Playground</p>
       <div className={`${CARD} p-4 mb-3`} style={{fontSize:size,lineHeight:lh,fontFamily:font}}>
-        <p className="text-zinc-700 dark:text-zinc-300">Books are a uniquely portable magic. A reader lives a thousand lives before he dies. The man who never reads lives only one. Opening a book is like taking a step into another world.</p>
+        <p className="text-zinc-700 dark:text-neutral-300">Books are a uniquely portable magic. A reader lives a thousand lives before he dies. The man who never reads lives only one. Opening a book is like taking a step into another world.</p>
       </div>
       <div className="space-y-3">
-        <div className="flex items-center gap-3"><label className="text-xs text-zinc-400 dark:text-zinc-400 w-20 flex-shrink-0">Size {size}px</label><input type="range" min={12} max={22} value={size} onChange={e=>setSize(Number(e.target.value))} className="flex-1 accent-zinc-700 dark:accent-zinc-300" /></div>
-        <div className="flex items-center gap-3"><label className="text-xs text-zinc-400 dark:text-zinc-400 w-20 flex-shrink-0">Leading {lh}</label><input type="range" min={1.2} max={2.2} step={0.1} value={lh} onChange={e=>setLh(Number(e.target.value))} className="flex-1 accent-zinc-700 dark:accent-zinc-300" /></div>
+        <div className="flex items-center gap-3"><label className="text-xs text-zinc-400 dark:text-neutral-400 w-20 flex-shrink-0">Size {size}px</label><input type="range" min={12} max={22} value={size} onChange={e=>setSize(Number(e.target.value))} className="flex-1 accent-zinc-700 dark:accent-neutral-300" /></div>
+        <div className="flex items-center gap-3"><label className="text-xs text-zinc-400 dark:text-neutral-400 w-20 flex-shrink-0">Leading {lh}</label><input type="range" min={1.2} max={2.2} step={0.1} value={lh} onChange={e=>setLh(Number(e.target.value))} className="flex-1 accent-zinc-700 dark:accent-neutral-300" /></div>
         <div className="flex gap-2">
           {(['serif','sans-serif','mono'] as const).map(f=>(
-            <button key={f} onClick={()=>setFont(f)} className={`px-3 py-1.5 text-xs rounded transition-colors ${font===f?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`} style={{fontFamily:f}}>{f}</button>
+            <button key={f} onClick={()=>setFont(f)} className={`px-3 py-1.5 text-xs rounded transition-colors ${font===f?'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900':'bg-zinc-100 dark:bg-neutral-800 text-zinc-500 dark:text-neutral-400'}`} style={{fontFamily:f}}>{f}</button>
           ))}
         </div>
       </div>
@@ -130,12 +130,12 @@ function ContestCard({name,platform,target}:{name:string;platform:string;target:
   return (
     <div className={`${CARD} flex items-center justify-between px-4 py-3`}>
       <div>
-        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{name}</p>
-        <p className="text-xs text-zinc-400 dark:text-zinc-400">{platform}</p>
+        <p className="text-sm font-medium text-zinc-700 dark:text-neutral-300">{name}</p>
+        <p className="text-xs text-zinc-400 dark:text-neutral-400">{platform}</p>
       </div>
       <div className="text-right">
-        <p className="text-sm font-mono font-medium dark:text-white tabular-nums">{String(h).padStart(2,'0')}:{String(m).padStart(2,'0')}:{String(s).padStart(2,'0')}</p>
-        <p className="text-xs text-zinc-400 dark:text-zinc-400">starts in</p>
+        <p className="text-sm font-mono font-medium dark:text-paper tabular-nums">{String(h).padStart(2,'0')}:{String(m).padStart(2,'0')}:{String(s).padStart(2,'0')}</p>
+        <p className="text-xs text-zinc-400 dark:text-neutral-400">starts in</p>
       </div>
     </div>
   );
@@ -160,18 +160,18 @@ function ApiClinicDemo() {
     <div className="my-8 not-prose">
       <p className={L}>API Demo</p>
       <div className={CARD}>
-        <div className="p-3 border-b border-zinc-100 dark:border-zinc-800 flex gap-2">
-          {API_PRESETS.map((pr,i)=><button key={i} onClick={()=>{setP(i);setRes(null);}} className={`px-2.5 py-1 text-xs rounded transition-colors ${p===i?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`}>{pr.m}</button>)}
+        <div className="p-3 border-b border-zinc-100 dark:border-neutral-800 flex gap-2">
+          {API_PRESETS.map((pr,i)=><button key={i} onClick={()=>{setP(i);setRes(null);}} className={`px-2.5 py-1 text-xs rounded transition-colors ${p===i?'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900':'bg-zinc-100 dark:bg-neutral-800 text-zinc-500 dark:text-neutral-400'}`}>{pr.m}</button>)}
         </div>
-        <div className="p-3 border-b border-zinc-100 dark:border-zinc-800 flex gap-2 items-center">
+        <div className="p-3 border-b border-zinc-100 dark:border-neutral-800 flex gap-2 items-center">
           <span className={`text-xs font-mono font-bold flex-shrink-0 ${API_PRESETS[p].m==='GET'?'text-green-500':'text-blue-500'}`}>{API_PRESETS[p].m}</span>
-          <input readOnly value={API_PRESETS[p].url} className="flex-1 text-xs font-mono bg-zinc-50 dark:bg-zinc-800 px-2 py-1.5 rounded border border-zinc-100 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 min-w-0 truncate" />
-          <button onClick={send} disabled={loading} className="flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded hover:opacity-80 transition-opacity disabled:opacity-50">{loading?'…':'Send'}</button>
+          <input readOnly value={API_PRESETS[p].url} className="flex-1 text-xs font-mono bg-zinc-50 dark:bg-neutral-800 px-2 py-1.5 rounded border border-zinc-100 dark:border-neutral-700 text-zinc-600 dark:text-neutral-400 min-w-0 truncate" />
+          <button onClick={send} disabled={loading} className="flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded hover:opacity-80 transition-opacity disabled:opacity-50">{loading?'…':'Send'}</button>
         </div>
-        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/50 min-h-[80px]">
-          {!res&&!loading&&<p className="text-xs text-zinc-400 dark:text-zinc-400">Response will appear here</p>}
+        <div className="p-3 bg-zinc-50 dark:bg-neutral-900/50 min-h-[80px]">
+          {!res&&!loading&&<p className="text-xs text-zinc-400 dark:text-neutral-400">Response will appear here</p>}
           {loading&&<div className="flex gap-1 items-center">{[0,1,2].map(i=><div key={i} className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" style={{animationDelay:`${i*150}ms`}}/>)}</div>}
-          {res&&<><div className="flex gap-2 mb-2"><span className="text-xs font-mono text-green-500 font-medium">200 OK</span><span className="text-xs text-zinc-400 dark:text-zinc-400">application/json</span></div><pre className="text-xs font-mono text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap">{res}</pre></>}
+          {res&&<><div className="flex gap-2 mb-2"><span className="text-xs font-mono text-green-500 font-medium">200 OK</span><span className="text-xs text-zinc-400 dark:text-neutral-400">application/json</span></div><pre className="text-xs font-mono text-zinc-600 dark:text-neutral-400 whitespace-pre-wrap">{res}</pre></>}
         </div>
       </div>
     </div>
@@ -190,14 +190,14 @@ function DSARoadmapDemo() {
   const pct=Math.round(done.size/DSA_TOPICS.length*100);
   return (
     <div className="my-8 not-prose">
-      <div className="flex items-center justify-between mb-3"><p className={L} style={{marginBottom:0}}>Learning Roadmap</p><span className="text-xs text-zinc-400 dark:text-zinc-400">{done.size}/{DSA_TOPICS.length} · {pct}%</span></div>
-      <div className="h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full mb-4 overflow-hidden"><div className="h-full bg-zinc-700 dark:bg-zinc-300 rounded-full transition-all duration-300" style={{width:`${pct}%`}}/></div>
+      <div className="flex items-center justify-between mb-3"><p className={L} style={{marginBottom:0}}>Learning Roadmap</p><span className="text-xs text-zinc-400 dark:text-neutral-400">{done.size}/{DSA_TOPICS.length} · {pct}%</span></div>
+      <div className="h-1.5 bg-zinc-100 dark:bg-neutral-800 rounded-full mb-4 overflow-hidden"><div className="h-full bg-zinc-700 dark:bg-neutral-300 rounded-full transition-all duration-300" style={{width:`${pct}%`}}/></div>
       <div className="space-y-1.5">
         {DSA_TOPICS.map(({t,d})=>(
-          <button key={t} onClick={()=>toggle(t)} className={`w-full flex items-center justify-between px-3 py-2.5 ${CARD} hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors text-left`}>
+          <button key={t} onClick={()=>toggle(t)} className={`w-full flex items-center justify-between px-3 py-2.5 ${CARD} hover:bg-zinc-50 dark:hover:bg-neutral-800/40 transition-colors text-left`}>
             <div className="flex items-center gap-2.5">
-              <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${done.has(t)?'bg-zinc-900 dark:bg-zinc-100 border-zinc-900 dark:border-zinc-100':'border-zinc-300 dark:border-zinc-600'}`}>{done.has(t)&&<Check className="w-2.5 h-2.5 text-white dark:text-zinc-900"/>}</div>
-              <span className={`text-sm transition-colors ${done.has(t)?'line-through text-zinc-400 dark:text-zinc-400':'text-zinc-700 dark:text-zinc-300'}`}>{t}</span>
+              <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${done.has(t)?'bg-zinc-900 dark:bg-neutral-100 border-zinc-900 dark:border-neutral-100':'border-zinc-300 dark:border-neutral-600'}`}>{done.has(t)&&<Check className="w-2.5 h-2.5 text-white dark:text-neutral-900"/>}</div>
+              <span className={`text-sm transition-colors ${done.has(t)?'line-through text-zinc-400 dark:text-neutral-400':'text-zinc-700 dark:text-neutral-300'}`}>{t}</span>
             </div>
             <span className={`text-xs ${DIFF_C[d as keyof typeof DIFF_C]}`}>{d}</span>
           </button>
@@ -222,22 +222,22 @@ function DekhoCarDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Car Search: {filtered.length} results</p>
       <div className="flex gap-2 mb-3 flex-wrap">
-        <select value={make} onChange={e=>setMake(e.target.value)} className="text-xs px-2.5 py-1.5 border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 focus:outline-none">
+        <select value={make} onChange={e=>setMake(e.target.value)} className="text-xs px-2.5 py-1.5 border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 focus:outline-none">
           {makes.map(m=><option key={m} value={m}>{m}</option>)}
         </select>
-        <select value={type} onChange={e=>setType(e.target.value)} className="text-xs px-2.5 py-1.5 border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 focus:outline-none">
+        <select value={type} onChange={e=>setType(e.target.value)} className="text-xs px-2.5 py-1.5 border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 focus:outline-none">
           {types.map(t=><option key={t} value={t}>{t}</option>)}
         </select>
       </div>
-      <div className={`${CARD} divide-y divide-zinc-100 dark:divide-zinc-800`}>
+      <div className={`${CARD} divide-y divide-zinc-100 dark:divide-neutral-800`}>
         {filtered.slice(0,5).map((c,i)=>(
           <div key={i} className="flex items-center justify-between px-4 py-2.5 text-xs">
-            <span className="text-zinc-700 dark:text-zinc-300 font-medium">{c.make} · {c.type}</span>
-            <span className="text-zinc-400 dark:text-zinc-400">₹{c.price.toLocaleString()}/day</span>
+            <span className="text-zinc-700 dark:text-neutral-300 font-medium">{c.make} · {c.type}</span>
+            <span className="text-zinc-400 dark:text-neutral-400">₹{c.price.toLocaleString()}/day</span>
           </div>
         ))}
-        {filtered.length===0&&<div className="px-4 py-3 text-xs text-zinc-400 dark:text-zinc-400">No cars match filters</div>}
-        {filtered.length>5&&<div className="px-4 py-2.5 text-xs text-zinc-400 dark:text-zinc-400">+{filtered.length-5} more</div>}
+        {filtered.length===0&&<div className="px-4 py-3 text-xs text-zinc-400 dark:text-neutral-400">No cars match filters</div>}
+        {filtered.length>5&&<div className="px-4 py-2.5 text-xs text-zinc-400 dark:text-neutral-400">+{filtered.length-5} more</div>}
       </div>
     </div>
   );
@@ -272,14 +272,14 @@ function QRDemo() {
     <div className="my-8 not-prose">
       <p className={L}>QR Preview</p>
       <div className="flex flex-col sm:flex-row gap-6 items-start">
-        <div className="inline-grid p-2 bg-white rounded-lg border border-zinc-200 dark:border-zinc-700" style={{gridTemplateColumns:`repeat(${SZ},9px)`,gap:1}}>
+        <div className="inline-grid p-2 bg-white rounded-lg border border-zinc-200 dark:border-neutral-700" style={{gridTemplateColumns:`repeat(${SZ},9px)`,gap:1}}>
           {cells.map((on,i)=><div key={i} style={{width:9,height:9,backgroundColor:on?'#1a1a1a':'#ffffff'}}/>)}
         </div>
         <div className="flex-1">
-          <label className="text-xs text-zinc-400 dark:text-zinc-400 block mb-2">Enter URL or text</label>
+          <label className="text-xs text-zinc-400 dark:text-neutral-400 block mb-2">Enter URL or text</label>
           <input value={text} onChange={e=>setText(e.target.value)} placeholder="https://…"
-            className="w-full px-3 py-2 text-sm border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-700" />
-          <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">Pattern updates as you type</p>
+            className="w-full px-3 py-2 text-sm border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 dark:focus:ring-neutral-700" />
+          <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-2">Pattern updates as you type</p>
         </div>
       </div>
     </div>
@@ -301,21 +301,21 @@ function YoutubeThumbnailDemo() {
       <p className={L}>Thumbnail Downloader</p>
       <div className="flex gap-2 mb-4">
         <input value={url} onChange={e=>setUrl(e.target.value)} onKeyDown={e=>e.key==='Enter'&&generate()} placeholder="https://youtube.com/watch?v=…"
-          className="flex-1 px-3 py-2 text-sm border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none" />
-        <button onClick={generate} className="px-4 py-2 text-sm bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 transition-opacity flex-shrink-0">Get</button>
+          className="flex-1 px-3 py-2 text-sm border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none" />
+        <button onClick={generate} className="px-4 py-2 text-sm bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80 transition-opacity flex-shrink-0">Get</button>
       </div>
       {vid&&(
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {quals.map(q=>(
             <a key={q.key} href={`https://img.youtube.com/vi/${vid}/${q.key}.jpg`} target="_blank" rel="noopener noreferrer"
-              className="group block border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hidden hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors">
-              <div className="bg-zinc-100 dark:bg-zinc-800 aspect-video flex items-center justify-center text-xs text-zinc-400 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">{q.w}×{q.h}</div>
-              <div className="px-2 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">{q.label} ↗</div>
+              className="group block border border-zinc-100 dark:border-neutral-800 rounded-lg overflow-hidden hover:border-zinc-400 dark:hover:border-neutral-500 transition-colors">
+              <div className="bg-zinc-100 dark:bg-neutral-800 aspect-video flex items-center justify-center text-xs text-zinc-400 group-hover:bg-zinc-200 dark:group-hover:bg-neutral-700 transition-colors">{q.w}×{q.h}</div>
+              <div className="px-2 py-1.5 text-xs font-medium text-zinc-600 dark:text-neutral-400">{q.label} ↗</div>
             </a>
           ))}
         </div>
       )}
-      {!vid&&<p className="text-xs text-zinc-400 dark:text-zinc-400">Paste a YouTube URL above</p>}
+      {!vid&&<p className="text-xs text-zinc-400 dark:text-neutral-400">Paste a YouTube URL above</p>}
     </div>
   );
 }
@@ -333,12 +333,12 @@ function CustomerManagementDemo() {
     <div className="my-8 not-prose">
       <p className={L}>CRM Demo: {filtered.length} customers</p>
       <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search customers or companies…"
-        className="w-full mb-3 px-3 py-2 text-sm border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none" />
-      <div className={`${CARD} divide-y divide-zinc-100 dark:divide-zinc-800`}>
+        className="w-full mb-3 px-3 py-2 text-sm border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none" />
+      <div className={`${CARD} divide-y divide-zinc-100 dark:divide-neutral-800`}>
         {filtered.map((c,i)=>(
           <div key={i} className="px-4 py-2.5 flex items-center justify-between text-xs">
-            <div><p className="font-medium text-zinc-700 dark:text-zinc-300">{c.name}</p><p className="text-zinc-400 dark:text-zinc-400">{c.company}</p></div>
-            <div className="text-right"><p className={`font-medium ${STATUS[c.status as keyof typeof STATUS]}`}>{c.status}</p><p className="text-zinc-500 dark:text-zinc-400">{c.value}</p></div>
+            <div><p className="font-medium text-zinc-700 dark:text-neutral-300">{c.name}</p><p className="text-zinc-400 dark:text-neutral-400">{c.company}</p></div>
+            <div className="text-right"><p className={`font-medium ${STATUS[c.status as keyof typeof STATUS]}`}>{c.status}</p><p className="text-zinc-500 dark:text-neutral-400">{c.value}</p></div>
           </div>
         ))}
         {filtered.length===0&&<div className="px-4 py-3 text-xs text-zinc-400">No results</div>}
@@ -362,10 +362,10 @@ function CodeChefDemo() {
         {EVENTS.map(e=>(
           <div key={e.n}>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="text-zinc-700 dark:text-zinc-300 truncate mr-2">{e.n}</span>
-              <span className="text-zinc-400 dark:text-zinc-400 flex-shrink-0">{e.p.toLocaleString()}</span>
+              <span className="text-zinc-700 dark:text-neutral-300 truncate mr-2">{e.n}</span>
+              <span className="text-zinc-400 dark:text-neutral-400 flex-shrink-0">{e.p.toLocaleString()}</span>
             </div>
-            <div className="h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-zinc-100 dark:bg-neutral-800 rounded-full overflow-hidden">
               <div className={`h-full rounded-full transition-all duration-700 ${TYPE_C[e.type as keyof typeof TYPE_C]}`} style={{width:`${(e.p/max)*100}%`}}/>
             </div>
           </div>
@@ -390,14 +390,14 @@ function MCUTimelineDemo() {
         <div className="flex gap-3 w-max">
           {MCU.map((m,i)=>(
             <button key={i} onClick={()=>setSel(sel===i?null:i)}
-              className={`flex-shrink-0 w-36 p-3 border-l-2 rounded-r-lg text-left transition-colors ${sel===i?'bg-zinc-100 dark:bg-zinc-800':CARD+' bg-transparent hover:bg-zinc-50 dark:hover:bg-zinc-800/40'} ${PHASE_C[m.phase]}`}>
-              <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-1">{m.year} · Phase {m.phase}</p>
-              <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300 leading-tight">{m.t}</p>
+              className={`flex-shrink-0 w-36 p-3 border-l-2 rounded-r-lg text-left transition-colors ${sel===i?'bg-zinc-100 dark:bg-neutral-800':CARD+' bg-transparent hover:bg-zinc-50 dark:hover:bg-neutral-800/40'} ${PHASE_C[m.phase]}`}>
+              <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-1">{m.year} · Phase {m.phase}</p>
+              <p className="text-xs font-medium text-zinc-700 dark:text-neutral-300 leading-tight">{m.t}</p>
             </button>
           ))}
         </div>
       </div>
-      {sel!==null&&<p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">{MCU[sel].t} · {MCU[sel].year} · MCU Phase {MCU[sel].phase}</p>}
+      {sel!==null&&<p className="text-xs text-zinc-500 dark:text-neutral-400 mt-2">{MCU[sel].t} · {MCU[sel].year} · MCU Phase {MCU[sel].phase}</p>}
     </div>
   );
 }

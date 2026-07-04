@@ -119,19 +119,19 @@ export default function PasswordFixDemo() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Passwords app simulator</p>
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Passwords app simulator</p>
+      <div className="border border-zinc-200 dark:border-neutral-800 rounded-lg overflow-hidden">
         {liveActivity && (
-          <div className="px-4 py-2.5 bg-zinc-900 dark:bg-zinc-100 flex items-center gap-2">
+          <div className="px-4 py-2.5 bg-zinc-900 dark:bg-neutral-100 flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-            <span className="text-xs text-white dark:text-zinc-900 font-medium truncate">{liveActivity}</span>
+            <span className="text-xs text-white dark:text-neutral-900 font-medium truncate">{liveActivity}</span>
           </div>
         )}
 
-        <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+        <div className="px-4 py-3 border-b border-zinc-200 dark:border-neutral-800 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium dark:text-white">Security</p>
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">{ACCOUNTS.length} accounts need attention</p>
+            <p className="text-sm font-medium dark:text-paper">Security</p>
+            <p className="text-[11px] text-zinc-500 dark:text-neutral-400">{ACCOUNTS.length} accounts need attention</p>
           </div>
           {!running ? (
             <button
@@ -143,35 +143,35 @@ export default function PasswordFixDemo() {
           ) : (
             <button
               onClick={reset}
-              className="text-xs font-medium px-3 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              className="text-xs font-medium px-3 py-1.5 rounded-full border border-zinc-300 dark:border-neutral-600 text-zinc-600 dark:text-neutral-300 hover:bg-zinc-50 dark:hover:bg-neutral-800 transition-colors"
             >
               Cancel
             </button>
           )}
         </div>
 
-        <div className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+        <div className="divide-y divide-zinc-100 dark:divide-neutral-800/60">
           {ACCOUNTS.map(account => {
             const status = statuses[account.id];
             const active = currentId === account.id;
             return (
               <div
                 key={account.id}
-                className={`px-4 py-3 flex items-center gap-3 transition-colors ${active ? 'bg-zinc-50 dark:bg-zinc-800/40' : ''}`}
+                className={`px-4 py-3 flex items-center gap-3 transition-colors ${active ? 'bg-zinc-50 dark:bg-neutral-800/40' : ''}`}
               >
-                <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase">
+                <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-bold text-zinc-500 dark:text-neutral-400 uppercase">
                     {account.site.slice(0, 2)}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium dark:text-white truncate">{account.site}</p>
+                  <p className="text-xs font-medium dark:text-paper truncate">{account.site}</p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className={`text-[10px] px-1.5 py-0.5 rounded ${ISSUE_COLOR[account.issue]}`}>
                       {ISSUE_LABEL[account.issue]}
                     </span>
                     {account.twoFA !== 'none' && (
-                      <span className="text-[10px] text-zinc-400 dark:text-zinc-400">
+                      <span className="text-[10px] text-zinc-400 dark:text-neutral-400">
                         2FA: {account.twoFA}
                       </span>
                     )}
@@ -181,7 +181,7 @@ export default function PasswordFixDemo() {
                   status === 'upgraded' ? 'text-emerald-600 dark:text-emerald-400' :
                   status === 'failed' ? 'text-red-500 dark:text-red-400' :
                   active ? 'text-blue-500 dark:text-blue-400' :
-                  'text-zinc-400 dark:text-zinc-400'
+                  'text-zinc-400 dark:text-neutral-400'
                 }`}>
                   {statusLabel(status)}
                 </span>
@@ -190,15 +190,15 @@ export default function PasswordFixDemo() {
           })}
         </div>
 
-        <div className="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/30">
+        <div className="px-4 py-3 border-t border-zinc-200 dark:border-neutral-800 bg-zinc-50 dark:bg-neutral-800/30">
           {done ? (
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs text-zinc-600 dark:text-neutral-400">
               Done. <span className="text-emerald-600 dark:text-emerald-400 font-medium">{upgraded} upgraded</span>
               {failed > 0 && <>, <span className="text-red-500 font-medium">{failed} failed</span> (authenticator 2FA)</>}.
               {' '}Tap Fix Passwords to run again.
             </p>
           ) : (
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="text-xs text-zinc-500 dark:text-neutral-400">
               Tap Fix Passwords to watch the agent work through each account. Accounts with authenticator-app 2FA fail in the beta.
             </p>
           )}

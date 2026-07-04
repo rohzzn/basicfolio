@@ -2,11 +2,6 @@ export type Theme = 'light' | 'dark';
 
 const THEME_STORAGE_KEY = 'theme';
 
-export function getSystemTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
 export function getStoredTheme(): Theme | null {
   if (typeof window === 'undefined') return null;
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
@@ -14,7 +9,7 @@ export function getStoredTheme(): Theme | null {
 }
 
 export function getEffectiveTheme(): Theme {
-  return getStoredTheme() ?? getSystemTheme();
+  return getStoredTheme() ?? 'light';
 }
 
 export function applyTheme(theme: Theme): void {

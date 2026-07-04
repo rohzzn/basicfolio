@@ -62,7 +62,7 @@ export default function LinksPage() {
   return (
     <div className="w-full min-w-0 max-w-6xl">
       <header className="mb-8">
-        <h2 className="text-lg font-medium dark:text-white">On the Internet</h2>
+        <h2 className="text-lg font-medium dark:text-paper">On the Internet</h2>
       </header>
 
       <div className="grid gap-5 lg:grid-cols-2">

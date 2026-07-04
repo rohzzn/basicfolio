@@ -26,17 +26,17 @@ function SmartAgricultureDemo() {
   ];
   return (
     <div className="my-8 not-prose">
-      <div className="flex items-center justify-between mb-3"><p className={L} style={{marginBottom:0}}>Live Sensors</p><div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"/><span className="text-xs text-zinc-400 dark:text-zinc-400">Live</span></div></div>
+      <div className="flex items-center justify-between mb-3"><p className={L} style={{marginBottom:0}}>Live Sensors</p><div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"/><span className="text-xs text-zinc-400 dark:text-neutral-400">Live</span></div></div>
       <div className="grid grid-cols-2 gap-3">
         {items.map(({label,value,pct,color,good})=>(
           <div key={label} className={`${CARD} p-3`}>
-            <div className="flex items-center justify-between mb-2"><span className="text-xs text-zinc-500 dark:text-zinc-400">{label}</span><span className={`text-xs font-medium ${good?'text-green-500':'text-red-500'}`}>{good?'OK':'!'}</span></div>
-            <p className="text-base font-medium dark:text-white mb-2 tabular-nums">{value}</p>
-            <div className="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full"><div className={`h-full rounded-full transition-all duration-1000 ${color}`} style={{width:`${pct}%`}}/></div>
+            <div className="flex items-center justify-between mb-2"><span className="text-xs text-zinc-500 dark:text-neutral-400">{label}</span><span className={`text-xs font-medium ${good?'text-green-500':'text-red-500'}`}>{good?'OK':'!'}</span></div>
+            <p className="text-base font-medium dark:text-paper mb-2 tabular-nums">{value}</p>
+            <div className="h-1 bg-zinc-100 dark:bg-neutral-800 rounded-full"><div className={`h-full rounded-full transition-all duration-1000 ${color}`} style={{width:`${pct}%`}}/></div>
           </div>
         ))}
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3">Values update every 2 seconds (simulated)</p>
+      <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-3">Values update every 2 seconds (simulated)</p>
     </div>
   );
 }
@@ -56,10 +56,10 @@ function AutomobileAnalyticsDemo() {
         {AUTO_DATA.map(d=>(
           <div key={d.brand} onMouseEnter={()=>setHover(d.brand)} onMouseLeave={()=>setHover(null)}>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className={`font-medium transition-colors ${hover===d.brand?'text-zinc-900 dark:text-white':'text-zinc-600 dark:text-zinc-400'}`}>{d.brand}</span>
-              <span className="text-zinc-400 dark:text-zinc-400 tabular-nums">{d.sales.toLocaleString()} units</span>
+              <span className={`font-medium transition-colors ${hover===d.brand?'text-zinc-900 dark:text-paper':'text-zinc-600 dark:text-neutral-400'}`}>{d.brand}</span>
+              <span className="text-zinc-400 dark:text-neutral-400 tabular-nums">{d.sales.toLocaleString()} units</span>
             </div>
-            <div className="h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-zinc-100 dark:bg-neutral-800 rounded-full overflow-hidden">
               <div className={`h-full rounded-full transition-all duration-500 ${d.color} ${hover===d.brand?'opacity-100':'opacity-70'}`} style={{width:`${(d.sales/max)*100}%`}}/>
             </div>
           </div>
@@ -80,9 +80,9 @@ function BlockSteamDemo() {
   return (
     <div className="my-8 not-prose">
       <p className={L}>Script Demo</p>
-      <div className="relative h-36 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 overflow-hidden flex items-center justify-center">
+      <div className="relative h-36 bg-zinc-50 dark:bg-neutral-900 rounded-lg border border-zinc-100 dark:border-neutral-800 overflow-hidden flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-3">Steam friend request received</p>
+          <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-3">Steam friend request received</p>
           <button onClick={show} className="px-4 py-2 text-sm bg-zinc-800 text-white rounded hover:bg-zinc-700 transition-colors">Simulate invite</button>
           {blocked>0&&<p className="text-xs text-green-500 mt-2">Blocked {blocked} invite{blocked>1?'s':''}</p>}
         </div>
@@ -94,7 +94,7 @@ function BlockSteamDemo() {
           </div>
         )}
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">The userscript intercepts and dismisses invite popups automatically</p>
+      <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-2">The userscript intercepts and dismisses invite popups automatically</p>
     </div>
   );
 }
@@ -165,13 +165,13 @@ function DiscordMirrorDemo() {
       <p className={L}>Live Mirror Demo</p>
       <div className="grid grid-cols-2 gap-3">
         {['Server A · #announcements','Server B · #announcements'].map((title,si)=>(
-          <div key={title} className="bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 overflow-hidden">
-            <div className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-800"><p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{title}</p></div>
+          <div key={title} className="bg-zinc-50 dark:bg-neutral-900 rounded-lg border border-zinc-100 dark:border-neutral-800 overflow-hidden">
+            <div className="px-3 py-2 bg-zinc-100 dark:bg-neutral-800 border-b border-zinc-100 dark:border-neutral-800"><p className="text-xs font-medium text-zinc-600 dark:text-neutral-400">{title}</p></div>
             <div className="p-2 space-y-1.5 min-h-[80px]">
               {visible.map((m,i)=>(
-                <div key={i} className="text-xs p-1.5 rounded bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700">
-                  {si===1&&<span className="text-zinc-400 dark:text-zinc-400 text-xs">[mirrored] </span>}
-                  <span className="text-zinc-700 dark:text-zinc-300">{m}</span>
+                <div key={i} className="text-xs p-1.5 rounded bg-white dark:bg-neutral-800 border border-zinc-100 dark:border-neutral-700">
+                  {si===1&&<span className="text-zinc-400 dark:text-neutral-400 text-xs">[mirrored] </span>}
+                  <span className="text-zinc-700 dark:text-neutral-300">{m}</span>
                 </div>
               ))}
             </div>
@@ -180,9 +180,9 @@ function DiscordMirrorDemo() {
       </div>
       <div className="flex items-center gap-3 mt-3">
         <button onClick={()=>setStep(s=>Math.min(s+1,MIRROR_MSGS.length))} disabled={step>=MIRROR_MSGS.length}
-          className="px-3 py-1.5 text-xs bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-30">Post message →</button>
-        <button onClick={()=>setStep(0)} className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Reset</button>
-        {step>0&&<p className="text-xs text-zinc-400 dark:text-zinc-400">Message mirrored to Server B in real time</p>}
+          className="px-3 py-1.5 text-xs bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-30">Post message →</button>
+        <button onClick={()=>setStep(0)} className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-neutral-300 transition-colors">Reset</button>
+        {step>0&&<p className="text-xs text-zinc-400 dark:text-neutral-400">Message mirrored to Server B in real time</p>}
       </div>
     </div>
   );
@@ -206,18 +206,18 @@ function GitHubAnyYearDemo() {
       <div className="flex gap-2 mb-4 flex-wrap">
         {Object.keys(YEAR_SEEDS).map(y=>(
           <button key={y} onClick={()=>setYear(Number(y))}
-            className={`px-3 py-1.5 text-xs rounded-md transition-colors ${year===Number(y)?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`}>{y}</button>
+            className={`px-3 py-1.5 text-xs rounded-md transition-colors ${year===Number(y)?'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900':'bg-zinc-100 dark:bg-neutral-800 text-zinc-500 dark:text-neutral-400'}`}>{y}</button>
         ))}
       </div>
       <div className="overflow-x-auto">
         <div className="inline-grid gap-0.5" style={{gridTemplateColumns:`repeat(${COLS},10px)`}}>
           {Array.from({length:COLS*ROWS}).map((_,i)=>{
             const on=cellActive(year,i);
-            return <div key={i} className={`w-2.5 h-2.5 rounded-sm transition-colors duration-300 ${on?'bg-zinc-700 dark:bg-zinc-300':'bg-zinc-100 dark:bg-zinc-800'}`}/>;
+            return <div key={i} className={`w-2.5 h-2.5 rounded-sm transition-colors duration-300 ${on?'bg-zinc-700 dark:bg-neutral-300':'bg-zinc-100 dark:bg-neutral-800'}`}/>;
           })}
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">Simulated contribution pattern for {year}</p>
+      <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-2">Simulated contribution pattern for {year}</p>
     </div>
   );
 }

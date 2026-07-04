@@ -56,13 +56,13 @@ function CardioStatsGrid({ activity }: { activity: StravaActivity }) {
   if (stats.length === 0) return null;
 
   return (
-    <div className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-zinc-100 dark:border-zinc-800 sm:grid-cols-3">
+    <div className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-zinc-100 dark:border-neutral-800 sm:grid-cols-3">
       {stats.map(({ label, value }) => (
-        <div key={label} className="bg-zinc-50 px-2.5 py-2 dark:bg-zinc-900/50">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+        <div key={label} className="bg-zinc-50 px-2.5 py-2 dark:bg-neutral-900/50">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
             {label}
           </p>
-          <p className="mt-0.5 text-xs font-medium tabular-nums text-zinc-800 dark:text-zinc-200">
+          <p className="mt-0.5 text-xs font-medium tabular-nums text-zinc-800 dark:text-neutral-200">
             {value}
           </p>
         </div>
@@ -82,19 +82,19 @@ function CardioCardBody({
     <>
       <div className="flex items-baseline justify-between gap-2">
         <div className="flex min-w-0 items-baseline gap-2">
-          <span className="flex-shrink-0 rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400">
+          <span className="flex-shrink-0 rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:bg-neutral-800 dark:text-neutral-400">
             {label}
           </span>
           <a
             href={`https://www.strava.com/activities/${activity.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="truncate text-sm font-medium text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
+            className="truncate text-sm font-medium text-zinc-700 transition-colors hover:text-zinc-900 dark:text-neutral-300 dark:hover:text-paper"
           >
             {activity.name}
           </a>
         </div>
-        <time className="flex-shrink-0 text-xs text-zinc-400 dark:text-zinc-400">
+        <time className="flex-shrink-0 text-xs text-zinc-400 dark:text-neutral-400">
           {shortDate(activity.start_date)}
         </time>
       </div>
@@ -126,7 +126,7 @@ export default function CardioCard({
 
   if (showPhotos) {
     return (
-      <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800">
+      <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-100 dark:border-neutral-800">
         <PhotoCarousel
           images={photoUrls}
           alt={activity.name}
@@ -141,7 +141,7 @@ export default function CardioCard({
 
   if (polyline) {
     return (
-      <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800">
+      <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-100 dark:border-neutral-800">
         <RouteMap polyline={polyline} />
         <div className="p-3">
           <CardioCardBody activity={activity} label={label} />
@@ -151,7 +151,7 @@ export default function CardioCard({
   }
 
   return (
-    <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-100 p-3 dark:border-zinc-800">
+    <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-100 p-3 dark:border-neutral-800">
       <CardioCardBody activity={activity} label={label} />
     </div>
   );

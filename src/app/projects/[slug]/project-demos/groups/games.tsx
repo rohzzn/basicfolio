@@ -43,16 +43,16 @@ function DockPokerDemo() {
       <p className={L}>Deal a Hand</p>
       <div className="flex gap-2 mb-4 flex-wrap">
         {hand.map((c, i) => (
-          <div key={i} className={`w-12 h-18 border-2 rounded-lg flex flex-col items-center justify-center p-2 ${CARD} ${c.red ? 'text-red-500 border-red-200 dark:border-red-900' : 'dark:text-white border-zinc-200 dark:border-zinc-700'}`}
+          <div key={i} className={`w-12 h-18 border-2 rounded-lg flex flex-col items-center justify-center p-2 ${CARD} ${c.red ? 'text-red-500 border-red-200 dark:border-red-900' : 'dark:text-paper border-zinc-200 dark:border-neutral-700'}`}
             style={{ minHeight: 72 }}>
             <span className="text-xs font-bold leading-none">{c.r}</span>
             <span className="text-lg leading-none">{c.s}</span>
           </div>
         ))}
-        {hand.length === 0 && <p className="text-sm text-zinc-400 dark:text-zinc-400 self-center">No cards dealt yet</p>}
+        {hand.length === 0 && <p className="text-sm text-zinc-400 dark:text-neutral-400 self-center">No cards dealt yet</p>}
       </div>
-      {best && <p className="text-sm font-medium dark:text-white mb-4">{best}</p>}
-      <button onClick={deal} className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 transition-opacity">
+      {best && <p className="text-sm font-medium dark:text-paper mb-4">{best}</p>}
+      <button onClick={deal} className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:opacity-80 transition-opacity">
         <RefreshCcw className="w-3.5 h-3.5" />{hand.length ? 'Deal Again' : 'Deal Hand'}
       </button>
     </div>
@@ -78,7 +78,7 @@ function CatanProbabilityDemo() {
           const num = Number(n); const hot = num === 6 || num === 8;
           return (
             <button key={n} onClick={() => setSel(sel === num ? null : num)}
-              className={`flex flex-col items-center px-3 py-2 rounded-lg border transition-colors ${sel === num ? 'bg-zinc-900 dark:bg-zinc-100 border-transparent text-white dark:text-zinc-900' : `${CARD} hover:bg-zinc-50 dark:hover:bg-zinc-800/40`}`}>
+              className={`flex flex-col items-center px-3 py-2 rounded-lg border transition-colors ${sel === num ? 'bg-zinc-900 dark:bg-neutral-100 border-transparent text-white dark:text-neutral-900' : `${CARD} hover:bg-zinc-50 dark:hover:bg-neutral-800/40`}`}>
               <span className={`text-sm font-bold ${hot && sel !== num ? 'text-red-500' : ''}`}>{n}</span>
               <div className="flex gap-0.5 mt-1">{Array.from({length:d.ways}).map((_,i) => <div key={i} className="w-1 h-1 rounded-full bg-current opacity-60" />)}</div>
             </button>
@@ -86,8 +86,8 @@ function CatanProbabilityDemo() {
         })}
       </div>
       {sel && (
-        <div className="text-sm text-zinc-600 dark:text-zinc-400 p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg">
-          Rolling <strong className="dark:text-white">{sel}</strong>: {CATAN_PROB[sel].ways} of 36 combinations: probability: <strong className="dark:text-white">{CATAN_PROB[sel].pct}</strong>
+        <div className="text-sm text-zinc-600 dark:text-neutral-400 p-3 bg-zinc-50 dark:bg-neutral-800/40 rounded-lg">
+          Rolling <strong className="dark:text-paper">{sel}</strong>: {CATAN_PROB[sel].ways} of 36 combinations: probability: <strong className="dark:text-paper">{CATAN_PROB[sel].pct}</strong>
         </div>
       )}
     </div>
@@ -110,8 +110,8 @@ function evalGuess(w:string,t:string):GS[] {
 const GC:Record<GS,string> = {
   correct:'bg-green-500 border-green-500 text-white',
   present:'bg-amber-400 border-amber-400 text-white',
-  absent:'bg-zinc-500 dark:bg-zinc-600 border-zinc-500 text-white',
-  empty:'border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 bg-transparent',
+  absent:'bg-zinc-500 dark:bg-neutral-600 border-zinc-500 text-white',
+  empty:'border-zinc-200 dark:border-neutral-700 text-zinc-700 dark:text-neutral-300 bg-transparent',
 };
 function MiniWordle() {
   const [rows,setRows]=useState<{w:string;s:GS[]}[]>([]);
@@ -151,17 +151,17 @@ function MiniWordle() {
         {!done?(
           <div className="flex gap-2">
             <input ref={ref} value={cur} onChange={e=>{setCur(e.target.value.replace(/[^a-zA-Z]/g,'').slice(0,5).toUpperCase());setErr('');}} onKeyDown={e=>{if(e.key==='Enter')submit();}}
-              className="font-mono text-sm uppercase text-center w-28 px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-lg bg-transparent text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 tracking-widest"
+              className="font-mono text-sm uppercase text-center w-28 px-3 py-2 border border-zinc-200 dark:border-neutral-700 rounded-lg bg-transparent text-zinc-800 dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-neutral-600 tracking-widest"
               placeholder="GUESS" maxLength={5} />
-            <button onClick={submit} disabled={cur.length!==5} className="px-4 py-2 text-xs font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg disabled:opacity-30 hover:opacity-80 transition-opacity">Enter</button>
+            <button onClick={submit} disabled={cur.length!==5} className="px-4 py-2 text-xs font-medium bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg disabled:opacity-30 hover:opacity-80 transition-opacity">Enter</button>
           </div>
         ):(
           <div className="text-center">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">{won?`Got it in ${rows.length}!`:`The word was ${W_TARGET}`}</p>
-            <button onClick={reset} className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"><RefreshCcw className="w-3 h-3"/>play again</button>
+            <p className="text-sm text-zinc-600 dark:text-neutral-400 mb-2">{won?`Got it in ${rows.length}!`:`The word was ${W_TARGET}`}</p>
+            <button onClick={reset} className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors"><RefreshCcw className="w-3 h-3"/>play again</button>
           </div>
         )}
-        <p className="text-xs text-zinc-400 dark:text-zinc-400">{4-rows.length} guess{4-rows.length!==1?'es':''} left · valid: {W_LIST.slice(0,5).join(', ')}…</p>
+        <p className="text-xs text-zinc-400 dark:text-neutral-400">{4-rows.length} guess{4-rows.length!==1?'es':''} left · valid: {W_LIST.slice(0,5).join(', ')}…</p>
       </div>
     </div>
   );
@@ -193,7 +193,7 @@ const TYPE_COLORS: Record<string,string> = {
   Ice:'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400',
   Psychic:'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400',
   Dragon:'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400',
-  Dark:'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300',
+  Dark:'bg-zinc-200 dark:bg-neutral-800 text-zinc-700 dark:text-neutral-300',
   Steel:'bg-slate-100 dark:bg-slate-900/30 text-slate-700 dark:text-slate-400',
   Fairy:'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400',
   Fighting:'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
@@ -208,17 +208,17 @@ function PokedexTypeDemo() {
       <div className="flex flex-wrap gap-1.5 mb-4">
         {Object.keys(TYPE_DATA).map(t=>(
           <button key={t} onClick={()=>setSel(sel===t?null:t)}
-            className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${sel===t?'ring-2 ring-zinc-900 dark:ring-zinc-100':''} ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}>{t}</button>
+            className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${sel===t?'ring-2 ring-zinc-900 dark:ring-neutral-100':''} ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-neutral-800 text-zinc-600 dark:text-neutral-400'}`}>{t}</button>
         ))}
       </div>
       {d&&(
         <div className="space-y-2 text-sm">
-          <div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-400 text-xs w-20 flex-shrink-0 pt-0.5">Strong vs</span><div className="flex flex-wrap gap-1">{d.strong.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>
-          <div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-400 text-xs w-20 flex-shrink-0 pt-0.5">Weak to</span><div className="flex flex-wrap gap-1">{d.weak.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>
-          {d.immune.length>0&&<div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-400 text-xs w-20 flex-shrink-0 pt-0.5">Immune to</span><div className="flex flex-wrap gap-1">{d.immune.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>}
+          <div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-neutral-400 text-xs w-20 flex-shrink-0 pt-0.5">Strong vs</span><div className="flex flex-wrap gap-1">{d.strong.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-neutral-800'}`}>{t}</span>)}</div></div>
+          <div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-neutral-400 text-xs w-20 flex-shrink-0 pt-0.5">Weak to</span><div className="flex flex-wrap gap-1">{d.weak.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-neutral-800'}`}>{t}</span>)}</div></div>
+          {d.immune.length>0&&<div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-neutral-400 text-xs w-20 flex-shrink-0 pt-0.5">Immune to</span><div className="flex flex-wrap gap-1">{d.immune.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-neutral-800'}`}>{t}</span>)}</div></div>}
         </div>
       )}
-      {!sel&&<p className="text-xs text-zinc-400 dark:text-zinc-400">Click a type to see matchups</p>}
+      {!sel&&<p className="text-xs text-zinc-400 dark:text-neutral-400">Click a type to see matchups</p>}
     </div>
   );
 }
@@ -256,14 +256,14 @@ function PokemonKeyDemo() {
       return p;
     });
   };
-  const kb=(k:string)=>pressed.has(k)?'bg-zinc-800 dark:bg-zinc-100 text-white dark:text-zinc-900 scale-95':'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400';
+  const kb=(k:string)=>pressed.has(k)?'bg-zinc-800 dark:bg-neutral-100 text-white dark:text-neutral-900 scale-95':'bg-zinc-100 dark:bg-neutral-800 text-zinc-600 dark:text-neutral-400';
   return (
     <div className="my-8 not-prose">
       <p className={L}>Movement Demo</p>
-      <div className="grid mb-3 gap-px bg-zinc-200 dark:bg-zinc-700 rounded-lg overflow-hidden" style={{gridTemplateColumns:`repeat(${cols},1fr)`}}>
+      <div className="grid mb-3 gap-px bg-zinc-200 dark:bg-neutral-700 rounded-lg overflow-hidden" style={{gridTemplateColumns:`repeat(${cols},1fr)`}}>
         {Array.from({length:cols*rows}).map((_,i)=>{
           const x=i%cols,y=Math.floor(i/cols);
-          return <div key={i} className={`aspect-square ${x===pos.x&&y===pos.y?'bg-red-500':'bg-zinc-50 dark:bg-zinc-900'}`} />;
+          return <div key={i} className={`aspect-square ${x===pos.x&&y===pos.y?'bg-red-500':'bg-zinc-50 dark:bg-neutral-900'}`} />;
         })}
       </div>
       <div className="flex flex-col items-center gap-1">
@@ -274,7 +274,7 @@ function PokemonKeyDemo() {
           <button onClick={()=>move('ArrowRight')} className={`w-9 h-9 rounded text-sm font-bold transition-all ${kb('ArrowRight')}`}>→</button>
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2 text-center">Arrow keys or click buttons to move the red pixel</p>
+      <p className="text-xs text-zinc-400 dark:text-neutral-400 mt-2 text-center">Arrow keys or click buttons to move the red pixel</p>
     </div>
   );
 }
@@ -291,16 +291,16 @@ function GreedIslandDemo() {
     <div className="my-8 not-prose">
       <p className={L}>Card Catalog: {filtered.length} of {GI_CARDS.length} cards</p>
       <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search cards…"
-        className="w-full mb-3 px-3 py-2 text-sm border border-zinc-100 dark:border-zinc-800 rounded-lg bg-transparent text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-700" />
-      <div className={`${CARD} divide-y divide-zinc-100 dark:divide-zinc-800 max-h-48 overflow-y-auto`}>
+        className="w-full mb-3 px-3 py-2 text-sm border border-zinc-100 dark:border-neutral-800 rounded-lg bg-transparent text-zinc-700 dark:text-neutral-300 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 dark:focus:ring-neutral-700" />
+      <div className={`${CARD} divide-y divide-zinc-100 dark:divide-neutral-800 max-h-48 overflow-y-auto`}>
         {filtered.slice(0,12).map(c=>(
           <div key={c} className="px-3 py-2 flex items-center justify-between text-xs">
-            <span className="text-zinc-700 dark:text-zinc-300">{c}</span>
-            <span className="text-zinc-400 dark:text-zinc-400 font-mono">GI-{String(GI_CARDS.indexOf(c)+1).padStart(3,'0')}</span>
+            <span className="text-zinc-700 dark:text-neutral-300">{c}</span>
+            <span className="text-zinc-400 dark:text-neutral-400 font-mono">GI-{String(GI_CARDS.indexOf(c)+1).padStart(3,'0')}</span>
           </div>
         ))}
-        {filtered.length>12&&<div className="px-3 py-2 text-xs text-zinc-400 dark:text-zinc-400">+{filtered.length-12} more</div>}
-        {filtered.length===0&&<div className="px-3 py-2 text-xs text-zinc-400 dark:text-zinc-400">No cards found</div>}
+        {filtered.length>12&&<div className="px-3 py-2 text-xs text-zinc-400 dark:text-neutral-400">+{filtered.length-12} more</div>}
+        {filtered.length===0&&<div className="px-3 py-2 text-xs text-zinc-400 dark:text-neutral-400">No cards found</div>}
       </div>
     </div>
   );

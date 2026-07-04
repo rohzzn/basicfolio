@@ -39,7 +39,7 @@ export default function PhotoCarousel({ images, alt, onAllFailed }: PhotoCarouse
   };
 
   return (
-    <div className="group relative w-full min-w-0 bg-zinc-100 dark:bg-zinc-900/50">
+    <div className="group relative w-full min-w-0 bg-zinc-100 dark:bg-neutral-900/50">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         key={current.url}

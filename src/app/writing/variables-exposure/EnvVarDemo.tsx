@@ -15,12 +15,12 @@ export default function EnvVarDemo() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Who can see what</p>
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-        <div className="flex border-b border-zinc-200 dark:border-zinc-800">
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Who can see what</p>
+      <div className="border border-zinc-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+        <div className="flex border-b border-zinc-200 dark:border-neutral-800">
           {(['browser', 'server'] as const).map(p => (
             <button key={p} onClick={() => setPerspective(p)}
-              className={`flex-1 py-2.5 text-xs font-medium transition-colors capitalize ${perspective === p ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'}`}>
+              className={`flex-1 py-2.5 text-xs font-medium transition-colors capitalize ${perspective === p ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900' : 'text-zinc-500 dark:text-neutral-400 hover:bg-zinc-50 dark:hover:bg-neutral-800/50'}`}>
               {p === 'browser' ? 'Browser / client bundle' : 'Server / API route'}
             </button>
           ))}
@@ -29,11 +29,11 @@ export default function EnvVarDemo() {
           {VARS.map(v => {
             const shown = perspective === 'server' || v.client;
             return (
-              <div key={v.name} className={`flex items-start justify-between gap-3 px-2 py-1.5 rounded transition-colors ${shown ? 'bg-zinc-50 dark:bg-zinc-800/50' : 'opacity-30'}`}>
-                <span className={`${v.client ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-500 dark:text-zinc-400'} flex-shrink-0`}>
+              <div key={v.name} className={`flex items-start justify-between gap-3 px-2 py-1.5 rounded transition-colors ${shown ? 'bg-zinc-50 dark:bg-neutral-800/50' : 'opacity-30'}`}>
+                <span className={`${v.client ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-500 dark:text-neutral-400'} flex-shrink-0`}>
                   {v.name}
                 </span>
-                <span className={`${shown ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-300 dark:text-zinc-700'} truncate text-right`}>
+                <span className={`${shown ? 'text-zinc-700 dark:text-neutral-300' : 'text-zinc-300 dark:text-neutral-700'} truncate text-right`}>
                   {shown ? v.value : '●●●●●●●●●'}
                 </span>
               </div>
@@ -41,7 +41,7 @@ export default function EnvVarDemo() {
           })}
         </div>
         <div className="px-4 pb-4 pt-1">
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs text-zinc-500 dark:text-neutral-400">
             {perspective === 'browser'
               ? <><span className="text-amber-600 dark:text-amber-400">NEXT_PUBLIC_</span> prefixed vars are compiled into your JavaScript bundle. Anyone who downloads your app can read them.</>
               : 'Server-side variables never leave your infrastructure. They are only available inside API routes and server components.'}

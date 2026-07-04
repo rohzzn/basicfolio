@@ -136,16 +136,16 @@ function TagMarquee({ tags }: { tags: string[] }) {
 
   return (
     <div
-      className="relative mb-8 overflow-hidden rounded-full border border-zinc-200/80 bg-zinc-50/80 py-2.5 dark:border-zinc-800 dark:bg-zinc-900/40"
+      className="relative mb-8 overflow-hidden rounded-full border border-zinc-200/80 bg-zinc-50/80 py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40"
       aria-hidden
     >
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-zinc-50 to-transparent dark:from-zinc-950" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-zinc-50 to-transparent dark:from-zinc-950" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-zinc-50 to-transparent dark:from-neutral-950" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-zinc-50 to-transparent dark:from-neutral-950" />
       <div className="art-tag-marquee-track" style={{ ["--marquee-duration" as string]: `${Math.max(60, tags.length * 8)}s` }}>
         {items.map((tag, i) => (
           <span
             key={`${tag}-${i}`}
-            className="mx-4 shrink-0 text-xs uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-400"
+            className="mx-4 shrink-0 text-xs uppercase tracking-[0.2em] text-zinc-400 dark:text-neutral-400"
           >
             {tag}
           </span>
@@ -166,8 +166,8 @@ const ArtPage = () => {
   return (
     <div className="w-full min-w-0 max-w-6xl">
       <header className="mb-6 max-w-xl">
-        <h2 className="text-lg font-medium dark:text-white">Design</h2>
-        <p className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-lg font-medium dark:text-paper">Design</h2>
+        <p className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-neutral-400">
           Branding, illustration, and interface work.
         </p>
       </header>
@@ -182,13 +182,13 @@ const ArtPage = () => {
             onClick={() => setActiveFilter(filter)}
             className={`text-xs uppercase tracking-[0.14em] transition-colors ${
               activeFilter === filter
-                ? "text-zinc-900 dark:text-white"
-                : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300"
+                ? "text-zinc-900 dark:text-paper"
+                : "text-zinc-400 hover:text-zinc-600 dark:text-neutral-400 dark:hover:text-neutral-300"
             }`}
           >
             {filter === "all" ? "All work" : filter}
             {activeFilter === filter ? (
-              <span className="mt-1 block h-px w-full bg-zinc-900 dark:bg-white" />
+              <span className="mt-1 block h-px w-full bg-zinc-900 dark:bg-paper" />
             ) : null}
           </button>
         ))}
@@ -210,7 +210,7 @@ const ArtPage = () => {
                 href={project.projectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative block w-full overflow-hidden rounded-xl ring-1 ring-zinc-200/70 transition-shadow hover:shadow-lg dark:ring-zinc-800/80"
+                className="group relative block w-full overflow-hidden rounded-xl ring-1 ring-zinc-200/70 transition-shadow hover:shadow-lg dark:ring-neutral-800/80"
               >
                 <Image
                   src={project.imageUrl}
@@ -230,11 +230,11 @@ const ArtPage = () => {
         </AnimatePresence>
       </motion.div>
 
-      <p className="mt-10 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="mt-10 text-sm text-zinc-500 dark:text-neutral-400">
         Want to work together?{" "}
         <Link
           href="/meet"
-          className="text-zinc-700 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:text-zinc-300 dark:hover:text-white"
+          className="text-zinc-700 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:text-neutral-300 dark:hover:text-paper"
         >
           Let&apos;s talk
         </Link>

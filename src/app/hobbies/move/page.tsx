@@ -32,8 +32,8 @@ const PERIODS: { id: StatsPeriod; label: string }[] = [
 
 function pillClass(active: boolean): string {
   return active
-    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900'
-    : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:text-white';
+    ? 'bg-zinc-900 text-white dark:bg-paper dark:text-neutral-900'
+    : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-paper';
 }
 
 export default function MovePage() {
@@ -170,8 +170,8 @@ export default function MovePage() {
     <div style={{ maxWidth: '75ch' }}>
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-lg font-medium dark:text-white">Move</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-lg font-medium dark:text-paper">Move</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">
           Runs, rides, lifts
         </p>
       </div>
@@ -201,13 +201,13 @@ export default function MovePage() {
 
       {/* Stats strip */}
       {!loading && (
-        <div className="mb-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800 sm:grid-cols-4">
+        <div className="mb-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-100 dark:border-neutral-800 sm:grid-cols-4">
           {statCards.map(({ label, value }) => (
-            <div key={label} className="bg-zinc-50 p-3 dark:bg-zinc-900/50">
-              <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+            <div key={label} className="bg-zinc-50 p-3 dark:bg-neutral-900/50">
+              <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
                 {label}
               </p>
-              <p className="text-sm font-medium tabular-nums leading-snug dark:text-white sm:text-base">
+              <p className="text-sm font-medium tabular-nums leading-snug dark:text-paper sm:text-base">
                 {value}
               </p>
             </div>
@@ -226,31 +226,31 @@ export default function MovePage() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="min-w-0 animate-pulse overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800"
+              className="min-w-0 animate-pulse overflow-hidden rounded-lg border border-zinc-100 dark:border-neutral-800"
             >
-              <div className="h-44 bg-zinc-100 dark:bg-zinc-800" />
+              <div className="h-44 bg-zinc-100 dark:bg-neutral-800" />
               <div className="space-y-2 p-3">
                 <div className="flex justify-between">
                   <div className="flex gap-2">
-                    <div className="h-4 w-8 rounded bg-zinc-200 dark:bg-zinc-700" />
-                    <div className="h-4 w-24 rounded bg-zinc-200 dark:bg-zinc-700" />
+                    <div className="h-4 w-8 rounded bg-zinc-200 dark:bg-neutral-700" />
+                    <div className="h-4 w-24 rounded bg-zinc-200 dark:bg-neutral-700" />
                   </div>
-                  <div className="h-3 w-10 rounded bg-zinc-200 dark:bg-zinc-700" />
+                  <div className="h-3 w-10 rounded bg-zinc-200 dark:bg-neutral-700" />
                 </div>
-                <div className="h-3 w-full rounded bg-zinc-200 dark:bg-zinc-700" />
+                <div className="h-3 w-full rounded bg-zinc-200 dark:bg-neutral-700" />
               </div>
             </div>
           ))}
         </div>
       ) : showEmpty ? (
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="py-6 text-sm text-zinc-500 dark:text-neutral-400">
           No activities logged yet.
         </p>
       ) : (
         <div className="space-y-10">
           {groupedActivities.map(group => (
             <section key={group.label}>
-              <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-neutral-400">
                 {group.label}
               </h3>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

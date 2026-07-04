@@ -34,8 +34,8 @@
 }
 
 .dark {
-  --background: #1e1e1e; /* Adjusted dark mode background for better contrast */
-  --foreground: #ededed;
+  --background: #0a0a0a; /* neutral-950: true achromatic near-black, no blue or brown cast */
+  --foreground: #F5F1EC; /* paper — the same warm cream as light mode's background, reused as dark mode's ink */
 }
 
 html {
@@ -119,7 +119,7 @@ button, a, [role="button"] {
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(245, 241, 236, 0.2);
 }
 
 /* E‑reader mode (Konami easter egg) */
@@ -370,7 +370,7 @@ html.e-reader-mode pre {
 
 .dark .spotify-preview-progress::-webkit-slider-thumb,
 .dark .spotify-preview-volume::-webkit-slider-thumb {
-  border-color: #18181b;
+  border-color: #171717;
 }
 
 .spotify-preview-progress::-moz-range-thumb,
@@ -385,6 +385,6 @@ html.e-reader-mode pre {
 
 .dark .spotify-preview-progress::-moz-range-thumb,
 .dark .spotify-preview-volume::-moz-range-thumb {
-  border-color: #18181b;
+  border-color: #171717;
 }
 

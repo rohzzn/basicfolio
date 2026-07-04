@@ -13,7 +13,7 @@ const PIPS: Record<number, [number, number][]> = {
 function Die({ value, shaking }: { value: number; shaking: boolean }) {
   return (
     <div
-      className="relative w-12 h-12 bg-white dark:bg-zinc-100 rounded-lg border border-zinc-200 dark:border-zinc-300 shadow-sm flex-shrink-0"
+      className="relative w-12 h-12 bg-white dark:bg-neutral-100 rounded-lg border border-zinc-200 dark:border-neutral-300 shadow-sm flex-shrink-0"
       style={{
         animation: shaking ? "shake 0.08s linear infinite" : "none",
       }}
@@ -107,8 +107,8 @@ export default function DiceRoller() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Dice Roller</p>
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4">
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Dice Roller</p>
+      <div className="border border-zinc-200 dark:border-neutral-800 rounded-lg p-4">
         <div className="flex items-center gap-4 mb-4">
           <div className="flex gap-3">
             <Die value={dice[0]} shaking={rolling && !bulkRolling} />
@@ -116,11 +116,11 @@ export default function DiceRoller() {
           </div>
           <div className="flex flex-col">
             <span
-              className={`text-3xl font-bold leading-none ${is7 ? "text-red-500" : isHot ? "text-amber-500 dark:text-amber-400" : "dark:text-white"}`}
+              className={`text-3xl font-bold leading-none ${is7 ? "text-red-500" : isHot ? "text-amber-500 dark:text-amber-400" : "dark:text-paper"}`}
             >
               {total}
             </span>
-            <span className="text-xs text-zinc-400 dark:text-zinc-400 mt-0.5">
+            <span className="text-xs text-zinc-400 dark:text-neutral-400 mt-0.5">
               {is7 ? "Move the robber" : isHot ? "High probability" : "Roll total"}
             </span>
           </div>
@@ -129,7 +129,7 @@ export default function DiceRoller() {
               type="button"
               onClick={roll100}
               disabled={rolling || bulkRolling}
-              className="px-3 py-2 text-sm font-medium rounded-md border border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors"
+              className="px-3 py-2 text-sm font-medium rounded-md border border-zinc-300 dark:border-neutral-600 text-zinc-700 dark:text-neutral-200 hover:bg-zinc-100 dark:hover:bg-neutral-800 disabled:opacity-40 transition-colors"
             >
               Roll 100×
             </button>
@@ -137,7 +137,7 @@ export default function DiceRoller() {
               type="button"
               onClick={roll}
               disabled={rolling || bulkRolling}
-              className="px-4 py-2 text-sm font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-md hover:bg-zinc-700 dark:hover:bg-zinc-200 disabled:opacity-40 transition-colors"
+              className="px-4 py-2 text-sm font-medium bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-md hover:bg-zinc-700 dark:hover:bg-neutral-200 disabled:opacity-40 transition-colors"
             >
               Roll
             </button>
@@ -146,23 +146,23 @@ export default function DiceRoller() {
 
         {totalRolls > 0 && (
           <div>
-            <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-2">
+            <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-2">
               Running totals · {totalRolls} roll{totalRolls === 1 ? "" : "s"}{" "}
-              <span className="text-zinc-300 dark:text-zinc-500">(shape should lean toward 6–8)</span>
+              <span className="text-zinc-300 dark:text-neutral-500">(shape should lean toward 6–8)</span>
             </p>
             <div className="flex items-end gap-1.5 h-32 mb-2">
               {TOTALS.map((n) => {
                 const c = dist[n] ?? 0;
                 return (
                   <div key={n} className="flex flex-col items-center flex-1 min-w-0">
-                    <span className="text-[10px] tabular-nums text-zinc-500 dark:text-zinc-400 mb-0.5">{c}</span>
+                    <span className="text-[10px] tabular-nums text-zinc-500 dark:text-neutral-400 mb-0.5">{c}</span>
                     <div
                       className={`w-full rounded-t-sm transition-[height] duration-100 ease-out ${
                         n === 7
                           ? "bg-red-400 dark:bg-red-500"
                           : n === 6 || n === 8
                             ? "bg-amber-400 dark:bg-amber-500"
-                            : "bg-zinc-300 dark:bg-zinc-600"
+                            : "bg-zinc-300 dark:bg-neutral-600"
                       }`}
                       style={{ height: `${(c / barMax) * 100}px`, minHeight: c > 0 ? 4 : 0 }}
                     />
@@ -172,7 +172,7 @@ export default function DiceRoller() {
             </div>
             <div className="flex gap-1.5">
               {TOTALS.map((n) => (
-                <div key={n} className="flex-1 min-w-0 text-center text-[9px] text-zinc-400 dark:text-zinc-400">
+                <div key={n} className="flex-1 min-w-0 text-center text-[9px] text-zinc-400 dark:text-neutral-400">
                   {n}
                 </div>
               ))}

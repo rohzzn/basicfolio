@@ -77,7 +77,7 @@ function getLoader(group: string) {
       () => import(`./groups/${group}`).then((m) => ({ default: m.GroupWidget })),
       {
         loading: () => (
-          <div className="my-8 h-24 animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-800/40" aria-hidden />
+          <div className="my-8 h-24 animate-pulse rounded-lg bg-zinc-100 dark:bg-neutral-800/40" aria-hidden />
         ),
       }
     ) as React.ComponentType<{ project: Project }>;

@@ -18,7 +18,7 @@ function AnimatedBar({ pct, color }: { pct: number; color: string }) {
     }
   }, [pct]);
   return (
-    <div className="h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+    <div className="h-1.5 bg-zinc-100 dark:bg-neutral-800 rounded-full overflow-hidden">
       <div className={`h-full rounded-full transition-all duration-700 ease-out ${color}`}
            style={{ width: `${width}%` }} />
     </div>
@@ -30,12 +30,12 @@ export default function PerfMetrics() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Performance Results</p>
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-        <div className="flex border-b border-zinc-200 dark:border-zinc-800">
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">Performance Results</p>
+      <div className="border border-zinc-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+        <div className="flex border-b border-zinc-200 dark:border-neutral-800">
           {(['before', 'after'] as const).map(v => (
             <button key={v} onClick={() => setView(v)}
-              className={`flex-1 py-2.5 text-xs font-medium transition-colors capitalize ${view === v ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'}`}>
+              className={`flex-1 py-2.5 text-xs font-medium transition-colors capitalize ${view === v ? 'bg-zinc-900 dark:bg-neutral-100 text-white dark:text-neutral-900' : 'text-zinc-500 dark:text-neutral-400 hover:bg-zinc-50 dark:hover:bg-neutral-800/50'}`}>
               {v}
             </button>
           ))}
@@ -44,14 +44,14 @@ export default function PerfMetrics() {
           {METRICS.map(m => (
             <div key={m.label}>
               <div className="flex justify-between items-baseline mb-1.5">
-                <span className="text-xs text-zinc-500 dark:text-zinc-400">{m.label}</span>
+                <span className="text-xs text-zinc-500 dark:text-neutral-400">{m.label}</span>
                 <div className="flex items-baseline gap-2">
                   {view === 'after' && (
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
                       {m.improvement > 0 ? '+' : ''}{m.improvement}{m.unit} better
                     </span>
                   )}
-                  <span className={`text-sm font-bold ${view === 'after' ? 'text-emerald-600 dark:text-emerald-400' : 'dark:text-white'}`}>
+                  <span className={`text-sm font-bold ${view === 'after' ? 'text-emerald-600 dark:text-emerald-400' : 'dark:text-paper'}`}>
                     {view === 'after' ? m.after : m.before}
                   </span>
                 </div>
@@ -59,14 +59,14 @@ export default function PerfMetrics() {
               <AnimatedBar
                 key={view + m.label}
                 pct={view === 'after' ? 100 - m.improvement : 100}
-                color={view === 'after' ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-500'}
+                color={view === 'after' ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-neutral-500'}
               />
             </div>
           ))}
         </div>
         {view === 'after' && (
           <div className="px-4 pb-4">
-            <p className="text-xs text-zinc-400 dark:text-zinc-400">Average improvement: {Math.round(METRICS.reduce((s, m) => s + m.improvement, 0) / METRICS.length)}% across all metrics</p>
+            <p className="text-xs text-zinc-400 dark:text-neutral-400">Average improvement: {Math.round(METRICS.reduce((s, m) => s + m.improvement, 0) / METRICS.length)}% across all metrics</p>
           </div>
         )}
       </div>

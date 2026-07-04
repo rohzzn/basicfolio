@@ -137,7 +137,7 @@ const WeatherIcon: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center gap-1">
-        <div className="w-3.5 h-3.5 animate-pulse bg-zinc-300 dark:bg-zinc-600 rounded"></div>
+        <div className="w-3.5 h-3.5 animate-pulse bg-zinc-300 dark:bg-neutral-600 rounded"></div>
       </div>
     );
   }
@@ -155,7 +155,7 @@ const WeatherIcon: React.FC = () => {
 
   return (
     <div 
-      className="flex items-center gap-1 text-zinc-700 dark:text-zinc-300 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+      className="flex items-center gap-1 text-zinc-700 dark:text-neutral-300 cursor-pointer hover:text-zinc-900 dark:hover:text-neutral-100 transition-colors"
       title={`${currentTemp}°${unit} in ${weather.location} - Click to toggle °C/°F`}
       onClick={handleToggleUnit}
     >

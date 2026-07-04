@@ -59,44 +59,44 @@ export default function MoveTimeline() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">The Journey</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 font-medium mb-3">The Journey</p>
       <div className="flex gap-4 mb-5 flex-wrap">
-        <div className="border border-zinc-100 dark:border-zinc-800 rounded-lg px-4 py-3 flex-1 min-w-28">
-          <p className="text-lg font-bold dark:text-white">{dist.toLocaleString()}</p>
-          <p className="text-xs text-zinc-400 dark:text-zinc-400">km from Hyderabad</p>
+        <div className="border border-zinc-100 dark:border-neutral-800 rounded-lg px-4 py-3 flex-1 min-w-28">
+          <p className="text-lg font-bold dark:text-paper">{dist.toLocaleString()}</p>
+          <p className="text-xs text-zinc-400 dark:text-neutral-400">km from Hyderabad</p>
         </div>
-        <div className="border border-zinc-100 dark:border-zinc-800 rounded-lg px-4 py-3 flex-1 min-w-28">
-          <p className="text-lg font-bold dark:text-white">+10:30</p>
-          <p className="text-xs text-zinc-400 dark:text-zinc-400">hrs time zone change</p>
+        <div className="border border-zinc-100 dark:border-neutral-800 rounded-lg px-4 py-3 flex-1 min-w-28">
+          <p className="text-lg font-bold dark:text-paper">+10:30</p>
+          <p className="text-xs text-zinc-400 dark:text-neutral-400">hrs time zone change</p>
         </div>
-        <div className="border border-zinc-100 dark:border-zinc-800 rounded-lg px-4 py-3 flex-1 min-w-28">
-          <p className="text-lg font-bold dark:text-white">26</p>
-          <p className="text-xs text-zinc-400 dark:text-zinc-400">hrs of travel</p>
+        <div className="border border-zinc-100 dark:border-neutral-800 rounded-lg px-4 py-3 flex-1 min-w-28">
+          <p className="text-lg font-bold dark:text-paper">26</p>
+          <p className="text-xs text-zinc-400 dark:text-neutral-400">hrs of travel</p>
         </div>
       </div>
 
       <div className="relative">
-        <div className="absolute left-[22px] top-3 bottom-3 w-px bg-zinc-100 dark:bg-zinc-800" />
+        <div className="absolute left-[22px] top-3 bottom-3 w-px bg-zinc-100 dark:bg-neutral-800" />
         <div className="space-y-2">
           {MILESTONES.map((m, i) => (
             <div key={i} className="flex gap-4 relative"
               onClick={() => setExpanded(expanded === m.title ? null : m.title)}>
               <div className="w-10 flex-shrink-0 flex flex-col items-center pt-3 z-10">
-                <div className="w-10 h-10 rounded-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 flex items-center justify-center text-base">
+                <div className="w-10 h-10 rounded-full bg-zinc-50 dark:bg-neutral-800 border border-zinc-100 dark:border-neutral-700 flex items-center justify-center text-base">
                   {m.emoji}
                 </div>
               </div>
-              <div className={`flex-1 border rounded-lg overflow-hidden cursor-pointer transition-colors ${expanded === m.title ? 'border-zinc-200 dark:border-zinc-600' : 'border-zinc-100 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700'}`}>
+              <div className={`flex-1 border rounded-lg overflow-hidden cursor-pointer transition-colors ${expanded === m.title ? 'border-zinc-200 dark:border-neutral-600' : 'border-zinc-100 dark:border-neutral-800 hover:border-zinc-200 dark:hover:border-neutral-700'}`}>
                 <div className="flex items-center justify-between px-3 py-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-400 dark:text-zinc-400 flex-shrink-0">{m.date}</span>
-                    <span className="text-xs font-medium dark:text-white">{m.title}</span>
+                    <span className="text-xs text-zinc-400 dark:text-neutral-400 flex-shrink-0">{m.date}</span>
+                    <span className="text-xs font-medium dark:text-paper">{m.title}</span>
                   </div>
-                  <span className="text-zinc-300 dark:text-zinc-500 text-[10px]">{expanded === m.title ? '▲' : '▼'}</span>
+                  <span className="text-zinc-300 dark:text-neutral-500 text-[10px]">{expanded === m.title ? '▲' : '▼'}</span>
                 </div>
                 {expanded === m.title && (
-                  <div className="px-3 pb-3 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 pt-2 leading-relaxed">{m.detail}</p>
+                  <div className="px-3 pb-3 border-t border-zinc-100 dark:border-neutral-800 bg-zinc-50/50 dark:bg-neutral-800/20">
+                    <p className="text-xs text-zinc-500 dark:text-neutral-400 pt-2 leading-relaxed">{m.detail}</p>
                   </div>
                 )}
               </div>

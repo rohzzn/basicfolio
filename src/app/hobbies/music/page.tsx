@@ -476,8 +476,8 @@ const MusicPage: React.FC = () => {
   };
 
   const renderPlaylistTracksPanel = (playlist: SpotifyPlaylist) => (
-    <section className="flex min-h-0 flex-col overflow-hidden border border-zinc-100 dark:border-zinc-800/60">
-      <div className="flex items-center gap-3 border-b border-zinc-100 px-3 py-2.5 dark:border-zinc-800/60">
+    <section className="flex min-h-0 flex-col overflow-hidden border border-zinc-100 dark:border-neutral-800/60">
+      <div className="flex items-center gap-3 border-b border-zinc-100 px-3 py-2.5 dark:border-neutral-800/60">
         <div className="relative h-11 w-11 shrink-0">
           <Image
             src={getSafeImageUrl(playlist.images)}
@@ -489,8 +489,8 @@ const MusicPage: React.FC = () => {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium dark:text-white">{playlist.name}</p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="truncate text-sm font-medium dark:text-paper">{playlist.name}</p>
+          <p className="text-xs text-zinc-500 dark:text-neutral-400">
             {playlistTracksLoading
               ? `Loading ${playlist.tracks?.total || 0} tracks...`
               : `${playlistTracks.length || playlist.tracks?.total || 0} tracks · newest first`}
@@ -500,7 +500,7 @@ const MusicPage: React.FC = () => {
         <button
           type="button"
           onClick={closePlaylistPanel}
-          className="rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-200 hover:text-zinc-800 dark:hover:bg-zinc-700 dark:hover:text-zinc-200"
+          className="rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-200 hover:text-zinc-800 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
           aria-label="Close playlist"
         >
           <X className="h-4 w-4" />
@@ -510,14 +510,14 @@ const MusicPage: React.FC = () => {
       <div className="min-h-0 flex-1 overflow-y-auto p-2 sm:p-3 scrollbar-hide xl:max-h-[min(70vh,640px)]">
         {playlistTracksLoading ? (
           <div className="flex h-40 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-zinc-600 dark:border-zinc-400" />
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-zinc-600 dark:border-neutral-400" />
           </div>
         ) : playlistTracks.length > 0 ? (
           <div className="space-y-1">
             {playlistTracks.map(({ track, added_at }, index) => (
               <article
                 key={`${track.id}-${added_at}-${index}`}
-                className="group flex items-center gap-3 rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/80"
+                className="group flex items-center gap-3 rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-neutral-800/80"
               >
                 <div className="relative h-11 w-11 shrink-0">
                   <Image
@@ -541,20 +541,20 @@ const MusicPage: React.FC = () => {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h5 className="truncate text-sm font-medium dark:text-white">{track.name}</h5>
-                  <p className="truncate text-xs text-zinc-600 dark:text-zinc-400">
+                  <h5 className="truncate text-sm font-medium dark:text-paper">{track.name}</h5>
+                  <p className="truncate text-xs text-zinc-600 dark:text-neutral-400">
                     {track.artists.map((artist) => artist.name).join(', ')}
                   </p>
                 </div>
 
-                <span className="hidden shrink-0 text-[11px] tabular-nums text-zinc-500 dark:text-zinc-400 sm:inline">
+                <span className="hidden shrink-0 text-[11px] tabular-nums text-zinc-500 dark:text-neutral-400 sm:inline">
                   {formatDuration(track.duration_ms)}
                 </span>
               </article>
             ))}
           </div>
         ) : (
-          <p className="py-10 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="py-10 text-center text-sm text-zinc-500 dark:text-neutral-400">
             Could not load tracks for this playlist.
           </p>
         )}
@@ -588,8 +588,8 @@ const MusicPage: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`text-sm capitalize transition-colors ${
               activeTab === tab.id
-                ? "font-medium text-zinc-900 dark:text-white"
-                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                ? "font-medium text-zinc-900 dark:text-paper"
+                : "text-zinc-500 hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300"
             }`}
           >
             {tab.label}
@@ -614,8 +614,8 @@ const MusicPage: React.FC = () => {
               }}
               className={`text-xs capitalize transition-colors ${
                 timeRange === range.id
-                  ? "font-medium text-zinc-900 dark:text-white"
-                  : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300"
+                  ? "font-medium text-zinc-900 dark:text-paper"
+                  : "text-zinc-400 hover:text-zinc-600 dark:text-neutral-400 dark:hover:text-neutral-300"
               }`}
             >
               {range.label}
@@ -628,7 +628,7 @@ const MusicPage: React.FC = () => {
 
   const renderTrackTile = (track: SpotifyTrack, index: number) => (
     <article key={`${track.id}-${index}`} className="group min-w-0">
-      <div className="relative mb-2 aspect-square overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800">
+      <div className="relative mb-2 aspect-square overflow-hidden rounded-md bg-zinc-100 dark:bg-neutral-800">
         <Image
           src={getSafeImageUrl(track.album?.images)}
           alt={track.album?.name || "Album cover"}
@@ -649,10 +649,10 @@ const MusicPage: React.FC = () => {
         </div>
       </div>
       <a href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="block min-w-0">
-        <h4 className="truncate text-sm font-medium text-zinc-800 transition-colors group-hover:text-zinc-600 dark:text-zinc-200 dark:group-hover:text-white">
+        <h4 className="truncate text-sm font-medium text-zinc-800 transition-colors group-hover:text-zinc-600 dark:text-neutral-200 dark:group-hover:text-paper">
           {track.name}
         </h4>
-        <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-neutral-400">
           {track.artists.map((artist) => artist.name).join(", ")}
         </p>
       </a>
@@ -661,12 +661,12 @@ const MusicPage: React.FC = () => {
 
   const ArtistsTabContent = () => (
     <div>
-      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
         Top artists · {timeRangeLabels[timeRange]}
       </p>
 
       {artistsLoading ? (
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">Loading artists…</p>
+        <p className="py-6 text-sm text-zinc-500 dark:text-neutral-400">Loading artists…</p>
       ) : topArtists.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           {topArtists.map((artist) => (
@@ -677,7 +677,7 @@ const MusicPage: React.FC = () => {
               rel="noopener noreferrer"
               className="group min-w-0"
             >
-              <div className="relative mb-2 aspect-square overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+              <div className="relative mb-2 aspect-square overflow-hidden rounded-full bg-zinc-100 dark:bg-neutral-800">
                 <Image
                   src={getSafeImageUrl(artist.images)}
                   alt={artist.name}
@@ -686,42 +686,42 @@ const MusicPage: React.FC = () => {
                   unoptimized
                 />
               </div>
-              <h4 className="truncate text-sm font-medium text-zinc-800 transition-colors group-hover:text-zinc-600 dark:text-zinc-200 dark:group-hover:text-white">
+              <h4 className="truncate text-sm font-medium text-zinc-800 transition-colors group-hover:text-zinc-600 dark:text-neutral-200 dark:group-hover:text-paper">
                 {artist.name}
               </h4>
-              <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-neutral-400">
                 {artist.genres?.length ? artist.genres.slice(0, 2).join(", ") : "—"}
               </p>
             </a>
           ))}
         </div>
       ) : (
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">No artist data right now.</p>
+        <p className="py-6 text-sm text-zinc-500 dark:text-neutral-400">No artist data right now.</p>
       )}
     </div>
   );
 
   const TracksTabContent = () => (
     <div>
-      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
         Top tracks · {timeRangeLabels[timeRange]}
       </p>
 
       {tracksLoading ? (
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">Loading tracks…</p>
+        <p className="py-6 text-sm text-zinc-500 dark:text-neutral-400">Loading tracks…</p>
       ) : topTracks.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {topTracks.map((track, index) => renderTrackTile(track, index))}
         </div>
       ) : (
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">No track data right now.</p>
+        <p className="py-6 text-sm text-zinc-500 dark:text-neutral-400">No track data right now.</p>
       )}
     </div>
   );
 
   const PlaylistsTabContent = () => (
     <div>
-      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
         Playlists
       </p>
 
@@ -743,10 +743,10 @@ const MusicPage: React.FC = () => {
                     type="button"
                     onClick={() => handlePlaylistClick(playlist)}
                     className={`min-w-0 rounded-md p-2 text-left transition-colors ${
-                      isSelected ? "bg-zinc-100 ring-1 ring-zinc-200 dark:bg-zinc-800/80 dark:ring-zinc-700" : "hover:bg-zinc-50 dark:hover:bg-zinc-800/40"
+                      isSelected ? "bg-zinc-100 ring-1 ring-zinc-200 dark:bg-neutral-800/80 dark:ring-neutral-700" : "hover:bg-zinc-50 dark:hover:bg-neutral-800/40"
                     }`}
                   >
-                    <div className="relative mb-2 aspect-square overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800">
+                    <div className="relative mb-2 aspect-square overflow-hidden rounded-md bg-zinc-100 dark:bg-neutral-800">
                       <Image
                         src={getSafeImageUrl(playlist.images)}
                         alt={playlist.name}
@@ -755,12 +755,12 @@ const MusicPage: React.FC = () => {
                         unoptimized
                       />
                     </div>
-                    <h4 className="truncate text-sm font-medium text-zinc-800 dark:text-zinc-200">{playlist.name}</h4>
-                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                    <h4 className="truncate text-sm font-medium text-zinc-800 dark:text-neutral-200">{playlist.name}</h4>
+                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-neutral-400">
                       {playlist.tracks?.total || 0} tracks
                     </p>
                     {playlistDescription ? (
-                      <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-400">
+                      <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-zinc-400 dark:text-neutral-400">
                         {playlistDescription}
                       </p>
                     ) : null}
@@ -775,14 +775,14 @@ const MusicPage: React.FC = () => {
           ) : null}
         </div>
       ) : (
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">No playlists available.</p>
+        <p className="py-6 text-sm text-zinc-500 dark:text-neutral-400">No playlists available.</p>
       )}
     </div>
   );
 
   const RecentTabContent = () => (
     <div>
-      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
         Recently played
       </p>
 
@@ -791,27 +791,27 @@ const MusicPage: React.FC = () => {
           {recentTracks.slice(0, 20).map((track, index) => renderTrackTile(track, index))}
         </div>
       ) : (
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">No recent tracks right now.</p>
+        <p className="py-6 text-sm text-zinc-500 dark:text-neutral-400">No recent tracks right now.</p>
       )}
     </div>
   );
 
   return (
     <div className="w-full min-w-0 max-w-5xl">
-      <h2 className="mb-8 text-lg font-medium dark:text-white">Music</h2>
+      <h2 className="mb-8 text-lg font-medium dark:text-paper">Music</h2>
 
       {loading ? (
-        <p className="py-8 text-sm text-zinc-500 dark:text-zinc-400">Loading…</p>
+        <p className="py-8 text-sm text-zinc-500 dark:text-neutral-400">Loading…</p>
       ) : error ? (
-        <p className="py-8 text-sm text-zinc-500 dark:text-zinc-400">{error}</p>
+        <p className="py-8 text-sm text-zinc-500 dark:text-neutral-400">{error}</p>
       ) : !hasLoadedAnySection ? (
         <div className="space-y-3 py-8">
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Spotify data unavailable right now.</p>
+          <p className="text-sm text-zinc-500 dark:text-neutral-400">Spotify data unavailable right now.</p>
           <a
             href="https://open.spotify.com/user/rohansanjeev"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
+            className="text-sm text-zinc-700 transition-colors hover:text-zinc-900 dark:text-neutral-300 dark:hover:text-paper"
           >
             Open Spotify profile
           </a>
@@ -820,10 +820,10 @@ const MusicPage: React.FC = () => {
         <div>
           {currentlyPlaying && loadedSections.currentlyPlaying ? (
             <section className="mb-8">
-              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
                 {currentlyPlaying.isPlaying ? "Now playing" : "Last played"}
               </p>
-              <div className="flex flex-col gap-4 rounded-lg border border-zinc-100 p-4 sm:flex-row sm:items-center dark:border-zinc-800/80">
+              <div className="flex flex-col gap-4 rounded-lg border border-zinc-100 p-4 sm:flex-row sm:items-center dark:border-neutral-800/80">
                 <div className="relative mx-auto h-24 w-24 shrink-0 sm:mx-0">
                   <Image
                     src={getSafeImageUrl(currentlyPlaying.track.album.images)}
@@ -845,24 +845,24 @@ const MusicPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 text-center sm:text-left">
-                  <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  <p className="truncate text-sm font-medium text-zinc-900 dark:text-neutral-100">
                     {currentlyPlaying.track.name}
                   </p>
-                  <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+                  <p className="truncate text-xs text-zinc-500 dark:text-neutral-400">
                     {currentlyPlaying.track.artists.map((artist) => artist.name).join(", ")}
                   </p>
-                  <p className="mt-0.5 truncate text-[11px] text-zinc-400 dark:text-zinc-400">
+                  <p className="mt-0.5 truncate text-[11px] text-zinc-400 dark:text-neutral-400">
                     {currentlyPlaying.track.album.name}
                   </p>
-                  <div className="mt-3 h-1 max-w-sm overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                  <div className="mt-3 h-1 max-w-sm overflow-hidden rounded-full bg-zinc-200 dark:bg-neutral-800">
                     <div
-                      className="h-full rounded-full bg-zinc-500 dark:bg-zinc-400"
+                      className="h-full rounded-full bg-zinc-500 dark:bg-neutral-400"
                       style={{
                         width: `${(currentlyPlaying.progress_ms / currentlyPlaying.track.duration_ms) * 100}%`,
                       }}
                     />
                   </div>
-                  <div className="mt-1 flex max-w-sm justify-between text-[11px] tabular-nums text-zinc-400 dark:text-zinc-400">
+                  <div className="mt-1 flex max-w-sm justify-between text-[11px] tabular-nums text-zinc-400 dark:text-neutral-400">
                     <span>{formatDuration(currentlyPlaying.progress_ms)}</span>
                     <span>{formatDuration(currentlyPlaying.track.duration_ms)}</span>
                   </div>
