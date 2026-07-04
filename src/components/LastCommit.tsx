@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 
 type LastCommit = {
   shortSha: string;
-  url: string;
-  message: string;
   date: string;
   additions: number;
   deletions: number;
@@ -55,15 +53,9 @@ export default function LastCommit() {
 
   return (
     <p className="mb-10 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-      <a
-        href={commit.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-mono text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
-        title={commit.message}
-      >
+      <span className="font-mono text-zinc-600 dark:text-zinc-300">
         {commit.shortSha}
-      </a>
+      </span>
       <span aria-hidden className="text-zinc-300 dark:text-zinc-600">
         ·
       </span>
