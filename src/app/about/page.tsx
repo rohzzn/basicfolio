@@ -3,29 +3,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import GitHubCalendar from 'react-github-calendar';
 import Image from '@/components/SiteImage';
 import Link from 'next/link';
-import { projects, type Project } from '@/data/projects';
-import { posts } from '@/data/writing';
-
-const recentWritings = [...posts]
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  .slice(0, 2);
-
-const recentProjectsPinned = ['relay', 'dock-poker']
-  .map((slug) => projects.find((x) => x.slug === slug))
-  .filter((p): p is Project => p != null);
-
-const recentItems = [
-  ...recentWritings.map((p) => ({
-    type: 'writing' as const,
-    slug: p.slug,
-    title: p.title,
-  })),
-  ...recentProjectsPinned.map((p) => ({
-    type: 'project' as const,
-    slug: p.slug,
-    title: p.title,
-  })),
-];
+import LastCommit from '@/components/LastCommit';
 
 const CAL_MARGIN = 3;
 const MAX_BLOCK = 28;
@@ -96,7 +74,7 @@ function ProseGitHubCalendar({ isDark }: { isDark: boolean }) {
   }, [refit]);
 
   return (
-    <div ref={wrapRef} className="mb-10 w-full min-w-0">
+    <div ref={wrapRef} className="mb-3 w-full min-w-0">
       <GitHubCalendar
         username="rohzzn"
         colorScheme={isDark ? 'dark' : 'light'}
@@ -272,37 +250,7 @@ const Home: React.FC = () => {
 
       {/* GitHub Contributions */}
       <ProseGitHubCalendar isDark={isDark} />
-
-      {/* Recent */}
-      <div className="mb-10">
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <span className="text-xs font-medium uppercase leading-none tracking-wider text-zinc-400 dark:text-zinc-500">
-            Recent
-          </span>
-          <Link
-            href="/timeline"
-            className="text-xs font-medium uppercase leading-none tracking-wider text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-400"
-          >
-            Timeline
-          </Link>
-        </div>
-        <div>
-          {recentItems.map((item) => (
-            <Link
-              key={`${item.type}-${item.slug}`}
-              href={item.type === 'writing' ? `/writing/${item.slug}` : `/projects/${item.slug}`}
-              className="group flex items-center justify-between gap-3 py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
-            >
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors min-w-0 truncate">
-                {item.title}
-              </span>
-              <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex-shrink-0">
-                {item.type === 'writing' ? 'Writing' : 'Project'}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </div>
+      <LastCommit />
 
     </div>
   );
