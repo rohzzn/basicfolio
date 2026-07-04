@@ -27,10 +27,6 @@ const STATIC_PATHS: string[] = [
   '/hobbies/art',
   '/hobbies/music',
   '/hobbies/uses',
-  '/hobbies/watch',
-  '/hobbies/screen',
-  '/hobbies/myanimelist',
-  '/hobbies/letterboxd',
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -73,18 +73,14 @@ const hobbyLinks: PaletteItem[] = [
   { title: 'Books', href: '/hobbies/books', icon: <BookOpen className="w-4 h-4" />, keywords: ['reading', 'books', 'literature'] },
   { title: 'Content', href: '/hobbies/content', icon: <Youtube className="w-4 h-4" />, keywords: ['youtube', 'videos', 'content'] },
   { title: 'Designs', href: '/hobbies/art', icon: <PenTool className="w-4 h-4" />, keywords: ['art', 'design', 'creative'] },
-  { title: 'Letterboxd', href: '/hobbies/letterboxd', icon: <Film className="w-4 h-4" />, keywords: ['letterboxd', 'movies', 'film', 'cinema', 'reviews'] },
-  { title: 'MyAnimeList', href: '/hobbies/myanimelist', icon: <Film className="w-4 h-4" />, keywords: ['anime', 'mal', 'myanimelist', 'manga'] },
-  { title: 'Watchlist', href: '/hobbies/watchlist', icon: <Film className="w-4 h-4" />, keywords: ['tmdb', 'movies', 'tv', 'anime', 'watchlist', 'streaming'] },
+  { title: 'Watchlist', href: '/hobbies/watchlist', icon: <Film className="w-4 h-4" />, keywords: ['tmdb', 'movies', 'tv', 'anime', 'watchlist', 'streaming', 'letterboxd', 'myanimelist'] },
   { title: 'Gaming', href: '/hobbies/games', icon: <Gamepad2 className="w-4 h-4" />, keywords: ['games', 'gaming', 'steam', 'cs2', 'csgo', 'leetify', 'stats', 'clips', 'highlights'] },
   { title: 'Hackathons', href: '/hobbies/hackathons', icon: <Code className="w-4 h-4" />, keywords: ['hackathon', 'competition', 'coding'] },
   { title: 'Music', href: '/hobbies/music', icon: <Music className="w-4 h-4" />, keywords: ['songs', 'playlist', 'spotify'] },
-  { title: 'Screen', href: '/hobbies/screen', icon: <Laptop className="w-4 h-4" />, keywords: ['screen', 'display', 'monitor', 'setup'] },
   { title: 'Seen', href: '/hobbies/seen', icon: <Camera className="w-4 h-4" />, keywords: ['seen', 'frames', 'photos', 'instagram', 'gallery'] },
-  { title: 'Setup', href: '/hobbies/uses', icon: <Laptop className="w-4 h-4" />, keywords: ['setup', 'workspace', 'tools', 'uses'] },
+  { title: 'Setup', href: '/hobbies/uses', icon: <Laptop className="w-4 h-4" />, keywords: ['setup', 'workspace', 'tools', 'uses', 'screen', 'display', 'monitor'] },
   { title: 'Stills', href: '/hobbies/stills', icon: <ImageIcon className="w-4 h-4" />, keywords: ['stills', 'photos', 'images', 'frames'] },
   { title: 'Typing', href: '/hobbies/typing', icon: <Keyboard className="w-4 h-4" />, keywords: ['typing', 'speed', 'test', 'wpm'] },
-  { title: 'Watch', href: '/hobbies/watch', icon: <Film className="w-4 h-4" />, keywords: ['watch', 'movies', 'tv', 'streaming'] },
 ];
 
 const externalLinks: PaletteItem[] = [
