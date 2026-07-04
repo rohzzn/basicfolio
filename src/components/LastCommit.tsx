@@ -52,14 +52,12 @@ export default function LastCommit() {
   if (!commit) return null;
 
   return (
-    <p className="mb-10 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs leading-relaxed text-zinc-500 dark:text-neutral-400">
-      <span className="font-mono text-zinc-600 dark:text-neutral-300">
-        {commit.shortSha}
-      </span>
+    <p className="mb-10 flex flex-wrap items-center gap-x-1.5 gap-y-1 font-mono text-xs leading-relaxed text-zinc-600 dark:text-neutral-300">
+      <span>{commit.shortSha}</span>
       <span aria-hidden className="text-zinc-300 dark:text-neutral-500">
         ·
       </span>
-      <span className="font-mono tabular-nums">
+      <span className="tabular-nums">
         <span className="text-red-500/90 dark:text-red-400/90">
           −{commit.deletions.toLocaleString()}
         </span>{' '}
