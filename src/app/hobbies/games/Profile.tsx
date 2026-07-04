@@ -39,7 +39,7 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
             >
               Steam ↗
             </a>
-            <span className="text-zinc-300 dark:text-zinc-600">·</span>
+            <span className="text-zinc-300 dark:text-zinc-500">·</span>
             <a
               href="https://settings.gg/rohzzn"
               target="_blank"

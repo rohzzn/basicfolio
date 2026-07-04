@@ -286,7 +286,7 @@ export default function NetworkWaterfall() {
             className={`text-xs px-4 py-2.5 -mb-px border-b-2 transition-colors ${
               tab === t
                 ? 'border-zinc-800 dark:border-zinc-200 text-zinc-900 dark:text-white font-medium'
-                : 'border-transparent text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+                : 'border-transparent text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
             }`}
           >
             {label}
@@ -310,7 +310,7 @@ export default function NetworkWaterfall() {
             {/* Time axis */}
             <div className="flex border-b border-zinc-100 dark:border-zinc-800 px-4 py-2 bg-zinc-50/60 dark:bg-zinc-800/20">
               <div className="w-36 sm:w-44 flex-shrink-0" />
-              <div className="flex-1 flex justify-between text-xs font-mono text-zinc-400 dark:text-zinc-600">
+              <div className="flex-1 flex justify-between text-xs font-mono text-zinc-400 dark:text-zinc-400">
                 <span>0</span>
                 <span>{Math.round(TOTAL_MS / 3)}ms</span>
                 <span>{Math.round((TOTAL_MS / 3) * 2)}ms</span>
@@ -351,7 +351,7 @@ export default function NetworkWaterfall() {
                     />
                   </div>
                   <div className="w-16 flex-shrink-0 text-right">
-                    <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500">{r.size.toFixed(1)}KB</span>
+                    <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400">{r.size.toFixed(1)}KB</span>
                   </div>
                 </button>
               );
@@ -362,7 +362,7 @@ export default function NetworkWaterfall() {
                 <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Total</span>
               </div>
               <div className="flex-1">
-                <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500">
+                <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400">
                   {RESOURCES.length} requests · {totalTime}ms finish
                 </span>
               </div>
@@ -382,12 +382,12 @@ export default function NetworkWaterfall() {
                   {activeResItem.type}
                 </span>
               </div>
-              <p className="text-xs font-mono text-zinc-400 dark:text-zinc-500 mb-3 break-all">{activeResItem.url}</p>
+              <p className="text-xs font-mono text-zinc-400 dark:text-zinc-400 mb-3 break-all">{activeResItem.url}</p>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">{activeResItem.note}</p>
               <div className="flex gap-6 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
                 {[['Start', `${activeResItem.start}ms`], ['Duration', `${activeResItem.duration}ms`], ['Size', `${activeResItem.size.toFixed(1)}KB`]].map(([label, val]) => (
                   <div key={label}>
-                    <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-0.5">{label}</p>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">{label}</p>
                     <p className="text-xs font-mono text-zinc-700 dark:text-zinc-300">{val}</p>
                   </div>
                 ))}
@@ -395,7 +395,7 @@ export default function NetworkWaterfall() {
             </div>
           )}
 
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">
+          <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3">
             Click any row for details · sizes are compressed transfer size · timings from fast broadband
           </p>
         </>
@@ -445,15 +445,15 @@ export default function NetworkWaterfall() {
                       <span className={`text-xs px-2 py-0.5 rounded flex-shrink-0 hidden sm:inline ${cc.badge}`}>
                         {api.category}
                       </span>
-                      <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500 truncate hidden md:block">
+                      <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400 truncate hidden md:block">
                         {api.internalRoute.split(' · ')[0]}
                       </span>
                     </div>
                     <div className="flex items-center gap-4 flex-shrink-0 ml-3">
-                      <span className="text-xs text-zinc-400 dark:text-zinc-500 hidden sm:block">
+                      <span className="text-xs text-zinc-400 dark:text-zinc-400 hidden sm:block">
                         {api.usedOn}
                       </span>
-                      <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500 whitespace-nowrap">
+                      <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400 whitespace-nowrap">
                         {api.cache}
                       </span>
                     </div>
@@ -463,19 +463,19 @@ export default function NetworkWaterfall() {
                     <div className="px-4 pb-4 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                       <div className="flex flex-wrap gap-x-6 gap-y-3 mb-3">
                         <div>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-0.5">Route</p>
+                          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">Route</p>
                           <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{api.internalRoute}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-0.5">Upstream</p>
+                          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">Upstream</p>
                           <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{api.upstream}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-0.5">Cache</p>
+                          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">Cache</p>
                           <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{api.cache}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-0.5">Used on</p>
+                          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-0.5">Used on</p>
                           <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{api.usedOn}</p>
                         </div>
                       </div>
@@ -487,7 +487,7 @@ export default function NetworkWaterfall() {
             })}
           </div>
 
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-4">
+          <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-4">
             {filteredApis.length} of {APIS.length} integrations · click any row to expand
           </p>
         </>

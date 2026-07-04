@@ -198,7 +198,7 @@ export default function TypingTest() {
     <div className="max-w-2xl">
       <div className="flex items-baseline justify-between mb-8">
         <h2 className="text-lg font-medium dark:text-white">Typing</h2>
-        <span className="text-xs text-zinc-400 dark:text-zinc-500">
+        <span className="text-xs text-zinc-400 dark:text-zinc-400">
           my best — {ROHAN_WPM} wpm
         </span>
       </div>
@@ -213,7 +213,7 @@ export default function TypingTest() {
                   className={`text-sm transition-colors ${
                     timeOpt === t
                       ? 'text-zinc-900 dark:text-white font-medium'
-                      : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+                      : 'text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
                   }`}
                 >
                   {t}s
@@ -222,7 +222,7 @@ export default function TypingTest() {
             </div>
             <div className="flex items-center gap-3 text-sm tabular-nums">
               {liveWpm > 0 && (
-                <span className="text-zinc-400 dark:text-zinc-500">{liveWpm}</span>
+                <span className="text-zinc-400 dark:text-zinc-400">{liveWpm}</span>
               )}
               <span className={`font-medium ${
                 phase === 'running' && timeLeft <= 5
@@ -233,7 +233,7 @@ export default function TypingTest() {
               </span>
               <button
                 onClick={restart}
-                className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                className="text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
                 aria-label="restart"
               >
                 <RefreshCcw className="w-3.5 h-3.5" />
@@ -267,11 +267,11 @@ export default function TypingTest() {
                     className={
                       isDone
                         ? isOk
-                          ? 'text-zinc-400 dark:text-zinc-500'
+                          ? 'text-zinc-400 dark:text-zinc-400'
                           : 'text-red-400 dark:text-red-500'
                         : isCurrent
                           ? 'text-zinc-900 dark:text-zinc-100'
-                          : 'text-zinc-300 dark:text-zinc-600'
+                          : 'text-zinc-300 dark:text-zinc-500'
                     }
                   >
                     {isCurrent && phase !== 'idle'
@@ -286,7 +286,7 @@ export default function TypingTest() {
                                   className={[
                                     isCursor ? 'border-l-2 border-zinc-800 dark:border-zinc-200' : '',
                                     t === undefined
-                                      ? 'text-zinc-400 dark:text-zinc-500'
+                                      ? 'text-zinc-400 dark:text-zinc-400'
                                       : t === ch
                                         ? 'text-zinc-900 dark:text-zinc-100'
                                         : 'text-red-500 dark:text-red-400',
@@ -310,7 +310,7 @@ export default function TypingTest() {
 
             {phase === 'idle' && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                <p className="text-xs text-zinc-400 dark:text-zinc-400">
                   start typing to begin
                 </p>
               </div>
@@ -320,7 +320,7 @@ export default function TypingTest() {
           {capsLock && (
             <p className="text-xs text-amber-500 mb-2">caps lock is on</p>
           )}
-          <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-6">
+          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-6">
             tab — reset · space — next word
           </p>
 
@@ -391,7 +391,7 @@ export default function TypingTest() {
               },
             ].map(({ label, val, color }) => (
               <div key={label} className="border border-zinc-100 dark:border-zinc-800 rounded-lg p-4">
-                <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
+                <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">
                   {label}
                 </p>
                 <p className={`text-2xl font-medium tabular-nums ${color || 'text-zinc-900 dark:text-white'}`}>
@@ -409,7 +409,7 @@ export default function TypingTest() {
               <RefreshCcw className="w-3.5 h-3.5" />
               Try again
             </button>
-            <p className="text-xs text-zinc-400 dark:text-zinc-600">or press tab</p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-400">or press tab</p>
           </div>
         </div>
       )}

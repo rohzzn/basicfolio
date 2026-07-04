@@ -49,7 +49,7 @@ export default function GymCard({ workout, stravaPhotoUrls }: GymCardProps) {
             <span className="truncate text-xs font-medium text-zinc-600 dark:text-zinc-400">
               {ex.title}
             </span>
-            <span className="flex-shrink-0 tabular-nums text-xs text-zinc-400 dark:text-zinc-600">
+            <span className="flex-shrink-0 tabular-nums text-xs text-zinc-400 dark:text-zinc-400">
               {ex.sets.length} {ex.sets.length === 1 ? 'set' : 'sets'}
               {exVol > 0 && ` · ${Math.round(exVol).toLocaleString()} kg`}
             </span>
@@ -78,12 +78,12 @@ export default function GymCard({ workout, stravaPhotoUrls }: GymCardProps) {
   const header = (
     <div className="flex items-baseline justify-between gap-2">
       <div className="flex min-w-0 items-baseline gap-2">
-        <span className="flex-shrink-0 rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
+        <span className="flex-shrink-0 rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400">
           gym
         </span>
         {titleNode}
       </div>
-      <time className="flex-shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
+      <time className="flex-shrink-0 text-xs text-zinc-400 dark:text-zinc-400">
         {shortDate(workout.start_time)}
       </time>
     </div>

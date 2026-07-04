@@ -21,7 +21,7 @@ function StarRow({ score, className = '' }: { score: number; className?: string 
       {Array.from({ length: 5 }).map((_, i) => (
         <span
           key={i}
-          className={`text-[11px] leading-none ${i < score ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'}`}
+          className={`text-[11px] leading-none ${i < score ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-500'}`}
         >
           ★
         </span>
@@ -191,7 +191,7 @@ function BookDetailModal({ book, onClose }: { book: Book; onClose: () => void })
               </button>
             </div>
 
-            <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+            <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
               {BOOK_CATEGORY_LABELS[book.category]}
             </p>
             <h3
@@ -275,7 +275,7 @@ export default function BooksClient() {
         ))}
       </div>
 
-      <p className="mt-6 text-xs text-zinc-400 dark:text-zinc-600">
+      <p className="mt-6 text-xs text-zinc-400 dark:text-zinc-400">
         {displayed.length} books · tap for notes
       </p>
 

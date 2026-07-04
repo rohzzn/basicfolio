@@ -49,7 +49,7 @@ function DockPokerDemo() {
             <span className="text-lg leading-none">{c.s}</span>
           </div>
         ))}
-        {hand.length === 0 && <p className="text-sm text-zinc-400 dark:text-zinc-500 self-center">No cards dealt yet</p>}
+        {hand.length === 0 && <p className="text-sm text-zinc-400 dark:text-zinc-400 self-center">No cards dealt yet</p>}
       </div>
       {best && <p className="text-sm font-medium dark:text-white mb-4">{best}</p>}
       <button onClick={deal} className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 transition-opacity">
@@ -161,7 +161,7 @@ function MiniWordle() {
             <button onClick={reset} className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"><RefreshCcw className="w-3 h-3"/>play again</button>
           </div>
         )}
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">{4-rows.length} guess{4-rows.length!==1?'es':''} left · valid: {W_LIST.slice(0,5).join(', ')}…</p>
+        <p className="text-xs text-zinc-400 dark:text-zinc-400">{4-rows.length} guess{4-rows.length!==1?'es':''} left · valid: {W_LIST.slice(0,5).join(', ')}…</p>
       </div>
     </div>
   );
@@ -213,12 +213,12 @@ function PokedexTypeDemo() {
       </div>
       {d&&(
         <div className="space-y-2 text-sm">
-          <div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-500 text-xs w-20 flex-shrink-0 pt-0.5">Strong vs</span><div className="flex flex-wrap gap-1">{d.strong.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>
-          <div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-500 text-xs w-20 flex-shrink-0 pt-0.5">Weak to</span><div className="flex flex-wrap gap-1">{d.weak.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>
-          {d.immune.length>0&&<div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-500 text-xs w-20 flex-shrink-0 pt-0.5">Immune to</span><div className="flex flex-wrap gap-1">{d.immune.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>}
+          <div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-400 text-xs w-20 flex-shrink-0 pt-0.5">Strong vs</span><div className="flex flex-wrap gap-1">{d.strong.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>
+          <div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-400 text-xs w-20 flex-shrink-0 pt-0.5">Weak to</span><div className="flex flex-wrap gap-1">{d.weak.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>
+          {d.immune.length>0&&<div className="flex gap-2 items-start"><span className="text-zinc-400 dark:text-zinc-400 text-xs w-20 flex-shrink-0 pt-0.5">Immune to</span><div className="flex flex-wrap gap-1">{d.immune.map(t=><span key={t} className={`px-2 py-0.5 text-xs rounded ${TYPE_COLORS[t]||'bg-zinc-100 dark:bg-zinc-800'}`}>{t}</span>)}</div></div>}
         </div>
       )}
-      {!sel&&<p className="text-xs text-zinc-400 dark:text-zinc-500">Click a type to see matchups</p>}
+      {!sel&&<p className="text-xs text-zinc-400 dark:text-zinc-400">Click a type to see matchups</p>}
     </div>
   );
 }
@@ -274,7 +274,7 @@ function PokemonKeyDemo() {
           <button onClick={()=>move('ArrowRight')} className={`w-9 h-9 rounded text-sm font-bold transition-all ${kb('ArrowRight')}`}>→</button>
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2 text-center">Arrow keys or click buttons to move the red pixel</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2 text-center">Arrow keys or click buttons to move the red pixel</p>
     </div>
   );
 }
@@ -296,11 +296,11 @@ function GreedIslandDemo() {
         {filtered.slice(0,12).map(c=>(
           <div key={c} className="px-3 py-2 flex items-center justify-between text-xs">
             <span className="text-zinc-700 dark:text-zinc-300">{c}</span>
-            <span className="text-zinc-400 dark:text-zinc-500 font-mono">GI-{String(GI_CARDS.indexOf(c)+1).padStart(3,'0')}</span>
+            <span className="text-zinc-400 dark:text-zinc-400 font-mono">GI-{String(GI_CARDS.indexOf(c)+1).padStart(3,'0')}</span>
           </div>
         ))}
-        {filtered.length>12&&<div className="px-3 py-2 text-xs text-zinc-400 dark:text-zinc-500">+{filtered.length-12} more</div>}
-        {filtered.length===0&&<div className="px-3 py-2 text-xs text-zinc-400 dark:text-zinc-500">No cards found</div>}
+        {filtered.length>12&&<div className="px-3 py-2 text-xs text-zinc-400 dark:text-zinc-400">+{filtered.length-12} more</div>}
+        {filtered.length===0&&<div className="px-3 py-2 text-xs text-zinc-400 dark:text-zinc-400">No cards found</div>}
       </div>
     </div>
   );

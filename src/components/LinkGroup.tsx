@@ -17,7 +17,7 @@ interface LinkGroupProps {
 const LinkGroup: React.FC<LinkGroupProps> = ({ title, links }) => {
   return (
     <section className="rounded-lg border border-zinc-100 p-4 sm:p-5 dark:border-zinc-800/80">
-      <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+      <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
         {title}
       </h3>
       <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">

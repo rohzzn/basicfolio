@@ -19,7 +19,7 @@ function InventoryCard({ item }: { item: CS2Item }) {
     <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 cursor-default group">
       <div className="relative w-full aspect-[4/3]">
         {item.condition && (
-          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-zinc-500">
+          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-zinc-400">
             {item.condition}
           </div>
         )}
@@ -38,7 +38,7 @@ function InventoryCard({ item }: { item: CS2Item }) {
         <p className="text-[10px] font-medium leading-tight line-clamp-1" style={{ color: item.rarityColor }}>
           {item.skin}
         </p>
-        <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 line-clamp-1">
+        <p className="text-[9px] text-zinc-400 dark:text-zinc-400 mt-0.5 line-clamp-1">
           {item.name}
         </p>
       </div>
@@ -51,7 +51,7 @@ function ValorantInventoryCard({ item }: { item: ValorantItem }) {
     <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 cursor-default group">
       <div className="relative w-full aspect-[4/3]">
         {item.isAlt && (
-          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-zinc-600">
+          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-zinc-400">
             ✦
           </div>
         )}
@@ -70,7 +70,7 @@ function ValorantInventoryCard({ item }: { item: ValorantItem }) {
         <p className="text-[10px] font-medium leading-tight line-clamp-1" style={{ color: item.tierColor }}>
           {item.name}
         </p>
-        <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 line-clamp-1">
+        <p className="text-[9px] text-zinc-400 dark:text-zinc-400 mt-0.5 line-clamp-1">
           {item.weapon}
         </p>
       </div>
@@ -93,7 +93,7 @@ function InventoryRow() {
             <button key={g} onClick={() => setGame(g)}
               className={`text-xs uppercase tracking-wide transition-colors ${game === g
                 ? 'text-zinc-900 dark:text-white font-medium'
-                : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>
+                : 'text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>
               {g === 'cs2' ? 'CS2' : 'Valorant'}
             </button>
           ))}
@@ -291,7 +291,7 @@ function GameRow({ name, iconSrc, href, label }: { name: string; iconSrc: string
       <span className="text-xs text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors line-clamp-1 flex-1 min-w-0">
         {name}
       </span>
-      <span className="text-[10px] text-zinc-400 dark:text-zinc-500 flex-shrink-0 tabular-nums">
+      <span className="text-[10px] text-zinc-400 dark:text-zinc-400 flex-shrink-0 tabular-nums">
         {label}
       </span>
     </a>
@@ -550,7 +550,7 @@ export default function Games() {
                 >
                   <span className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 mr-2">{a.tournament}</span>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500">{a.year}</span>
+                    <span className="text-[10px] text-zinc-400 dark:text-zinc-400">{a.year}</span>
                     <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400">{a.result}</span>
                   </div>
                 </div>
@@ -571,7 +571,7 @@ export default function Games() {
                   className={`text-xs transition-colors ${
                     activeFilter === id
                       ? 'text-zinc-900 dark:text-white font-medium'
-                      : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+                      : 'text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
                   }`}
                 >
                   {label}

@@ -429,7 +429,7 @@ export default function ContentPage() {
           {/* No streams message */}
           {data.liveStreams.length === 0 && data.completedStreams.length === 0 && (
             <div className="text-center py-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-              <Wifi className="h-10 w-10 mx-auto text-zinc-400 dark:text-zinc-500 mb-3" />
+              <Wifi className="h-10 w-10 mx-auto text-zinc-400 dark:text-zinc-400 mb-3" />
               <h3 className="text-zinc-700 dark:text-zinc-300 font-medium mb-1">No streams found</h3>
               <p className="text-zinc-500 dark:text-zinc-400 text-sm">
                 Check back later for live or past streams

@@ -155,11 +155,11 @@ function GuestbookEntry({
             {comment.displayName || "Anonymous"}
           </span>
           {comment.isAdmin && (
-            <span className="text-[10px] uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+            <span className="text-[10px] uppercase tracking-wide text-zinc-400 dark:text-zinc-400">
               admin
             </span>
           )}
-          <time className="text-xs text-zinc-400 dark:text-zinc-500 tabular-nums shrink-0">
+          <time className="text-xs text-zinc-400 dark:text-zinc-400 tabular-nums shrink-0">
             {relativeTime(comment.createdAt)}
           </time>
         </div>
@@ -492,7 +492,7 @@ export default function GuestbookPage() {
       ) : error ? (
         <p className="text-sm text-red-400">{error}</p>
       ) : threads.length === 0 ? (
-        <p className="text-sm text-zinc-400 dark:text-zinc-600">No entries yet — be the first.</p>
+        <p className="text-sm text-zinc-400 dark:text-zinc-400">No entries yet — be the first.</p>
       ) : (
         <>
           <div>

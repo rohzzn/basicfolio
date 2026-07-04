@@ -34,11 +34,11 @@ function ProjectRow({ project }: { project: Project }) {
         <span className="text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-white">
           {project.title}
         </span>
-        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-zinc-500">
+        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-zinc-400">
           {project.description}
         </span>
       </div>
-      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-zinc-500">{project.description}</p>
+      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-zinc-400">{project.description}</p>
     </Link>
   );
 }
@@ -89,7 +89,7 @@ export default function ProjectsPage() {
 
       {showFeatured ? (
         <section className="mb-10">
-          <h3 className="mb-4 text-xs font-medium uppercase leading-none tracking-wider text-zinc-400 dark:text-zinc-500">
+          <h3 className="mb-4 text-xs font-medium uppercase leading-none tracking-wider text-zinc-400 dark:text-zinc-400">
             Featured
           </h3>
           <div>

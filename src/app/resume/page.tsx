@@ -232,7 +232,7 @@ const Stack = () => {
                         {cert.issuer}
                       </p>
                     </div>
-                    <div className="text-xs text-zinc-400 dark:text-zinc-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <div className="text-xs text-zinc-400 dark:text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       ↗
                     </div>
                   </div>

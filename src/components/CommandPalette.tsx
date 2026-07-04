@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { writingArticles, projectLinks, type PaletteItem } from '@/lib/command-palette-data';
 import { toggleEReaderMode } from '@/lib/ereader-mode';
+import { toggleTheme } from '@/lib/theme-mode';
 
 interface CommandPaletteProps {
   links?: PaletteItem[];
@@ -107,9 +108,7 @@ const quickActions: PaletteItem[] = [
     keywords: ['theme', 'light', 'dark', 'switch'],
     icon: <Moon className="w-4 h-4" />,
     action: () => {
-      document.documentElement.classList.toggle('dark');
-      const isDark = document.documentElement.classList.contains('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      toggleTheme();
     },
   },
   {
@@ -411,7 +410,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
 
           <Command.List className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
             <Command.Empty className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400 flex flex-col items-center justify-center">
-              <Sparkles className="w-5 h-5 mb-2 text-zinc-400 dark:text-zinc-500" />
+              <Sparkles className="w-5 h-5 mb-2 text-zinc-400 dark:text-zinc-400" />
               <p>No results found for &ldquo;{inputValue}&rdquo;</p>
             </Command.Empty>
 
@@ -461,7 +460,7 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
                         {category.icon}
                         <span>{category.title}</span>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0 text-zinc-400 dark:text-zinc-500">
+                      <div className="flex items-center gap-2 flex-shrink-0 text-zinc-400 dark:text-zinc-400">
                         <span className="text-[11px]">{category.count}</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </div>

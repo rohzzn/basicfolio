@@ -204,7 +204,7 @@ export default function MovePage() {
         <div className="mb-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800 sm:grid-cols-4">
           {statCards.map(({ label, value }) => (
             <div key={label} className="bg-zinc-50 p-3 dark:bg-zinc-900/50">
-              <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                 {label}
               </p>
               <p className="text-sm font-medium tabular-nums leading-snug dark:text-white sm:text-base">

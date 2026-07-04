@@ -20,7 +20,7 @@ function KeelDemo() {
       <div className={`${CARD} max-w-xs`}>
         <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
           <div>
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">{annual?'Annual':'Monthly'} total</p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-400">{annual?'Annual':'Monthly'} total</p>
             <p className="text-xl font-semibold dark:text-white tabular-nums">${total.toFixed(2)}</p>
             {annual&&<p className="text-xs text-green-500">Saving ${savings.toFixed(2)}/yr vs monthly</p>}
           </div>
@@ -37,7 +37,7 @@ function KeelDemo() {
             </div>
           ))}
         </div>
-        <div className="px-4 py-2 bg-zinc-50 dark:bg-zinc-800/40 text-xs text-zinc-400 dark:text-zinc-500 text-center">{subs.length} subscriptions · hover to remove</div>
+        <div className="px-4 py-2 bg-zinc-50 dark:bg-zinc-800/40 text-xs text-zinc-400 dark:text-zinc-400 text-center">{subs.length} subscriptions · hover to remove</div>
       </div>
     </div>
   );
@@ -59,7 +59,7 @@ function TodoKanbanDemo() {
       <div className="grid grid-cols-3 gap-2">
         {COLS.map(col=>(
           <div key={col.s} className="bg-zinc-50 dark:bg-zinc-800/40 rounded-lg p-2">
-            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-2 px-1">{col.label} <span className="text-zinc-400 dark:text-zinc-600">({tasks.filter(t=>t.s===col.s).length})</span></p>
+            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-2 px-1">{col.label} <span className="text-zinc-400 dark:text-zinc-400">({tasks.filter(t=>t.s===col.s).length})</span></p>
             <div className="space-y-1.5">
               {tasks.filter(t=>t.s===col.s).map(t=>(
                 <div key={t.id} className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-700 rounded-md p-2 text-xs text-zinc-600 dark:text-zinc-400 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-500 transition-colors"
@@ -68,7 +68,7 @@ function TodoKanbanDemo() {
                     if(idx<COLS.length-1) move(t.id,COLS[idx+1].s);
                     else move(t.id,COLS[0].s);
                   }}>
-                  {t.t}<p className="text-zinc-400 dark:text-zinc-600 mt-0.5">click → move</p>
+                  {t.t}<p className="text-zinc-400 dark:text-zinc-400 mt-0.5">click → move</p>
                 </div>
               ))}
             </div>
@@ -188,7 +188,7 @@ function RelayDemo() {
           </button>
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">Toggle a monitor: admin dashboard and status page stay in sync in the real app</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3">Toggle a monitor: admin dashboard and status page stay in sync in the real app</p>
     </div>
   );
 }
@@ -215,7 +215,7 @@ function CSStatsDemo() {
           </div>
         )}
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">Click to toggle the stats overlay the extension injects</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3">Click to toggle the stats overlay the extension injects</p>
     </div>
   );
 }
@@ -239,7 +239,7 @@ function ZenitsuBotDemo() {
       <div className={CARD}>
         <div className="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800/60 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"/><span className="text-xs font-medium text-zinc-600 dark:text-zinc-400"># general</span></div>
         <div className="bg-zinc-50 dark:bg-zinc-900 min-h-[160px] p-4 space-y-3">
-          {msgs.length===0&&<p className="text-xs text-zinc-400 dark:text-zinc-500 italic">Click a command to see the bot respond</p>}
+          {msgs.length===0&&<p className="text-xs text-zinc-400 dark:text-zinc-400 italic">Click a command to see the bot respond</p>}
           {msgs.map((m,i)=>{ const r=BOT_RES[m.cmd]; return (
             <div key={i} className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white">Z</div>
@@ -273,7 +273,7 @@ function TanoshiColorPalette({ colors }: { colors: NonNullable<Project['colors']
             <div className="w-8 h-8 rounded-md flex-shrink-0 ring-1 ring-zinc-200 dark:ring-zinc-700 ring-offset-2 ring-offset-white dark:ring-offset-zinc-950 group-hover:ring-2 transition-all" style={{ backgroundColor: c.hex }} />
             <div className="min-w-0">
               <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">{c.name}</p>
-              <p className="text-xs font-mono text-zinc-400 dark:text-zinc-500">{copied === c.hex ? <span className="text-green-500">copied!</span> : c.hex}</p>
+              <p className="text-xs font-mono text-zinc-400 dark:text-zinc-400">{copied === c.hex ? <span className="text-green-500">copied!</span> : c.hex}</p>
             </div>
           </button>
         ))}
@@ -312,7 +312,7 @@ function TanoshiSyntaxPreview({ colors }:{ colors: NonNullable<Project['colors']
     <div className="my-8 not-prose">
       <div className="flex items-center justify-between mb-3">
         <p className={L} style={{marginBottom:0}}>Syntax Preview</p>
-        <div className="flex gap-1">{(['ts','py'] as const).map(l=><button key={l} onClick={()=>setLang(l)} className={`px-2.5 py-1 text-xs font-mono rounded transition-colors ${lang===l?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>{l==='ts'?'TypeScript':'Python'}</button>)}</div>
+        <div className="flex gap-1">{(['ts','py'] as const).map(l=><button key={l} onClick={()=>setLang(l)} className={`px-2.5 py-1 text-xs font-mono rounded transition-colors ${lang===l?'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900':'text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>{l==='ts'?'TypeScript':'Python'}</button>)}</div>
       </div>
       <div className="rounded-lg overflow-hidden border border-zinc-800">
         <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800" style={{ backgroundColor: bg }}>
@@ -348,7 +348,7 @@ function PagesReorderDemo() {
       <div className={`${CARD} divide-y divide-zinc-100 dark:divide-zinc-800 mb-3`}>
         {pages.map((p,i)=>(
           <div key={p} className="flex items-center justify-between px-4 py-2.5 group">
-            <div className="flex items-center gap-2"><span className="text-zinc-400 dark:text-zinc-600 text-xs select-none">{String(i+1).padStart(2,'0')}</span><span className="text-sm text-zinc-700 dark:text-zinc-300">{p}</span></div>
+            <div className="flex items-center gap-2"><span className="text-zinc-400 dark:text-zinc-400 text-xs select-none">{String(i+1).padStart(2,'0')}</span><span className="text-sm text-zinc-700 dark:text-zinc-300">{p}</span></div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button onClick={()=>mv(i,-1)} disabled={i===0} className="w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-20 transition-colors text-xs">↑</button>
               <button onClick={()=>mv(i,1)} disabled={i===pages.length-1} className="w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-20 transition-colors text-xs">↓</button>
@@ -396,7 +396,7 @@ function MeetDemo() {
           ))}
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">Mute yourself or remove participants</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">Mute yourself or remove participants</p>
     </div>
   );
 }
@@ -488,7 +488,7 @@ function AnomalyDetectionDemo() {
       <p className={L}>Network Traffic: Anomaly Detection</p>
       <div className={`${CARD} p-4`}>
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{height:100}}>
-          <polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-400 dark:text-zinc-500"/>
+          <polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-400 dark:text-zinc-400"/>
           {anomalies.map(({v,i})=>{ const x=pad+i*(W-pad*2)/(TRAFFIC.length-1),y=H-pad-(v-min)/(max-min)*(H-pad*2);
             return <circle key={i} cx={x} cy={y} r={hov===i?5:3.5} fill="#ef4444" onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)} className="cursor-pointer transition-all"/>;
           })}
@@ -496,7 +496,7 @@ function AnomalyDetectionDemo() {
             <text x={pad+hov*(W-pad*2)/(TRAFFIC.length-1)} y={H-pad-(TRAFFIC[hov]-min)/(max-min)*(H-pad*2)-8} textAnchor="middle" fontSize="9" fill="#ef4444">{TRAFFIC[hov]} pkts/s</text>
           )}
         </svg>
-        <div className="flex items-center gap-4 mt-2 text-xs text-zinc-400 dark:text-zinc-500">
+        <div className="flex items-center gap-4 mt-2 text-xs text-zinc-400 dark:text-zinc-400">
           <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"/>{anomalies.length} anomalies detected</div>
           <span>hover red dots for details</span>
         </div>
@@ -558,7 +558,7 @@ function IpynbDemo() {
       </div>
       {images.length>0&&(
         <>
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-2">{images.length} images extracted to ./images/</p>
+          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-2">{images.length} images extracted to ./images/</p>
           <div className="grid grid-cols-5 gap-2">
             {images.map((c,i)=>(
               <div key={i} className={`aspect-square rounded-lg ${c} flex items-center justify-center text-xs text-zinc-500 dark:text-zinc-400`}>img_{i+1}</div>

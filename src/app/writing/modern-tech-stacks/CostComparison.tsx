@@ -16,10 +16,10 @@ export default function CostComparison() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Modern vs Simple Stack</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Modern vs Simple Stack</p>
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
         <div className="grid grid-cols-3 border-b border-zinc-200 dark:border-zinc-800">
-          <div className="py-2.5 px-3 text-xs text-zinc-400 dark:text-zinc-500">Metric</div>
+          <div className="py-2.5 px-3 text-xs text-zinc-400 dark:text-zinc-400">Metric</div>
           <div className="py-2.5 px-3 text-xs text-center text-zinc-500 dark:text-zinc-400 border-l border-zinc-200 dark:border-zinc-800">Modern stack</div>
           <div className="py-2.5 px-3 text-xs text-center font-medium text-emerald-600 dark:text-emerald-400 border-l border-zinc-200 dark:border-zinc-800">Simple stack</div>
         </div>

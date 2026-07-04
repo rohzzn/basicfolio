@@ -63,7 +63,7 @@ function CincinnatiLocalTime() {
 
   return (
     <div className="rounded-lg border border-zinc-100 px-4 py-3.5 dark:border-zinc-800/80">
-      <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+      <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
         Cincinnati
       </p>
       <p
@@ -637,13 +637,13 @@ export default function MeetPage() {
 
         <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-zinc-800/60 space-y-4">
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
               Event
             </p>
             <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{c.eventTitle}</p>
           </div>
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
               Date & time
             </p>
             <p className="text-sm text-zinc-800 dark:text-zinc-200">{c.whenLong}</p>
@@ -653,20 +653,20 @@ export default function MeetPage() {
           </div>
           <div className="border-t border-zinc-200/80 pt-4 dark:border-zinc-800/80 space-y-3">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
                 Name
               </p>
               <p className="text-sm text-zinc-800 dark:text-zinc-200">{c.name}</p>
             </div>
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
                 Email
               </p>
               <p className="text-sm text-zinc-800 dark:text-zinc-200 break-all">{c.email}</p>
             </div>
             {c.rows.map((row) => (
               <div key={row.label}>
-                <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-1">
                   {row.label}
                 </p>
                 <p className="text-sm text-zinc-800 dark:text-zinc-200 whitespace-pre-wrap break-words">{row.value}</p>
@@ -696,7 +696,7 @@ export default function MeetPage() {
           <CincinnatiLocalTime />
 
           <div>
-            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
               Event
             </p>
             <div className="space-y-2">
@@ -720,7 +720,7 @@ export default function MeetPage() {
             </div>
             {selectedType?.lengthInMinutesOptions && selectedType.lengthInMinutesOptions.length > 1 ? (
               <div className="mt-4">
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                   Length
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -747,18 +747,18 @@ export default function MeetPage() {
         <div className="min-w-0 space-y-8">
           <div>
             <div className="mb-3 flex items-baseline justify-between gap-2">
-              <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                 {selectedStart ? "Your time" : "Available times"}
               </span>
               {loadingSlots ? (
-                <span className="text-xs text-zinc-400 dark:text-zinc-500">Updating…</span>
+                <span className="text-xs text-zinc-400 dark:text-zinc-400">Updating…</span>
               ) : null}
             </div>
             {slotsError ? (
               <div className="rounded-lg border border-zinc-100 px-4 py-4 dark:border-zinc-800/80">
                 <p className="text-sm text-zinc-500 dark:text-zinc-400">Could not load slots. Try again later.</p>
                 {slotsErrorDetail ? (
-                  <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500 break-words">{slotsErrorDetail}</p>
+                  <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-400 break-words">{slotsErrorDetail}</p>
                 ) : null}
               </div>
             ) : totalSlots === 0 && !loadingSlots ? (
@@ -781,7 +781,7 @@ export default function MeetPage() {
               <div className="max-h-[min(420px,50vh)] space-y-6 overflow-y-auto rounded-lg border border-zinc-100 p-4 dark:border-zinc-800/80">
                 {dates.map((date) => (
                   <div key={date}>
-                    <p className="mb-2 text-xs font-medium text-zinc-400 dark:text-zinc-500">
+                    <p className="mb-2 text-xs font-medium text-zinc-400 dark:text-zinc-400">
                       {(() => {
                         try {
                           const [y, mo, da] = date.split("-").map(Number);
@@ -817,7 +817,7 @@ export default function MeetPage() {
 
           {selectedStart ? (
             <form onSubmit={handleBook} className="space-y-5 rounded-lg border border-zinc-100 p-4 dark:border-zinc-800/80">
-              <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                 Your details
               </p>
 

@@ -152,7 +152,7 @@ export default function NotFound() {
       onMouseUp={onMouseUp}
       onMouseLeave={onMouseUp}
     >
-      <p className="text-xs font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">
+      <p className="text-xs font-mono text-zinc-400 dark:text-zinc-400 uppercase tracking-widest mb-6">
         404 — you&apos;re lost
       </p>
 
@@ -262,7 +262,7 @@ export default function NotFound() {
         </div>
       </div>
 
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-5">
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-5">
         make a beat while you figure out where you were going
       </p>
     </div>

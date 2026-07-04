@@ -53,7 +53,7 @@ function LinksSection({ links }: { links: Project["links"] }) {
     <div className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1 text-sm">
       {rest.map((link, index) => (
         <React.Fragment key={link.url}>
-          {index > 0 ? <span className="text-zinc-300 dark:text-zinc-600">·</span> : null}
+          {index > 0 ? <span className="text-zinc-300 dark:text-zinc-500">·</span> : null}
           <a
             href={link.url}
             target="_blank"
@@ -66,7 +66,7 @@ function LinksSection({ links }: { links: Project["links"] }) {
       ))}
       {gh ? (
         <>
-          {rest.length > 0 ? <span className="text-zinc-300 dark:text-zinc-600">·</span> : null}
+          {rest.length > 0 ? <span className="text-zinc-300 dark:text-zinc-500">·</span> : null}
           <a
             href={gh.url}
             target="_blank"
@@ -109,7 +109,7 @@ export default function ProjectDetail({ project: p }: { project: Project }) {
           <h1 className="text-lg font-medium dark:text-white">{p.title}</h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{p.description}</p>
           {techLine || meta ? (
-            <p className="mt-3 text-xs text-zinc-400 dark:text-zinc-500">
+            <p className="mt-3 text-xs text-zinc-400 dark:text-zinc-400">
               {[techLine, meta].filter(Boolean).join(" · ")}
             </p>
           ) : null}

@@ -9,7 +9,7 @@ const BeginnersGuideProgramming: React.FC = () => {
       <header className="mb-8">
         <div className="flex items-start justify-between gap-4 mb-4">
           <h1 className="text-lg font-medium dark:text-white">Beginners Guide for Programming</h1>
-          <Link href="/writing" className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex-shrink-0 mt-1">writing</Link>
+          <Link href="/writing" className="text-xs text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex-shrink-0 mt-1">writing</Link>
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2021-04-28">April 28, 2021</time>

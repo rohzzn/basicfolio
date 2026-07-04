@@ -48,7 +48,7 @@ export default function ProjectStats() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">The {total} Projects</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">The {total} Projects</p>
 
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden mb-4">
         <div className="p-4">
@@ -72,7 +72,7 @@ export default function ProjectStats() {
           </div>
           {active && (
             <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-              <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-2">Examples</p>
+              <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-2">Examples</p>
               <div className="flex flex-wrap gap-1.5">
                 {CATEGORIES.find(c => c.label === active)?.examples.map(e => (
                   <span key={e} className={`text-xs px-2 py-0.5 rounded ${CATEGORIES.find(c => c.label === active)!.light}`}>{e}</span>
@@ -83,16 +83,16 @@ export default function ProjectStats() {
         </div>
       </div>
 
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Projects that got traction</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Projects that got traction</p>
       <div className="space-y-1.5">
         {NOTABLE.map(n => (
           <a key={n.name} href={n.url} target="_blank" rel="noopener noreferrer"
             className="group flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
             <div className="flex items-center gap-3">
               <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{n.name}</span>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">{n.type}</span>
+              <span className="text-[10px] text-zinc-400 dark:text-zinc-400">{n.type}</span>
             </div>
-            <span className="text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0">{n.metric}</span>
+            <span className="text-xs text-zinc-400 dark:text-zinc-400 flex-shrink-0">{n.metric}</span>
           </a>
         ))}
       </div>

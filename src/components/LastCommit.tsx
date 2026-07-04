@@ -56,7 +56,7 @@ export default function LastCommit() {
       <span className="font-mono text-zinc-600 dark:text-zinc-300">
         {commit.shortSha}
       </span>
-      <span aria-hidden className="text-zinc-300 dark:text-zinc-600">
+      <span aria-hidden className="text-zinc-300 dark:text-zinc-500">
         ·
       </span>
       <span className="font-mono tabular-nums">
@@ -67,12 +67,10 @@ export default function LastCommit() {
           +{commit.additions.toLocaleString()}
         </span>
       </span>
-      <span aria-hidden className="text-zinc-300 dark:text-zinc-600">
+      <span aria-hidden className="text-zinc-300 dark:text-zinc-500">
         ·
       </span>
-      <span>
-        Last commit {relativeTime ?? '…'}
-      </span>
+      <span>{relativeTime ?? '…'}</span>
     </p>
   );
 }

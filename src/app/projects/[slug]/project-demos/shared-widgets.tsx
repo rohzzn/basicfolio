@@ -37,7 +37,7 @@ export function TerminalInstall({
               <div key={c} className={`w-2.5 h-2.5 rounded-full ${c} opacity-70`} />
             ))}
           </div>
-          <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">
+          <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400">
             {packageType === 'pypi' ? 'pip' : 'npm'}
           </span>
         </div>
@@ -114,7 +114,7 @@ export function CommandList({
             <code className="text-xs font-mono text-zinc-800 dark:text-zinc-200 flex-shrink-0 max-w-[45%] truncate">
               {c.cmd}
             </code>
-            <span className="text-xs text-zinc-400 dark:text-zinc-500 flex-1 min-w-0 truncate">
+            <span className="text-xs text-zinc-400 dark:text-zinc-400 flex-1 min-w-0 truncate">
               {c.desc}
             </span>
             <button

@@ -77,15 +77,15 @@ const WritingPage = () => {
       {selectedCategory === 'tweets' ? (
         <div>
           {tweetsLoading && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-zinc-500 py-2">Loading tweets…</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-400 py-2">Loading tweets…</p>
           )}
 
           {!tweetsLoading && tweetsError && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-zinc-500 py-2">Tweets unavailable right now.</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-400 py-2">Tweets unavailable right now.</p>
           )}
 
           {!tweetsLoading && !tweetsError && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-zinc-500 py-2">No tweets yet.</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-400 py-2">No tweets yet.</p>
           )}
 
           {tweets.map((tweet) => (
@@ -157,7 +157,7 @@ const WritingPage = () => {
                     href={tweet.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors flex-shrink-0"
+                    className="text-xs text-zinc-400 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors flex-shrink-0"
                   >
                     {tweet.displayDate}
                   </a>
@@ -177,7 +177,7 @@ const WritingPage = () => {
               <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
                 {item.title}
               </span>
-              <span className="text-xs text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors flex-shrink-0 ml-4">
+              <span className="text-xs text-zinc-400 dark:text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors flex-shrink-0 ml-4">
                 {item.displayDate}
               </span>
             </Link>

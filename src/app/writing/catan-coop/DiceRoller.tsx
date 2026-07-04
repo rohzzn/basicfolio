@@ -107,7 +107,7 @@ export default function DiceRoller() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Dice Roller</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Dice Roller</p>
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4">
         <div className="flex items-center gap-4 mb-4">
           <div className="flex gap-3">
@@ -120,7 +120,7 @@ export default function DiceRoller() {
             >
               {total}
             </span>
-            <span className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+            <span className="text-xs text-zinc-400 dark:text-zinc-400 mt-0.5">
               {is7 ? "Move the robber" : isHot ? "High probability" : "Roll total"}
             </span>
           </div>
@@ -146,9 +146,9 @@ export default function DiceRoller() {
 
         {totalRolls > 0 && (
           <div>
-            <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-2">
+            <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-2">
               Running totals · {totalRolls} roll{totalRolls === 1 ? "" : "s"}{" "}
-              <span className="text-zinc-300 dark:text-zinc-600">(shape should lean toward 6–8)</span>
+              <span className="text-zinc-300 dark:text-zinc-500">(shape should lean toward 6–8)</span>
             </p>
             <div className="flex items-end gap-1.5 h-32 mb-2">
               {TOTALS.map((n) => {
@@ -172,7 +172,7 @@ export default function DiceRoller() {
             </div>
             <div className="flex gap-1.5">
               {TOTALS.map((n) => (
-                <div key={n} className="flex-1 min-w-0 text-center text-[9px] text-zinc-400 dark:text-zinc-600">
+                <div key={n} className="flex-1 min-w-0 text-center text-[9px] text-zinc-400 dark:text-zinc-400">
                   {n}
                 </div>
               ))}

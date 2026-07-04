@@ -34,7 +34,7 @@ export function BuildConfigurator() {
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <span className={`text-xs w-20 flex-shrink-0 ${selected === p.id ? 'text-zinc-400 dark:text-zinc-600' : 'text-zinc-400 dark:text-zinc-500'}`}>
+                <span className={`text-xs w-20 flex-shrink-0 ${selected === p.id ? 'text-zinc-400 dark:text-zinc-400' : 'text-zinc-400 dark:text-zinc-400'}`}>
                   {p.label}
                 </span>
                 <span className={`text-xs truncate font-medium ${selected === p.id ? '' : 'text-zinc-700 dark:text-zinc-300'}`}>
@@ -118,11 +118,11 @@ export function CostComparison() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
-              <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mb-1">Cloud cost</p>
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-400 mb-1">Cloud cost</p>
               <p className="text-sm font-mono font-semibold text-zinc-700 dark:text-zinc-300">${cloudCumulative.toLocaleString()}</p>
             </div>
             <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
-              <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mb-1">Self-hosted cost</p>
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-400 mb-1">Self-hosted cost</p>
               <p className="text-sm font-mono font-semibold text-zinc-700 dark:text-zinc-300">${selfHostedCumulative.toLocaleString()}</p>
             </div>
           </div>
@@ -206,14 +206,14 @@ export function ServiceList() {
                 <span className={`text-xs font-medium truncate ${selected === s.name ? 'text-white dark:text-zinc-900' : 'text-zinc-700 dark:text-zinc-300'}`}>
                   {s.name}
                 </span>
-                <span className={`text-[10px] flex-shrink-0 ${selected === s.name ? 'text-zinc-400 dark:text-zinc-600' : 'text-zinc-400 dark:text-zinc-500'}`}>
+                <span className={`text-[10px] flex-shrink-0 ${selected === s.name ? 'text-zinc-400 dark:text-zinc-400' : 'text-zinc-400 dark:text-zinc-400'}`}>
                   replaces {s.replaces}
                 </span>
               </div>
               <span className={`text-[10px] flex-shrink-0 ml-3 ${
                 selected === s.name
                   ? (s.access === 'public' ? 'text-emerald-400' : 'text-rose-400')
-                  : (s.access === 'public' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400 dark:text-zinc-500')
+                  : (s.access === 'public' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400 dark:text-zinc-400')
               }`}>
                 {s.access}
               </span>
@@ -225,7 +225,7 @@ export function ServiceList() {
           {active ? (
             <p className="text-xs text-zinc-500 dark:text-zinc-400">{active.desc}</p>
           ) : (
-            <p className="text-xs text-zinc-400 dark:text-zinc-600">Click any row to see what it does</p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-400">Click any row to see what it does</p>
           )}
         </div>
       </div>
@@ -294,7 +294,7 @@ export function StorageLayout() {
               <div className="flex items-center gap-4">
                 <div className="w-12 flex-shrink-0">
                   <p className={`text-xs font-medium ${isActive ? 'text-white dark:text-zinc-900' : 'text-zinc-700 dark:text-zinc-300'}`}>{d.label}</p>
-                  <p className={`text-[10px] ${isActive ? 'text-zinc-400 dark:text-zinc-600' : 'text-zinc-400 dark:text-zinc-500'}`}>{d.sub}</p>
+                  <p className={`text-[10px] ${isActive ? 'text-zinc-400 dark:text-zinc-400' : 'text-zinc-400 dark:text-zinc-400'}`}>{d.sub}</p>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className={`h-1.5 rounded-full overflow-hidden ${isActive ? 'bg-zinc-700 dark:bg-zinc-300' : 'bg-zinc-100 dark:bg-zinc-800'}`}>
@@ -305,14 +305,14 @@ export function StorageLayout() {
                   </div>
                 </div>
                 <div className="flex-shrink-0 text-right">
-                  <p className={`text-xs font-mono ${isActive ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500 dark:text-zinc-400'}`}>{pct}%</p>
-                  <p className={`text-[10px] ${isActive ? 'text-zinc-500 dark:text-zinc-500' : 'text-zinc-400 dark:text-zinc-600'}`}>{d.size - d.used} GB free</p>
+                  <p className={`text-xs font-mono ${isActive ? 'text-zinc-300 dark:text-zinc-400' : 'text-zinc-500 dark:text-zinc-400'}`}>{pct}%</p>
+                  <p className={`text-[10px] ${isActive ? 'text-zinc-500 dark:text-zinc-500' : 'text-zinc-400 dark:text-zinc-400'}`}>{d.size - d.used} GB free</p>
                 </div>
               </div>
               {isActive && (
                 <ul className="mt-3 space-y-1 pl-16">
                   {d.items.map(item => (
-                    <li key={item} className="text-xs text-zinc-400 dark:text-zinc-600">
+                    <li key={item} className="text-xs text-zinc-400 dark:text-zinc-400">
                       {item}
                     </li>
                   ))}
@@ -481,7 +481,7 @@ export function TrafficFlow() {
           </div>
 
           <div className="p-4">
-            <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 mb-3 uppercase tracking-wider">Private (VPN only)</p>
+            <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-400 mb-3 uppercase tracking-wider">Private (VPN only)</p>
             <div className="space-y-1.5">
               {PRIVATE_PATH.map((step, i) => (
                 <React.Fragment key={step.label}>
@@ -508,7 +508,7 @@ export function TrafficFlow() {
           {note ? (
             <p className="text-xs text-zinc-500 dark:text-zinc-400">{note}</p>
           ) : (
-            <p className="text-xs text-zinc-400 dark:text-zinc-600">Click any step to see what it does</p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-400">Click any step to see what it does</p>
           )}
         </div>
       </div>

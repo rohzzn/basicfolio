@@ -9,7 +9,7 @@ const DiscordWidgets: React.FC = () => {
       <header className="mb-8">
         <div className="flex items-start justify-between gap-4 mb-4">
           <h1 className="text-lg font-medium dark:text-white">How to Build Discord Profile Widgets</h1>
-          <Link href="/writing" className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex-shrink-0 mt-1">writing</Link>
+          <Link href="/writing" className="text-xs text-zinc-400 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex-shrink-0 mt-1">writing</Link>
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400 text-sm">
           <time dateTime="2026-05-29">May 29, 2026</time>
@@ -24,7 +24,7 @@ const DiscordWidgets: React.FC = () => {
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">
-          <span className="text-zinc-400 dark:text-zinc-500 font-normal mr-2">01</span>Setting Up Your Application
+          <span className="text-zinc-400 dark:text-zinc-400 font-normal mr-2">01</span>Setting Up Your Application
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Start at the Discord Developer Portal and create a new application. Once created, navigate to Games then Social SDK in the sidebar. Fill out the short form to get access to the Social SDK, which is the umbrella feature that widgets v2 falls under. You do not need an actual game for this, and you get access immediately after submitting.
@@ -62,7 +62,7 @@ findByProps("getAll").getAll().find(e=>e.getName() === "ApexExperimentStore")
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">
-          <span className="text-zinc-400 dark:text-zinc-500 font-normal mr-2">02</span>Building the Widget
+          <span className="text-zinc-400 dark:text-zinc-400 font-normal mr-2">02</span>Building the Widget
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Clicking Create Widget drops you into the widget editor. You need to create a Widget Top, a Widget Bottom, and an Add Widget Preview section, with all required fields filled before you can publish.
@@ -101,7 +101,7 @@ findByProps("getAll").getAll().find(e=>e.getName() === "ApexExperimentStore")
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">
-          <span className="text-zinc-400 dark:text-zinc-500 font-normal mr-2">03</span>OAuth Setup
+          <span className="text-zinc-400 dark:text-zinc-400 font-normal mr-2">03</span>OAuth Setup
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           For the widget to display user-specific data, users need to grant your application permission to update their widget. Head to the OAuth2 page under your application and add a redirect URI. You can point it at your own website or, for testing purposes, Discord&apos;s homepage works fine.
@@ -112,7 +112,7 @@ findByProps("getAll").getAll().find(e=>e.getName() === "ApexExperimentStore")
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">
-          <span className="text-zinc-400 dark:text-zinc-500 font-normal mr-2">04</span>Application Identities (Personal Use Only)
+          <span className="text-zinc-400 dark:text-zinc-400 font-normal mr-2">04</span>Application Identities (Personal Use Only)
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           If you are building this just for yourself rather than as a service for other people, this step is required. Skipping it causes the widget to show &quot;Your game stats are still syncing. Keep playing!&quot; instead of your actual data, and the widget will not be visible to anyone else.
@@ -166,7 +166,7 @@ findByProps("getAll").getAll().find(e=>e.getName() === "ApexExperimentStore")
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">
-          <span className="text-zinc-400 dark:text-zinc-500 font-normal mr-2">05</span>Widget Management With a Bot
+          <span className="text-zinc-400 dark:text-zinc-400 font-normal mr-2">05</span>Widget Management With a Bot
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           If you are building this as a service for other people, you need a bot to handle the data sync. The pattern that works well is a user-installable bot with two slash commands: one to set up and link a user&apos;s account, and one to push fresh data to Discord on demand.
@@ -207,7 +207,7 @@ findByProps("getAll").getAll().find(e=>e.getName() === "ApexExperimentStore")
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-white">
-          <span className="text-zinc-400 dark:text-zinc-500 font-normal mr-2">06</span>Adding the Widget to Your Profile
+          <span className="text-zinc-400 dark:text-zinc-400 font-normal mr-2">06</span>Adding the Widget to Your Profile
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">
           Adding a widget to your profile currently has to be done through the API directly as Discord has not exposed it in the normal UI yet. The Discord Previews community server has a thread with ready-to-run browser snippets that handle this for you, covering both directly pinning the widget to your profile and adding it to the Add Widget menu at the top right of your profile page. You will also want to make sure the experiment <code className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">2026-03-application-widget-v2-renderer</code> is set to Variant 1 on your account.

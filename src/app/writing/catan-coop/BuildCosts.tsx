@@ -30,7 +30,7 @@ export default function BuildCosts() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Build Cost Reference</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Build Cost Reference</p>
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4">
         <div className="mb-5">
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">Set your hand</p>
@@ -64,7 +64,7 @@ export default function BuildCosts() {
                   {ok && <span className="text-[10px] text-emerald-600 dark:text-emerald-500">can build</span>}
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500 mr-1">{b.vp} VP</span>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-400 mr-1">{b.vp} VP</span>
                   {(Object.entries(b.cost) as [Res, number][]).map(([res, n]) =>
                     Array.from({ length: n }).map((_, j) => (
                       <div key={`${res}-${j}`} className={`w-4 h-4 rounded-sm ${RES_COLORS[res]} text-white text-[9px] font-bold flex items-center justify-center`}>
@@ -78,7 +78,7 @@ export default function BuildCosts() {
           })}
         </div>
 
-        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-3">Colour key: green=wood, orange=brick, lime=sheep, yellow=wheat, slate=ore</p>
+        <p className="text-[10px] text-zinc-400 dark:text-zinc-400 mt-3">Colour key: green=wood, orange=brick, lime=sheep, yellow=wheat, slate=ore</p>
       </div>
     </div>
   );

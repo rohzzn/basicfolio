@@ -54,7 +54,7 @@ export default function HexBoard() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Interactive Board</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Interactive Board</p>
       <div className="flex flex-col sm:flex-row gap-6 items-start">
         <svg viewBox="0 0 420 310" className="w-full max-w-xs sm:max-w-sm flex-shrink-0" style={{ overflow: 'visible' }}>
           {positions.map((pos, i) => {
@@ -115,17 +115,17 @@ export default function HexBoard() {
                       {Array.from({ length: 5 }).map((_, i) => (
                         <div key={i} className={`h-1.5 w-4 rounded-sm ${i < (PROB[h.num!] ?? 0) ? (h.num === 6 || h.num === 8 ? 'bg-red-500' : 'bg-zinc-600 dark:bg-zinc-300') : 'bg-zinc-200 dark:bg-zinc-700'}`} />
                       ))}
-                      <span className="text-xs text-zinc-400 dark:text-zinc-500 ml-1.5">{((PROB[h.num!] ?? 0) / 36 * 100).toFixed(0)}% of rolls</span>
+                      <span className="text-xs text-zinc-400 dark:text-zinc-400 ml-1.5">{((PROB[h.num!] ?? 0) / 36 * 100).toFixed(0)}% of rolls</span>
                     </div>
                   </div>
                 </>
               ) : (
-                <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">No number token. Robber lives here at game start.</p>
+                <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">No number token. Robber lives here at game start.</p>
               )}
             </div>
           ) : (
             <div className="border border-dashed border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
-              <p className="text-xs text-zinc-400 dark:text-zinc-500">Hover any tile to see its resource type, what it produces, and how often that number rolls.</p>
+              <p className="text-xs text-zinc-400 dark:text-zinc-400">Hover any tile to see its resource type, what it produces, and how often that number rolls.</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {(Object.entries(RESOURCES) as [ResKey, typeof RESOURCES[ResKey]][]).filter(([k]) => k !== 'desert').map(([key, val]) => (
                   <div key={key} className="flex items-center gap-1">

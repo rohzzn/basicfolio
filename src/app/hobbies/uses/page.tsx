@@ -125,7 +125,7 @@ function GearLink({ item }: { item: GearItem }) {
 function GearGroup({ label, items }: { label: string; items: GearItem[] }) {
   return (
     <div>
-      <h4 className="mb-2 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+      <h4 className="mb-2 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
         {label}
       </h4>
       <div className="space-y-0.5">
@@ -179,7 +179,7 @@ export default function UsesPage() {
 
       <div className="space-y-12">
         <div>
-          <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400 dark:text-zinc-500">
+          <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400 dark:text-zinc-400">
             Hardware
           </p>
 
@@ -199,7 +199,7 @@ export default function UsesPage() {
                     key={item.name}
                     className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-2.5 last:border-0 dark:border-zinc-800/80"
                   >
-                    <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                    <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       {item.name}
                     </span>
                     <span className="text-right text-sm text-zinc-700 dark:text-zinc-300">{item.description}</span>
@@ -211,7 +211,7 @@ export default function UsesPage() {
         </div>
 
         <div>
-          <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400 dark:text-zinc-500">
+          <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400 dark:text-zinc-400">
             Software
           </p>
 

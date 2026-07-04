@@ -26,7 +26,7 @@ function SmartAgricultureDemo() {
   ];
   return (
     <div className="my-8 not-prose">
-      <div className="flex items-center justify-between mb-3"><p className={L} style={{marginBottom:0}}>Live Sensors</p><div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"/><span className="text-xs text-zinc-400 dark:text-zinc-500">Live</span></div></div>
+      <div className="flex items-center justify-between mb-3"><p className={L} style={{marginBottom:0}}>Live Sensors</p><div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"/><span className="text-xs text-zinc-400 dark:text-zinc-400">Live</span></div></div>
       <div className="grid grid-cols-2 gap-3">
         {items.map(({label,value,pct,color,good})=>(
           <div key={label} className={`${CARD} p-3`}>
@@ -36,7 +36,7 @@ function SmartAgricultureDemo() {
           </div>
         ))}
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3">Values update every 2 seconds (simulated)</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3">Values update every 2 seconds (simulated)</p>
     </div>
   );
 }
@@ -57,7 +57,7 @@ function AutomobileAnalyticsDemo() {
           <div key={d.brand} onMouseEnter={()=>setHover(d.brand)} onMouseLeave={()=>setHover(null)}>
             <div className="flex items-center justify-between text-xs mb-1">
               <span className={`font-medium transition-colors ${hover===d.brand?'text-zinc-900 dark:text-white':'text-zinc-600 dark:text-zinc-400'}`}>{d.brand}</span>
-              <span className="text-zinc-400 dark:text-zinc-500 tabular-nums">{d.sales.toLocaleString()} units</span>
+              <span className="text-zinc-400 dark:text-zinc-400 tabular-nums">{d.sales.toLocaleString()} units</span>
             </div>
             <div className="h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
               <div className={`h-full rounded-full transition-all duration-500 ${d.color} ${hover===d.brand?'opacity-100':'opacity-70'}`} style={{width:`${(d.sales/max)*100}%`}}/>
@@ -82,7 +82,7 @@ function BlockSteamDemo() {
       <p className={L}>Script Demo</p>
       <div className="relative h-36 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 overflow-hidden flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-3">Steam friend request received</p>
+          <p className="text-xs text-zinc-400 dark:text-zinc-400 mb-3">Steam friend request received</p>
           <button onClick={show} className="px-4 py-2 text-sm bg-zinc-800 text-white rounded hover:bg-zinc-700 transition-colors">Simulate invite</button>
           {blocked>0&&<p className="text-xs text-green-500 mt-2">Blocked {blocked} invite{blocked>1?'s':''}</p>}
         </div>
@@ -94,7 +94,7 @@ function BlockSteamDemo() {
           </div>
         )}
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">The userscript intercepts and dismisses invite popups automatically</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">The userscript intercepts and dismisses invite popups automatically</p>
     </div>
   );
 }
@@ -170,7 +170,7 @@ function DiscordMirrorDemo() {
             <div className="p-2 space-y-1.5 min-h-[80px]">
               {visible.map((m,i)=>(
                 <div key={i} className="text-xs p-1.5 rounded bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700">
-                  {si===1&&<span className="text-zinc-400 dark:text-zinc-500 text-xs">[mirrored] </span>}
+                  {si===1&&<span className="text-zinc-400 dark:text-zinc-400 text-xs">[mirrored] </span>}
                   <span className="text-zinc-700 dark:text-zinc-300">{m}</span>
                 </div>
               ))}
@@ -182,7 +182,7 @@ function DiscordMirrorDemo() {
         <button onClick={()=>setStep(s=>Math.min(s+1,MIRROR_MSGS.length))} disabled={step>=MIRROR_MSGS.length}
           className="px-3 py-1.5 text-xs bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-30">Post message →</button>
         <button onClick={()=>setStep(0)} className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Reset</button>
-        {step>0&&<p className="text-xs text-zinc-400 dark:text-zinc-500">Message mirrored to Server B in real time</p>}
+        {step>0&&<p className="text-xs text-zinc-400 dark:text-zinc-400">Message mirrored to Server B in real time</p>}
       </div>
     </div>
   );
@@ -217,7 +217,7 @@ function GitHubAnyYearDemo() {
           })}
         </div>
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">Simulated contribution pattern for {year}</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">Simulated contribution pattern for {year}</p>
     </div>
   );
 }

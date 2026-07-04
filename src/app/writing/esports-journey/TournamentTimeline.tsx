@@ -34,7 +34,7 @@ export default function TournamentTimeline() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Tournament History</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Tournament History</p>
 
       <div className="flex gap-3 mb-4 flex-wrap">
         {['all', ...ALL_GAMES].map(g => (
@@ -51,7 +51,7 @@ export default function TournamentTimeline() {
           {visible.map((ev, i) => (
             <div key={i} className="flex items-start gap-4 relative">
               <div className="w-10 text-right flex-shrink-0 pt-2.5">
-                <span className="text-xs text-zinc-400 dark:text-zinc-500">{ev.year}</span>
+                <span className="text-xs text-zinc-400 dark:text-zinc-400">{ev.year}</span>
               </div>
               <div className="w-3 h-3 rounded-full bg-zinc-200 dark:bg-zinc-700 flex-shrink-0 mt-2.5 z-10 relative" />
               <div className={`flex-1 flex items-center justify-between px-3 py-2.5 rounded-md border ${PLACE_STYLE[ev.place]}`}>
@@ -66,7 +66,7 @@ export default function TournamentTimeline() {
         </div>
       </div>
 
-      <div className="mt-4 flex gap-3 text-xs text-zinc-400 dark:text-zinc-500">
+      <div className="mt-4 flex gap-3 text-xs text-zinc-400 dark:text-zinc-400">
         <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-400" />1st place</div>
         <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-500" />2nd place</div>
         <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-orange-300" />3rd place</div>

@@ -30,7 +30,7 @@ export default function PerfMetrics() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Performance Results</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Performance Results</p>
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
         <div className="flex border-b border-zinc-200 dark:border-zinc-800">
           {(['before', 'after'] as const).map(v => (
@@ -66,7 +66,7 @@ export default function PerfMetrics() {
         </div>
         {view === 'after' && (
           <div className="px-4 pb-4">
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">Average improvement: {Math.round(METRICS.reduce((s, m) => s + m.improvement, 0) / METRICS.length)}% across all metrics</p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-400">Average improvement: {Math.round(METRICS.reduce((s, m) => s + m.improvement, 0) / METRICS.length)}% across all metrics</p>
           </div>
         )}
       </div>

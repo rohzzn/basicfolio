@@ -271,7 +271,7 @@ const MediaGrid: React.FC<MediaGridProps> = ({ groups, emptyLabel, isLoading }) 
       {groups.map((group) => (
         <section key={group.key}>
           {group.yearLabel ? (
-            <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+            <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
               {group.yearLabel}
             </h3>
           ) : null}
@@ -307,11 +307,11 @@ const MediaGrid: React.FC<MediaGridProps> = ({ groups, emptyLabel, isLoading }) 
                     {entry.title}
                   </p>
                   {entry.ratingValue !== null ? (
-                    <p className="mt-0.5 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500">
+                    <p className="mt-0.5 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-400">
                       {entry.ratingValue.toFixed(1)}/5
                     </p>
                   ) : (
-                    <p className="mt-0.5 text-[10px] text-zinc-400 dark:text-zinc-600">Unrated</p>
+                    <p className="mt-0.5 text-[10px] text-zinc-400 dark:text-zinc-400">Unrated</p>
                   )}
                 </div>
               </a>

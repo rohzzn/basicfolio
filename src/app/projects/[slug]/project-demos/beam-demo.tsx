@@ -363,7 +363,7 @@ export function BeamDemo() {
         <div className="grid lg:grid-cols-[220px_minmax(0,1fr)]">
           <aside className="border-b lg:border-b-0 lg:border-r border-zinc-100 dark:border-zinc-800 p-4 space-y-4 bg-zinc-50/50 dark:bg-zinc-900/20">
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">Capture</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">Capture</p>
               <div className="space-y-1">
                 {MODES.map(m => (
                   <button
@@ -383,7 +383,7 @@ export function BeamDemo() {
             </div>
 
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">Inputs</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">Inputs</p>
               <div className="space-y-2">
                 <Toggle label="Webcam bubble" checked={webcam} onChange={setWebcam} />
                 <Toggle label="Microphone" checked={mic} onChange={setMic} />
@@ -393,7 +393,7 @@ export function BeamDemo() {
             </div>
 
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">Quality</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">Quality</p>
               <div className="space-y-1">
                 {QUALITY.map(q => (
                   <button
@@ -407,7 +407,7 @@ export function BeamDemo() {
                     }`}
                   >
                     <span className="block text-[11px]">{q.label}</span>
-                    <span className={`block text-[9px] ${quality === q.id ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-400'}`}>{q.hint}</span>
+                    <span className={`block text-[9px] ${quality === q.id ? 'text-zinc-300 dark:text-zinc-500' : 'text-zinc-400'}`}>{q.hint}</span>
                   </button>
                 ))}
               </div>
@@ -415,7 +415,7 @@ export function BeamDemo() {
 
             {recording && mic && (
               <div className="pt-1">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">Mic level</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400 mb-2">Mic level</p>
                 <div className="flex items-end gap-0.5 h-8">
                   {waveBars.map((h, i) => (
                     <span

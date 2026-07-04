@@ -40,7 +40,7 @@ export default function TwoFactorMatrix() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">2FA compatibility</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">2FA compatibility</p>
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
         <div className="flex flex-wrap border-b border-zinc-200 dark:border-zinc-800">
           {METHODS.map(m => (
@@ -78,7 +78,7 @@ export default function TwoFactorMatrix() {
           <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">{method.detail}</p>
 
           <div className="rounded-md bg-zinc-50 dark:bg-zinc-800/50 p-3 font-mono text-[11px] space-y-1">
-            <div className="text-zinc-400 dark:text-zinc-500">{`// Agent access for ${method.label}`}</div>
+            <div className="text-zinc-400 dark:text-zinc-400">{`// Agent access for ${method.label}`}</div>
             {method.agent === 'success' ? (
               <>
                 <div className="text-zinc-700 dark:text-zinc-300">safari.navigate(site)</div>
@@ -93,7 +93,7 @@ export default function TwoFactorMatrix() {
                 <div className="text-zinc-700 dark:text-zinc-300">safari.navigate(site)</div>
                 <div className="text-zinc-700 dark:text-zinc-300">keychain.read(credentials)</div>
                 <div className="text-red-500 dark:text-red-400">secondFactor.resolve() // undefined</div>
-                <div className="text-zinc-400 dark:text-zinc-600">keychain.write(newPassword) // never reached</div>
+                <div className="text-zinc-400 dark:text-zinc-400">keychain.write(newPassword) // never reached</div>
               </>
             )}
           </div>

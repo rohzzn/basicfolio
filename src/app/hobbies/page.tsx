@@ -27,11 +27,11 @@ function HobbyRow({ hobby }: { hobby: (typeof hobbies)[number] }) {
         <span className="text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-white">
           {hobby.title}
         </span>
-        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-zinc-500">
+        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-zinc-400">
           {hobby.description}
         </span>
       </div>
-      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-zinc-500">{hobby.description}</p>
+      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-zinc-400">{hobby.description}</p>
     </Link>
   );
 }

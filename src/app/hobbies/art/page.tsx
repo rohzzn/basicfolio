@@ -145,7 +145,7 @@ function TagMarquee({ tags }: { tags: string[] }) {
         {items.map((tag, i) => (
           <span
             key={`${tag}-${i}`}
-            className="mx-4 shrink-0 text-xs uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500"
+            className="mx-4 shrink-0 text-xs uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-400"
           >
             {tag}
           </span>
@@ -183,7 +183,7 @@ const ArtPage = () => {
             className={`text-xs uppercase tracking-[0.14em] transition-colors ${
               activeFilter === filter
                 ? "text-zinc-900 dark:text-white"
-                : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+                : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300"
             }`}
           >
             {filter === "all" ? "All work" : filter}

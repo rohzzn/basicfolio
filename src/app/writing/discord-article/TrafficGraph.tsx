@@ -27,7 +27,7 @@ export default function TrafficGraph() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Concurrent Users (millions)</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Concurrent Users (millions)</p>
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
         <div className="flex border-b border-zinc-200 dark:border-zinc-800">
           {(['normal', 'launch'] as const).map(v => (
@@ -51,7 +51,7 @@ export default function TrafficGraph() {
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-[9px] text-zinc-400 dark:text-zinc-600">
+          <div className="flex justify-between text-[9px] text-zinc-400 dark:text-zinc-400">
             <span>12am</span><span>6am</span><span>12pm</span><span>6pm</span><span>12am</span>
           </div>
           <div className="mt-3 flex items-center justify-between">

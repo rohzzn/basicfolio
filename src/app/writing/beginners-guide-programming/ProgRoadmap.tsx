@@ -25,7 +25,7 @@ export default function ProgRoadmap() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Learning Roadmap</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Learning Roadmap</p>
       <div className="mb-4">
         <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1.5">
           <span>Progress</span>
@@ -51,8 +51,8 @@ export default function ProgRoadmap() {
                   <span className="text-sm font-medium dark:text-white">{phase.phase}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500">{pDone}/{phase.items.length}</span>
-                  <span className="text-zinc-300 dark:text-zinc-600 text-xs">{isOpen ? '▲' : '▼'}</span>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-400">{pDone}/{phase.items.length}</span>
+                  <span className="text-zinc-300 dark:text-zinc-500 text-xs">{isOpen ? '▲' : '▼'}</span>
                 </div>
               </button>
               {isOpen && (
@@ -66,7 +66,7 @@ export default function ProgRoadmap() {
                           className={`w-4 h-4 rounded border mt-0.5 flex-shrink-0 flex items-center justify-center transition-colors ${checked ? 'bg-zinc-900 dark:bg-zinc-100 border-zinc-900 dark:border-zinc-100' : 'border-zinc-300 dark:border-zinc-600 group-hover:border-zinc-500'}`}>
                           {checked && <span className="text-white dark:text-zinc-900 text-[8px] font-bold">✓</span>}
                         </div>
-                        <span className={`text-xs leading-relaxed ${checked ? 'text-zinc-400 dark:text-zinc-600 line-through' : 'text-zinc-600 dark:text-zinc-400'}`}>
+                        <span className={`text-xs leading-relaxed ${checked ? 'text-zinc-400 dark:text-zinc-400 line-through' : 'text-zinc-600 dark:text-zinc-400'}`}>
                           {item}
                         </span>
                       </label>

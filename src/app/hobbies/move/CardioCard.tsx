@@ -59,7 +59,7 @@ function CardioStatsGrid({ activity }: { activity: StravaActivity }) {
     <div className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-zinc-100 dark:border-zinc-800 sm:grid-cols-3">
       {stats.map(({ label, value }) => (
         <div key={label} className="bg-zinc-50 px-2.5 py-2 dark:bg-zinc-900/50">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
             {label}
           </p>
           <p className="mt-0.5 text-xs font-medium tabular-nums text-zinc-800 dark:text-zinc-200">
@@ -82,7 +82,7 @@ function CardioCardBody({
     <>
       <div className="flex items-baseline justify-between gap-2">
         <div className="flex min-w-0 items-baseline gap-2">
-          <span className="flex-shrink-0 rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
+          <span className="flex-shrink-0 rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400">
             {label}
           </span>
           <a
@@ -94,7 +94,7 @@ function CardioCardBody({
             {activity.name}
           </a>
         </div>
-        <time className="flex-shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
+        <time className="flex-shrink-0 text-xs text-zinc-400 dark:text-zinc-400">
           {shortDate(activity.start_date)}
         </time>
       </div>

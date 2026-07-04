@@ -184,17 +184,17 @@ export default function AdmiredSoftware() {
                   <span className={`text-xs px-2 py-0.5 rounded font-mono flex-shrink-0 ${LANG_COLORS[sw.lang]}`}>
                     {sw.lang}
                   </span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500 hidden sm:block truncate">
+                  <span className="text-xs text-zinc-400 dark:text-zinc-400 hidden sm:block truncate">
                     {sw.tagline}
                   </span>
                 </div>
-                <span className="text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0 ml-3">
+                <span className="text-xs text-zinc-400 dark:text-zinc-400 flex-shrink-0 ml-3">
                   {sw.year}
                 </span>
               </button>
               {isOpen && (
                 <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800">
-                  <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3 mb-2 uppercase tracking-wider font-medium">
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-3 mb-2 uppercase tracking-wider font-medium">
                     {sw.category}
                   </p>
                   <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -207,7 +207,7 @@ export default function AdmiredSoftware() {
         })}
       </div>
 
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-4">
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-4">
         {shown.length} of {SOFTWARE.length} · click any row to expand
       </p>
     </div>

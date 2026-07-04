@@ -119,7 +119,7 @@ export default function PasswordFixDemo() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Passwords app simulator</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Passwords app simulator</p>
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
         {liveActivity && (
           <div className="px-4 py-2.5 bg-zinc-900 dark:bg-zinc-100 flex items-center gap-2">
@@ -171,7 +171,7 @@ export default function PasswordFixDemo() {
                       {ISSUE_LABEL[account.issue]}
                     </span>
                     {account.twoFA !== 'none' && (
-                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                      <span className="text-[10px] text-zinc-400 dark:text-zinc-400">
                         2FA: {account.twoFA}
                       </span>
                     )}
@@ -181,7 +181,7 @@ export default function PasswordFixDemo() {
                   status === 'upgraded' ? 'text-emerald-600 dark:text-emerald-400' :
                   status === 'failed' ? 'text-red-500 dark:text-red-400' :
                   active ? 'text-blue-500 dark:text-blue-400' :
-                  'text-zinc-400 dark:text-zinc-500'
+                  'text-zinc-400 dark:text-zinc-400'
                 }`}>
                   {statusLabel(status)}
                 </span>

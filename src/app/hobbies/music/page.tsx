@@ -615,7 +615,7 @@ const MusicPage: React.FC = () => {
               className={`text-xs capitalize transition-colors ${
                 timeRange === range.id
                   ? "font-medium text-zinc-900 dark:text-white"
-                  : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300"
               }`}
             >
               {range.label}
@@ -661,7 +661,7 @@ const MusicPage: React.FC = () => {
 
   const ArtistsTabContent = () => (
     <div>
-      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
         Top artists · {timeRangeLabels[timeRange]}
       </p>
 
@@ -703,7 +703,7 @@ const MusicPage: React.FC = () => {
 
   const TracksTabContent = () => (
     <div>
-      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
         Top tracks · {timeRangeLabels[timeRange]}
       </p>
 
@@ -721,7 +721,7 @@ const MusicPage: React.FC = () => {
 
   const PlaylistsTabContent = () => (
     <div>
-      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
         Playlists
       </p>
 
@@ -760,7 +760,7 @@ const MusicPage: React.FC = () => {
                       {playlist.tracks?.total || 0} tracks
                     </p>
                     {playlistDescription ? (
-                      <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
+                      <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-400">
                         {playlistDescription}
                       </p>
                     ) : null}
@@ -782,7 +782,7 @@ const MusicPage: React.FC = () => {
 
   const RecentTabContent = () => (
     <div>
-      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
         Recently played
       </p>
 
@@ -820,7 +820,7 @@ const MusicPage: React.FC = () => {
         <div>
           {currentlyPlaying && loadedSections.currentlyPlaying ? (
             <section className="mb-8">
-              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                 {currentlyPlaying.isPlaying ? "Now playing" : "Last played"}
               </p>
               <div className="flex flex-col gap-4 rounded-lg border border-zinc-100 p-4 sm:flex-row sm:items-center dark:border-zinc-800/80">
@@ -851,7 +851,7 @@ const MusicPage: React.FC = () => {
                   <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
                     {currentlyPlaying.track.artists.map((artist) => artist.name).join(", ")}
                   </p>
-                  <p className="mt-0.5 truncate text-[11px] text-zinc-400 dark:text-zinc-500">
+                  <p className="mt-0.5 truncate text-[11px] text-zinc-400 dark:text-zinc-400">
                     {currentlyPlaying.track.album.name}
                   </p>
                   <div className="mt-3 h-1 max-w-sm overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
@@ -862,7 +862,7 @@ const MusicPage: React.FC = () => {
                       }}
                     />
                   </div>
-                  <div className="mt-1 flex max-w-sm justify-between text-[11px] tabular-nums text-zinc-400 dark:text-zinc-500">
+                  <div className="mt-1 flex max-w-sm justify-between text-[11px] tabular-nums text-zinc-400 dark:text-zinc-400">
                     <span>{formatDuration(currentlyPlaying.progress_ms)}</span>
                     <span>{formatDuration(currentlyPlaying.track.duration_ms)}</span>
                   </div>

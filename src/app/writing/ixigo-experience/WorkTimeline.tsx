@@ -32,7 +32,7 @@ export default function WorkTimeline() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Projects at Abhibus</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Projects at Abhibus</p>
       <div className="flex gap-2 mb-4 flex-wrap">
         {(['all', ...ALL_TAGS] as const).map(t => (
           <button key={t} onClick={() => setFilter(t)}

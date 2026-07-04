@@ -29,7 +29,7 @@ function Portfolio4Demo() {
           <div className="absolute bottom-2 left-2"><button onClick={()=>setOpen(true)} className="bg-zinc-300 border border-zinc-400 px-3 py-1 text-xs hover:bg-zinc-200">📂 My Projects</button></div>
         )}
       </div>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">Click × to minimize · click the taskbar button to reopen</p>
+      <p className="text-xs text-zinc-400 dark:text-zinc-400 mt-2">Click × to minimize · click the taskbar button to reopen</p>
     </div>
   );
 }
@@ -70,7 +70,7 @@ function Portfolio2Demo() {
           style={{transform:`scale(${scale})`,transition:'transform 0s'}}>
           Click me
         </button>
-        {cnt>0&&<p className="text-xs text-zinc-400 dark:text-zinc-500">Clicked {cnt} time{cnt>1?'s':''} · GSAP used this spring curve throughout</p>}
+        {cnt>0&&<p className="text-xs text-zinc-400 dark:text-zinc-400">Clicked {cnt} time{cnt>1?'s':''} · GSAP used this spring curve throughout</p>}
       </div>
     </div>
   );

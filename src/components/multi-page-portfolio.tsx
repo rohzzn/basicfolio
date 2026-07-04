@@ -9,6 +9,7 @@ import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/Spot
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
 import EReaderEasterEgg from "./EReaderEasterEgg";
+import { getStoredTheme, applyTheme } from '@/lib/theme-mode';
 
 interface NavLinkProps {
   href: string;
@@ -291,6 +292,21 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
     if (localStorage.getItem('sunRays') === 'on') {
       document.documentElement.classList.add('sun-rays-on');
     }
+  }, []);
+
+  // Keep theme in sync with OS-level changes, unless the user picked one explicitly.
+  // The initial theme itself is already applied by the blocking script in layout.tsx
+  // (before paint), so this only needs to react to *future* system changes.
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      const isEReaderActive = document.documentElement.classList.contains('e-reader-mode');
+      if (getStoredTheme() === null && !isEReaderActive) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    };
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
   }, []);
 
   useEffect(() => {

@@ -212,7 +212,7 @@ const Hackathons = () => {
               { label: "Total hours", value: totalHours },
             ].map(({ label, value }) => (
               <div key={label} className="bg-zinc-50 p-3 dark:bg-zinc-900/50">
-                <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">{label}</p>
+                <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400">{label}</p>
                 <p className="text-base font-medium tabular-nums dark:text-white">{value}</p>
               </div>
             ))}
@@ -224,7 +224,7 @@ const Hackathons = () => {
                 <div className="absolute -left-[21px] mt-1 h-2.5 w-2.5 rounded-full border-2 border-zinc-300 bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900" />
                 <div className="mb-1 flex items-baseline justify-between gap-4">
                   <h3 className="text-sm font-medium leading-snug dark:text-white">{h.title}</h3>
-                  <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">{h.date}</span>
+                  <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-400">{h.date}</span>
                 </div>
                 <div className="mb-2 flex flex-wrap gap-2">
                   {h.achievement ? (
@@ -232,12 +232,12 @@ const Hackathons = () => {
                       {h.achievement}
                     </span>
                   ) : null}
-                  {h.role ? <span className="text-[10px] text-zinc-400 dark:text-zinc-500">{h.role}</span> : null}
-                  {h.time ? <span className="text-[10px] text-zinc-400 dark:text-zinc-500">{h.time}</span> : null}
+                  {h.role ? <span className="text-[10px] text-zinc-400 dark:text-zinc-400">{h.role}</span> : null}
+                  {h.time ? <span className="text-[10px] text-zinc-400 dark:text-zinc-400">{h.time}</span> : null}
                 </div>
                 <p className="mb-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">{h.description}</p>
                 {h.technologies?.length ? (
-                  <p className="text-xs text-zinc-400 dark:text-zinc-500">{h.technologies.join(" · ")}</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400">{h.technologies.join(" · ")}</p>
                 ) : null}
                 {h.projectUrl || h.liveDemo ? (
                   <div className="mt-2 flex gap-4">
@@ -278,7 +278,7 @@ const Hackathons = () => {
               { label: "Workshops", value: eventsOrganized.filter((e) => !e.achievement).length },
             ].map(({ label, value }) => (
               <div key={label} className="bg-zinc-50 p-3 dark:bg-zinc-900/50">
-                <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">{label}</p>
+                <p className="mb-1 text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-400">{label}</p>
                 <p className="text-base font-medium tabular-nums dark:text-white">{value}</p>
               </div>
             ))}
@@ -290,9 +290,9 @@ const Hackathons = () => {
                 <div className="absolute -left-[21px] mt-1 h-2.5 w-2.5 rounded-full border-2 border-zinc-300 bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900" />
                 <div className="mb-1 flex items-baseline justify-between gap-4">
                   <h3 className="text-sm font-medium leading-snug dark:text-white">{e.title}</h3>
-                  <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">{e.date}</span>
+                  <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-400">{e.date}</span>
                 </div>
-                <div className="mb-1.5 flex flex-wrap gap-3 text-[10px] text-zinc-400 dark:text-zinc-500">
+                <div className="mb-1.5 flex flex-wrap gap-3 text-[10px] text-zinc-400 dark:text-zinc-400">
                   {e.participants ? <span>{e.participants.toLocaleString()} participants</span> : null}
                   {e.achievement ? <span className="font-medium text-zinc-500 dark:text-zinc-400">{e.achievement}</span> : null}
                 </div>

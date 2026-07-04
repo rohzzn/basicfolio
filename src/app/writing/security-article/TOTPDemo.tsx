@@ -28,7 +28,7 @@ export default function TOTPDemo() {
 
   return (
     <div className="my-8 not-prose">
-      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-medium mb-3">Live TOTP Simulation</p>
+      <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-zinc-400 font-medium mb-3">Live TOTP Simulation</p>
       <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
         <div className="flex border-b border-zinc-200 dark:border-zinc-800">
           {(['vulnerable', 'secure'] as const).map(m => (

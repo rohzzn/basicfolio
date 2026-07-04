@@ -23,10 +23,10 @@ export default function ActivityHeatmap({ activities }: ActivityHeatmapProps) {
   return (
     <div className="mb-8 rounded-lg border border-zinc-100 p-4 dark:border-zinc-800">
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+        <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
           Activity
         </p>
-        <p className="text-xs tabular-nums text-zinc-400 dark:text-zinc-500">
+        <p className="text-xs tabular-nums text-zinc-400 dark:text-zinc-400">
           {total.toLocaleString()} sessions · last 52 weeks
         </p>
       </div>
@@ -46,11 +46,11 @@ export default function ActivityHeatmap({ activities }: ActivityHeatmapProps) {
         </div>
       </div>
       <div className="mt-3 flex items-center justify-end gap-1.5">
-        <span className="text-[10px] text-zinc-400 dark:text-zinc-500">Less</span>
+        <span className="text-[10px] text-zinc-400 dark:text-zinc-400">Less</span>
         {LEVEL_CLASS.map((cls, i) => (
           <div key={i} className={`h-[11px] w-[11px] rounded-sm ${cls}`} />
         ))}
-        <span className="text-[10px] text-zinc-400 dark:text-zinc-500">More</span>
+        <span className="text-[10px] text-zinc-400 dark:text-zinc-400">More</span>
       </div>
     </div>
   );
