@@ -101,7 +101,7 @@ function ProseGitHubCalendar({ isDark }: { isDark: boolean }) {
 }
 
 const PROFILE_PNG = '/images/profile/rohan.png';
-const PROFILE_VARIANTS = [
+const PROFILE_IMAGES = [
   '/images/profile/rohan.png',
   '/images/profile/rohan_gif.gif',
   '/images/profile/rohangrad.png',
@@ -111,18 +111,24 @@ const PROFILE_VARIANTS = [
   '/images/profile/setup.gif',
 ] as const;
 
-function pickRandomProfileVariant(): (typeof PROFILE_VARIANTS)[number] {
-  return PROFILE_VARIANTS[Math.floor(Math.random() * PROFILE_VARIANTS.length)];
+function buildProfileQueue(): string[] {
+  const rest = PROFILE_IMAGES.filter((img) => img !== PROFILE_PNG);
+  for (let i = rest.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rest[i], rest[j]] = [rest[j], rest[i]];
+  }
+  return [PROFILE_PNG, ...rest];
 }
 
 const Home: React.FC = () => {
   const [isDark, setIsDark] = React.useState(false);
   const [showImage, setShowImage] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [tapCount, setTapCount] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
   const ageRef = useRef<HTMLSpanElement>(null);
+  const profileQueueRef = useRef<string[]>(buildProfileQueue());
+  const nextProfileIndexRef = useRef(0);
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -144,15 +150,21 @@ const Home: React.FC = () => {
 
   const handleNameClick = () => {
     if (!isDesktop) return;
-    const newCount = tapCount + 1;
-    setTapCount(newCount);
 
-    if (newCount % 2 === 1) {
-      setShowImage(true);
-      setProfileImage(newCount === 1 ? PROFILE_PNG : pickRandomProfileVariant());
-    } else {
+    if (showImage) {
       setShowImage(false);
+      return;
     }
+
+    if (nextProfileIndexRef.current >= profileQueueRef.current.length) {
+      profileQueueRef.current = buildProfileQueue();
+      nextProfileIndexRef.current = 0;
+    }
+
+    const image = profileQueueRef.current[nextProfileIndexRef.current];
+    nextProfileIndexRef.current += 1;
+    setProfileImage(image);
+    setShowImage(true);
   };
 
   useEffect(() => {
