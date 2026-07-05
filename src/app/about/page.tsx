@@ -100,12 +100,27 @@ function ProseGitHubCalendar({ isDark }: { isDark: boolean }) {
   );
 }
 
+const PROFILE_PNG = '/images/profile/rohan.png';
+const PROFILE_VARIANTS = [
+  '/images/profile/rohan.png',
+  '/images/profile/rohan_gif.gif',
+  '/images/profile/rohangrad.png',
+  '/images/profile/rohancode.gif',
+  '/images/profile/lap.jpg',
+  '/images/profile/hairchange.jpg',
+  '/images/profile/setup.gif',
+] as const;
+
+function pickRandomProfileVariant(): (typeof PROFILE_VARIANTS)[number] {
+  return PROFILE_VARIANTS[Math.floor(Math.random() * PROFILE_VARIANTS.length)];
+}
+
 const Home: React.FC = () => {
   const [isDark, setIsDark] = React.useState(false);
   const [showImage, setShowImage] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [tapCount, setTapCount] = useState(0);
-  const [imageType, setImageType] = useState<'normal' | 'gif'>('normal');
+  const [isDesktop, setIsDesktop] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
   const ageRef = useRef<HTMLSpanElement>(null);
 
@@ -130,10 +145,14 @@ const Home: React.FC = () => {
   const handleNameClick = () => {
     if (!isDesktop) return;
     const newCount = tapCount + 1;
-    if (newCount === 1) { setShowImage(true); setImageType('normal'); setTapCount(1); }
-    else if (newCount === 2) { setShowImage(false); setTapCount(2); }
-    else if (newCount === 3) { setShowImage(true); setImageType('gif'); setTapCount(3); }
-    else { setShowImage(false); setTapCount(0); }
+    setTapCount(newCount);
+
+    if (newCount % 2 === 1) {
+      setShowImage(true);
+      setProfileImage(newCount === 1 ? PROFILE_PNG : pickRandomProfileVariant());
+    } else {
+      setShowImage(false);
+    }
   };
 
   useEffect(() => {
@@ -184,26 +203,16 @@ const Home: React.FC = () => {
             </p>
           </div>
 
-          {showImage && isDesktop && (
+          {showImage && profileImage && isDesktop && (
             <div className="animate-fade-in flex-shrink-0">
-              {imageType === 'normal' ? (
-                <Image
-                  src="/images/profile/rohan.png"
-                  alt="Rohan Pothuru"
-                  width={160}
-                  height={160}
-                  className="rounded-lg"
-                />
-              ) : (
-                <Image
-                  src="/images/profile/rohan_gif.gif"
-                  alt="Rohan Pothuru"
-                  width={160}
-                  height={160}
-                  className="rounded-lg"
-                  unoptimized
-                />
-              )}
+              <Image
+                src={profileImage}
+                alt="Rohan Pothuru"
+                width={160}
+                height={160}
+                className="rounded-lg"
+                unoptimized={profileImage.endsWith('.gif')}
+              />
             </div>
           )}
         </div>
