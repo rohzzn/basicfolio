@@ -12,6 +12,7 @@ const hobbies = [
   { title: "Watchlist", description: "Movies, TV & anime", href: "/hobbies/watchlist" },
   { title: "Music", description: "Spotify stats & playlists", href: "/hobbies/music" },
   { title: "Designs", description: "UI/UX & Behance", href: "/hobbies/art" },
+  { title: "Components", description: "Interactive UI components", href: "/hobbies/components" },
   { title: "Hackathons", description: "Events & sprint builds", href: "/hobbies/hackathons" },
   { title: "Gaming", description: "CS2 stats & clips", href: "/hobbies/games" },
   { title: "Setup", description: "Desk, PC & gear", href: "/hobbies/uses" },
