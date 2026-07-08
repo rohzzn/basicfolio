@@ -1,0 +1,52 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "rohan",
+  "homepage": "https://rohan.run/hobbies/components",
+  "items": [
+    {
+      "name": "compare-slider",
+      "title": "Compare Slider",
+      "description": "A before/after comparison. Both layers stay perfectly registered while a draggable divider clips between them on a soft spring. Works with images or any React content; arrow keys move the divider too."
+    },
+    {
+      "name": "confetti-button",
+      "title": "Confetti Button",
+      "description": "A button that fires a confetti burst from its center on click."
+    },
+    {
+      "name": "dock",
+      "title": "Dock",
+      "description": "A macOS-style dock. Icons magnify smoothly as the cursor approaches, with springy tooltips and running-app indicator dots."
+    },
+    {
+      "name": "number-ticker",
+      "title": "Number Ticker",
+      "description": "An odometer-style number. Each digit lives on a vertical reel and rolls to its new value on a spring, taking the shortest path around the loop."
+    },
+    {
+      "name": "scrub-input",
+      "title": "Scrub Input",
+      "description": "A Figma-style numeric input. Drag horizontally across the label to scrub the value — hold Shift for ×10, Alt for ×0.1 — or click the number to type it directly. Arrow keys nudge when the field is focused."
+    },
+    {
+      "name": "slide-to-confirm",
+      "title": "Slide To Confirm",
+      "description": "A slide-to-unlock control for destructive or irreversible actions. Drag the knob to the end to confirm; release early and it springs back. The prompt carries a slow shimmer and fades as you drag."
+    },
+    {
+      "name": "spotlight-card",
+      "title": "Spotlight Card",
+      "description": "A card whose border and interior glow follow the cursor with a soft spring."
+    },
+    {
+      "name": "status-button",
+      "title": "Status Button",
+      "description": "A button that runs an async action and morphs through loading, success and error states — spinner, drawn-in checkmark, shake — resizing itself to fit each label, then reverts to idle."
+    },
+    {
+      "name": "tilt-card",
+      "title": "Tilt Card",
+      "description": "A 3D perspective card that tilts toward the cursor with a moving glare. Children can pop out of the surface with `[transform:translateZ(..px)]`."
+    }
+  ]
+}

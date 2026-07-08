@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next lint --max-warnings 0",
+    "build": "node scripts/build-registry.mjs && next build && next lint --max-warnings 0",
+    "registry": "node scripts/build-registry.mjs",
     "start": "next start",
     "lint": "next lint",
     "ping-sitemap": "node scripts/ping-sitemap.js"

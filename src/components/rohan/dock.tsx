@@ -70,7 +70,7 @@ function DockIcon({
       whileTap={{ scale: 0.88 }}
       style={{ width: size, height: size, y }}
       className={cn(
-        "relative flex items-center justify-center rounded-[14px] border shadow-sm transition-colors duration-200",
+        "relative flex items-center justify-center rounded-[14px] border shadow-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 dark:focus-visible:ring-neutral-500",
         active
           ? "border-zinc-300 bg-white text-zinc-800 dark:border-neutral-600 dark:bg-neutral-700 dark:text-paper"
           : "border-zinc-200/90 bg-white/95 text-zinc-600 hover:border-zinc-300 dark:border-neutral-700/90 dark:bg-neutral-800/95 dark:text-neutral-300 dark:hover:border-neutral-600"

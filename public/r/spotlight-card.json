@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "spotlight-card",
+  "type": "registry:component",
+  "title": "Spotlight Card",
+  "description": "A card whose border and interior glow follow the cursor with a soft spring.",
+  "dependencies": [
+    "framer-motion"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/rohan/spotlight-card.tsx",
+      "type": "registry:component",
+      "target": "components/rohan/spotlight-card.tsx",
+      "content": "\"use client\";\n\nimport React from \"react\";\nimport { motion, useMotionTemplate, useMotionValue, useSpring } from \"framer-motion\";\nimport { cn } from \"@/lib/utils\";\n\nexport interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {\n  /** RGB triplet, e.g. \"245, 158, 11\" */\n  glowColor?: string;\n  /** Spotlight radius in px */\n  radius?: number;\n}\n\n/**\n * @rohan/spotlight-card\n * A card whose border and interior glow follow the cursor with a soft spring.\n */\nexport function SpotlightCard({\n  className,\n  children,\n  glowColor = \"217, 119, 6\",\n  radius = 220,\n  ...props\n}: SpotlightCardProps) {\n  const mouseX = useMotionValue(0);\n  const mouseY = useMotionValue(0);\n  const sx = useSpring(mouseX, { stiffness: 420, damping: 42 });\n  const sy = useSpring(mouseY, { stiffness: 420, damping: 42 });\n\n  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {\n    const rect = e.currentTarget.getBoundingClientRect();\n    mouseX.set(e.clientX - rect.left);\n    mouseY.set(e.clientY - rect.top);\n  }\n\n  function handleMouseEnter(e: React.MouseEvent<HTMLDivElement>) {\n    // Snap the spotlight to the entry point so it doesn't sweep in\n    // from wherever the cursor last left the card.\n    const rect = e.currentTarget.getBoundingClientRect();\n    mouseX.jump(e.clientX - rect.left);\n    mouseY.jump(e.clientY - rect.top);\n  }\n\n  const rim = useMotionTemplate`radial-gradient(${radius}px circle at ${sx}px ${sy}px, rgba(${glowColor}, 0.85), transparent 68%)`;\n  const glow = useMotionTemplate`radial-gradient(${radius * 1.4}px circle at ${sx}px ${sy}px, rgba(${glowColor}, 0.12), transparent 72%)`;\n\n  return (\n    <div\n      onMouseMove={handleMouseMove}\n      onMouseEnter={handleMouseEnter}\n      className={cn(\n        \"group relative mx-auto w-full max-w-[280px] rounded-2xl bg-zinc-200/90 p-px shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-zinc-300/30 dark:bg-neutral-800 dark:hover:shadow-black/30\",\n        className\n      )}\n      {...props}\n    >\n      <motion.div\n        aria-hidden\n        className=\"pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100\"\n        style={{ background: rim }}\n      />\n      <div className=\"relative h-full w-full overflow-hidden rounded-[calc(1rem-1px)] bg-white dark:bg-neutral-900\">\n        <motion.div\n          aria-hidden\n          className=\"pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100\"\n          style={{ background: glow }}\n        />\n        <div className=\"relative h-full w-full\">{children}</div>\n      </div>\n    </div>\n  );\n}\n"
+    }
+  ]
+}

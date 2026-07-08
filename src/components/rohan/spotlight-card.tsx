@@ -33,12 +33,21 @@ export function SpotlightCard({
     mouseY.set(e.clientY - rect.top);
   }
 
+  function handleMouseEnter(e: React.MouseEvent<HTMLDivElement>) {
+    // Snap the spotlight to the entry point so it doesn't sweep in
+    // from wherever the cursor last left the card.
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.jump(e.clientX - rect.left);
+    mouseY.jump(e.clientY - rect.top);
+  }
+
   const rim = useMotionTemplate`radial-gradient(${radius}px circle at ${sx}px ${sy}px, rgba(${glowColor}, 0.85), transparent 68%)`;
   const glow = useMotionTemplate`radial-gradient(${radius * 1.4}px circle at ${sx}px ${sy}px, rgba(${glowColor}, 0.12), transparent 72%)`;
 
   return (
     <div
       onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
       className={cn(
         "group relative mx-auto w-full max-w-[280px] rounded-2xl bg-zinc-200/90 p-px shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-zinc-300/30 dark:bg-neutral-800 dark:hover:shadow-black/30",
         className

@@ -27,8 +27,8 @@ export const projects: Project[] = [
   {
     slug: 'languages-lat',
     year: 2026,
-    title: 'languages.lat',
-    description: 'Interactive archive of human language history',
+    title: 'Languages',
+    description: 'Human language history',
     tech: ['HTML', 'CSS', 'JavaScript'],
     category: 'web',
     links: [{ label: 'Live', url: 'https://www.languages.lat/' }],

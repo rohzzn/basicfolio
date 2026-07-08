@@ -35,6 +35,7 @@ export function ConfettiButton({
         particleCount,
         spread,
         origin: { x, y },
+        disableForReducedMotion: true,
       });
 
       onClick?.(e);
@@ -47,7 +48,7 @@ export function ConfettiButton({
       type="button"
       onClick={fire}
       className={cn(
-        "inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-[transform,colors] hover:border-zinc-300 hover:bg-zinc-50 active:scale-[0.98] dark:border-neutral-700 dark:bg-neutral-800 dark:text-paper dark:hover:border-neutral-600 dark:hover:bg-neutral-700",
+        "inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 active:scale-[0.98] dark:border-neutral-700 dark:bg-neutral-800 dark:text-paper dark:hover:border-neutral-600 dark:hover:bg-neutral-700 dark:focus-visible:ring-neutral-500 dark:focus-visible:ring-offset-neutral-900",
         className
       )}
       {...props}

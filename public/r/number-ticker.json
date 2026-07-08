@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "number-ticker",
+  "type": "registry:component",
+  "title": "Number Ticker",
+  "description": "An odometer-style number. Each digit lives on a vertical reel and rolls to its new value on a spring, taking the shortest path around the loop.",
+  "dependencies": [
+    "framer-motion"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/rohan/number-ticker.tsx",
+      "type": "registry:component",
+      "target": "components/rohan/number-ticker.tsx",
+      "content": "\"use client\";\n\nimport React, { useEffect } from \"react\";\nimport { motion, useSpring, useTransform, type MotionValue } from \"framer-motion\";\nimport { cn } from \"@/lib/utils\";\n\nexport interface NumberTickerProps extends React.HTMLAttributes<HTMLSpanElement> {\n  /** The number to display */\n  value: number;\n  /** Thousands separator; pass \"\" to disable grouping */\n  separator?: string;\n  /** Rendered before the digits, e.g. \"$\" */\n  prefix?: string;\n  /** Rendered after the digits, e.g. \"%\" */\n  suffix?: string;\n}\n\nconst SPRING = { stiffness: 200, damping: 26, mass: 0.6 };\n\nfunction DigitColumn({ mv, digit }: { mv: MotionValue<number>; digit: number }) {\n  const y = useTransform(mv, (latest) => {\n    const placeValue = latest % 10;\n    // Shortest signed distance from this glyph to the current digit,\n    // so columns roll through the near side of the reel.\n    let offset = (10 + digit - placeValue) % 10;\n    if (offset > 5) offset -= 10;\n    return `${offset}em`;\n  });\n\n  return (\n    <motion.span style={{ y }} className=\"absolute inset-0 flex items-center justify-center\">\n      {digit}\n    </motion.span>\n  );\n}\n\nfunction Digit({ place, value }: { place: number; value: number }) {\n  const target = Math.floor(value / place);\n  const mv = useSpring(target, SPRING);\n\n  useEffect(() => {\n    mv.set(target);\n  }, [mv, target]);\n\n  return (\n    <span className=\"relative inline-block h-[1em] w-[1ch] overflow-hidden\">\n      {Array.from({ length: 10 }, (_, i) => (\n        <DigitColumn key={i} mv={mv} digit={i} />\n      ))}\n    </span>\n  );\n}\n\n/**\n * @rohan/number-ticker\n * An odometer-style number. Each digit lives on a vertical reel and rolls\n * to its new value on a spring, taking the shortest path around the loop.\n */\nexport function NumberTicker({\n  value,\n  separator = \",\",\n  prefix,\n  suffix,\n  className,\n  ...props\n}: NumberTickerProps) {\n  const absolute = Math.abs(Math.round(value));\n  const digitCount = Math.max(1, String(absolute).length);\n  const places = Array.from({ length: digitCount }, (_, i) => 10 ** (digitCount - 1 - i));\n\n  return (\n    <span\n      className={cn(\"inline-flex items-center leading-none tabular-nums\", className)}\n      {...props}\n    >\n      {value < 0 && <span>−</span>}\n      {prefix && <span>{prefix}</span>}\n      {places.map((place, i) => {\n        const digitsAfter = places.length - 1 - i;\n        return (\n          <React.Fragment key={place}>\n            <Digit place={place} value={absolute} />\n            {separator && digitsAfter > 0 && digitsAfter % 3 === 0 && (\n              <span className=\"mx-px\">{separator}</span>\n            )}\n          </React.Fragment>\n        );\n      })}\n      {suffix && <span>{suffix}</span>}\n    </span>\n  );\n}\n"
+    }
+  ]
+}

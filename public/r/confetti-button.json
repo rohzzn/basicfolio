@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "confetti-button",
+  "type": "registry:component",
+  "title": "Confetti Button",
+  "description": "A button that fires a confetti burst from its center on click.",
+  "dependencies": [
+    "canvas-confetti"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/rohan/confetti-button.tsx",
+      "type": "registry:component",
+      "target": "components/rohan/confetti-button.tsx",
+      "content": "\"use client\";\n\nimport React, { useCallback } from \"react\";\nimport confetti from \"canvas-confetti\";\nimport { cn } from \"@/lib/utils\";\n\nexport interface ConfettiButtonProps\n  extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n  /** Number of confetti particles per burst */\n  particleCount?: number;\n  /** Spread angle in degrees */\n  spread?: number;\n  children?: React.ReactNode;\n}\n\n/**\n * @rohan/confetti-button\n * A button that fires a confetti burst from its center on click.\n */\nexport function ConfettiButton({\n  children = \"Celebrate\",\n  className,\n  particleCount = 100,\n  spread = 70,\n  onClick,\n  ...props\n}: ConfettiButtonProps) {\n  const fire = useCallback(\n    (e: React.MouseEvent<HTMLButtonElement>) => {\n      const rect = e.currentTarget.getBoundingClientRect();\n      const x = (rect.left + rect.width / 2) / window.innerWidth;\n      const y = (rect.top + rect.height / 2) / window.innerHeight;\n\n      void confetti({\n        particleCount,\n        spread,\n        origin: { x, y },\n        disableForReducedMotion: true,\n      });\n\n      onClick?.(e);\n    },\n    [onClick, particleCount, spread]\n  );\n\n  return (\n    <button\n      type=\"button\"\n      onClick={fire}\n      className={cn(\n        \"inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 active:scale-[0.98] dark:border-neutral-700 dark:bg-neutral-800 dark:text-paper dark:hover:border-neutral-600 dark:hover:bg-neutral-700 dark:focus-visible:ring-neutral-500 dark:focus-visible:ring-offset-neutral-900\",\n        className\n      )}\n      {...props}\n    >\n      {children}\n    </button>\n  );\n}\n"
+    }
+  ]
+}
