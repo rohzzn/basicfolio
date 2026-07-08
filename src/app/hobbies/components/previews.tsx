@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Camera, Folder, Home, Mail, Music, Terminal } from "lucide-react";
-import { Dock, SpotlightCard, TiltCard } from "@/components/rohan";
+import { ConfettiButton, Dock, SpotlightCard, TiltCard } from "@/components/rohan";
 import { cn } from "@/lib/utils";
 
 export function DockPreview() {
@@ -46,10 +46,15 @@ export function TiltPreview() {
   );
 }
 
+export function ConfettiPreview() {
+  return <ConfettiButton>Celebrate</ConfettiButton>;
+}
+
 export const componentPreviews: Record<string, React.ComponentType> = {
   dock: DockPreview,
   "spotlight-card": SpotlightPreview,
   "tilt-card": TiltPreview,
+  "confetti-button": ConfettiPreview,
 };
 
 export function PreviewStage({

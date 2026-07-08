@@ -146,6 +146,42 @@ import { Camera, Folder, Home, Mail, Music, Terminal } from "lucide-react"`,
       },
     ],
   },
+  {
+    slug: "confetti-button",
+    name: "Confetti Button",
+    description: "Button that fires a confetti burst on click",
+    intro:
+      "A celebratory button that launches a confetti burst from its center when clicked. Uses canvas-confetti under the hood with configurable particle count and spread.",
+    registryUrl: "https://rohan.run/r/confetti-button.json",
+    usageImport: `import { ConfettiButton } from "@/components/rohan/confetti-button"`,
+    usageCode: `<ConfettiButton>Celebrate</ConfettiButton>`,
+    props: [
+      {
+        name: "children",
+        type: "ReactNode",
+        default: '"Celebrate"',
+        description: "Button label or content.",
+      },
+      {
+        name: "particleCount",
+        type: "number",
+        default: "100",
+        description: "Number of confetti particles per burst.",
+      },
+      {
+        name: "spread",
+        type: "number",
+        default: "70",
+        description: "Spread angle of the burst in degrees.",
+      },
+      {
+        name: "className",
+        type: "string",
+        default: "—",
+        description: "Optional CSS classes for the button.",
+      },
+    ],
+  },
 ];
 
 export function getRohanComponent(slug: string): RohanComponent | undefined {

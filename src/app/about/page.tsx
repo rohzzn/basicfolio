@@ -101,34 +101,13 @@ function ProseGitHubCalendar({ isDark }: { isDark: boolean }) {
 }
 
 const PROFILE_PNG = '/images/profile/rohan.png';
-const PROFILE_IMAGES = [
-  '/images/profile/rohan.png',
-  '/images/profile/rohan_gif.gif',
-  '/images/profile/rohangrad.png',
-  '/images/profile/rohancode.gif',
-  '/images/profile/lap.jpg',
-  '/images/profile/hairchange.jpg',
-  '/images/profile/setup.gif',
-] as const;
-
-function buildProfileQueue(): string[] {
-  const rest = PROFILE_IMAGES.filter((img) => img !== PROFILE_PNG);
-  for (let i = rest.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [rest[i], rest[j]] = [rest[j], rest[i]];
-  }
-  return [PROFILE_PNG, ...rest];
-}
 
 const Home: React.FC = () => {
   const [isDark, setIsDark] = React.useState(false);
   const [showImage, setShowImage] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
   const ageRef = useRef<HTMLSpanElement>(null);
-  const profileQueueRef = useRef<string[]>(buildProfileQueue());
-  const nextProfileIndexRef = useRef(0);
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -150,21 +129,7 @@ const Home: React.FC = () => {
 
   const handleNameClick = () => {
     if (!isDesktop) return;
-
-    if (showImage) {
-      setShowImage(false);
-      return;
-    }
-
-    if (nextProfileIndexRef.current >= profileQueueRef.current.length) {
-      profileQueueRef.current = buildProfileQueue();
-      nextProfileIndexRef.current = 0;
-    }
-
-    const image = profileQueueRef.current[nextProfileIndexRef.current];
-    nextProfileIndexRef.current += 1;
-    setProfileImage(image);
-    setShowImage(true);
+    setShowImage((prev) => !prev);
   };
 
   useEffect(() => {
@@ -215,15 +180,14 @@ const Home: React.FC = () => {
             </p>
           </div>
 
-          {showImage && profileImage && isDesktop && (
+          {showImage && isDesktop && (
             <div className="animate-fade-in flex-shrink-0">
               <Image
-                src={profileImage}
+                src={PROFILE_PNG}
                 alt="Rohan Pothuru"
                 width={160}
                 height={160}
                 className="rounded-lg"
-                unoptimized={profileImage.endsWith('.gif')}
               />
             </div>
           )}

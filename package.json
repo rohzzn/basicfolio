@@ -19,6 +19,7 @@
     "@upstash/redis": "^1.35.6",
     "@vercel/kv": "^3.0.0",
     "axios": "^1.7.9",
+    "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/mapbox__polyline": "^1.0.5",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -25,6 +25,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'languages-lat',
+    year: 2026,
+    title: 'languages.lat',
+    description: 'Interactive archive of human language history',
+    tech: ['HTML', 'CSS', 'JavaScript'],
+    category: 'web',
+    links: [{ label: 'Live', url: 'https://www.languages.lat/' }],
+    image: 'https://www.languages.lat/apple-touch-icon.png',
+    longDescription:
+      'An interactive archive of human language — scroll backward through attested evidence, from languages of living memory to the first writing on clay. Filters, collections, proportional timelines, and a free JSON dataset.',
+  },
+  {
     slug: 'beam',
     year: 2026,
     title: 'Beam',
