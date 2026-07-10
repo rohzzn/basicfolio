@@ -96,6 +96,8 @@ export function ScrubInput({
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onLostPointerCapture={handlePointerUp}
       onKeyDown={(e) => {
         if (editing) return;
         const multiplier = e.shiftKey ? 10 : 1;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { animate, motion, useMotionValue, useTransform } from "framer-motion";
+import { animate, motion, useMotionValue, useMotionValueEvent, useTransform } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +34,7 @@ export function SlideToConfirm({
 }: SlideToConfirmProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [confirmed, setConfirmed] = useState(false);
+  const [progress, setProgress] = useState(0);
   // Knob size and travel are measured from the track, so the knob always
   // fits the height exactly and can never slide past the rounded ends.
   const [bounds, setBounds] = useState({ knob: 40, maxDrag: 0 });
@@ -41,6 +42,11 @@ export function SlideToConfirm({
   const x = useMotionValue(0);
   const labelOpacity = useTransform(x, [0, 110], [1, 0]);
   const fillWidth = useTransform(x, (v) => PADDING + v + bounds.knob);
+
+  useMotionValueEvent(x, "change", (latest) => {
+    const next = bounds.maxDrag > 0 ? Math.round((latest / bounds.maxDrag) * 100) : 0;
+    setProgress(Math.min(100, Math.max(0, next)));
+  });
 
   useLayoutEffect(() => {
     const track = trackRef.current;
@@ -136,7 +142,9 @@ export function SlideToConfirm({
         aria-label={label}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-valuenow={confirmed ? 100 : 0}
+        aria-valuenow={confirmed ? 100 : progress}
+        aria-valuetext={confirmed ? confirmedLabel : `${progress}% complete`}
+        aria-orientation="horizontal"
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
             e.preventDefault();

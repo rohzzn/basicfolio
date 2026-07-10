@@ -19,9 +19,34 @@
       "description": "A macOS-style dock. Icons magnify smoothly as the cursor approaches, with springy tooltips and running-app indicator dots."
     },
     {
+      "name": "hold-button",
+      "title": "Hold Button",
+      "description": "A deliberate press-and-hold action with pointer and keyboard support, visible progress, early-release cancellation, and a calm success state."
+    },
+    {
+      "name": "morph-tabs",
+      "title": "Morph Tabs",
+      "description": "An accessible tab set with roving keyboard focus, a shared spring-morphing selection surface, and direction-aware panel transitions."
+    },
+    {
+      "name": "notification-stack",
+      "title": "Notification Stack",
+      "description": "A compact notification center whose cards fan out on hover, focus, or tap. Notifications can be dismissed and restored, with controlled expansion and polite live-region announcements for assistive technology."
+    },
+    {
       "name": "number-ticker",
       "title": "Number Ticker",
-      "description": "An odometer-style number. Each digit lives on a vertical reel and rolls to its new value on a spring, taking the shortest path around the loop."
+      "description": "An accessible odometer-style number. Each digit lives on a vertical reel and rolls to its new value on a spring, taking the shortest path around it."
+    },
+    {
+      "name": "orbit-menu",
+      "title": "Orbit Menu",
+      "description": "A responsive radial command menu with spring-launched actions around a central trigger. It collapses into a touch-friendly command tray on narrow screens and includes roving keyboard focus, dismissal behavior, and a reduced-motion mode."
+    },
+    {
+      "name": "reorder-list",
+      "title": "Reorder List",
+      "description": "A controlled or uncontrolled sortable list with handle-only pointer dragging, visible keyboard move controls, position announcements, and reduced-motion support."
     },
     {
       "name": "scrub-input",
@@ -44,9 +69,19 @@
       "description": "A button that runs an async action and morphs through loading, success and error states — spinner, drawn-in checkmark, shake — resizing itself to fit each label, then reverts to idle."
     },
     {
+      "name": "swipe-deck",
+      "title": "Swipe Deck",
+      "description": "An accessible stack of cards that can be approved or rejected with a gesture, visible controls, or the arrow keys. Includes spring recovery, undo, reset, and reduced-motion behavior."
+    },
+    {
       "name": "tilt-card",
       "title": "Tilt Card",
       "description": "A 3D perspective card that tilts toward the cursor with a moving glare. Children can pop out of the surface with `[transform:translateZ(..px)]`."
+    },
+    {
+      "name": "waveform-scrubber",
+      "title": "Waveform Scrubber",
+      "description": "A compact media waveform with an animated playhead, standalone playback, pointer scrubbing, and complete slider keyboard semantics."
     }
   ]
 }

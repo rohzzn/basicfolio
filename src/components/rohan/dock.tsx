@@ -67,8 +67,11 @@ function DockIcon({
       onClick={onSelect}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+      aria-pressed={active}
       whileTap={{ scale: 0.88 }}
-      style={{ width: size, height: size, y }}
+      style={{ width: size, height: size, y, contain: "none" }}
       className={cn(
         "relative flex items-center justify-center rounded-[14px] border shadow-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 dark:focus-visible:ring-neutral-500",
         active
@@ -112,8 +115,8 @@ export function Dock({ items, baseSize = 42, maxSize = 72, className, ...props }
 
   return (
     <div
-      onMouseMove={(e) => mouseX.set(e.clientX)}
-      onMouseLeave={() => mouseX.set(Infinity)}
+      onPointerMove={(e) => mouseX.set(e.clientX)}
+      onPointerLeave={() => mouseX.set(Infinity)}
       className={cn(
         "mx-auto flex w-fit items-end gap-1.5 rounded-2xl border border-zinc-200/80 bg-zinc-100/80 px-3.5 pb-2.5 pt-2 shadow-sm backdrop-blur-md dark:border-neutral-800/90 dark:bg-neutral-900/80 dark:shadow-black/20",
         className

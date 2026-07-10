@@ -68,6 +68,8 @@ export function CompareSlider({
         if (dragging) handlePointer(e);
       }}
       onPointerUp={() => setDragging(false)}
+      onPointerCancel={() => setDragging(false)}
+      onLostPointerCapture={() => setDragging(false)}
       className={cn(
         "group relative w-full max-w-[340px] cursor-ew-resize touch-none select-none overflow-hidden rounded-xl border border-zinc-200 shadow-sm dark:border-neutral-800",
         className
@@ -82,10 +84,10 @@ export function CompareSlider({
       </motion.div>
 
       {/* Labels */}
-      <span className="pointer-events-none absolute left-2.5 top-2.5 rounded-md bg-zinc-900/70 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+      <span className="pointer-events-none absolute left-2.5 top-2.5 rounded-md bg-zinc-900/70 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
         {beforeLabel}
       </span>
-      <span className="pointer-events-none absolute right-2.5 top-2.5 rounded-md bg-zinc-900/70 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+      <span className="pointer-events-none absolute right-2.5 top-2.5 rounded-md bg-zinc-900/70 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
         {afterLabel}
       </span>
 
@@ -102,8 +104,22 @@ export function CompareSlider({
           aria-valuemax={100}
           aria-valuenow={position}
           onKeyDown={(e) => {
-            if (e.key === "ArrowLeft") update(target.get() - 5);
-            if (e.key === "ArrowRight") update(target.get() + 5);
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              update(target.get() - 5);
+            }
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              update(target.get() + 5);
+            }
+            if (e.key === "Home") {
+              e.preventDefault();
+              update(0);
+            }
+            if (e.key === "End") {
+              e.preventDefault();
+              update(100);
+            }
           }}
           className={cn(
             "absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-zinc-500 shadow-md ring-1 ring-black/5 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400",

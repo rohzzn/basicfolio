@@ -430,6 +430,401 @@ import { Camera, Folder, Home, Mail, Music, Terminal } from "lucide-react"`,
       },
     ],
   },
+  {
+    slug: "orbit-menu",
+    name: "Orbit Menu",
+    description: "Responsive radial menu for spatial quick actions",
+    intro:
+      "A command menu that launches actions around a central trigger on larger screens and becomes a compact, touch-friendly tray on mobile. It includes roving keyboard focus, typeahead, outside-click dismissal and reduced-motion support.",
+    registryUrl: "https://rohan.run/r/orbit-menu.json",
+    usageImport: `import { OrbitMenu } from "@/components/rohan/orbit-menu"
+import { CalendarPlus, FileText, Link, Upload } from "lucide-react"`,
+    usageCode: `const actions = [
+  { id: "note", label: "New note", icon: <FileText />, shortcut: "N" },
+  { id: "event", label: "Add event", icon: <CalendarPlus />, shortcut: "E" },
+  { id: "upload", label: "Upload", icon: <Upload />, shortcut: "U" },
+  { id: "link", label: "Save link", icon: <Link />, shortcut: "L" },
+]
+
+<OrbitMenu
+  items={actions}
+  menuLabel="Create something"
+  onSelect={(action) => runAction(action.id)}
+/>`,
+    props: [
+      {
+        name: "items",
+        type: "OrbitMenuItem[]",
+        default: "—",
+        description: "Actions with an id, label, icon and optional description, shortcut or callback.",
+      },
+      {
+        name: "menuLabel",
+        type: "string",
+        default: '"Quick actions"',
+        description: "Accessible menu name and the compact tray title.",
+      },
+      {
+        name: "radius",
+        type: "number",
+        default: "112",
+        description: "Distance from the center trigger to each radial action, in px.",
+      },
+      {
+        name: "open / defaultOpen",
+        type: "boolean",
+        default: "false",
+        description: "Controlled or initial open state.",
+      },
+      {
+        name: "onOpenChange",
+        type: "(open: boolean) => void",
+        default: "—",
+        description: "Called whenever the user opens or closes the menu.",
+      },
+      {
+        name: "onSelect",
+        type: "(item: OrbitMenuItem) => void",
+        default: "—",
+        description: "Called after an enabled action is selected.",
+      },
+    ],
+  },
+  {
+    slug: "waveform-scrubber",
+    name: "Waveform Scrubber",
+    description: "Accessible waveform playback with drag and keyboard seeking",
+    intro:
+      "A compact media control with deterministic waveform bars, a responsive playhead and complete slider semantics. It can manage playback and progress internally or plug into an external audio source.",
+    registryUrl: "https://rohan.run/r/waveform-scrubber.json",
+    usageImport: `import { WaveformScrubber } from "@/components/rohan/waveform-scrubber"`,
+    usageCode: `<WaveformScrubber
+  label="Field recording"
+  duration={142}
+  defaultProgress={0.28}
+  onChange={(progress) => seek(progress)}
+/>`,
+    props: [
+      {
+        name: "progress / defaultProgress",
+        type: "number",
+        default: "0",
+        description: "Controlled or initial normalized playhead position from 0 to 1.",
+      },
+      {
+        name: "playing / defaultPlaying",
+        type: "boolean",
+        default: "false",
+        description: "Controlled or initial playback state.",
+      },
+      {
+        name: "duration",
+        type: "number",
+        default: "86",
+        description: "Media duration in seconds.",
+      },
+      {
+        name: "data",
+        type: "readonly number[]",
+        default: "generated",
+        description: "Normalized waveform bar heights from 0 to 1.",
+      },
+      {
+        name: "label",
+        type: "string",
+        default: '"Audio preview"',
+        description: "Visible media title and accessible name for the controls.",
+      },
+      {
+        name: "seekStep",
+        type: "number",
+        default: "5",
+        description: "Seconds moved by each arrow-key press.",
+      },
+      {
+        name: "onChange",
+        type: "(progress: number) => void",
+        default: "—",
+        description: "Called whenever playback, pointer or keyboard input moves the playhead.",
+      },
+      {
+        name: "onPlayChange",
+        type: "(playing: boolean) => void",
+        default: "—",
+        description: "Called when the play button changes state.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disables playback and seeking interactions.",
+      },
+    ],
+  },
+  {
+    slug: "hold-button",
+    name: "Hold Button",
+    description: "Press-and-hold action with progress and cancellation",
+    intro:
+      "A deliberate alternative to an ordinary click for consequential actions. Progress follows the pointer or keyboard hold, releasing early cancels cleanly, and completion resolves into a calm success state.",
+    registryUrl: "https://rohan.run/r/hold-button.json",
+    usageImport: `import { HoldButton } from "@/components/rohan/hold-button"`,
+    usageCode: `<HoldButton
+  duration={1300}
+  successLabel="Published"
+  onComplete={() => publish()}
+>
+  Hold to publish
+</HoldButton>`,
+    props: [
+      {
+        name: "duration",
+        type: "number",
+        default: "1200",
+        description: "Time in milliseconds the button must remain pressed.",
+      },
+      {
+        name: "successLabel",
+        type: "ReactNode",
+        default: '"Confirmed"',
+        description: "Content shown after a complete hold.",
+      },
+      {
+        name: "resetAfter",
+        type: "number",
+        default: "1600",
+        description: "Delay before returning to idle. Pass 0 to keep the success state.",
+      },
+      {
+        name: "onComplete",
+        type: "() => void",
+        default: "—",
+        description: "Called once progress reaches 100 percent.",
+      },
+      {
+        name: "onCancel",
+        type: "() => void",
+        default: "—",
+        description: "Called when an in-progress hold ends early.",
+      },
+      {
+        name: "onProgressChange",
+        type: "(progress: number) => void",
+        default: "—",
+        description: "Reports normalized progress from 0 to 1.",
+      },
+    ],
+  },
+  {
+    slug: "morph-tabs",
+    name: "Morph Tabs",
+    description: "Accessible tabs with a shared spring selection surface",
+    intro:
+      "A roving-keyboard tab set whose active surface morphs between triggers while panels transition in the direction of travel. It supports controlled state and horizontal or vertical layouts.",
+    registryUrl: "https://rohan.run/r/morph-tabs.json",
+    usageImport: `import { MorphTabs } from "@/components/rohan/morph-tabs"`,
+    usageCode: `<MorphTabs
+  defaultValue="notes"
+  items={[
+    { id: "notes", label: "Notes", content: <Notes /> },
+    { id: "activity", label: "Activity", content: <Activity /> },
+    { id: "details", label: "Details", content: <Details /> },
+  ]}
+/>`,
+    props: [
+      {
+        name: "items",
+        type: "MorphTabItem[]",
+        default: "—",
+        description: "Tabs with stable ids, labels, panel content and optional icons or disabled state.",
+      },
+      {
+        name: "value / defaultValue",
+        type: "string",
+        default: "first item",
+        description: "Controlled or initial selected tab id.",
+      },
+      {
+        name: "orientation",
+        type: '"horizontal" | "vertical"',
+        default: '"horizontal"',
+        description: "Tab-list and keyboard navigation direction.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: string) => void",
+        default: "—",
+        description: "Called when the selected tab changes.",
+      },
+    ],
+  },
+  {
+    slug: "swipe-deck",
+    name: "Swipe Deck",
+    description: "Stacked cards with gesture decisions, controls and undo",
+    intro:
+      "A tactile card stack that accepts left and right swipes using distance and velocity, springs back from uncertain gestures, and stays fully usable through visible buttons or arrow keys. Decisions can be undone or reset.",
+    registryUrl: "https://rohan.run/r/swipe-deck.json",
+    usageImport: `import { SwipeDeck } from "@/components/rohan/swipe-deck"`,
+    usageCode: `<SwipeDeck
+  items={ideas.map((idea) => ({
+    id: idea.id,
+    ariaLabel: idea.title,
+    content: <IdeaCard idea={idea} />,
+  }))}
+  approveLabel="Save"
+  rejectLabel="Skip"
+  onDecision={(item, decision) => updateIdea(item.id, decision)}
+/>`,
+    props: [
+      {
+        name: "items",
+        type: "SwipeDeckItem[]",
+        default: "—",
+        description: "Cards with stable ids, content and optional accessible names.",
+      },
+      {
+        name: "threshold",
+        type: "number",
+        default: "96",
+        description: "Horizontal distance in px required to accept a drag.",
+      },
+      {
+        name: "approveLabel / rejectLabel",
+        type: "string",
+        default: '"Approve" / "Reject"',
+        description: "Visible and accessible decision labels.",
+      },
+      {
+        name: "onDecision",
+        type: "(item, decision) => void",
+        default: "—",
+        description: "Called for every accepted swipe or control action.",
+      },
+      {
+        name: "onUndo",
+        type: "(item, decision) => void",
+        default: "—",
+        description: "Called when the latest decision is restored.",
+      },
+      {
+        name: "onReset",
+        type: "() => void",
+        default: "—",
+        description: "Called when an exhausted deck starts over.",
+      },
+    ],
+  },
+  {
+    slug: "notification-stack",
+    name: "Notification Stack",
+    description: "Notifications that fan out, dismiss and restore",
+    intro:
+      "A compact notification center whose cards stack at rest and fan into a readable list on hover, focus or tap. Individual items can be dismissed and restored, with semantic tones and polite live announcements built in.",
+    registryUrl: "https://rohan.run/r/notification-stack.json",
+    usageImport: `import { NotificationStack } from "@/components/rohan/notification-stack"`,
+    usageCode: `<NotificationStack
+  label="Recent activity"
+  notifications={notifications}
+  onDismiss={(notification) => archive(notification.id)}
+  onVisibleChange={setVisibleNotifications}
+/>`,
+    props: [
+      {
+        name: "notifications",
+        type: "NotificationStackItem[]",
+        default: "—",
+        description: "Items with titles, descriptions, timestamps, tones and optional actions.",
+      },
+      {
+        name: "expanded / defaultExpanded",
+        type: "boolean",
+        default: "false",
+        description: "Controlled or initial expanded state.",
+      },
+      {
+        name: "maxCollapsed",
+        type: "number",
+        default: "4",
+        description: "Maximum number of cards represented in the collapsed stack.",
+      },
+      {
+        name: "onDismiss",
+        type: "(notification) => void",
+        default: "—",
+        description: "Called after an individual notification is dismissed.",
+      },
+      {
+        name: "onRestore",
+        type: "(notifications) => void",
+        default: "—",
+        description: "Called when dismissed items are restored.",
+      },
+      {
+        name: "live",
+        type: '"off" | "polite" | "assertive"',
+        default: '"polite"',
+        description: "Live-region politeness for incoming and dismissal announcements.",
+      },
+    ],
+  },
+  {
+    slug: "reorder-list",
+    name: "Reorder List",
+    description: "Sortable list with drag handles and keyboard controls",
+    intro:
+      "A controlled or uncontrolled list that reorders from a dedicated drag handle, visible move controls or keyboard shortcuts. Every move is announced with its new position, and the original order can be restored.",
+    registryUrl: "https://rohan.run/r/reorder-list.json",
+    usageImport: `import { ReorderList } from "@/components/rohan/reorder-list"`,
+    usageCode: `<ReorderList
+  defaultItems={steps.map((step) => ({
+    id: step.id,
+    label: step.title,
+    content: step.title,
+  }))}
+  label="Project steps"
+  allowReset
+  onChange={setSteps}
+/>`,
+    props: [
+      {
+        name: "items / defaultItems",
+        type: "ReorderListItem[]",
+        default: "[]",
+        description: "Controlled or initial ordered items with stable ids and content.",
+      },
+      {
+        name: "onChange",
+        type: "(items: ReorderListItem[]) => void",
+        default: "—",
+        description: "Called with the complete order after every move.",
+      },
+      {
+        name: "label",
+        type: "string",
+        default: '"Reorderable list"',
+        description: "Accessible name for the ordered list.",
+      },
+      {
+        name: "allowReset",
+        type: "boolean",
+        default: "false",
+        description: "Shows a reset control when defaultItems are available.",
+      },
+      {
+        name: "onReset",
+        type: "(items: ReorderListItem[]) => void",
+        default: "—",
+        description: "Called after restoring the original order.",
+      },
+      {
+        name: "itemClassName",
+        type: "string",
+        default: "—",
+        description: "Classes applied to each sortable row.",
+      },
+    ],
+  },
 ];
 
 export function getRohanComponent(slug: string): RohanComponent | undefined {
