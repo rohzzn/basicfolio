@@ -9,6 +9,9 @@ import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/Spot
 import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
 import EReaderEasterEgg from "./EReaderEasterEgg";
+import WeatherToggle from './weather/WeatherToggle';
+// TEMP: weather test panel — remove after testing
+import WeatherTestPanel from './weather/WeatherTestPanel';
 
 interface NavLinkProps {
   href: string;
@@ -560,6 +563,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
       {/* Bottom Controls - Hidden on mobile and on guestbook (desk workspace) */}
       {pathname !== "/guestbook" && (
       <div className={`hidden md:flex fixed right-4 z-40 flex-row items-center gap-1.5 bottom-4 ${previewPlayerActive ? 'lg:bottom-24' : ''}`}>
+        <WeatherToggle />
         <button
           onClick={togglePlay}
           disabled={!audioLoaded}
@@ -574,7 +578,9 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
         </button>
       </div>
       )}
-      
+
+      {/* TEMP: weather test panel — remove after testing */}
+      <WeatherTestPanel />
 
     </div>
   );
