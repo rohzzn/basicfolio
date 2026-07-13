@@ -10,8 +10,6 @@ import CommandPalette from './CommandPalette';
 import CursorSound from './CursorSound';
 import EReaderEasterEgg from "./EReaderEasterEgg";
 import WeatherToggle from './weather/WeatherToggle';
-// TEMP: weather test panel — remove after testing
-import WeatherTestPanel from './weather/WeatherTestPanel';
 
 interface NavLinkProps {
   href: string;
@@ -578,9 +576,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
         </button>
       </div>
       )}
-
-      {/* TEMP: weather test panel — remove after testing */}
-      <WeatherTestPanel />
 
     </div>
   );
