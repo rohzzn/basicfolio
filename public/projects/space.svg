@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" fill="none">
+  <rect width="800" height="450" fill="#05070f"/>
+  <circle cx="400" cy="225" r="16" fill="#ffd75e" opacity="0.95"/>
+  <circle cx="400" cy="225" r="28" fill="none" stroke="rgba(255,215,94,0.35)" stroke-width="1"/>
+  <ellipse cx="400" cy="225" rx="120" ry="56" fill="none" stroke="#8ea2ff" stroke-width="1.4" transform="rotate(-24 400 225)"/>
+  <circle cx="520" cy="170" r="8" fill="#e6ecff"/>
+  <circle cx="452" cy="225" r="5" fill="#60a5fa"/>
+  <circle cx="318" cy="248" r="4" fill="#f87171"/>
+  <circle cx="560" cy="210" r="3.5" fill="#c084fc"/>
+  <text x="400" y="380" text-anchor="middle" fill="#fafafa" font-family="system-ui,sans-serif" font-size="40" font-weight="600">Still Flying</text>
+  <text x="400" y="416" text-anchor="middle" fill="#a1a1aa" font-family="system-ui,sans-serif" font-size="17">Every spacecraft, tracked live</text>
+</svg>

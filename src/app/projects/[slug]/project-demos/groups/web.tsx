@@ -4,6 +4,7 @@ import { Check } from 'lucide-react';
 import type { Project } from '@/data/projects';
 import { CARD, L } from '../demo-utils';
 import { LanguagesLatDemo } from './languages-lat-demo';
+import { SpaceDemo } from './space-demo';
 
 // 7. Interactions: micro-interaction demos
 // ─────────────────────────────────────────────────────────────────────────────
@@ -407,6 +408,7 @@ function MCUTimelineDemo() {
 
 export function getWidget(p: Project): React.ReactNode {
   const slug = p.slug;
+  if (slug === 'space') return <SpaceDemo />;
   if (slug === 'languages-lat') return <LanguagesLatDemo />;
   if (slug === 'interactions') return <InteractionsDemo />;
   if (slug === 'margin') return <MarginDemo />;

@@ -25,6 +25,21 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'space',
+    year: 2026,
+    title: 'Still Flying',
+    description: 'Live spacecraft map & space dashboard',
+    tech: ['React', 'TypeScript', 'Vite', 'Express', 'Node.js'],
+    category: 'web',
+    links: [
+      { label: 'GitHub', url: 'https://github.com/rohzzn/still_flying' },
+      { label: 'Live', url: 'https://space.rohan.run/' },
+    ],
+    image: '/projects/space.svg',
+    longDescription:
+      "Still Flying is a live dashboard for everything humanity still has operating beyond Earth. The fleet map pulls heliocentric positions from NASA JPL Horizons, projects them onto a log-scale solar map with true orbital angles, and groups 25 active craft from Voyager 1 out in the Kuiper Belt down to the Mars surface fleet. Around that core, the site adds who's in orbit right now, Mars rover and NASA image feeds, APOD wallpapers, and an upcoming launch calendar backed by a small Express API with cached upstream fetches.",
+  },
+  {
     slug: 'languages-lat',
     year: 2026,
     title: 'Languages',
