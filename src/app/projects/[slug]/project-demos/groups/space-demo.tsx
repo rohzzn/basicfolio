@@ -14,7 +14,7 @@ function radiusForAu(rAu: number) {
   return k * f(rAu);
 }
 
-function project(r: [number, number, number]) {
+function project(r: readonly [number, number, number]) {
   const rAu = Math.hypot(r[0], r[1], r[2]) / AU_KM;
   const angle = Math.atan2(r[1], r[0]);
   const radius = radiusForAu(rAu);
