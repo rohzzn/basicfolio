@@ -9,6 +9,7 @@ import {
   fmtVolume,
   monthGroupLabel,
 } from '@/lib/activities-utils';
+import { buildWorkoutCardModels } from '@/lib/move-workout-analytics';
 import ActivityHeatmap from './ActivityHeatmap';
 import GymCard from './GymCard';
 
@@ -87,6 +88,11 @@ export default function MovePage() {
     [allActivities, period]
   );
 
+  const cardModels = React.useMemo(
+    () => buildWorkoutCardModels(payload?.hevy ?? []),
+    [payload]
+  );
+
   const hevyError = payload?.errors.hevy;
   const showEmpty = !loading && allActivities.length === 0;
 
@@ -159,21 +165,26 @@ export default function MovePage() {
       )}
 
       {loading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div className="space-y-4">
+          {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="min-w-0 animate-pulse overflow-hidden rounded-lg border border-zinc-100 p-3 dark:border-neutral-800"
+              className="animate-pulse rounded-lg border border-zinc-100 p-4 dark:border-neutral-800 sm:p-5"
             >
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <div className="flex gap-2">
-                    <div className="h-4 w-8 rounded bg-zinc-200 dark:bg-neutral-700" />
-                    <div className="h-4 w-24 rounded bg-zinc-200 dark:bg-neutral-700" />
+              <div className="mb-4 flex justify-between">
+                <div className="h-4 w-32 bg-zinc-200 dark:bg-neutral-800" />
+                <div className="h-3 w-12 bg-zinc-200 dark:bg-neutral-800" />
+              </div>
+              <div className="mb-2 h-8 w-28 bg-zinc-200 dark:bg-neutral-800" />
+              <div className="mb-4 h-3 w-16 bg-zinc-200 dark:bg-neutral-800" />
+              <div className="space-y-3 border-t border-zinc-100 pt-4 dark:border-neutral-800">
+                {Array.from({ length: 3 }).map((__, j) => (
+                  <div key={j} className="grid grid-cols-[7.5rem_1fr_4rem] gap-3">
+                    <div className="h-3 bg-zinc-200 dark:bg-neutral-800" />
+                    <div className="h-2 bg-zinc-200 dark:bg-neutral-800" />
+                    <div className="h-3 bg-zinc-200 dark:bg-neutral-800" />
                   </div>
-                  <div className="h-3 w-10 rounded bg-zinc-200 dark:bg-neutral-700" />
-                </div>
-                <div className="h-3 w-full rounded bg-zinc-200 dark:bg-neutral-700" />
+                ))}
               </div>
             </div>
           ))}
@@ -189,10 +200,14 @@ export default function MovePage() {
               <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-neutral-400">
                 {group.label}
               </h3>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-4">
                 {group.items.map((item) => {
                   if (!item.gymWorkout) return null;
-                  return <GymCard key={item.id} workout={item.gymWorkout} />;
+                  const model = cardModels.get(item.gymWorkout.id);
+                  if (!model) return null;
+                  return (
+                    <GymCard key={item.id} workout={item.gymWorkout} model={model} />
+                  );
                 })}
               </div>
             </section>
