@@ -1,10 +1,8 @@
 import type { ActivitiesPayload } from '@/lib/activities-types';
-import { matchGymSessions } from '@/lib/activities-match';
 import { fetchAllHevyWorkouts } from '@/lib/hevy-workouts';
-import { fetchAllStravaActivities } from '@/lib/strava';
 import { getRedis } from '@/lib/redis';
 
-const CACHE_KEY = 'activities:combined:v5';
+const CACHE_KEY = 'activities:hevy:v1';
 /** Serve cached data for 1 hour; stale copy kept for fallback. */
 const CACHE_TTL_SECONDS = 60 * 60;
 
@@ -64,7 +62,7 @@ export async function loadActivities(
 
     return payload;
   } catch (error) {
-    if (stale && (stale.strava.length > 0 || stale.hevy.length > 0)) {
+    if (stale && stale.hevy.length > 0) {
       return stale;
     }
     throw error;
@@ -72,57 +70,20 @@ export async function loadActivities(
 }
 
 async function fetchActivitiesLive(): Promise<ActivitiesPayload> {
-  const [stravaResult, hevyResult] = await Promise.allSettled([
-    fetchAllStravaActivities(),
-    fetchAllHevyWorkouts(),
-  ]);
-
-  const strava =
-    stravaResult.status === 'fulfilled' ? stravaResult.value : [];
-  const hevyRaw = hevyResult.status === 'fulfilled' ? hevyResult.value : [];
-
-  const gymMatches = matchGymSessions(hevyRaw, strava);
-  const matchedStravaIds = new Set(
-    [...gymMatches.values()].map(a => a.id)
-  );
-
-  const hevy = hevyRaw.map(workout => {
-    const matched = gymMatches.get(workout.id);
-    if (!matched) return workout;
+  try {
+    const hevy = await fetchAllHevyWorkouts();
     return {
-      ...workout,
-      matchedStrava: { id: matched.id },
+      hevy,
+      fetchedAt: new Date().toISOString(),
+      errors: {},
     };
-  });
-
-  const stravaCardio = strava.filter(a => !matchedStravaIds.has(a.id));
-
-  const payload: ActivitiesPayload = {
-    strava: stravaCardio,
-    hevy,
-    fetchedAt: new Date().toISOString(),
-    errors: {
-      strava:
-        stravaResult.status === 'rejected'
-          ? stravaResult.reason instanceof Error
-            ? stravaResult.reason.message
-            : 'Failed to fetch Strava data'
-          : undefined,
-      hevy:
-        hevyResult.status === 'rejected'
-          ? hevyResult.reason instanceof Error
-            ? hevyResult.reason.message
-            : 'Failed to fetch Hevy data'
-          : undefined,
-    },
-  };
-
-  const hasData = payload.strava.length > 0 || payload.hevy.length > 0;
-  const allFailed = payload.errors.strava && payload.errors.hevy && !hasData;
-
-  if (allFailed) {
-    throw new Error('Failed to fetch activities');
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Failed to fetch Hevy data';
+    return {
+      hevy: [],
+      fetchedAt: new Date().toISOString(),
+      errors: { hevy: message },
+    };
   }
-
-  return payload;
 }

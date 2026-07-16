@@ -69,7 +69,7 @@ const mainLinks: PaletteItem[] = [
 ];
 
 const hobbyLinks: PaletteItem[] = [
-  { title: 'Move', href: '/hobbies/move', icon: <Activity className="w-4 h-4" />, keywords: ['strava', 'workout', 'running', 'gym', 'hevy', 'activities'] },
+  { title: 'Move', href: '/hobbies/move', icon: <Activity className="w-4 h-4" />, keywords: ['workout', 'gym', 'hevy', 'lifting', 'activities'] },
   { title: 'Books', href: '/hobbies/books', icon: <BookOpen className="w-4 h-4" />, keywords: ['reading', 'books', 'literature'] },
   { title: 'Content', href: '/hobbies/content', icon: <Youtube className="w-4 h-4" />, keywords: ['youtube', 'videos', 'content'] },
   { title: 'Designs', href: '/hobbies/art', icon: <PenTool className="w-4 h-4" />, keywords: ['art', 'design', 'creative'] },

@@ -14,8 +14,6 @@ const categories: { id: CategoryFilter; label: string }[] = [
   { id: "other", label: "other" },
 ];
 
-const FEATURED_ORDER = ["beam", "relay", "dock-poker", "catan-online"] as const;
-
 function sortByLatest(list: Project[]): Project[] {
   return [...list].sort((a, b) => {
     const yearDiff = (b.year ?? 0) - (a.year ?? 0);
@@ -46,22 +44,13 @@ function ProjectRow({ project }: { project: Project }) {
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState<CategoryFilter>("all");
 
-  const featured = useMemo(() => {
-    const bySlug = new Map(projects.map((p) => [p.slug, p]));
-    return FEATURED_ORDER.map((slug) => bySlug.get(slug)).filter((p): p is Project => p != null);
-  }, []);
-
-  const featuredSlugs = useMemo(() => new Set(FEATURED_ORDER), []);
-
   const filtered = useMemo(() => {
     const list =
       activeTab === "all"
-        ? projects.filter((p) => !featuredSlugs.has(p.slug as (typeof FEATURED_ORDER)[number]))
+        ? projects
         : projects.filter((p) => p.category === activeTab);
     return sortByLatest(list);
-  }, [activeTab, featuredSlugs]);
-
-  const showFeatured = activeTab === "all";
+  }, [activeTab]);
 
   return (
     <div style={{ maxWidth: "75ch" }}>
@@ -86,19 +75,6 @@ export default function ProjectsPage() {
           ))}
         </div>
       </div>
-
-      {showFeatured ? (
-        <section className="mb-10">
-          <h3 className="mb-4 text-xs font-medium uppercase leading-none tracking-wider text-zinc-400 dark:text-neutral-400">
-            Featured
-          </h3>
-          <div>
-            {featured.map((project) => (
-              <ProjectRow key={project.slug} project={project} />
-            ))}
-          </div>
-        </section>
-      ) : null}
 
       <div>
         {filtered.map((project) => (

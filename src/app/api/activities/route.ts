@@ -16,11 +16,9 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching activities:', error);
     return NextResponse.json(
       {
-        strava: [],
         hevy: [],
         fetchedAt: new Date().toISOString(),
         errors: {
-          strava: 'Failed to fetch Strava data',
           hevy: 'Failed to fetch Hevy data',
         },
       },

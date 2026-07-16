@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 
 const hobbies = [
-  { title: "Move", description: "Strava & Hevy", href: "/hobbies/move" },
+  { title: "Move", description: "Hevy workouts", href: "/hobbies/move" },
   { title: "Typing", description: "Speed test · 115 WPM", href: "/hobbies/typing" },
   { title: "Seen", description: "Images I like", href: "/hobbies/seen" },
   { title: "Books", description: "Reading list & notes", href: "/hobbies/books" },

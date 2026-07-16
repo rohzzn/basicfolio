@@ -145,10 +145,10 @@ const APIS: ApiEntry[] = [
     service: 'Hevy',
     category: 'activity',
     internalRoute: '/api/activities · /api/hevy/workouts',
-    upstream: 'api.hevyapp.com/v1/workouts · Strava API',
+    upstream: 'api.hevyapp.com/v1/workouts',
     usedOn: 'Move',
     cache: 'live',
-    note: 'Workout log from Hevy, the app I use to track gym sessions. Returns paginated workout history with exercises, sets, reps, and weights per entry.',
+    note: 'Workout log from Hevy via the developer API — exercises, sets, reps, and weights per session.',
   },
   {
     service: 'TMDB',

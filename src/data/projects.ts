@@ -12,7 +12,6 @@ export interface Project {
   };
   category: "application" | "web" | "game" | "other";
   image: string;
-  featured?: boolean;
   // Detail page fields
   slug: string;
   year?: number;
@@ -73,7 +72,6 @@ export const projects: Project[] = [
     description: 'Screen recording for Windows',
     tech: ['Electron', 'React', 'TypeScript', 'FFmpeg', 'Whisper'],
     category: 'application',
-    featured: true,
     links: [
       { label: 'GitHub', url: 'https://github.com/rohzzn/beam' },
       { label: 'Live', url: 'https://beam.rohan.run/' },
@@ -89,7 +87,6 @@ export const projects: Project[] = [
     description: 'Uptime monitoring and status pages in one binary',
     tech: ['Go', 'SQLite', 'Docker', 'WebSocket', 'HTMX'],
     category: 'application',
-    featured: true,
     links: [
       { label: 'GitHub', url: 'https://github.com/rohzzn/relay' },
       { label: 'Live', url: 'https://relay.rohan.run' },
@@ -119,7 +116,6 @@ export const projects: Project[] = [
     description: "Private Texas Hold'em with friends online",
     tech: ["React", "Node.js", "Socket.IO", "Express"],
     category: "game",
-    featured: true,
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/dock.poker" },
       { label: "Live", url: "https://dock.poker" },
@@ -134,7 +130,6 @@ export const projects: Project[] = [
     description: "Multiplayer Catan in the browser",
     tech: ["React", "Node.js", "Socket.IO", "Express", "Vite"],
     category: "game",
-    featured: true,
     links: [
       { label: "GitHub", url: "https://github.com/rohzzn/catan" },
       { label: "Live", url: "https://catan.rohan.run" },
@@ -739,5 +734,3 @@ export const projects: Project[] = [
     longDescription: "The first portfolio, shipped publicly. Anime-inspired visual design. Everything about it is wrong from a professional portfolio standpoint, but it was the first thing I built that I was willing to put my name on.",
   },
 ];
-
-export const featuredProjects = projects.filter((p) => p.featured);
