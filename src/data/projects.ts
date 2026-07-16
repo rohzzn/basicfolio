@@ -25,6 +25,21 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'quire',
+    year: 2026,
+    title: 'Quire',
+    description: 'Private in-browser PDF editor',
+    tech: ['React', 'TypeScript', 'Vite', 'pdf-lib', 'react-pdf', 'Zustand', 'Tailwind CSS'],
+    category: 'web',
+    links: [
+      { label: 'GitHub', url: 'https://github.com/rohzzn/quire' },
+      { label: 'Live', url: 'https://pdf.rohan.run/' },
+    ],
+    image: '/projects/quire.svg',
+    longDescription:
+      'Quire is a private PDF editor that runs entirely in the browser. Rendering uses pdf.js through react-pdf; editing and export use pdf-lib with fontkit for embedding Google fonts and fonts extracted from the open document. Edit text in place with detected font matching, add signatures and images, annotate, fill or add form fields, reorder pages, and export a clean PDF with no watermark. A separate tools hub adds merge, split, compress, convert, watermark, page numbers, headers and footers, password protection, and metadata editing. There is no backend: files never leave the device.',
+  },
+  {
     slug: 'space',
     year: 2026,
     title: 'Still Flying',

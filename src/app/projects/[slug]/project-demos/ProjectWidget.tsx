@@ -29,6 +29,7 @@ const GROUP_SLUGS: Record<string, string[]> = {
     "anomaly-detection"
   ],
   "web": [
+    "quire",
     "space",
     "languages-lat",
     "interactions",
