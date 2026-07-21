@@ -24,6 +24,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'mac',
+    year: 2026,
+    title: 'Mac',
+    description: 'macOS desktop with working iMessage and FaceTime',
+    tech: ['HTML', 'CSS', 'JavaScript'],
+    category: 'web',
+    links: [{ label: 'Live', url: 'https://mac.rohan.run/' }],
+    image: '/projects/mac.svg',
+    longDescription:
+      'A browser-based macOS experience with a full desktop shell, dock, and native-feeling apps. Messages and FaceTime are fully functional.',
+  },
+  {
     slug: 'quire',
     year: 2026,
     title: 'Quire',
