@@ -355,7 +355,7 @@ export function MacDemo() {
                     />
                   </div>
                   <span className="flex-1 text-center text-[11px] font-medium text-zinc-600 dark:text-neutral-300">
-                    {active.label}
+                    {active?.label ?? open}
                   </span>
                 </div>
                 <div className={maximized ? "h-[calc(100%-36px)]" : "min-h-[180px]"}>
