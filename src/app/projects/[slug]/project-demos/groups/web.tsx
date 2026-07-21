@@ -4,6 +4,7 @@ import { Check } from 'lucide-react';
 import type { Project } from '@/data/projects';
 import { CARD, L } from '../demo-utils';
 import { LanguagesLatDemo } from './languages-lat-demo';
+import { MacDemo } from './mac-demo';
 import { QuireDemo } from './quire-demo';
 import { SpaceDemo } from './space-demo';
 
@@ -409,6 +410,7 @@ function MCUTimelineDemo() {
 
 export function getWidget(p: Project): React.ReactNode {
   const slug = p.slug;
+  if (slug === 'mac') return <MacDemo />;
   if (slug === 'quire') return <QuireDemo />;
   if (slug === 'space') return <SpaceDemo />;
   if (slug === 'languages-lat') return <LanguagesLatDemo />;
