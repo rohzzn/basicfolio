@@ -2,12 +2,18 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { feltQuotes } from '@/data/felt-quotes';
 import { posts } from '@/data/writing';
 import type { TweetItem } from '@/lib/tweets-types';
 
-type Category = 'all' | 'tech' | 'life' | 'tweets';
+type Category = 'all' | 'tech' | 'life' | 'tweets' | 'i-felt-that';
 
 const REFRESH_MS = 60 * 1000;
+
+function categoryLabel(cat: Category): string {
+  if (cat === 'i-felt-that') return 'i felt that';
+  return cat;
+}
 
 const WritingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category>('all');
@@ -21,7 +27,18 @@ const WritingPage = () => {
     );
   }, [selectedCategory]);
 
-  const categories: Category[] = ['all', 'tech', 'life', 'tweets'];
+  const sortedQuotes = useMemo(
+    () =>
+      [...feltQuotes].sort((a, b) => {
+        if (!a.date && !b.date) return 0;
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return b.date.localeCompare(a.date);
+      }),
+    []
+  );
+
+  const categories: Category[] = ['all', 'tech', 'life', 'tweets', 'i-felt-that'];
 
   const loadTweets = async () => {
     setTweetsLoading(true);
@@ -68,7 +85,7 @@ const WritingPage = () => {
                   : 'text-zinc-500 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'
               }`}
             >
-              {cat}
+              {categoryLabel(cat)}
             </button>
           ))}
         </div>
@@ -164,6 +181,53 @@ const WritingPage = () => {
                 )}
               </div>
             </div>
+          ))}
+        </div>
+      ) : selectedCategory === 'i-felt-that' ? (
+        <div>
+          <p className="mb-4 text-sm text-zinc-500 dark:text-neutral-400">
+            Things I heard that I felt.
+          </p>
+
+          {sortedQuotes.length === 0 && (
+            <p className="text-sm text-zinc-400 dark:text-neutral-400 py-2">Nothing here yet.</p>
+          )}
+
+          {sortedQuotes.map((quote) => (
+            <figure
+              key={quote.id}
+              className="py-4 border-b border-zinc-100 dark:border-neutral-800/60 last:border-0"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <blockquote className="min-w-0 flex-1">
+                  <p className="text-sm leading-relaxed text-zinc-800 dark:text-neutral-200">
+                    {quote.text}
+                  </p>
+                  {(quote.source || quote.context) && (
+                    <figcaption className="mt-2 space-y-0.5">
+                      {quote.source &&
+                        (quote.sourceUrl ? (
+                          <a
+                            href={quote.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-xs text-zinc-500 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors"
+                          >
+                            {quote.source}
+                          </a>
+                        ) : (
+                          <cite className="block text-xs not-italic text-zinc-500 dark:text-neutral-400">
+                            {quote.source}
+                          </cite>
+                        ))}
+                      {quote.context && (
+                        <p className="text-xs text-zinc-400 dark:text-neutral-500">{quote.context}</p>
+                      )}
+                    </figcaption>
+                  )}
+                </blockquote>
+              </div>
+            </figure>
           ))}
         </div>
       ) : (
