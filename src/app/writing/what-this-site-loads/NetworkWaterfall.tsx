@@ -133,13 +133,13 @@ const APIS: ApiEntry[] = [
     note: 'CS2 analytics platform. Three proxied routes: overall profile stats and skill ratings, match history list, and per-match detail breakdowns. All require a Bearer token that lives only on the server.',
   },
   {
-    service: 'Medal.tv',
+    service: 'Allstar',
     category: 'gaming',
-    internalRoute: '/api/medal',
-    upstream: 'developers.medal.tv/v1',
+    internalRoute: '/api/allstar',
+    upstream: 'a1.allstar.gg/graphql',
     usedOn: 'Gaming Clips',
     cache: 'live',
-    note: 'Calls three Medal endpoints in parallel (latest by user ID, search by username, search by tag) to maximize coverage, then deduplicates by contentId and sorts by timestamp. Medal\'s API is inconsistent about which endpoint returns what.',
+    note: 'CS2 clips via Allstar GraphQL — paginated until all clips are fetched.',
   },
   {
     service: 'Hevy',

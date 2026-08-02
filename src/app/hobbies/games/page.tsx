@@ -137,21 +137,8 @@ interface UnifiedClip {
   thumbnail: string;
   clipUrl: string;
   videoUrl: string;
-  embedUrl: string;
   duration: number;
-  source: 'medal' | 'allstar';
   createdTimestamp: number;
-}
-
-interface MedalClip {
-  contentId: string;
-  contentTitle: string;
-  contentViews: number;
-  contentThumbnail: string;
-  embedIframeUrl: string;
-  createdTimestamp: number;
-  directClipUrl: string;
-  videoLengthSeconds: number;
 }
 
 interface AllstarClipRaw {
@@ -224,6 +211,34 @@ const FILTERS = [
   { id: '5k', label: 'Ace' },
 ];
 
+const CLIPS_SESSION_KEY = 'games:allstar-clips:v1';
+const CLIPS_SESSION_TTL_MS = 60 * 60 * 1000;
+
+function readSessionClips(): UnifiedClip[] | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = sessionStorage.getItem(CLIPS_SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { clips?: UnifiedClip[]; savedAt?: number };
+    if (!parsed.clips?.length || !parsed.savedAt) return null;
+    if (Date.now() - parsed.savedAt > CLIPS_SESSION_TTL_MS) return null;
+    return parsed.clips;
+  } catch {
+    return null;
+  }
+}
+
+function writeSessionClips(clips: UnifiedClip[]) {
+  try {
+    sessionStorage.setItem(
+      CLIPS_SESSION_KEY,
+      JSON.stringify({ clips, savedAt: Date.now() })
+    );
+  } catch {
+    // quota or private mode
+  }
+}
+
 function matchesFilter(clip: UnifiedClip, id: string): boolean {
   if (id === 'all') return true;
   const t = clip.title.toLowerCase();
@@ -240,20 +255,6 @@ function fmtDur(sec: number) {
   return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 }
 
-function medalToUnified(clip: MedalClip): UnifiedClip {
-  return {
-    id: clip.contentId,
-    title: clip.contentTitle,
-    thumbnail: clip.contentThumbnail,
-    clipUrl: clip.directClipUrl || clip.embedIframeUrl,
-    videoUrl: clip.directClipUrl || '',
-    embedUrl: clip.embedIframeUrl || '',
-    duration: clip.videoLengthSeconds,
-    source: 'medal',
-    createdTimestamp: clip.createdTimestamp,
-  };
-}
-
 function allstarToUnified(clip: AllstarClipRaw): UnifiedClip {
   return {
     id: clip.id,
@@ -261,9 +262,7 @@ function allstarToUnified(clip: AllstarClipRaw): UnifiedClip {
     thumbnail: clip.thumbnail,
     clipUrl: clip.clipUrl,
     videoUrl: clip.videoUrl || '',
-    embedUrl: '',
     duration: clip.duration,
-    source: 'allstar',
     createdTimestamp: clip.createdTimestamp,
   };
 }
@@ -311,9 +310,7 @@ function ClipModal({ clip, onClose }: { clip: UnifiedClip; onClose: () => void }
     };
   }, [onClose]);
 
-  const canPlayInline =
-    (clip.source === 'medal' && !!clip.embedUrl) ||
-    (clip.source === 'allstar' && !!clip.videoUrl);
+  const canPlayInline = !!clip.videoUrl;
 
   return (
     <div
@@ -329,15 +326,7 @@ function ClipModal({ clip, onClose }: { clip: UnifiedClip; onClose: () => void }
         </button>
 
         <div className="aspect-video rounded-xl overflow-hidden bg-zinc-950">
-          {clip.source === 'medal' && clip.embedUrl ? (
-            <iframe
-              src={clip.embedUrl}
-              className="w-full h-full"
-              allowFullScreen
-              allow="autoplay; fullscreen"
-              title={clip.title}
-            />
-          ) : clip.source === 'allstar' && clip.videoUrl ? (
+          {clip.videoUrl ? (
             <video
               src={clip.videoUrl}
               controls
@@ -354,7 +343,7 @@ function ClipModal({ clip, onClose }: { clip: UnifiedClip; onClose: () => void }
                 rel="noopener noreferrer"
                 className="text-sm text-white/80 hover:text-white underline"
               >
-                Open on {clip.source === 'allstar' ? 'Allstar' : 'Medal'} ↗
+                Open on Allstar ↗
               </a>
             </div>
           )}
@@ -370,7 +359,7 @@ function ClipModal({ clip, onClose }: { clip: UnifiedClip; onClose: () => void }
             rel="noopener noreferrer"
             className="text-xs text-white/40 hover:text-white/70 transition-colors flex-shrink-0 ml-3"
           >
-            {clip.source === 'allstar' ? 'allstar ↗' : 'medal ↗'}
+            allstar ↗
           </a>
         </div>
       </div>
@@ -385,8 +374,8 @@ export default function Games() {
   const [ownedGames, setOwnedGames] = useState<SteamGame[]>([]);
   const [gamesLoading, setGamesLoading] = useState(true);
 
-  const [clips, setClips] = useState<UnifiedClip[]>([]);
-  const [clipsLoading, setClipsLoading] = useState(true);
+  const [clips, setClips] = useState<UnifiedClip[]>(() => readSessionClips() ?? []);
+  const [clipsLoading, setClipsLoading] = useState(() => readSessionClips() === null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeClip, setActiveClip] = useState<UnifiedClip | null>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
@@ -403,17 +392,19 @@ export default function Games() {
     }).finally(() => setGamesLoading(false));
   }, []);
 
-  // Fetch clips
+  // Fetch clips — session cache paints instantly; API refresh updates in background
   useEffect(() => {
-    Promise.all([
-      fetch('/api/medal').then(r => r.json()).catch(() => ({ clips: [] })),
-      fetch('/api/allstar').then(r => r.json()).catch(() => ({ clips: [] })),
-    ]).then(([md, ad]) => {
-      const medal = (md.clips ?? []).map(medalToUnified);
-      const allstar = (ad.clips ?? []).map(allstarToUnified);
-      const merged = [...medal, ...allstar].sort((a, b) => b.createdTimestamp - a.createdTimestamp);
-      setClips(merged);
-    }).finally(() => setClipsLoading(false));
+    fetch('/api/allstar')
+      .then(r => r.json())
+      .catch(() => ({ clips: [] }))
+      .then(data => {
+        const allstar = (data.clips ?? []).map(allstarToUnified);
+        if (allstar.length) {
+          setClips(allstar);
+          writeSessionClips(allstar);
+        }
+      })
+      .finally(() => setClipsLoading(false));
   }, []);
 
   const byRecent = [...ownedGames]
@@ -612,9 +603,9 @@ export default function Games() {
             >
               {filteredClips.map(clip => (
                 <div
-                  key={`${clip.source}-${clip.id}`}
+                  key={clip.id}
                   onClick={() => openClip(clip)}
-                  className="group cursor-pointer"
+                  className="group cursor-pointer [content-visibility:auto] [contain-intrinsic-size:160px]"
                 >
                   <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-neutral-800 mb-1.5">
                     {clip.thumbnail ? (

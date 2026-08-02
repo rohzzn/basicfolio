@@ -13,6 +13,11 @@ export type FeltQuote = {
 /** Lines heard elsewhere that hit. Not things you wrote. */
 export const feltQuotes: FeltQuote[] = [
   {
+    id: "rick-morty-morty-01",
+    text: "Nobody exists on purpose. Nobody belongs anywhere. Everybody's gonna die.",
+    source: "Morty",
+  },
+  {
     id: "odyssey-2026-01",
     text: "What you most want is what you can't have and what you most can't have is what you already had, and lost.",
     source: "Odyssey",

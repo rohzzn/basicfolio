@@ -92,7 +92,6 @@ const externalLinks: PaletteItem[] = [
   { title: 'Steam Profile', keywords: ['steam', 'gaming', 'games', 'valve'], icon: <Gamepad2 className="w-4 h-4" />, href: 'https://steamcommunity.com/id/rohzzn' },
   { title: 'Spotify', keywords: ['music', 'spotify', 'playlist', 'songs'], icon: <Music className="w-4 h-4" />, href: 'https://open.spotify.com/user/rohzzn' },
   { title: 'Leetify Profile', keywords: ['leetify', 'cs2', 'csgo', 'stats'], icon: <Target className="w-4 h-4" />, href: 'https://leetify.com/@rohzzn' },
-  { title: 'Medal.tv', keywords: ['medal', 'clips', 'gaming', 'highlights'], icon: <Film className="w-4 h-4" />, href: 'https://medal.tv/u/rohzzn' },
   { title: 'YouTube', keywords: ['youtube', 'videos', 'channel'], icon: <Youtube className="w-4 h-4" />, href: 'https://youtube.com/@rohzzn' },
   { title: 'MyAnimeList', keywords: ['anime', 'mal', 'myanimelist', 'shows'], icon: <Film className="w-4 h-4" />, href: 'https://myanimelist.net/profile/rohzzn' },
   { title: 'Settings.gg', keywords: ['settings', 'config', 'csgo', 'valorant'], icon: <Laptop className="w-4 h-4" />, href: 'https://settings.gg/rohzzn' },

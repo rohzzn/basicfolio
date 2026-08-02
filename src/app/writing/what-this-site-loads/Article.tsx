@@ -46,7 +46,7 @@ export default function WhatThisSiteLoads() {
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">The API integrations</h2>
 
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
-          Thirteen external services in total. The hobbies section drives most of this — Steam, Valorant, Leetify, and Medal for gaming; Hevy for workouts; TMDB, MyAnimeList, and YouTube for entertainment. Most of them are proxied through Next.js API routes so the API keys live only on the server and never reach the browser.
+          Twelve external services in total. The hobbies section drives most of this — Steam, Valorant, Leetify, and Allstar for gaming; Hevy for workouts; TMDB, MyAnimeList, and YouTube for entertainment. Most of them are proxied through Next.js API routes so the API keys live only on the server and never reach the browser.
         </p>
 
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
@@ -54,7 +54,7 @@ export default function WhatThisSiteLoads() {
         </p>
 
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
-          A few are worth calling out specifically. The guestbook uses GitHub Issues as a database — entries are comments on an issue in this repo, fetched and written via the GitHub API. It sounds odd but it works: free, versioned, and requires no separate database. The Medal.tv integration calls three different endpoints in parallel and deduplicates because Medal&apos;s API is inconsistent about which endpoint actually returns your clips. The MyAnimeList route handles pagination recursively — MAL caps responses at 100 entries, and my list is longer than that.
+          A few are worth calling out specifically. The guestbook uses GitHub Issues as a database — entries are comments on an issue in this repo, fetched and written via the GitHub API. It sounds odd but it works: free, versioned, and requires no separate database. Gaming clips come from Allstar&apos;s GraphQL API, paginated server-side. The MyAnimeList route handles pagination recursively — MAL caps responses at 100 entries, and my list is longer than that.
         </p>
 
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">

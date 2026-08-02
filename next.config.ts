@@ -36,8 +36,6 @@ const nextConfig = {
       { protocol: 'https', hostname: 'yt3.ggpht.com' },
       { protocol: 'https', hostname: 'youtube.com' },
       { protocol: 'https', hostname: 'i.imgur.com' },
-      { protocol: 'https', hostname: 'cdn.medal.tv' },
-      { protocol: 'https', hostname: 'medal.tv' },
       { protocol: 'https', hostname: 'media.allstar.gg' },
       { protocol: 'https', hostname: 'f005.backblazeb2.com' },
       { protocol: 'https', hostname: 'images-na.ssl-images-amazon.com' },
@@ -57,7 +55,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "frame-src 'self' https://medal.tv https://*.medal.tv https://www.youtube.com https://youtube.com https://allstar.gg https://*.allstar.gg; frame-ancestors 'self'; media-src 'self' https://f005.backblazeb2.com https://media.allstar.gg https://p.scdn.co;"
+            value: "frame-src 'self' https://www.youtube.com https://youtube.com https://allstar.gg https://*.allstar.gg; frame-ancestors 'self'; media-src 'self' https://f005.backblazeb2.com https://media.allstar.gg https://p.scdn.co;"
           },
         ],
       },
