@@ -4,6 +4,7 @@ import type { Project } from '@/data/projects';
 import { CARD, L, useCopy } from '../demo-utils';
 import { CommandList, TerminalInstall } from '../shared-widgets';
 import { BeamDemo } from '../beam-demo';
+import { WorldClockDemo } from '../world-clock-demo';
 
 // 10. Keel: React Native subscription tracker
 // ─────────────────────────────────────────────────────────────────────────────
@@ -573,6 +574,7 @@ function IpynbDemo() {
 
 export function getWidget(p: Project): React.ReactNode {
   const slug = p.slug;
+  if (slug === 'world-clock') return <WorldClockDemo />;
   if (slug === 'beam') return <BeamDemo />;
   if (slug === 'keel') return <KeelDemo />;
   if (slug === 'relay') return <RelayDemo />;

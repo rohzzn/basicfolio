@@ -24,6 +24,24 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'world-clock',
+    year: 2026,
+    title: 'World Clock',
+    description: 'Stream Deck plugin for live city clocks',
+    tech: ['TypeScript', 'Node.js', 'SVG', 'Stream Deck SDK'],
+    category: 'application',
+    links: [
+      { label: 'GitHub', url: 'https://github.com/rohzzn/elgato_clock' },
+      {
+        label: 'Marketplace',
+        url: 'https://marketplace.elgato.com/product/world-clock-b9d5f7ee-68ee-44e3-bd63-61efa0c6b67b',
+      },
+    ],
+    image: 'https://raw.githubusercontent.com/rohzzn/elgato_clock/main/assets/marketplace.svg',
+    longDescription:
+      "I wanted a wall of city clocks on my Stream Deck that actually looked like clocks — not a row of static labels. World Clock is a plugin for Stream Deck 7.1+: drop the action on as many keys as you want, point each one at any IANA timezone, and they tick live. Every key draws as an SVG — large tabular digits so the time never jumps width when the minutes flip, a city label, a hairline seconds ring in that key's accent colour, and a background that drifts cooler at night and warmer at midday for that city. Times come from Intl.DateTimeFormat, so DST and odd offsets like Kathmandu's UTC+5:45 are handled by the IANA database. All visible keys share one second-aligned ticker, so idle pages cost nothing. Press a key to toggle the seconds readout. On the Elgato Marketplace for Mac and Windows.",
+  },
+  {
     slug: 'mac',
     year: 2026,
     title: 'Mac',

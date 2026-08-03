@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Writing — Rohan',
+  title: 'Rohan',
   description:
     'Essays and deep dives on tech, security, side projects, and building software.',
   openGraph: {
-    title: 'Writing — Rohan',
+    title: 'Rohan',
     description:
       'Essays and deep dives on tech, security, side projects, and building software.',
     url: 'https://rohan.run/writing',

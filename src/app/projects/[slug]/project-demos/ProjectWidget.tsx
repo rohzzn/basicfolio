@@ -13,6 +13,7 @@ const GROUP_SLUGS: Record<string, string[]> = {
     "greed-island-dex"
   ],
   "apps": [
+    "world-clock",
     "beam",
     "keel",
     "relay",
