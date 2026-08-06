@@ -139,7 +139,7 @@ const APIS: ApiEntry[] = [
     upstream: 'a1.allstar.gg/graphql',
     usedOn: 'Gaming Clips',
     cache: 'live',
-    note: 'CS2 clips via Allstar GraphQL — paginated until all clips are fetched.',
+    note: 'CS2 clips via Allstar GraphQL — parallel page fetch with Redis cache and soft timeout so Vercel does not 504.',
   },
   {
     service: 'Hevy',

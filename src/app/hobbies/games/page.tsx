@@ -211,8 +211,9 @@ const FILTERS = [
   { id: '5k', label: 'Ace' },
 ];
 
-const CLIPS_SESSION_KEY = 'games:allstar-clips:v1';
+const CLIPS_SESSION_KEY = 'games:allstar-clips:v2';
 const CLIPS_SESSION_TTL_MS = 60 * 60 * 1000;
+const CLIPS_FETCH_TIMEOUT_MS = 12_000;
 
 function readSessionClips(): UnifiedClip[] | null {
   if (typeof window === 'undefined') return null;
@@ -376,6 +377,7 @@ export default function Games() {
 
   const [clips, setClips] = useState<UnifiedClip[]>(() => readSessionClips() ?? []);
   const [clipsLoading, setClipsLoading] = useState(() => readSessionClips() === null);
+  const [clipsError, setClipsError] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeClip, setActiveClip] = useState<UnifiedClip | null>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
@@ -394,17 +396,46 @@ export default function Games() {
 
   // Fetch clips — session cache paints instantly; API refresh updates in background
   useEffect(() => {
-    fetch('/api/allstar')
-      .then(r => r.json())
-      .catch(() => ({ clips: [] }))
-      .then(data => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), CLIPS_FETCH_TIMEOUT_MS);
+
+    fetch('/api/allstar', { signal: controller.signal })
+      .then(async (r) => {
+        const data = (await r.json().catch(() => ({}))) as {
+          clips?: AllstarClipRaw[];
+          error?: string;
+        };
+        if (!r.ok) throw new Error(data.error || 'request failed');
+        return data;
+      })
+      .then((data) => {
         const allstar = (data.clips ?? []).map(allstarToUnified);
         if (allstar.length) {
           setClips(allstar);
           writeSessionClips(allstar);
+          setClipsError(false);
+        } else {
+          setClips((prev) => {
+            if (prev.length === 0) setClipsError(true);
+            return prev;
+          });
         }
       })
-      .finally(() => setClipsLoading(false));
+      .catch(() => {
+        setClips((prev) => {
+          if (prev.length === 0) setClipsError(true);
+          return prev;
+        });
+      })
+      .finally(() => {
+        window.clearTimeout(timeout);
+        setClipsLoading(false);
+      });
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
 
   const byRecent = [...ownedGames]
@@ -582,13 +613,48 @@ export default function Games() {
             </div>
           ) : filteredClips.length === 0 ? (
             <div className="py-6">
-              <p className="text-sm text-zinc-500 dark:text-neutral-400">No clips matching this filter.</p>
-              {activeFilter !== 'all' && (
+              <p className="text-sm text-zinc-500 dark:text-neutral-400">
+                {clipsError
+                  ? 'Clips unavailable right now — try again in a moment.'
+                  : activeFilter === 'all'
+                    ? 'No clips found.'
+                    : 'No clips matching this filter.'}
+              </p>
+              {activeFilter !== 'all' && !clipsError && (
                 <button
                   onClick={() => setActiveFilter('all')}
                   className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-neutral-300 transition-colors mt-1"
                 >
                   Show all
+                </button>
+              )}
+              {clipsError && (
+                <button
+                  onClick={() => {
+                    setClipsLoading(true);
+                    setClipsError(false);
+                    fetch('/api/allstar')
+                      .then(async (r) => {
+                        const data = (await r.json().catch(() => ({}))) as { clips?: AllstarClipRaw[] };
+                        if (!r.ok) throw new Error('failed');
+                        return data;
+                      })
+                      .then((data) => {
+                        const allstar = (data.clips ?? []).map(allstarToUnified);
+                        if (allstar.length) {
+                          setClips(allstar);
+                          writeSessionClips(allstar);
+                          setClipsError(false);
+                        } else {
+                          setClipsError(true);
+                        }
+                      })
+                      .catch(() => setClipsError(true))
+                      .finally(() => setClipsLoading(false));
+                  }}
+                  className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-neutral-300 transition-colors mt-1"
+                >
+                  Retry
                 </button>
               )}
             </div>

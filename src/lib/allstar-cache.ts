@@ -13,9 +13,11 @@ export type AllstarClipItem = {
   categoryName: string;
 };
 
-type AllstarCachePayload = {
+export type AllstarCachePayload = {
   clips: AllstarClipItem[];
   fetchedAt: string;
+  /** True when the last live fetch stopped early (timeout / incomplete). */
+  partial?: boolean;
 };
 
 interface AllstarClipRaw {
@@ -35,10 +37,22 @@ interface AllstarGraphQLResponse {
       data: AllstarClipRaw[];
     };
   };
+  errors?: { message: string }[];
 }
 
-const CACHE_KEY = 'allstar:clips:v1';
-const CACHE_TTL_SECONDS = 60 * 60;
+const CACHE_KEY = 'allstar:clips:v3';
+/** Keep a warm Redis copy for a day — cold live fetches are expensive. */
+const CACHE_TTL_SECONDS = 60 * 60 * 24;
+/** Serve stale Redis while refreshing after this age. */
+const FRESH_SECONDS = 60 * 60 * 6;
+/** Soft ceiling for a request-path live fetch (Vercel hobby ~10s). */
+const LIVE_BUDGET_MS = 7500;
+/** Longer budget for after() background continuation. */
+const FULL_BUDGET_MS = 25_000;
+const PAGE_SIZE = 10;
+const MAX_PAGES = 200;
+/** Keep modest — Allstar returns empty pages under parallel hammering. */
+const PARALLEL = 4;
 
 const CLIPS_QUERY = `query ($page: Int!, $user: String!) {
   videos: clips(search: createdDate, page: $page, user: $user, mobile: false) {
@@ -67,6 +81,21 @@ function b2ToHttps(b2Url: string): string {
   return '';
 }
 
+function mapClip(clip: AllstarClipRaw): AllstarClipItem {
+  return {
+    id: clip._id,
+    title: clip.clipTitle || 'Untitled Clip',
+    thumbnail: b2ToHttps(clip.clipImageThumb) || b2ToHttps(clip.clipImageSource),
+    clipUrl: `https://allstar.gg/clip?clip=${clip._id}`,
+    videoUrl: b2ToHttps(clip.clipLink),
+    createdTimestamp: parseInt(clip.createdDate, 10),
+    views: clip.views ?? 0,
+    duration: clip.clipLength ?? 0,
+    source: 'allstar',
+    categoryName: 'CS2',
+  };
+}
+
 function readMemoryCache(): AllstarCachePayload | null {
   if (!memoryCache || memoryCache.expiresAt <= Date.now()) return null;
   return memoryCache.payload;
@@ -80,69 +109,158 @@ function writeMemoryCache(payload: AllstarCachePayload): void {
 }
 
 function isFresh(payload: AllstarCachePayload): boolean {
-  return Date.now() - new Date(payload.fetchedAt).getTime() < CACHE_TTL_SECONDS * 1000;
+  if (payload.partial) return false;
+  return Date.now() - new Date(payload.fetchedAt).getTime() < FRESH_SECONDS * 1000;
 }
 
-async function fetchAllstarClipsLive(): Promise<AllstarCachePayload> {
-  const userId = process.env.ALLSTAR_USER_ID;
-  if (!userId) throw new Error('ALLSTAR_USER_ID not configured');
+function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+    const id = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(id);
+        reject(new DOMException('Aborted', 'AbortError'));
+      },
+      { once: true }
+    );
+  });
+}
 
-  const allClips: AllstarClipRaw[] = [];
-  let page = 1;
-  const PAGE_SIZE = 10;
-  const MAX_PAGES = 200;
-
-  while (page <= MAX_PAGES) {
+async function fetchPageOnce(
+  userId: string,
+  page: number,
+  signal?: AbortSignal
+): Promise<AllstarClipRaw[] | null> {
+  try {
     const res = await fetch('https://a1.allstar.gg/graphql', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ query: CLIPS_QUERY, variables: { user: userId, page } }),
       cache: 'no-store',
+      signal,
     });
-
-    if (!res.ok) break;
-
+    if (!res.ok) return null;
     const json: AllstarGraphQLResponse = await res.json();
-    const pageClips = json.data?.videos?.data ?? [];
-
-    if (pageClips.length === 0) break;
-
-    allClips.push(...pageClips);
-
-    if (pageClips.length < PAGE_SIZE) break;
-    page++;
+    if (json.errors?.length) return null;
+    return json.data?.videos?.data ?? [];
+  } catch {
+    return null;
   }
+}
 
-  const clips = allClips
-    .map(clip => ({
-      id: clip._id,
-      title: clip.clipTitle || 'Untitled Clip',
-      thumbnail: b2ToHttps(clip.clipImageThumb) || b2ToHttps(clip.clipImageSource),
-      clipUrl: `https://allstar.gg/clip?clip=${clip._id}`,
-      videoUrl: b2ToHttps(clip.clipLink),
-      createdTimestamp: parseInt(clip.createdDate, 10),
-      views: clip.views ?? 0,
-      duration: clip.clipLength ?? 0,
-      source: 'allstar' as const,
-      categoryName: 'CS2',
-    }))
+/** Retry once on null/empty — parallel bursts sometimes get blank pages that aren't real EOF. */
+async function fetchPage(
+  userId: string,
+  page: number,
+  signal?: AbortSignal
+): Promise<AllstarClipRaw[] | null> {
+  const first = await fetchPageOnce(userId, page, signal);
+  if (first && first.length > 0) return first;
+  if (signal?.aborted) return null;
+  try {
+    await sleep(120, signal);
+  } catch {
+    return null;
+  }
+  return fetchPageOnce(userId, page, signal);
+}
+
+function toPayload(allRaw: AllstarClipRaw[], partial: boolean): AllstarCachePayload {
+  const seen = new Set<string>();
+  const clips = allRaw
+    .map(mapClip)
+    .filter((clip) => {
+      if (!clip.id || seen.has(clip.id)) return false;
+      seen.add(clip.id);
+      return true;
+    })
     .sort((a, b) => b.createdTimestamp - a.createdTimestamp);
 
   return {
     clips,
     fetchedAt: new Date().toISOString(),
+    partial,
   };
 }
 
-async function persistCache(payload: AllstarCachePayload): Promise<void> {
-  writeMemoryCache(payload);
-  const redis = getRedis();
-  if (!redis) return;
-  try {
-    await redis.set(CACHE_KEY, payload, { ex: CACHE_TTL_SECONDS });
-  } catch {
-    // non-fatal
+/**
+ * Walk Allstar pages in small parallel batches until empty, page cap, or time budget.
+ * Partial results beat a hard timeout / empty 500 on Vercel.
+ */
+async function fetchAllstarClipsLive(
+  budgetMs = LIVE_BUDGET_MS
+): Promise<AllstarCachePayload> {
+  const userId = process.env.ALLSTAR_USER_ID;
+  if (!userId) throw new Error('ALLSTAR_USER_ID not configured');
+
+  const started = Date.now();
+  const allRaw: AllstarClipRaw[] = [];
+  let page = 1;
+  let hitEnd = false;
+  let timedOut = false;
+  let flakyEmpty = false;
+
+  while (page <= MAX_PAGES && !hitEnd) {
+    const remaining = budgetMs - (Date.now() - started);
+    if (remaining < 500) {
+      timedOut = true;
+      break;
+    }
+
+    const batchPages = Array.from(
+      { length: Math.min(PARALLEL, MAX_PAGES - page + 1) },
+      (_, i) => page + i
+    );
+
+    const controller = new AbortController();
+    const batchTimeout = setTimeout(() => controller.abort(), Math.max(0, remaining));
+
+    let batchResults: (AllstarClipRaw[] | null)[];
+    try {
+      batchResults = await Promise.all(
+        batchPages.map((p) => fetchPage(userId, p, controller.signal))
+      );
+    } catch {
+      timedOut = true;
+      clearTimeout(batchTimeout);
+      break;
+    }
+    clearTimeout(batchTimeout);
+
+    let advanced = 0;
+    for (const pageClips of batchResults) {
+      // null = request failure / abort — stop and treat as partial, don't claim EOF
+      if (pageClips === null) {
+        flakyEmpty = true;
+        break;
+      }
+      if (pageClips.length === 0) {
+        hitEnd = true;
+        break;
+      }
+      allRaw.push(...pageClips);
+      advanced += 1;
+      if (pageClips.length < PAGE_SIZE) {
+        hitEnd = true;
+        break;
+      }
+    }
+
+    if (flakyEmpty) {
+      timedOut = true;
+      break;
+    }
+
+    page += advanced > 0 ? advanced : batchPages.length;
+    if (advanced === 0) break;
   }
+
+  return toPayload(allRaw, timedOut || flakyEmpty || !hitEnd);
 }
 
 async function readRedisCache(): Promise<AllstarCachePayload | null> {
@@ -160,16 +278,63 @@ async function readRedisCache(): Promise<AllstarCachePayload | null> {
   return null;
 }
 
-function refreshInBackground(): void {
-  if (refreshInFlight) return;
-  refreshInFlight = fetchAllstarClipsLive()
-    .then(async payload => {
-      await persistCache(payload);
-      return payload;
-    })
-    .finally(() => {
-      refreshInFlight = null;
-    });
+/**
+ * Persist only if the new payload is a meaningful upgrade.
+ * Never shrink a larger warm cache with a flaky smaller fetch.
+ */
+async function persistCache(payload: AllstarCachePayload): Promise<void> {
+  const existing = readMemoryCache();
+  if (
+    existing &&
+    payload.clips.length < existing.clips.length &&
+    (payload.partial || payload.clips.length < existing.clips.length * 0.9)
+  ) {
+    writeMemoryCache({ ...existing, partial: true });
+    return;
+  }
+
+  writeMemoryCache(payload);
+  const redis = getRedis();
+  if (!redis) return;
+  try {
+    const remote = await redis.get<AllstarCachePayload>(CACHE_KEY);
+    if (
+      remote?.clips?.length &&
+      payload.clips.length < remote.clips.length &&
+      (payload.partial || payload.clips.length < remote.clips.length * 0.9)
+    ) {
+      return;
+    }
+    await redis.set(CACHE_KEY, payload, { ex: CACHE_TTL_SECONDS });
+  } catch {
+    // non-fatal
+  }
+}
+
+async function runLiveFetchAndPersist(budgetMs?: number): Promise<AllstarCachePayload> {
+  const payload = await fetchAllstarClipsLive(budgetMs);
+  const existing = readMemoryCache() ?? (await readRedisCache());
+
+  if (
+    existing &&
+    payload.clips.length < existing.clips.length &&
+    (payload.partial || payload.clips.length < existing.clips.length * 0.9)
+  ) {
+    // Keep serving the richer set; mark stale so a later pass can finish.
+    writeMemoryCache({ ...existing, partial: true });
+    return existing;
+  }
+
+  await persistCache(payload);
+  return payload;
+}
+
+function startRefresh(budgetMs?: number): Promise<AllstarCachePayload> {
+  if (refreshInFlight) return refreshInFlight;
+  refreshInFlight = runLiveFetchAndPersist(budgetMs).finally(() => {
+    refreshInFlight = null;
+  });
+  return refreshInFlight;
 }
 
 export async function loadAllstarClips(forceRefresh = false): Promise<AllstarCachePayload> {
@@ -183,25 +348,19 @@ export async function loadAllstarClips(forceRefresh = false): Promise<AllstarCac
     return stale;
   }
 
+  // Stale-but-usable: return immediately and refresh in the background.
   if (stale?.clips.length && !forceRefresh) {
-    refreshInBackground();
+    void startRefresh(FULL_BUDGET_MS);
     return stale;
   }
 
-  if (refreshInFlight) {
-    return refreshInFlight;
-  }
-
-  refreshInFlight = fetchAllstarClipsLive()
-    .then(async payload => {
-      await persistCache(payload);
-      return payload;
-    })
-    .finally(() => {
-      refreshInFlight = null;
-    });
-
-  return refreshInFlight;
+  // Cold path — wait for a budgeted live fetch so the client gets something.
+  return startRefresh(LIVE_BUDGET_MS);
 }
 
-export { CACHE_TTL_SECONDS };
+/** Longer budget for background / after() continuation. */
+export async function refreshAllstarClipsFull(): Promise<AllstarCachePayload> {
+  return startRefresh(FULL_BUDGET_MS);
+}
+
+export { CACHE_TTL_SECONDS, FRESH_SECONDS };
