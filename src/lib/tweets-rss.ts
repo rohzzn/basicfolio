@@ -235,6 +235,7 @@ export async function fetchTweets(): Promise<TweetsFetchResult> {
     const htmlResponse = await fetch(profileUrl, {
       next: { revalidate: 60 },
       headers: { Accept: 'text/html' },
+      signal: AbortSignal.timeout(8000),
     });
 
     if (htmlResponse.ok) {
@@ -250,6 +251,7 @@ export async function fetchTweets(): Promise<TweetsFetchResult> {
     const rssResponse = await fetch(rssUrl, {
       next: { revalidate: 60 },
       headers: { Accept: 'application/rss+xml, application/xml, text/xml' },
+      signal: AbortSignal.timeout(8000),
     });
 
     if (rssResponse.ok) {

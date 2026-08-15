@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { fetchTweets } from '@/lib/tweets-rss';
 
-export const revalidate = 60;
+// Force-dynamic keeps this off the prerender path at build time — the route
+// has no request-scoped API to trigger that automatically, and the upstream
+// Nitter bridge being unreachable during a build hung the build itself.
+// Cache-Control headers below already handle CDN-level caching.
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const { tweets, error } = await fetchTweets();
