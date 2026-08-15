@@ -333,10 +333,8 @@ html.e-reader-mode pre {
 }
 
 /* Handwritten text style */
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&display=swap');
-
 .handwritten-text {
-  font-family: 'Caveat', cursive;
+  font-family: var(--font-caveat), cursive;
   font-size: 1.1rem;
   font-weight: 500;
   transform: rotate(-2deg);

@@ -1,15 +1,20 @@
 "use client";
 import React, { useState, useEffect, useRef, memo, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { Menu, X, Gamepad, Music, Loader2, Focus, VolumeX } from "lucide-react";
 import Link from "next/link";
 import Image from "@/components/SiteImage";
 import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/SpotifyPreviewContext';
-import CommandPalette from './CommandPalette';
-import CursorSound from './CursorSound';
-import EReaderEasterEgg from "./EReaderEasterEgg";
 import WeatherToggle from './weather/WeatherToggle';
+
+// These are all opt-in extras (keyboard-shortcut palette, click sound, konami
+// easter egg) that render nothing visible on first paint — load them after
+// hydration instead of bundling them into every page's initial JS.
+const CommandPalette = dynamic(() => import('./CommandPalette'), { ssr: false });
+const CursorSound = dynamic(() => import('./CursorSound'), { ssr: false });
+const EReaderEasterEgg = dynamic(() => import('./EReaderEasterEgg'), { ssr: false });
 
 interface NavLinkProps {
   href: string;
@@ -351,16 +356,13 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
     return () => clearInterval(interval);
   }, [discordId]);
 
-  // Background music setup
+  // Background music setup. preload stays 'none' so the browser doesn't fetch
+  // the mp3 until the user actually presses play — otherwise every page load
+  // site-wide pulls the full track for a control almost nobody uses.
   useEffect(() => {
     try {
       // Create audio element
       const audio = new Audio('/lofi-background.mp3');
-      
-      // Add event listeners
-      audio.addEventListener('loadeddata', () => {
-        setAudioLoaded(true);
-      });
 
       audio.addEventListener('error', () => {
         console.error('Audio failed to load');
@@ -369,9 +371,10 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
       // Configure audio
       audio.loop = true;
       audio.volume = 0.7;
-      audio.preload = 'auto';
+      audio.preload = 'none';
 
       audioRef.current = audio;
+      setAudioLoaded(true);
 
       return () => {
         if (audioRef.current) {

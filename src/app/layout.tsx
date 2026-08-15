@@ -1,7 +1,15 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
+import { Caveat } from "next/font/google";
 import "./globals.css";
 import MultiPagePortfolio from '../components/multi-page-portfolio';
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-caveat",
+  display: "swap",
+});
 export const metadata: Metadata = {
   title: "Rohan",
   description: 'Software Engineer, Designer, and CS student. Building digital experiences and exploring the future of technology through code and creativity.',
@@ -70,7 +78,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={caveat.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
