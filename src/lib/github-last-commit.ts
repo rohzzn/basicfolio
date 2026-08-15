@@ -23,40 +23,44 @@ function githubHeaders(): HeadersInit {
 export async function fetchLastCommit(): Promise<LastCommit | null> {
   const headers = githubHeaders();
 
-  const listRes = await fetch(
-    `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?per_page=1`,
-    { headers, next: { revalidate: 300 } }
-  );
+  try {
+    const listRes = await fetch(
+      `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?per_page=1`,
+      { headers, next: { revalidate: 300 }, signal: AbortSignal.timeout(8000) }
+    );
 
-  if (!listRes.ok) return null;
+    if (!listRes.ok) return null;
 
-  const commits = (await listRes.json()) as Array<{ sha?: string }>;
-  const sha = commits[0]?.sha;
-  if (!sha) return null;
+    const commits = (await listRes.json()) as Array<{ sha?: string }>;
+    const sha = commits[0]?.sha;
+    if (!sha) return null;
 
-  const detailRes = await fetch(
-    `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits/${sha}`,
-    { headers, next: { revalidate: 300 } }
-  );
+    const detailRes = await fetch(
+      `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits/${sha}`,
+      { headers, next: { revalidate: 300 }, signal: AbortSignal.timeout(8000) }
+    );
 
-  if (!detailRes.ok) return null;
+    if (!detailRes.ok) return null;
 
-  const detail = (await detailRes.json()) as {
-    sha: string;
-    html_url: string;
-    commit: { message: string; author?: { date?: string } };
-    stats?: { additions?: number; deletions?: number };
-  };
+    const detail = (await detailRes.json()) as {
+      sha: string;
+      html_url: string;
+      commit: { message: string; author?: { date?: string } };
+      stats?: { additions?: number; deletions?: number };
+    };
 
-  const message = detail.commit.message.split('\n')[0]?.trim() || 'Commit';
+    const message = detail.commit.message.split('\n')[0]?.trim() || 'Commit';
 
-  return {
-    sha: detail.sha,
-    shortSha: detail.sha.slice(0, 7),
-    url: detail.html_url,
-    message,
-    date: detail.commit.author?.date ?? new Date().toISOString(),
-    additions: detail.stats?.additions ?? 0,
-    deletions: detail.stats?.deletions ?? 0,
-  };
+    return {
+      sha: detail.sha,
+      shortSha: detail.sha.slice(0, 7),
+      url: detail.html_url,
+      message,
+      date: detail.commit.author?.date ?? new Date().toISOString(),
+      additions: detail.stats?.additions ?? 0,
+      deletions: detail.stats?.deletions ?? 0,
+    };
+  } catch {
+    return null;
+  }
 }

@@ -31,8 +31,8 @@
     "next-auth": "^4.24.11",
     "prisma": "^6.1.0",
     "react": "^19.0.0",
+    "react-activity-calendar": "^2.7.15",
     "react-dom": "^19.0.0",
-    "react-github-calendar": "^4.5.11",
     "react-icons": "^5.4.0",
     "tailwind-merge": "^3.6.0"
   },

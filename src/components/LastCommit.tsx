@@ -25,44 +25,33 @@ function formatRelativeTime(date: Date): string {
   return rtf.format(-Math.round(days / 365), 'year');
 }
 
-export default function LastCommit() {
-  const [commit, setCommit] = useState<LastCommit | null>(null);
-  const [relativeTime, setRelativeTime] = useState<string | null>(null);
+export default function LastCommit({ initialCommit }: { initialCommit: LastCommit | null }) {
+  const [relativeTime, setRelativeTime] = useState<string | null>(() =>
+    initialCommit ? formatRelativeTime(new Date(initialCommit.date)) : null
+  );
 
   useEffect(() => {
-    fetch('/api/github/last-commit')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data: LastCommit | null) => {
-        if (data?.shortSha) setCommit(data);
-      })
-      .catch(() => {
-        // Hide quietly if GitHub is unavailable
-      });
-  }, []);
+    if (!initialCommit?.date) return;
 
-  useEffect(() => {
-    if (!commit?.date) return;
-
-    const tick = () => setRelativeTime(formatRelativeTime(new Date(commit.date)));
-    tick();
+    const tick = () => setRelativeTime(formatRelativeTime(new Date(initialCommit.date)));
     const id = window.setInterval(tick, 60_000);
     return () => window.clearInterval(id);
-  }, [commit?.date]);
+  }, [initialCommit?.date]);
 
-  if (!commit) return null;
+  if (!initialCommit) return null;
 
   return (
     <p className="mb-10 flex flex-wrap items-center gap-x-1.5 gap-y-1 font-mono text-xs leading-relaxed text-zinc-600 dark:text-neutral-300">
-      <span>{commit.shortSha}</span>
+      <span>{initialCommit.shortSha}</span>
       <span aria-hidden className="text-zinc-300 dark:text-neutral-500">
         ·
       </span>
       <span className="tabular-nums">
         <span className="text-red-500/90 dark:text-red-400/90">
-          −{commit.deletions.toLocaleString()}
+          −{initialCommit.deletions.toLocaleString()}
         </span>{' '}
         <span className="text-emerald-600 dark:text-emerald-400">
-          +{commit.additions.toLocaleString()}
+          +{initialCommit.additions.toLocaleString()}
         </span>
       </span>
       <span aria-hidden className="text-zinc-300 dark:text-neutral-500">
