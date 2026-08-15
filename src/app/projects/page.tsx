@@ -7,7 +7,6 @@ import { projects, type Project } from "@/data/projects";
 type CategoryFilter = Project["category"] | "all";
 
 const categories: { id: CategoryFilter; label: string }[] = [
-  { id: "all", label: "all" },
   { id: "application", label: "apps" },
   { id: "web", label: "web" },
   { id: "game", label: "games" },
@@ -42,7 +41,7 @@ function ProjectRow({ project }: { project: Project }) {
 }
 
 export default function ProjectsPage() {
-  const [activeTab, setActiveTab] = useState<CategoryFilter>("all");
+  const [activeTab, setActiveTab] = useState<CategoryFilter>(categories[0].id);
 
   const filtered = useMemo(() => {
     const list =
