@@ -246,14 +246,12 @@ const Stack = () => {
         {/* Resume Footer */}
         <div className="p-4 pt-3 border-t border-zinc-200 dark:border-neutral-800 bg-zinc-50 dark:bg-neutral-800/30">
           <div className="flex justify-center gap-8">
-            <a
-              href="https://drive.google.com/file/d/1rVCn-bsEeeL8y_M0zpFmdNECoX3uEI3X/view"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-neutral-300 hover:text-zinc-900 dark:hover:text-paper bg-white dark:bg-neutral-800 border border-zinc-200 dark:border-neutral-700 rounded-md hover:bg-zinc-50 dark:hover:bg-neutral-700 transition-colors"
+            <span
+              aria-disabled="true"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-400 dark:text-neutral-500 bg-white dark:bg-neutral-800 border border-zinc-200 dark:border-neutral-700 rounded-md cursor-not-allowed"
             >
-              Download PDF
-            </a>
+              Download PDF (Coming Soon)
+            </span>
             <a
               href="mailto:hi@rohanpothuru.com"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-zinc-900 dark:bg-paper dark:text-neutral-900 rounded-md hover:bg-zinc-800 dark:hover:bg-neutral-100 transition-colors"
