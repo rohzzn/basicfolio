@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Github } from "lucide-react";
 import type { Project } from "@/data/projects";
-import ProjectWidget from "./project-demos/ProjectWidget";
+import { getDetailWidget } from "../previews/detail";
 
 function projectMeta(project: Project): string | null {
   const { metrics } = project;
@@ -96,17 +96,28 @@ function StoryBlock({ text }: { text: string }) {
   );
 }
 
+const CATEGORY_LABEL: Record<Project["category"], string> = {
+  application: "App",
+  web: "Web",
+  game: "Game",
+  other: "Other",
+};
+
 export default function ProjectDetail({ project: p }: { project: Project }) {
   const meta = projectMeta(p);
   const techLine = p.tech.length > 0 ? p.tech.join(" · ") : null;
   const story = p.longDescription?.trim();
   const showStory = Boolean(story && story !== p.description.trim());
+  const Widget = getDetailWidget(p.slug);
 
   return (
     <article className="pb-12">
       <div className="max-w-prose">
         <header>
-          <h1 className="text-lg font-medium dark:text-paper">{p.title}</h1>
+          <div className="text-xs text-zinc-400 dark:text-neutral-500">
+            <span>{CATEGORY_LABEL[p.category]}</span>
+          </div>
+          <h1 className="mt-1 text-lg font-medium dark:text-paper">{p.title}</h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">{p.description}</p>
           {techLine || meta ? (
             <p className="mt-3 text-xs text-zinc-400 dark:text-neutral-400">
@@ -115,13 +126,19 @@ export default function ProjectDetail({ project: p }: { project: Project }) {
           ) : null}
           <LinksSection links={p.links} />
         </header>
-
-        {showStory ? <StoryBlock text={story!} /> : null}
       </div>
 
-      <div className="mt-8 max-w-4xl">
-        <ProjectWidget project={p} />
-      </div>
+      {Widget ? (
+        <div className="relative mt-8 max-w-3xl overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 dark:border-neutral-800 dark:bg-neutral-900" style={{ height: 320 }}>
+          <Widget />
+        </div>
+      ) : null}
+
+      {showStory ? (
+        <div className="max-w-prose">
+          <StoryBlock text={story!} />
+        </div>
+      ) : null}
 
       <Link
         href="/projects"

@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
+import PreviewCard from "./previews/PreviewCard";
+import { getPreview } from "./previews";
 import { projects, type Project } from "@/data/projects";
 
 type CategoryFilter = Project["category"] | "all";
@@ -21,21 +23,27 @@ function sortByLatest(list: Project[]): Project[] {
   });
 }
 
-function ProjectRow({ project }: { project: Project }) {
+function ProjectCard({ project }: { project: Project }) {
+  const Preview = getPreview(project.slug);
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group block border-b border-zinc-100 py-3 last:border-0 dark:border-neutral-800/60 sm:py-2.5"
+      className="group block overflow-hidden rounded-lg border border-zinc-200 transition-colors hover:border-zinc-300 dark:border-neutral-800 dark:hover:border-neutral-700"
     >
-      <div className="flex items-baseline justify-between gap-4">
-        <span className="text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">
-          {project.title}
-        </span>
-        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-neutral-400">
-          {project.description}
-        </span>
+      <PreviewCard>{Preview ? <Preview /> : null}</PreviewCard>
+      <div className="border-t border-zinc-100 p-3 dark:border-neutral-800/60">
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="truncate text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">
+            {project.title}
+          </span>
+          {project.year ? (
+            <span className="shrink-0 text-[10px] tabular-nums text-zinc-400 dark:text-neutral-500">
+              {project.year}
+            </span>
+          ) : null}
+        </div>
+        <p className="mt-0.5 truncate text-xs text-zinc-400 dark:text-neutral-400">{project.description}</p>
       </div>
-      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-neutral-400">{project.description}</p>
     </Link>
   );
 }
@@ -52,7 +60,7 @@ export default function ProjectsPage() {
   }, [activeTab]);
 
   return (
-    <div style={{ maxWidth: "75ch" }}>
+    <div className="max-w-5xl">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-medium dark:text-paper">Projects</h2>
         <div className="flex flex-wrap gap-x-4 gap-y-2" role="tablist" aria-label="Project categories">
@@ -75,9 +83,9 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      <div>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {filtered.map((project) => (
-          <ProjectRow key={project.slug} project={project} />
+          <ProjectCard key={project.slug} project={project} />
         ))}
       </div>
 
