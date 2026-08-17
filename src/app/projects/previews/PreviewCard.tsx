@@ -25,12 +25,12 @@ export default function PreviewCard({ children }: { children: React.ReactNode })
   return (
     <div
       ref={containerRef}
-      className="relative aspect-[4/3] overflow-hidden bg-zinc-50"
+      className="relative aspect-[4/3] overflow-hidden bg-zinc-50 dark:bg-neutral-900"
     >
       {visible ? (
         <div className="pointer-events-none absolute inset-0">{children}</div>
       ) : (
-        <div className="absolute inset-0 animate-pulse bg-zinc-100" aria-hidden />
+        <div className="absolute inset-0 animate-pulse bg-zinc-100 dark:bg-neutral-800/40" aria-hidden />
       )}
     </div>
   );
