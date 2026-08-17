@@ -15,6 +15,52 @@ const OFFENSIVE_WORDS = [
   // Add more words as needed
 ];
 
+// Common leetspeak / lookalike substitutions, used only to widen matches
+// against the small OFFENSIVE_WORDS list above (not applied to general text,
+// so it can't cause collateral false positives elsewhere).
+const LEET_VARIANTS: Record<string, string> = {
+  a: 'a4@',
+  e: 'e3',
+  g: 'g9',
+  i: 'i1l!',
+  l: 'l1i!',
+  o: 'o0',
+  s: 's5$',
+  t: 't7+',
+};
+
+function leetLetterClass(ch: string): string {
+  const variants = LEET_VARIANTS[ch];
+  // `+` also absorbs elongation, e.g. "sluuut" or "niggggger".
+  return variants ? `[${variants}]+` : `${ch}+`;
+}
+
+/**
+ * Build a regex matching a blocked word even when broken up by punctuation
+ * or whitespace ("s.l.u.t", "s l u t") or leetspeak-substituted ("s1ut",
+ * "wh0re"). Still anchored on both sides to a non-alphanumeric boundary, so
+ * it only fires on the literal letter sequence in order — it can't match
+ * across an unrelated word (e.g. "insult" or "assault" never trip "slut").
+ */
+function buildOffensiveWordPattern(word: string): string {
+  const letters = word.toLowerCase().replace(/[^a-z0-9]/g, '').split('');
+  const body = letters.map(leetLetterClass).join('[\\W_]*');
+  return `(?<![a-z0-9])${body}(?![a-z0-9])`;
+}
+
+const OFFENSIVE_TEST_PATTERNS = OFFENSIVE_WORDS.map(
+  (word) => new RegExp(buildOffensiveWordPattern(word), 'i')
+);
+const OFFENSIVE_REPLACE_PATTERNS = OFFENSIVE_WORDS.map(
+  (word) => new RegExp(buildOffensiveWordPattern(word), 'gi')
+);
+
+// Strip invisible/zero-width characters sometimes used to split up a
+// blocked word ("s<ZWSP>lut") before matching.
+function stripInvisible(text: string): string {
+  return text.replace(/[\u200B-\u200F\u2060\uFEFF]/g, '');
+}
+
 // Regex patterns for common spam patterns
 const SPAM_PATTERNS = [
   /\b(viagra|cialis|pharmacy|prescription|meds|pills)\b/i,
@@ -32,25 +78,22 @@ const SPAM_PATTERNS = [
  * Check if text contains offensive content
  */
 export function containsOffensiveContent(text: string): boolean {
-  // Convert to lowercase for case-insensitive matching
-  const lowerText = text.toLowerCase();
-  
-  // Check for offensive words
-  for (const word of OFFENSIVE_WORDS) {
-    // Use word boundary to match whole words only
-    const regex = new RegExp(`\\b${word}\\b`, 'i');
-    if (regex.test(lowerText)) {
+  const normalized = stripInvisible(text);
+
+  // Check for offensive words (spacing/leetspeak/elongation resistant)
+  for (const pattern of OFFENSIVE_TEST_PATTERNS) {
+    if (pattern.test(normalized)) {
       return true;
     }
   }
-  
+
   // Check for spam patterns
   for (const pattern of SPAM_PATTERNS) {
     if (pattern.test(text)) {
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -98,14 +141,14 @@ export function checkRateLimit(rawIp: string): boolean {
  * Clean text by replacing offensive words with asterisks
  */
 export function cleanText(text: string): string {
-  let cleanedText = text;
-  
-  // Replace offensive words with asterisks
-  for (const word of OFFENSIVE_WORDS) {
-    const regex = new RegExp(`\\b${word}\\b`, 'gi');
-    cleanedText = cleanedText.replace(regex, '*'.repeat(word.length));
+  let cleanedText = stripInvisible(text);
+
+  // Replace offensive words with asterisks (same evasion-resistant match
+  // as containsOffensiveContent, so cleaning and detection stay in sync)
+  for (const pattern of OFFENSIVE_REPLACE_PATTERNS) {
+    cleanedText = cleanedText.replace(pattern, (match) => '*'.repeat(match.length));
   }
-  
+
   return cleanedText;
 }
 
