@@ -252,7 +252,8 @@ function matchesFilter(clip: UnifiedClip, id: string): boolean {
 }
 
 function fmtDur(sec: number) {
-  return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+  const total = Math.round(sec);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
 }
 
 function allstarToUnified(clip: AllstarClipRaw): UnifiedClip {
