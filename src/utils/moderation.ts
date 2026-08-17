@@ -20,7 +20,12 @@ const SPAM_PATTERNS = [
   /\b(viagra|cialis|pharmacy|prescription|meds|pills)\b/i,
   /\b(casino|gambling|betting|lottery|jackpot)\b/i,
   /\b(free\s+money|earn\s+money|make\s+money|cash\s+app)\b/i,
-  /https?:\/\/(?!github\.com|twitter\.com|linkedin\.com)[^\s]+/gi, // Links except to common platforms
+  // Links except to common platforms. No `g` flag: `.test()` on a global
+  // regex mutates lastIndex across calls, which made this pattern miss
+  // matches nondeterministically since it's reused across requests.
+  // The domain boundary (`/|?|#|$`) stops lookalikes like
+  // github.com.evil.com from slipping through as "excluded".
+  /https?:\/\/(?!(?:www\.)?(?:github\.com|twitter\.com|linkedin\.com)(?:[/?#]|$))[^\s]+/i,
 ];
 
 /**
@@ -56,20 +61,37 @@ const ipSubmissions: Map<string, number[]> = new Map();
 const MAX_SUBMISSIONS_PER_HOUR = 5;
 const SUBMISSION_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 
-export function checkRateLimit(ip: string): boolean {
+// Periodically drop IPs with no submissions left in the window, so a
+// long-running server doesn't accumulate one entry per visitor forever.
+function pruneStaleIps(now: number): void {
+  for (const [key, times] of ipSubmissions) {
+    if (times[times.length - 1] === undefined || now - times[times.length - 1] >= SUBMISSION_WINDOW_MS) {
+      ipSubmissions.delete(key);
+    }
+  }
+}
+
+export function checkRateLimit(rawIp: string): boolean {
+  // x-forwarded-for can be a "client, proxy1, proxy2" chain; key on the client.
+  const ip = rawIp.split(',')[0].trim() || 'unknown';
   const now = Date.now();
-  
+
+  if (Math.random() < 0.01) pruneStaleIps(now);
+
   // Get previous submissions or initialize empty array
   const submissions = ipSubmissions.get(ip) || [];
-  
+
   // Filter out submissions older than the window
   const recentSubmissions = submissions.filter(time => now - time < SUBMISSION_WINDOW_MS);
-  
-  // Update the submissions list
-  ipSubmissions.set(ip, [...recentSubmissions, now]);
-  
+
+  const allowed = recentSubmissions.length < MAX_SUBMISSIONS_PER_HOUR;
+
+  // Cap stored history at the limit so a burst of rejected retries can't
+  // grow this IP's array without bound within the window.
+  ipSubmissions.set(ip, [...recentSubmissions, now].slice(-MAX_SUBMISSIONS_PER_HOUR));
+
   // Check if user has exceeded rate limit
-  return recentSubmissions.length < MAX_SUBMISSIONS_PER_HOUR;
+  return allowed;
 }
 
 /**
