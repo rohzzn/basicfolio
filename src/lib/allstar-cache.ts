@@ -83,34 +83,48 @@ function isFresh(payload: AllstarCachePayload): boolean {
   return Date.now() - new Date(payload.fetchedAt).getTime() < CACHE_TTL_SECONDS * 1000;
 }
 
+async function fetchAllstarPage(userId: string, page: number): Promise<AllstarClipRaw[]> {
+  const res = await fetch('https://a1.allstar.gg/graphql', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ query: CLIPS_QUERY, variables: { user: userId, page } }),
+    cache: 'no-store',
+  });
+  if (!res.ok) return [];
+  const json: AllstarGraphQLResponse = await res.json();
+  return json.data?.videos?.data ?? [];
+}
+
 async function fetchAllstarClipsLive(): Promise<AllstarCachePayload> {
   const userId = process.env.ALLSTAR_USER_ID;
   if (!userId) throw new Error('ALLSTAR_USER_ID not configured');
 
   const allClips: AllstarClipRaw[] = [];
-  let page = 1;
   const PAGE_SIZE = 10;
   const MAX_PAGES = 200;
+  const BATCH_SIZE = 10;
 
-  while (page <= MAX_PAGES) {
-    const res = await fetch('https://a1.allstar.gg/graphql', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: CLIPS_QUERY, variables: { user: userId, page } }),
-      cache: 'no-store',
-    });
+  let nextPage = 1;
+  let done = false;
 
-    if (!res.ok) break;
+  // Fetch pages in concurrent batches instead of one at a time — sequential
+  // pagination over ~60+ pages routinely exceeded Vercel's serverless
+  // function timeout, leaving clips empty in production.
+  while (nextPage <= MAX_PAGES && !done) {
+    const batchPages = Array.from(
+      { length: Math.min(BATCH_SIZE, MAX_PAGES - nextPage + 1) },
+      (_, i) => nextPage + i
+    );
 
-    const json: AllstarGraphQLResponse = await res.json();
-    const pageClips = json.data?.videos?.data ?? [];
+    const results = await Promise.all(batchPages.map(p => fetchAllstarPage(userId, p)));
 
-    if (pageClips.length === 0) break;
+    for (const pageClips of results) {
+      if (pageClips.length === 0) { done = true; break; }
+      allClips.push(...pageClips);
+      if (pageClips.length < PAGE_SIZE) { done = true; break; }
+    }
 
-    allClips.push(...pageClips);
-
-    if (pageClips.length < PAGE_SIZE) break;
-    page++;
+    nextPage += batchPages.length;
   }
 
   const clips = allClips

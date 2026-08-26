@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { loadAllstarClips } from '@/lib/allstar-cache';
 
 export const revalidate = 3600;
+export const maxDuration = 60;
 
 export async function GET() {
   try {
