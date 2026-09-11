@@ -23,14 +23,8 @@ export const metadata: Metadata = {
     description: 'Software Engineer, Designer, and CS student. Building digital experiences and exploring the future of technology through code and creativity.',
     url: 'https://rohan.run',
     siteName: "Rohan's Personal Website",
-    images: [
-      {
-        url: '/og.png',  // Changed to .jpg and added a new optimized image
-        width: 1200,     // Changed to WhatsApp's preferred dimensions
-        height: 630,     // Standard OG image ratio
-        alt: 'Rohan'
-      }
-    ],
+    // Images come from the per-route opengraph-image.tsx files, so every page
+    // gets its own card instead of sharing one static png.
     locale: 'en_US',
     type: 'website',
   },
@@ -39,18 +33,12 @@ export const metadata: Metadata = {
     title: 'Rohan',
     description: 'Software Engineer, Designer, and CS student. Building digital experiences and exploring the future of technology through code and creativity.',
     creator: '@rohzzn',
-    images: ['/og.png'], // Use the same optimized image
   },
   alternates: {
     canonical: 'https://rohan.run',
     types: {
       'application/rss+xml': [{ url: '/feed.xml', title: "Rohan's Writing" }],
     },
-  },
-  other: {
-    'og:image:type': 'image/png',
-    'og:image:width': '1200',
-    'og:image:height': '630',
   },
   robots: {
     index: true,

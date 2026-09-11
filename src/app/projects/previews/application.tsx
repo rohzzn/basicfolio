@@ -3,6 +3,51 @@
 import React, { useEffect, useState } from 'react';
 import { LightFrame, LightWindowBar, lightDot } from './light';
 
+// ── Argus: the audit trail scrolling past, the way it does in the server ──
+
+const ARGUS_TAGS: Record<string, string> = {
+  MESSAGE: 'bg-zinc-100 text-zinc-500 dark:bg-neutral-800 dark:text-neutral-400',
+  ROLES: 'bg-sky-100 text-sky-600 dark:bg-sky-900/40 dark:text-sky-300',
+  AUTOMOD: 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300',
+  WEBHOOK: 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300',
+  CHANNEL: 'bg-violet-100 text-violet-600 dark:bg-violet-900/40 dark:text-violet-300',
+  MEMBER: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300',
+};
+const ARGUS_LOG = [
+  { at: '14:02', tag: 'MESSAGE', text: '@rhys deleted a message in #general' },
+  { at: '14:01', tag: 'ROLES', text: '@mira gained Tier C' },
+  { at: '13:58', tag: 'AUTOMOD', text: 'Blocked an invite link from @newuser' },
+  { at: '13:55', tag: 'WEBHOOK', text: 'github relayed to #releases' },
+  { at: '13:51', tag: 'CHANNEL', text: '#archive-2025 was renamed' },
+  { at: '13:49', tag: 'MEMBER', text: '@theo joined, auto-role applied' },
+];
+export function ArgusPreview() {
+  return (
+    <LightFrame>
+      <div className="flex shrink-0 items-center justify-between border-b border-zinc-100 px-2.5 py-1.5 dark:border-neutral-800">
+        <span className="text-[7px] font-medium uppercase tracking-[0.14em] text-zinc-400 dark:text-neutral-500">The record</span>
+        <span className="flex items-center gap-1">
+          {lightDot('bg-emerald-500', true)}
+          <span className="text-[7px] font-medium uppercase tracking-[0.14em] text-zinc-400 dark:text-neutral-500">Live</span>
+        </span>
+      </div>
+      <div className="relative flex-1 overflow-hidden">
+        <div className="absolute inset-x-0 top-0" style={{ animation: 'argusRecord 15s linear infinite' }}>
+          {[...ARGUS_LOG, ...ARGUS_LOG].map((r, i) => (
+            <div key={i} className="flex items-center gap-1.5 px-2.5 py-[5px]">
+              <span className="shrink-0 font-mono text-[7px] tabular-nums text-zinc-300 dark:text-neutral-600">{r.at}</span>
+              <span className={`shrink-0 rounded px-1 py-px text-[6px] font-medium tracking-wide ${ARGUS_TAGS[r.tag]}`}>{r.tag}</span>
+              <span className="min-w-0 flex-1 truncate text-[7.5px] text-zinc-500 dark:text-neutral-400">{r.text}</span>
+            </div>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-7 bg-gradient-to-t from-white to-transparent dark:from-neutral-950" />
+      </div>
+      <style>{`@keyframes argusRecord { from { transform: translateY(0) } to { transform: translateY(-50%) } }`}</style>
+    </LightFrame>
+  );
+}
+
 // ── World Clock: six live-ticking city keys with day/night tint ──
 
 const WC_CITIES = [

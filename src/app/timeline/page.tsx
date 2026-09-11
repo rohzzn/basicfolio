@@ -588,7 +588,7 @@ export default function TimelinePage() {
       </div>
 
       <div className="mt-6 flex min-w-0 flex-col gap-6 sm:mt-8 sm:gap-8 md:flex-row md:items-start md:gap-10 lg:gap-12">
-        <div className="w-full min-w-0 max-w-3xl shrink-0">
+        <div className="timeline-chart w-full min-w-0 max-w-3xl shrink-0">
           <div className="overflow-x-auto overflow-y-visible overscroll-x-contain rounded-lg border border-zinc-200 bg-zinc-50/50 shadow-sm [-webkit-overflow-scrolling:touch] dark:border-neutral-800 dark:bg-neutral-950/40 sm:rounded-xl">
             <div
               ref={timelineHoverRef}

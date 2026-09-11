@@ -1,11 +1,12 @@
 "use client";
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { cloneElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ActivityCalendar } from 'react-activity-calendar';
 import Image from '@/components/SiteImage';
 import Link from 'next/link';
-import LastCommit from '@/components/LastCommit';
+import NowStrip from '@/components/NowStrip';
 import type { CalendarActivity } from '@/lib/github-calendar';
-import type { LastCommit as LastCommitData } from '@/lib/github-last-commit';
+import { languageColor, languageSwatch, type LanguageCalendar } from '@/lib/github-languages';
+import type { NowData } from '@/lib/now';
 
 const CAL_MARGIN = 3;
 const MAX_BLOCK = 28;
@@ -24,7 +25,15 @@ function nineMonthsOf(data: CalendarActivity[]): CalendarActivity[] {
   return data.filter((day) => new Date(day.date) >= nineMonthsAgo);
 }
 
-function ProseGitHubCalendar({ isDark, data }: { isDark: boolean; data: CalendarActivity[] }) {
+function ProseGitHubCalendar({
+  isDark,
+  data,
+  languages,
+}: {
+  isDark: boolean;
+  data: CalendarActivity[];
+  languages: LanguageCalendar;
+}) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [blockSize, setBlockSize] = useState(10);
@@ -84,24 +93,52 @@ function ProseGitHubCalendar({ isDark, data }: { isDark: boolean; data: Calendar
 
   if (data.length === 0) return null;
 
+  const scheme = isDark ? 'dark' : 'light';
+
   return (
     <div ref={wrapRef} className="mb-3 w-full min-w-0">
-      <ActivityCalendar
-        data={nineMonthsOf(data)}
-        colorScheme={isDark ? 'dark' : 'light'}
-        theme={{
-          light: ['#e4e4e7', '#a1a1aa', '#71717a', '#52525b', '#3f3f46'],
-          dark: ['#262626', '#525252', '#737373', '#d4d4d4', '#F5F1EC'],
-        }}
-        blockSize={blockSize}
-        blockMargin={CAL_MARGIN}
-        fontSize={10}
-        hideColorLegend
-        hideMonthLabels
-        hideTotalCount
-        showWeekdayLabels={false}
-      />
+      <div className="reveal-sweep">
+        <ActivityCalendar
+          data={nineMonthsOf(data)}
+          colorScheme={scheme}
+          theme={{
+            light: ['#e4e4e7', '#a1a1aa', '#71717a', '#52525b', '#3f3f46'],
+            dark: ['#262626', '#525252', '#737373', '#d4d4d4', '#F5F1EC'],
+          }}
+          blockSize={blockSize}
+          blockMargin={CAL_MARGIN}
+          fontSize={10}
+          hideColorLegend
+          hideMonthLabels
+          hideTotalCount
+          showWeekdayLabels={false}
+          renderBlock={(block, activity) => {
+            const fill = languageColor(languages.byDate[activity.date], activity.level, scheme);
+            return fill ? cloneElement(block, { fill }) : block;
+          }}
+        />
+      </div>
+      <LanguageLegend languages={languages.languages} scheme={scheme} />
     </div>
+  );
+}
+
+function LanguageLegend({ languages, scheme }: { languages: string[]; scheme: 'light' | 'dark' }) {
+  if (languages.length === 0) return null;
+
+  return (
+    <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-zinc-400 dark:text-neutral-500">
+      {languages.slice(0, 6).map((language) => (
+        <li key={language} className="flex items-center gap-1.5">
+          <span
+            aria-hidden
+            className="h-2 w-2 rounded-[2px]"
+            style={{ backgroundColor: languageSwatch(language, scheme) }}
+          />
+          {language.toLowerCase()}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -109,10 +146,11 @@ const PROFILE_PNG = '/images/profile/rohan.png';
 
 type AboutClientProps = {
   calendarData: CalendarActivity[];
-  initialCommit: LastCommitData | null;
+  languageCalendar: LanguageCalendar;
+  now: NowData;
 };
 
-const AboutClient: React.FC<AboutClientProps> = ({ calendarData, initialCommit }) => {
+const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalendar, now }) => {
   const [isDark, setIsDark] = React.useState(false);
   const [showImage, setShowImage] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -244,8 +282,10 @@ const AboutClient: React.FC<AboutClientProps> = ({ calendarData, initialCommit }
       </div>
 
       {/* GitHub Contributions */}
-      <ProseGitHubCalendar isDark={isDark} data={calendarData} />
-      <LastCommit initialCommit={initialCommit} />
+      <ProseGitHubCalendar isDark={isDark} data={calendarData} languages={languageCalendar} />
+
+      {/* What is true right now */}
+      <NowStrip data={now} />
 
     </div>
   );

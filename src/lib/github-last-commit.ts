@@ -2,6 +2,7 @@ const REPO_OWNER = 'rohzzn';
 const REPO_NAME = 'basicfolio';
 
 export type LastCommit = {
+  repo: string;
   sha: string;
   shortSha: string;
   url: string;
@@ -52,6 +53,7 @@ export async function fetchLastCommit(): Promise<LastCommit | null> {
     const message = detail.commit.message.split('\n')[0]?.trim() || 'Commit';
 
     return {
+      repo: REPO_NAME,
       sha: detail.sha,
       shortSha: detail.sha.slice(0, 7),
       url: detail.html_url,

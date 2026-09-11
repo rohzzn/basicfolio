@@ -24,6 +24,26 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'argus',
+    year: 2026,
+    title: 'Argus',
+    description: 'Discord bot with everything written down',
+    tech: ['TypeScript', 'Discord.js', 'Node.js', 'Lavalink', 'Next.js', 'Express'],
+    category: 'application',
+    links: [
+      { label: 'Live', url: 'https://argus.xin' },
+      {
+        label: 'Invite',
+        url: 'https://discord.com/oauth2/authorize?client_id=1518803529869951046&permissions=1374711573686&scope=bot+applications.commands+identify+guilds',
+      },
+    ],
+    metrics: { users: 1050 },
+    image: '/projects/argus.svg',
+    packageType: 'discord',
+    longDescription:
+      "Every Discord bot I have run wanted a different slash command for every setting, and none of them could tell me what had actually happened in the server last night. Argus is the answer to both: eighty-three commands, all of them configurable from one dashboard page, and an audit trail that records edits, deletions, joins, role changes, channel renames and moderation actions in seven separately switchable categories.\n\nThe moderation side leans on Discord's own AutoMod rule engine, so the rules keep holding even when the bot is offline, and every violation feeds a strike pool with points that decay — three points is a warning and a DM, six is an hour of timeout, ten swaps the member role for the muted one, fifteen is a ban with the last day of messages removed. Levels count message and voice XP apart on a curve that gets steeper each time, and the rank cards, welcome cards, leaderboards and music panel are all drawn server-side in a palette each server picks.\n\nAround that sit a permanent Lavalink player that lives in one message it edits forever, an economy with blackjack, roulette, plinko, poker and a crash channel you bet in by typing a number, RSS, YouTube, Twitch, AniList and Steam feeds, inbound webhooks so anything that can POST lands in Discord formatted, and audiobooks — drop an EPUB and it reads aloud while everyone keeps their own place. Free, with every feature, currently watching about a thousand members across fourteen servers.",
+  },
+  {
     slug: 'world-clock',
     year: 2026,
     title: 'World Clock',

@@ -3,6 +3,284 @@
 import React, { useEffect, useState } from 'react';
 import { Frame, WindowBar, dot } from '../shared';
 
+// ── Argus: four of the bot's systems, working — levels, strikes, AutoMod, webhooks ──
+
+const ARGUS_TABS = ['Levels', 'Strikes', 'AutoMod', 'Webhook'] as const;
+type ArgusTab = (typeof ARGUS_TABS)[number];
+
+// Clearing level L costs 5L² + 50L + 100 XP — the curve the bot really uses.
+const argusNeed = (level: number) => 5 * level * level + 50 * level + 100;
+function argusTrack(total: number) {
+  let level = 0;
+  let into = total;
+  while (into >= argusNeed(level)) {
+    into -= argusNeed(level);
+    level += 1;
+  }
+  return { level, into, need: argusNeed(level) };
+}
+const ARGUS_TIERS = [
+  { at: 45, name: 'Tier C' }, { at: 30, name: 'Tier D' }, { at: 20, name: 'Tier E' },
+  { at: 10, name: 'Tier F' }, { at: 5, name: 'Tier G' }, { at: 0, name: 'No tier' },
+];
+const argusTier = (level: number) => ARGUS_TIERS.find((t) => level >= t.at)!.name;
+
+const ARGUS_RUNGS = [
+  { at: 3, label: 'Warning', does: 'Argus DMs them the reason and opens a case.' },
+  { at: 6, label: 'Timeout', does: 'One hour of timeout, and the staff channel is told.' },
+  { at: 10, label: 'Muted role', does: 'Adds the muted role, takes the member role away.' },
+  { at: 15, label: 'Ban', does: 'Banned, with the last day of messages removed.' },
+];
+const ARGUS_REASONS = [
+  { label: 'Spam', pts: 1 }, { label: 'Rudeness', pts: 2 },
+  { label: 'Slurs', pts: 5 }, { label: 'Raiding', pts: 8 },
+];
+
+const ARGUS_SAMPLES = ['join discord.gg/example', 'AAAAAAAAAAAA', 'WHY IS NOBODY ANSWERING', 'hey, has anyone seen the patch notes?'];
+function argusAutomod(text: string) {
+  const t = text.trim();
+  if (/discord\.(gg|com\/invite)\//i.test(t))
+    return { verdict: 'Blocked', rule: 'invite link', why: 'Deleted, and a strike charged to the spam pool.', tone: 'bad' };
+  if (/@(everyone|here)\b/i.test(t))
+    return { verdict: 'Blocked', rule: 'mention spam', why: 'Deleted before it pings anyone, and a point charged.', tone: 'bad' };
+  const letters = t.replace(/[^a-z]/gi, '');
+  if (letters.length >= 8 && letters === letters.toUpperCase())
+    return { verdict: 'Flagged', rule: 'shouting', why: 'Not deleted. Repeated often enough, it earns a point.', tone: 'warn' };
+  if (/(.)\1{5,}/.test(t))
+    return { verdict: 'Flagged', rule: 'repeated characters', why: 'Not deleted. Repeated often enough, it earns a point.', tone: 'warn' };
+  return { verdict: 'Allowed', rule: null, why: 'Nothing here matches a rule. It posts as normal.', tone: 'good' };
+}
+const ARGUS_TONE: Record<string, string> = {
+  bad: 'text-red-600 dark:text-red-400',
+  warn: 'text-amber-600 dark:text-amber-400',
+  good: 'text-emerald-600 dark:text-emerald-400',
+};
+
+const ARGUS_SENDERS = [
+  { name: 'GitHub', body: { title: 'v2.4.0 released', text: 'Adds the strike ladder.', url: 'https://example.com/v2.4.0' } },
+  { name: 'Grafana', body: { title: 'Disk 91% full', text: 'web-02, /var/lib', level: 'warning' } },
+  { name: 'Your own script', body: { title: 'New order #8812', text: '2 items, 48.00' } },
+];
+
+function ArgusBar({ label, track, accent }: { label: string; track: ReturnType<typeof argusTrack>; accent: string }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className="w-12 shrink-0 text-[10px] text-zinc-400 dark:text-neutral-500">{label}</span>
+      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-neutral-800">
+        <div className={`h-full rounded-full transition-[width] duration-300 ${accent}`} style={{ width: `${Math.round((track.into / track.need) * 100)}%` }} />
+      </div>
+      <span className="w-20 shrink-0 text-right font-mono text-[10px] tabular-nums text-zinc-400 dark:text-neutral-500">{track.into} / {track.need}</span>
+      <span className="w-9 shrink-0 text-right text-[10px] font-medium text-zinc-500 dark:text-neutral-400">Lv {track.level}</span>
+    </div>
+  );
+}
+
+export function ArgusDetail() {
+  const [tab, setTab] = useState<ArgusTab>('Levels');
+  const [msgXp, setMsgXp] = useState(0);
+  const [voiceXp, setVoiceXp] = useState(0);
+  const [points, setPoints] = useState(0);
+  const [draft, setDraft] = useState('');
+  const [checked, setChecked] = useState<string | null>(null);
+  const [sender, setSender] = useState(0);
+  const [delivered, setDelivered] = useState(false);
+
+  const msg = argusTrack(msgXp);
+  const voice = argusTrack(voiceXp);
+  const top = [...ARGUS_RUNGS].reverse().find((r) => points >= r.at);
+  const next = ARGUS_RUNGS.find((r) => points < r.at);
+  const verdict = checked === null ? null : argusAutomod(checked);
+  const check = (t: string) => { setDraft(t); setChecked(t.trim() ? t : null); };
+
+  const pill = (on: boolean) =>
+    `rounded-md px-2 py-1 text-[11px] transition-colors ${on
+      ? 'bg-zinc-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+      : 'text-zinc-500 hover:bg-zinc-100 dark:text-neutral-400 dark:hover:bg-neutral-800'}`;
+  const chip = 'rounded-md bg-zinc-100 px-2 py-1 text-[11px] text-zinc-600 transition-colors hover:bg-zinc-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700';
+
+  return (
+    <div className="flex h-full flex-col p-4">
+      <div className="mb-3 flex items-center justify-between gap-2 border-b border-zinc-100 pb-2 dark:border-neutral-800">
+        <div className="flex gap-1">
+          {ARGUS_TABS.map((t) => (
+            <button key={t} onClick={() => setTab(t)} className={pill(tab === t)}>{t}</button>
+          ))}
+        </div>
+        <span className="hidden items-center gap-1.5 sm:flex">
+          {dot('bg-emerald-500', true)}
+          <span className="text-[10px] text-zinc-400 dark:text-neutral-500">83 commands, one page</span>
+        </span>
+      </div>
+
+      {tab === 'Levels' && (
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="rounded-lg border border-zinc-200 p-3 dark:border-neutral-800">
+            <div className="mb-3 flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-600 dark:bg-neutral-800 dark:text-neutral-300">M</div>
+              <div className="min-w-0">
+                <p className="flex items-center gap-1.5 text-sm font-medium text-zinc-700 dark:text-neutral-200">
+                  mira
+                  <span className="rounded-full border border-zinc-300 px-1.5 py-px text-[9px] font-normal text-zinc-500 dark:border-neutral-700 dark:text-neutral-400">{argusTier(msg.level)}</span>
+                </p>
+                <p className="text-[10px] text-zinc-400 dark:text-neutral-500">Message and voice XP kept apart</p>
+              </div>
+              <span className="ml-auto font-mono text-2xl tabular-nums text-zinc-300 dark:text-neutral-600">{msg.level}</span>
+            </div>
+            <div className="space-y-2">
+              <ArgusBar label="Message" track={msg} accent="bg-zinc-700 dark:bg-neutral-300" />
+              <ArgusBar label="Voice" track={voice} accent="bg-sky-400 dark:bg-sky-500" />
+            </div>
+            <div className="mt-3 flex gap-1 border-t border-zinc-100 pt-2.5 dark:border-neutral-800">
+              {[...ARGUS_TIERS].reverse().map((t) => (
+                <span
+                  key={t.name}
+                  className={`flex-1 rounded px-1 py-1 text-center text-[9px] transition-colors ${
+                    msg.level >= t.at
+                      ? 'bg-zinc-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                      : 'bg-zinc-100 text-zinc-400 dark:bg-neutral-800 dark:text-neutral-500'
+                  }`}
+                >
+                  {t.name} <span className="opacity-60">· {t.at}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button onClick={() => setMsgXp((x) => x + 15 + Math.floor(Math.random() * 11))} className={chip}>Send a message</button>
+            <button onClick={() => setVoiceXp((x) => x + 8 + Math.floor(Math.random() * 5))} className={chip}>A minute in voice</button>
+            <button onClick={() => { setMsgXp((x) => x + 900); setVoiceXp((x) => x + 520); }} className={chip}>Skip a day</button>
+            {(msgXp > 0 || voiceXp > 0) && (
+              <button onClick={() => { setMsgXp(0); setVoiceXp(0); }} className="ml-auto text-[10px] text-zinc-400 hover:text-zinc-600 dark:hover:text-neutral-300">Reset</button>
+            )}
+          </div>
+          <p className="mt-auto text-[10px] text-zinc-400 dark:text-neutral-500">15 to 25 XP a message, as it really is. Each level costs 5L² + 50L + 100, so the curve gets steeper, and the tier is drawn onto a rank card.</p>
+        </div>
+      )}
+
+      {tab === 'Strikes' && (
+        <div className="flex flex-1 flex-col gap-2.5">
+          <div className="flex items-baseline gap-2">
+            <span className="font-mono text-sm tabular-nums text-zinc-700 dark:text-neutral-200">{points} points</span>
+            <span className="text-[11px] text-zinc-400 dark:text-neutral-500">
+              {top ? `${top.label} fired.` : 'Nothing has fired.'}{' '}
+              {next ? `${next.at - points} more reaches ${next.label}.` : 'There is nothing above a ban.'}
+            </span>
+          </div>
+          <div className="divide-y divide-zinc-100 overflow-hidden rounded-lg border border-zinc-200 dark:divide-neutral-800 dark:border-neutral-800">
+            {ARGUS_RUNGS.map((r) => {
+              const on = points >= r.at;
+              return (
+                <div key={r.label} className={`flex items-center gap-2.5 px-2.5 py-1.5 transition-colors ${on ? 'bg-red-50/60 dark:bg-red-950/20' : ''}`}>
+                  <span className={`w-4 shrink-0 text-right font-mono text-[11px] tabular-nums ${on ? 'text-red-600 dark:text-red-400' : 'text-zinc-300 dark:text-neutral-600'}`}>{r.at}</span>
+                  <span className={`w-20 shrink-0 text-[11px] font-medium ${on ? 'text-red-600 dark:text-red-400' : 'text-zinc-400 dark:text-neutral-500'}`}>{r.label}</span>
+                  <span className="min-w-0 flex-1 truncate text-[11px] text-zinc-400 dark:text-neutral-500">{r.does}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {ARGUS_REASONS.map((r) => (
+              <button key={r.label} onClick={() => setPoints((p) => Math.min(20, p + r.pts))} className={chip}>
+                {r.label} <span className="text-zinc-400 dark:text-neutral-500">+{r.pts}</span>
+              </button>
+            ))}
+            <button onClick={() => setPoints((p) => Math.max(0, p - 3))} disabled={points === 0} className={`${chip} disabled:opacity-40`}>A month passes</button>
+          </div>
+          <p className="text-[10px] text-zinc-400 dark:text-neutral-500">Points fade with time, so somebody who was trouble two years ago is not permanently one step from a ban.</p>
+        </div>
+      )}
+
+      {tab === 'AutoMod' && (
+        <div className="flex flex-1 flex-col gap-2.5">
+          <form onSubmit={(e) => { e.preventDefault(); check(draft); }} className="flex gap-2">
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="Say something in #general…"
+              className="flex-1 rounded-lg border border-zinc-200 bg-transparent px-3 py-1.5 text-[13px] text-zinc-700 placeholder:text-zinc-300 focus:outline-none dark:border-neutral-800 dark:text-neutral-300 dark:placeholder:text-neutral-600"
+            />
+            <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-[11px] text-white hover:opacity-85 dark:bg-neutral-100 dark:text-neutral-900">Post it</button>
+          </form>
+          <div className="flex flex-wrap gap-1.5">
+            {ARGUS_SAMPLES.map((s) => (
+              <button key={s} onClick={() => check(s)} className={`${chip} max-w-full truncate font-mono text-[10px]`}>{s}</button>
+            ))}
+          </div>
+          <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-zinc-200 dark:border-neutral-800">
+            <p className="border-b border-zinc-100 bg-zinc-50 px-2.5 py-1 text-[10px] text-zinc-500 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-400">#general</p>
+            {verdict ? (
+              <div className="flex flex-1 flex-col gap-2 p-2.5">
+                <div className="flex gap-2">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-[10px] font-semibold text-zinc-600 dark:bg-neutral-800 dark:text-neutral-300">M</div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-medium text-zinc-700 dark:text-neutral-200">
+                      mira <span className="text-[9px] font-normal text-zinc-400 dark:text-neutral-500">now</span>
+                    </p>
+                    <p className={`truncate text-[12px] ${verdict.verdict === 'Blocked' ? 'text-zinc-300 line-through dark:text-neutral-600' : 'text-zinc-600 dark:text-neutral-300'}`}>{checked}</p>
+                  </div>
+                </div>
+                <div className="mt-auto border-t border-zinc-100 pt-2 dark:border-neutral-800">
+                  <p className={`text-[12px] font-medium ${ARGUS_TONE[verdict.tone]}`}>
+                    {verdict.verdict}{verdict.rule ? `: ${verdict.rule}` : ''}
+                  </p>
+                  <p className="text-[11px] text-zinc-500 dark:text-neutral-400">{verdict.why}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-1 flex-col justify-center p-2.5">
+                <p className="text-[12px] font-medium text-zinc-400 dark:text-neutral-500">Nothing to check</p>
+                <p className="text-[11px] text-zinc-400 dark:text-neutral-500">Type something a member might post, or pick one above.</p>
+              </div>
+            )}
+          </div>
+          <p className="text-[10px] text-zinc-400 dark:text-neutral-500">These are Discord&apos;s own AutoMod rules, so they keep holding when the bot is offline.</p>
+        </div>
+      )}
+
+      {tab === 'Webhook' && (
+        <div className="flex flex-1 flex-col gap-2.5">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {ARGUS_SENDERS.map((s, i) => (
+              <button key={s.name} onClick={() => { setSender(i); setDelivered(false); }} className={pill(sender === i)}>{s.name}</button>
+            ))}
+            <button onClick={() => setDelivered(true)} className="ml-auto rounded-lg bg-zinc-900 px-3 py-1 text-[11px] text-white hover:opacity-85 dark:bg-neutral-100 dark:text-neutral-900">Send it</button>
+          </div>
+          <div className="grid flex-1 gap-2.5 sm:grid-cols-2">
+            <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-neutral-800">
+              <p className="border-b border-zinc-100 bg-zinc-50 px-2.5 py-1 font-mono text-[10px] text-zinc-500 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-400">POST /hooks/&lt;token&gt;</p>
+              <pre className="overflow-x-auto px-2.5 py-2 font-mono text-[10px] leading-[1.6] text-zinc-500 dark:text-neutral-400">{JSON.stringify(ARGUS_SENDERS[sender].body, null, 2)}</pre>
+            </div>
+            <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-neutral-800">
+              <p className="border-b border-zinc-100 bg-zinc-50 px-2.5 py-1 text-[10px] text-zinc-500 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-400">#releases</p>
+              <div className="px-2.5 py-2">
+                {delivered ? (
+                  <div className="flex gap-2">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-[10px] font-semibold text-zinc-600 dark:bg-neutral-800 dark:text-neutral-300">A</div>
+                    <div className="min-w-0">
+                      <p className="flex items-center gap-1 text-[11px] font-medium text-zinc-700 dark:text-neutral-200">
+                        Argus
+                        <span className="rounded bg-zinc-200 px-1 text-[8px] font-semibold uppercase text-zinc-500 dark:bg-neutral-700 dark:text-neutral-300">App</span>
+                        <span className="text-[9px] font-normal text-zinc-400 dark:text-neutral-500">now</span>
+                      </p>
+                      <div className="mt-1 rounded-r border-l-2 border-zinc-400 bg-zinc-50 px-2 py-1 dark:border-neutral-500 dark:bg-neutral-800/60">
+                        <p className="truncate text-[11px] font-medium text-zinc-700 dark:text-neutral-200">{ARGUS_SENDERS[sender].body.title}</p>
+                        <p className="truncate text-[11px] text-zinc-500 dark:text-neutral-400">{ARGUS_SENDERS[sender].body.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-zinc-400 dark:text-neutral-500">Nothing delivered yet. Press send.</p>
+                )}
+              </div>
+            </div>
+          </div>
+          <p className="text-[10px] text-zinc-400 dark:text-neutral-500">Anything that can POST can talk to your server, and the failures are kept so you can see what bounced.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── World Clock: six cities, 12/24h toggle, pin a city, per-key alarm ──
 
 const WC_CITIES = [

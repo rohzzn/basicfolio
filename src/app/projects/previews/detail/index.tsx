@@ -5,6 +5,7 @@ import * as Game from './game';
 import * as Other from './other';
 
 const REGISTRY: Record<string, React.ComponentType> = {
+  argus: App.ArgusDetail,
   'world-clock': App.WorldClockDetail,
   beam: App.BeamDetail,
   relay: App.RelayDetail,

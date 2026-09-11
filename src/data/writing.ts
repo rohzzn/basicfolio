@@ -10,6 +10,15 @@ export type Post = {
 
 export const posts: Post[] = [
   {
+    slug: 'nobody-said-he-was-wrong',
+    title: 'Nobody Said He Was Wrong',
+    description:
+      'A researcher resigned from Anthropic and said the labs are gambling with our lives. Eighty-three minutes later the company\'s own alignment lead agreed, with a number. On how we ended up in a world where that is an ordinary week.',
+    date: '2026-09-10',
+    displayDate: 'Sep 2026',
+    category: 'tech',
+  },
+  {
     slug: 'telugumovies-in',
     title: 'Why I Built telugumovies.in',
     description:
