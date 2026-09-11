@@ -490,10 +490,14 @@ html.e-reader-mode pre {
 /* ───────────────────────────────────────────────────────────────────
    Custom cursor
 
-   One solid circle. It is a composited layer that only ever receives
-   `transform` and `opacity`, so moving the mouse costs no layout and no
-   paint. The native cursor is hidden by a class the component adds once
-   it is actually running — with JavaScript off, on touch, or under
+   A solid dot that gets captured by links and grows into their shape.
+   Size, radius, position and fade are all written by the component, so
+   this block only sets what does not change. `contain` keeps the geometry
+   writes during a capture from reaching the rest of the document — and at
+   rest the loop parks, so nothing is written at all.
+
+   The native cursor is hidden by a class the component adds once it is
+   actually running: with JavaScript off, on touch, or under
    reduced-motion, nothing here applies and the normal cursor stands.
    ─────────────────────────────────────────────────────────────────── */
 
@@ -502,25 +506,17 @@ html.e-reader-mode pre {
   top: 0;
   left: 0;
   z-index: 9999;
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
   border-radius: 50%;
   background: var(--foreground);
   pointer-events: none;
+  contain: layout paint;
   opacity: 0;
-  transition: opacity 200ms ease;
+  transition: opacity 150ms ease;
   /* Own layer from the start: no promotion hitch on the first move. */
   transform: translate3d(-100px, -100px, 0);
-}
-
-.cursor-visible .cursor-dot {
-  opacity: 0.85;
-}
-
-/* Over a text field, stand down and let the I-beam through. */
-.cursor-text .cursor-dot {
-  opacity: 0;
 }
 
 .has-custom-cursor,
