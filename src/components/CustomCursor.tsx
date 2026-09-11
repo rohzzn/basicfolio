@@ -3,19 +3,25 @@
 import { useEffect } from 'react';
 
 /**
- * A small solid circle that gets captured by whatever it can click.
+ * A small solid circle that opens into a word naming what a click will do.
  *
- * At rest it is a dot on a spring. Near a link or a button it is pulled to
- * that element's centre and grows into its exact shape, so targets feel
- * sticky and clicking gets easier; leaving releases it back to a dot.
+ * At rest it is a dot on a spring. Over something actionable it widens into a
+ * pill — Read, View, Open, Copy — and closes again on the way out. On a
+ * portfolio where half the page is a link, that says something the link text
+ * usually does not: whether you are about to read an essay, open a demo, or
+ * leave the site entirely.
+ *
+ * Labels are derived from the element itself rather than hand-tagged through
+ * the markup, so nothing has to be annotated and nothing can go stale. Any
+ * element can still override with `data-cursor-label`.
  *
  * Kept cheap for old hardware:
  *  - one element, created once and mutated by ref; React never re-renders
  *  - one rAF loop that parks itself the moment everything settles, so a still
  *    mouse costs nothing at all
- *  - at rest nothing is written. The geometry writes that do cost layout are
- *    bounded to the ~200ms of a capture or release, and the element carries
- *    `contain` so that layout can never escape it
+ *  - at rest nothing is written. The width writes that do cost layout are
+ *    bounded to the ~200ms of an open or close, and the pill carries `contain`
+ *    so that layout can never escape it
  *  - no mix-blend-mode and no backdrop-filter; both look lovely and both fall
  *    off the GPU fast path on older integrated graphics
  *  - the springs integrate on a fixed 120Hz substep, so a 30fps laptop and a
@@ -26,8 +32,7 @@ import { useEffect } from 'react';
  * applies and the normal cursor stands.
  */
 
-const INTERACTIVE =
-  'a,button,[role="button"],select,summary,label,[data-cursor="interactive"]';
+const INTERACTIVE = 'a,button,[role="button"],summary,[data-cursor-label]';
 const TEXT_FIELD =
   'input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=button]):not([type=submit]),textarea,[contenteditable="true"]';
 
@@ -38,28 +43,56 @@ const MAX_STEPS = 8; // caps catch-up after a tab switch
 const K = 0.2;
 const D = 0.6;
 
-/** Capture and release: a looser spring so the snap has a little bounce. */
+/** Open and close: a looser spring, so the pill arrives with a little bounce. */
 const MORPH_K = 0.18;
 const MORPH_D = 0.66;
 
 const DOT = 11;
-const PAD = 7; // breathing room around a captured element
+const PILL_H = 26;
+const PILL_PAD = 26; // total horizontal padding around the label
+const SWELL = 1.7; // for actionable things that have nothing useful to say
 
 /**
- * Past this, wrapping the element would cover the thing you are trying to
- * look at — a project card is not a cursor. Those get a swell instead.
+ * What a click actually does, read off the element. Order matters: the more
+ * specific a rule, the earlier it sits.
  */
-const MAX_W = 260;
-const MAX_H = 132;
-const BIG_SCALE = 1.7;
+function labelFor(el: Element): string | null {
+  const explicit = el.getAttribute('data-cursor-label');
+  if (explicit !== null) return explicit.trim() || null;
 
-interface Target {
-  el: Element;
-  cx: number;
-  cy: number;
-  w: number;
-  h: number;
-  r: number;
+  if (el instanceof HTMLAnchorElement) {
+    const href = el.getAttribute('href') ?? '';
+
+    if (href.startsWith('mailto:')) return 'Email';
+    if (href.startsWith('tel:')) return 'Call';
+    if (href.startsWith('#')) return null;
+
+    // Anything leaving the site is worth flagging as such.
+    const external = /^https?:\/\//i.test(href) && el.hostname !== window.location.hostname;
+    if (external || el.target === '_blank') return 'Open ↗';
+
+    // Named destinations first, in the site's own words.
+    if (href === '/meet') return 'Book';
+    if (href === '/guestbook') return 'Sign';
+    if (href === '/resume') return 'Read';
+    if (href === '/timeline') return 'View';
+    if (href === '/links') return 'Open';
+
+    // Then indexes, then the things inside them.
+    if (href === '/writing' || href === '/projects' || href === '/hobbies') return 'Browse';
+    if (href.startsWith('/writing/')) return 'Read';
+    if (href.startsWith('/projects/')) return 'View';
+    if (href.startsWith('/hobbies/')) return 'Open';
+    if (href.startsWith('/')) return 'Go';
+    return null;
+  }
+
+  if (el instanceof HTMLButtonElement) {
+    if (el.type === 'submit') return 'Send';
+    return null; // a bare button's own text already says it
+  }
+
+  return null;
 }
 
 export default function CustomCursor() {
@@ -69,10 +102,12 @@ export default function CustomCursor() {
     if (!fine.matches || calm.matches) return;
 
     const root = document.documentElement;
-    const dot = document.createElement('div');
-    dot.className = 'cursor-dot';
-    dot.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(dot);
+    const pill = document.createElement('div');
+    const text = document.createElement('span');
+    pill.className = 'cursor-dot';
+    pill.setAttribute('aria-hidden', 'true');
+    pill.appendChild(text);
+    document.body.appendChild(pill);
     root.classList.add('has-custom-cursor');
 
     let px = 0;
@@ -82,8 +117,8 @@ export default function CustomCursor() {
     let vx = 0;
     let vy = 0;
 
-    // 0 = free dot, 1 = wrapped around the target. One spring drives the whole
-    // capture, so position, size, radius and fill can never disagree.
+    // 0 = closed dot, 1 = open pill. One spring drives width, height, radius
+    // and the label's fade together, so they can never disagree.
     let morph = 0;
     let morphV = 0;
     let morphTo = 0;
@@ -92,49 +127,31 @@ export default function CustomCursor() {
     let swellV = 0;
     let swellTo = 1;
 
-    let target: Target | null = null;
+    let pillW = DOT;
+    let hovered: Element | null = null;
     let seen = false;
     let inDocument = true;
     let overText = false;
-    let boundsStale = false;
     let raf = 0;
     let last = 0;
     let acc = 0;
 
-    const measure = (el: Element): Target | null => {
-      const r = el.getBoundingClientRect();
-      if (r.width < 1 || r.height < 1) return null;
-      if (r.width + PAD * 2 > MAX_W || r.height + PAD * 2 > MAX_H) return null;
-
-      const radius = parseFloat(getComputedStyle(el).borderRadius) || 0;
-      return {
-        el,
-        cx: r.left + r.width / 2,
-        cy: r.top + r.height / 2,
-        w: r.width + PAD * 2,
-        h: r.height + PAD * 2,
-        r: radius > 0 ? radius + PAD : 999,
-      };
-    };
-
     const draw = () => {
       const m = morph;
-      const w = target ? DOT + (target.w - DOT) * m : DOT;
-      const h = target ? DOT + (target.h - DOT) * m : DOT;
+      const w = DOT + (pillW - DOT) * m;
+      const h = DOT + (PILL_H - DOT) * m;
 
-      // Circle when free, the element's own corner when wrapped.
-      const rest = Math.min(w, h) / 2;
-      const r = target ? target.r + (rest - target.r) * (1 - m) : rest;
+      pill.style.width = `${w}px`;
+      pill.style.height = `${h}px`;
+      pill.style.marginLeft = `${-w / 2}px`;
+      pill.style.marginTop = `${-h / 2}px`;
+      pill.style.borderRadius = `${Math.min(w, h) / 2}px`;
+      pill.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${swell})`;
+      pill.style.opacity = seen && inDocument && !overText ? '0.92' : '0';
 
-      dot.style.width = `${w}px`;
-      dot.style.height = `${h}px`;
-      dot.style.marginLeft = `${-w / 2}px`;
-      dot.style.marginTop = `${-h / 2}px`;
-      dot.style.borderRadius = `${r}px`;
-      // Solid as a dot, a quiet wash once it is covering something readable.
-      const shown = seen && inDocument && !overText;
-      dot.style.opacity = shown ? `${0.85 - 0.71 * m}` : '0';
-      dot.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${swell})`;
+      // Hold the word back until there is room for it. Clamped, because the
+      // spring deliberately overshoots past 1 on the way open.
+      text.style.opacity = `${Math.min(1, Math.max(0, (m - 0.45) / 0.55))}`;
     };
 
     const settled = () =>
@@ -152,11 +169,11 @@ export default function CustomCursor() {
       acc += Math.min(now - last, STEP_MS * MAX_STEPS);
       last = now;
 
-      // The page moved under a captured element, or it went away entirely.
-      if (target && boundsStale) {
-        boundsStale = false;
-        target = target.el.isConnected ? measure(target.el) : null;
-        if (!target) morphTo = 0;
+      // The thing we were labelling went away — a route change, a re-render.
+      if (hovered && !hovered.isConnected) {
+        hovered = null;
+        morphTo = 0;
+        swellTo = 1;
       }
 
       let steps = 0;
@@ -164,12 +181,8 @@ export default function CustomCursor() {
         acc -= STEP_MS;
         steps += 1;
 
-        // Anchor blends from the pointer to the element as the capture closes.
-        const ax = target ? px + (target.cx - px) * morph : px;
-        const ay = target ? py + (target.cy - py) * morph : py;
-
-        vx = (vx + (ax - x) * K) * D;
-        vy = (vy + (ay - y) * K) * D;
+        vx = (vx + (px - x) * K) * D;
+        vy = (vy + (py - y) * K) * D;
         x += vx;
         y += vy;
 
@@ -181,17 +194,14 @@ export default function CustomCursor() {
       }
 
       if (settled()) {
-        const ax = target ? px + (target.cx - px) * morphTo : px;
-        const ay = target ? py + (target.cy - py) * morphTo : py;
-        x = ax;
-        y = ay;
+        x = px;
+        y = py;
         vx = 0;
         vy = 0;
         morph = morphTo;
         morphV = 0;
         swell = swellTo;
         swellV = 0;
-        if (morph === 0) target = null;
         draw();
         return; // idle: nothing queued until something moves again
       }
@@ -236,26 +246,24 @@ export default function CustomCursor() {
       }
 
       const el = node.closest(INTERACTIVE);
-      if (el === target?.el) return;
+      if (el === hovered) return;
+      hovered = el;
 
-      const next = el ? measure(el) : null;
+      const label = el ? labelFor(el) : null;
 
-      if (next) {
-        target = next;
+      if (label) {
+        // Set the word first, then measure it: the span is nowrap inside an
+        // overflow-hidden parent, so its own width is the natural text width.
+        text.textContent = label;
+        pillW = Math.max(DOT, text.offsetWidth + PILL_PAD);
         morphTo = 1;
         swellTo = 1;
       } else {
         morphTo = 0;
-        // Too big to wrap, but still worth acknowledging.
-        swellTo = el ? BIG_SCALE : 1;
+        // Actionable, but nothing useful to say about it.
+        swellTo = el ? SWELL : 1;
       }
 
-      wake();
-    };
-
-    const onScroll = () => {
-      if (!target) return;
-      boundsStale = true;
       wake();
     };
 
@@ -272,8 +280,6 @@ export default function CustomCursor() {
     const opts = { passive: true } as const;
     window.addEventListener('mousemove', onMove, opts);
     window.addEventListener('mouseover', onOver, opts);
-    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
-    window.addEventListener('resize', onScroll, opts);
     document.addEventListener('mouseleave', onLeave, opts);
     document.addEventListener('mouseenter', onEnter, opts);
 
@@ -288,13 +294,11 @@ export default function CustomCursor() {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseover', onOver);
-      window.removeEventListener('scroll', onScroll, true);
-      window.removeEventListener('resize', onScroll);
       document.removeEventListener('mouseleave', onLeave);
       document.removeEventListener('mouseenter', onEnter);
       fine.removeEventListener('change', onPointerKindChange);
       root.classList.remove('has-custom-cursor');
-      dot.remove();
+      pill.remove();
     };
   }, []);
 

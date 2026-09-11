@@ -490,11 +490,11 @@ html.e-reader-mode pre {
 /* ───────────────────────────────────────────────────────────────────
    Custom cursor
 
-   A solid dot that gets captured by links and grows into their shape.
-   Size, radius, position and fade are all written by the component, so
-   this block only sets what does not change. `contain` keeps the geometry
-   writes during a capture from reaching the rest of the document — and at
-   rest the loop parks, so nothing is written at all.
+   A solid dot that opens into a pill naming what a click does. Width,
+   height, radius, position and fade are all written by the component, so
+   this block only sets what does not change. `contain` keeps the width
+   writes during an open or close from reaching the rest of the document —
+   and at rest the loop parks, so nothing is written at all.
 
    The native cursor is hidden by a class the component adds once it is
    actually running: with JavaScript off, on touch, or under
@@ -506,17 +506,33 @@ html.e-reader-mode pre {
   top: 0;
   left: 0;
   z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 11px;
   height: 11px;
   margin: -5.5px 0 0 -5.5px;
   border-radius: 50%;
   background: var(--foreground);
+  overflow: hidden;
   pointer-events: none;
   contain: layout paint;
   opacity: 0;
-  transition: opacity 150ms ease;
   /* Own layer from the start: no promotion hitch on the first move. */
   transform: translate3d(-100px, -100px, 0);
+}
+
+.cursor-dot > span {
+  /* Sizes to its own text so the component can measure it, and never wraps. */
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: var(--background);
+  opacity: 0;
 }
 
 .has-custom-cursor,
