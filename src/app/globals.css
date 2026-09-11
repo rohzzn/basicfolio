@@ -486,3 +486,48 @@ html.e-reader-mode pre {
     }
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────
+   Custom cursor
+
+   One solid circle. It is a composited layer that only ever receives
+   `transform` and `opacity`, so moving the mouse costs no layout and no
+   paint. The native cursor is hidden by a class the component adds once
+   it is actually running — with JavaScript off, on touch, or under
+   reduced-motion, nothing here applies and the normal cursor stands.
+   ─────────────────────────────────────────────────────────────────── */
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--foreground);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  /* Own layer from the start: no promotion hitch on the first move. */
+  transform: translate3d(-100px, -100px, 0);
+}
+
+.cursor-visible .cursor-dot {
+  opacity: 0.85;
+}
+
+/* Over a text field, stand down and let the I-beam through. */
+.cursor-text .cursor-dot {
+  opacity: 0;
+}
+
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none;
+}
+
+.has-custom-cursor :is(input, textarea, select, [contenteditable="true"]) {
+  cursor: auto;
+}
