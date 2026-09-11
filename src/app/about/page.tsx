@@ -1,20 +1,20 @@
 import AboutClient from './AboutClient';
 import { fetchGitHubCalendar } from '@/lib/github-calendar';
 import { fetchLanguageCalendar } from '@/lib/github-languages';
-import { fetchNow } from '@/lib/now';
+import { fetchLastCommit } from '@/lib/github-last-commit';
 
 export default async function AboutPage() {
-  const [calendarData, languageCalendar, now] = await Promise.all([
+  const [calendarData, languageCalendar, initialCommit] = await Promise.all([
     fetchGitHubCalendar('rohzzn'),
     fetchLanguageCalendar(),
-    fetchNow(),
+    fetchLastCommit(),
   ]);
 
   return (
     <AboutClient
       calendarData={calendarData}
       languageCalendar={languageCalendar}
-      now={now}
+      initialCommit={initialCommit}
     />
   );
 }

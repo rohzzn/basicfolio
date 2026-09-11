@@ -3,10 +3,10 @@ import React, { cloneElement, useCallback, useEffect, useLayoutEffect, useRef, u
 import { ActivityCalendar } from 'react-activity-calendar';
 import Image from '@/components/SiteImage';
 import Link from 'next/link';
-import NowStrip from '@/components/NowStrip';
+import LastCommit from '@/components/LastCommit';
 import type { CalendarActivity } from '@/lib/github-calendar';
 import { languageColor, languageSwatch, type LanguageCalendar } from '@/lib/github-languages';
-import type { NowData } from '@/lib/now';
+import type { LastCommit as LastCommitData } from '@/lib/github-last-commit';
 
 const CAL_MARGIN = 3;
 const MAX_BLOCK = 28;
@@ -147,10 +147,10 @@ const PROFILE_PNG = '/images/profile/rohan.png';
 type AboutClientProps = {
   calendarData: CalendarActivity[];
   languageCalendar: LanguageCalendar;
-  now: NowData;
+  initialCommit: LastCommitData | null;
 };
 
-const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalendar, now }) => {
+const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalendar, initialCommit }) => {
   const [isDark, setIsDark] = React.useState(false);
   const [showImage, setShowImage] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -284,8 +284,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalenda
       {/* GitHub Contributions */}
       <ProseGitHubCalendar isDark={isDark} data={calendarData} languages={languageCalendar} />
 
-      {/* What is true right now */}
-      <NowStrip data={now} />
+      <LastCommit initialCommit={initialCommit} />
 
     </div>
   );
