@@ -3,10 +3,8 @@ import React, { cloneElement, useCallback, useEffect, useLayoutEffect, useRef, u
 import { ActivityCalendar } from 'react-activity-calendar';
 import Image from '@/components/SiteImage';
 import Link from 'next/link';
-import LastCommit from '@/components/LastCommit';
 import type { CalendarActivity } from '@/lib/github-calendar';
-import { languageColor, languageSwatch, type LanguageCalendar } from '@/lib/github-languages';
-import type { LastCommit as LastCommitData } from '@/lib/github-last-commit';
+import { languageColor, type LanguageCalendar } from '@/lib/github-languages';
 
 const CAL_MARGIN = 3;
 const MAX_BLOCK = 28;
@@ -118,27 +116,7 @@ function ProseGitHubCalendar({
           }}
         />
       </div>
-      <LanguageLegend languages={languages.languages} scheme={scheme} />
     </div>
-  );
-}
-
-function LanguageLegend({ languages, scheme }: { languages: string[]; scheme: 'light' | 'dark' }) {
-  if (languages.length === 0) return null;
-
-  return (
-    <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-zinc-400 dark:text-neutral-500">
-      {languages.slice(0, 6).map((language) => (
-        <li key={language} className="flex items-center gap-1.5">
-          <span
-            aria-hidden
-            className="h-2 w-2 rounded-[2px]"
-            style={{ backgroundColor: languageSwatch(language, scheme) }}
-          />
-          {language.toLowerCase()}
-        </li>
-      ))}
-    </ul>
   );
 }
 
@@ -147,10 +125,9 @@ const PROFILE_PNG = '/images/profile/rohan.png';
 type AboutClientProps = {
   calendarData: CalendarActivity[];
   languageCalendar: LanguageCalendar;
-  initialCommit: LastCommitData | null;
 };
 
-const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalendar, initialCommit }) => {
+const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalendar }) => {
   const [isDark, setIsDark] = React.useState(false);
   const [showImage, setShowImage] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -284,7 +261,6 @@ const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalenda
       {/* GitHub Contributions */}
       <ProseGitHubCalendar isDark={isDark} data={calendarData} languages={languageCalendar} />
 
-      <LastCommit initialCommit={initialCommit} />
 
     </div>
   );
