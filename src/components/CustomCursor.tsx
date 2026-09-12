@@ -88,8 +88,12 @@ function labelFor(el: Element): string | null {
   }
 
   if (el instanceof HTMLButtonElement) {
-    if (el.type === 'submit') return 'Send';
-    return null; // a bare button's own text already says it
+    // `type` defaults to "submit" on any <button> that did not opt out, so it
+    // says nothing about intent. Only a button that actually owns a form
+    // submits anything; everything else is a plain action whose own text
+    // already says what it does.
+    if (el.form && el.type === 'submit') return 'Send';
+    return null;
   }
 
   return null;
