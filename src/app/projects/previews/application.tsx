@@ -3,6 +3,98 @@
 import React, { useEffect, useState } from 'react';
 import { LightFrame, LightWindowBar, lightDot } from './light';
 
+// ── Cursors: the pack grid, applying a scheme every couple of seconds ──
+
+/** The classic Windows arrow, drawn once and re-skinned per pack. */
+function CursorArrow({
+  size = 14,
+  fill = '#fff',
+  stroke = '#18181b',
+  className = '',
+}: {
+  size?: number;
+  fill?: string;
+  stroke?: string;
+  className?: string;
+}) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 18" className={className} aria-hidden>
+      <path
+        d="M1 1 L1 15.4 L4.6 11.9 L7.1 17.2 L9.6 16.1 L7.1 11 L12 11 Z"
+        fill={fill}
+        stroke={stroke}
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+const CUR_PACKS = [
+  { n: 'Ink', f: '#18181b', s: '#fafafa' },
+  { n: 'Paper', f: '#fafafa', s: '#18181b' },
+  { n: 'Slate', f: '#64748b', s: '#f8fafc' },
+  { n: 'Acid', f: '#a3e635', s: '#1a2e05' },
+  { n: 'Vapor', f: '#f0abfc', s: '#4a044e' },
+  { n: 'Cyan', f: '#67e8f9', s: '#083344' },
+  { n: 'Peach', f: '#fdba74', s: '#431407' },
+  { n: 'Amber', f: '#fbbf24', s: '#451a03' },
+  { n: 'Frost', f: '#e0f2fe', s: '#0c4a6e' },
+];
+
+export function CursorsPreview() {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setActive((i) => (i + 1) % CUR_PACKS.length), 1900);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <LightFrame>
+      <LightWindowBar label="Cursors" />
+      <div className="flex flex-1 overflow-hidden">
+        <div className="flex w-[52px] shrink-0 flex-col gap-[3px] border-r border-zinc-100 bg-zinc-50/70 p-1.5 dark:border-neutral-800 dark:bg-neutral-900/50">
+          {['Minimal', 'Neon', 'Cute', 'Retro', 'Glass'].map((c, i) => (
+            <span
+              key={c}
+              className={`truncate rounded px-1 py-0.5 text-[6.5px] ${
+                i === 0
+                  ? 'bg-zinc-200 text-zinc-600 dark:bg-neutral-700 dark:text-neutral-200'
+                  : 'text-zinc-400 dark:text-neutral-500'
+              }`}
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+
+        <div className="grid flex-1 grid-cols-3 gap-1 p-1.5">
+          {CUR_PACKS.map((p, i) => (
+            <div
+              key={p.n}
+              className={`flex flex-col items-center justify-center gap-0.5 rounded border transition-colors ${
+                i === active
+                  ? 'border-zinc-400 bg-zinc-100 dark:border-neutral-500 dark:bg-neutral-800'
+                  : 'border-zinc-100 bg-white dark:border-neutral-800 dark:bg-neutral-950'
+              }`}
+            >
+              <CursorArrow size={13} fill={p.f} stroke={p.s} />
+              <span className="text-[5.5px] text-zinc-400 dark:text-neutral-500">{p.n}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between border-t border-zinc-100 px-2 py-1 dark:border-neutral-800">
+        <span className="text-[6.5px] text-zinc-400 dark:text-neutral-500">
+          Applied · 17 roles
+        </span>
+        <CursorArrow size={9} fill={CUR_PACKS[active].f} stroke={CUR_PACKS[active].s} />
+      </div>
+    </LightFrame>
+  );
+}
+
 // ── Argus: the audit trail scrolling past, the way it does in the server ──
 
 const ARGUS_TAGS: Record<string, string> = {

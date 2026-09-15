@@ -5,6 +5,7 @@ import * as Game from './game';
 import * as Other from './other';
 
 const REGISTRY: Record<string, React.ComponentType> = {
+  cursors: App.CursorsPreview,
   argus: App.ArgusPreview,
   'world-clock': App.WorldClockPreview,
   beam: App.BeamPreview,

@@ -24,6 +24,21 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'cursors',
+    year: 2026,
+    title: 'Cursors',
+    description: 'One-click cursor packs for Windows',
+    tech: ['C#', 'WinForms', '.NET Framework 4.8', 'Win32'],
+    category: 'application',
+    links: [
+      { label: 'GitHub', url: 'https://github.com/rohzzn/cursors' },
+      { label: 'Download', url: 'https://github.com/rohzzn/cursors/releases/latest' },
+    ],
+    image: '/projects/cursors.svg',
+    longDescription:
+      "Changing your cursor on Windows means the Mouse Properties dialog, a Pointers tab that has not been redesigned since XP, and setting seventeen roles one dropdown at a time — Normal Select, Help Select, Working In Background, all of them — before you can even see what you picked. I wanted to click a card and be done.\n\nCursors is a 184 KB WinForms executable that applies a whole scheme at once. Sixty packs ship with it across nine categories — 20 minimal, 10 neon, 9 cute, 5 retro, 5 pixel and gaming, 4 macOS-style, 4 animated, 3 glass, and the 4 Windows defaults — and another 500 community sets are pulled from rw-designer.com, sortable and searchable by name, style or creator. Cards preview live, animated packs play in place, and anything you drop on the window is installed: a .zip, an install.inf, a loose pile of .cur and .ani files, or a link pasted straight from the browser.\n\nIt needs no administrator rights, leaves no background process running, keeps no telemetry, and works offline once the community index is cached. The scheme survives a restart because it is written where Windows actually reads it, and `Cursors.exe --uninstall` puts every default back.",
+  },
+  {
     slug: 'argus',
     year: 2026,
     title: 'Argus',

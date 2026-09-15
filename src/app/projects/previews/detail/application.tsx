@@ -3,6 +3,290 @@
 import React, { useEffect, useState } from 'react';
 import { Frame, WindowBar, dot } from '../shared';
 
+// ── Cursors: pick a category, apply a pack, watch all 17 roles change ──
+
+/** The classic Windows arrow, drawn once and re-skinned per pack. */
+function CursorArrow({
+  size = 14,
+  fill = '#fff',
+  stroke = '#18181b',
+  className = '',
+}: {
+  size?: number;
+  fill?: string;
+  stroke?: string;
+  className?: string;
+}) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 18" className={className} aria-hidden>
+      <path
+        d="M1 1 L1 15.4 L4.6 11.9 L7.1 17.2 L9.6 16.1 L7.1 11 L12 11 Z"
+        fill={fill}
+        stroke={stroke}
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+interface CurPack {
+  n: string;
+  f: string;
+  s: string;
+}
+
+/** Nine categories, with the counts the app actually ships. */
+const CUR_CATS: { name: string; count: number; packs: CurPack[] }[] = [
+  {
+    name: 'Minimal',
+    count: 20,
+    packs: [
+      { n: 'Ink', f: '#18181b', s: '#fafafa' },
+      { n: 'Paper', f: '#fafafa', s: '#18181b' },
+      { n: 'Slate', f: '#64748b', s: '#f8fafc' },
+      { n: 'Bone', f: '#e7e5e4', s: '#44403c' },
+      { n: 'Graphite', f: '#3f3f46', s: '#e4e4e7' },
+      { n: 'Hairline', f: '#ffffff', s: '#71717a' },
+    ],
+  },
+  {
+    name: 'Neon',
+    count: 10,
+    packs: [
+      { n: 'Acid', f: '#a3e635', s: '#1a2e05' },
+      { n: 'Vapor', f: '#f0abfc', s: '#4a044e' },
+      { n: 'Cyan', f: '#67e8f9', s: '#083344' },
+      { n: 'Ember', f: '#fb7185', s: '#4c0519' },
+      { n: 'Volt', f: '#fde047', s: '#422006' },
+    ],
+  },
+  {
+    name: 'Cute',
+    count: 9,
+    packs: [
+      { n: 'Peach', f: '#fdba74', s: '#7c2d12' },
+      { n: 'Mochi', f: '#fecdd3', s: '#881337' },
+      { n: 'Matcha', f: '#bbf7d0', s: '#14532d' },
+      { n: 'Bubble', f: '#bfdbfe', s: '#1e3a8a' },
+    ],
+  },
+  {
+    name: 'Retro',
+    count: 5,
+    packs: [
+      { n: 'Win95', f: '#d4d0c8', s: '#000000' },
+      { n: 'Amber CRT', f: '#fbbf24', s: '#451a03' },
+      { n: 'Phosphor', f: '#4ade80', s: '#052e16' },
+    ],
+  },
+  {
+    name: 'Pixel & Gaming',
+    count: 5,
+    packs: [
+      { n: '8-bit', f: '#f87171', s: '#450a0a' },
+      { n: 'Arcade', f: '#c084fc', s: '#2e1065' },
+      { n: 'Crosshair', f: '#22d3ee', s: '#083344' },
+    ],
+  },
+  {
+    name: 'macOS',
+    count: 4,
+    packs: [
+      { n: 'Aqua', f: '#ffffff', s: '#111111' },
+      { n: 'Graphite', f: '#1c1c1e', s: '#ffffff' },
+      { n: 'Sonoma', f: '#f2f2f7', s: '#1c1c1e' },
+    ],
+  },
+  {
+    name: 'Animated',
+    count: 4,
+    packs: [
+      { n: 'Spinner', f: '#93c5fd', s: '#1e3a8a' },
+      { n: 'Pulse', f: '#fda4af', s: '#881337' },
+    ],
+  },
+  {
+    name: 'Glass',
+    count: 3,
+    packs: [
+      { n: 'Frost', f: '#e0f2fe', s: '#0c4a6e' },
+      { n: 'Haze', f: '#ede9fe', s: '#4c1d95' },
+    ],
+  },
+  {
+    name: 'Windows',
+    count: 4,
+    packs: [
+      { n: 'Default', f: '#ffffff', s: '#000000' },
+      { n: 'Inverted', f: '#000000', s: '#ffffff' },
+      { n: 'Large', f: '#ffffff', s: '#000000' },
+    ],
+  },
+];
+
+/** Five of the seventeen roles Windows defines, enough to show a scheme lands. */
+const CUR_ROLES = ['Normal', 'Text', 'Busy', 'Link', 'Precision'];
+
+const WINDOWS_DEFAULT: CurPack = { n: 'Windows default', f: '#ffffff', s: '#000000' };
+
+function RoleGlyph({ role, pack }: { role: string; pack: CurPack }) {
+  if (role === 'Text') {
+    return (
+      <svg width="14" height="18" viewBox="0 0 14 18" aria-hidden>
+        <path d="M4 2 h6 M7 2 v14 M4 16 h6" stroke={pack.f} strokeWidth="1.6" fill="none" />
+      </svg>
+    );
+  }
+  if (role === 'Busy') {
+    return (
+      <svg width="14" height="18" viewBox="0 0 14 18" aria-hidden>
+        <circle cx="7" cy="9" r="5" fill="none" stroke={pack.s} strokeWidth="1.4" opacity="0.35" />
+        <path d="M7 4 a5 5 0 0 1 5 5" fill="none" stroke={pack.f} strokeWidth="1.8" strokeLinecap="round">
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 7 9"
+            to="360 7 9"
+            dur="1s"
+            repeatCount="indefinite"
+          />
+        </path>
+      </svg>
+    );
+  }
+  if (role === 'Link') {
+    return (
+      <svg width="14" height="18" viewBox="0 0 14 18" aria-hidden>
+        <path
+          d="M5 9 V4.2 a1.2 1.2 0 0 1 2.4 0 V8 h.6 V6.4 a1.1 1.1 0 0 1 2.2 0 V12 a4 4 0 0 1-4 4 H6 a3.4 3.4 0 0 1-3.2-2.6 L2 10.6 a1.1 1.1 0 0 1 2-.9 Z"
+          fill={pack.f}
+          stroke={pack.s}
+          strokeWidth="1"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  if (role === 'Precision') {
+    return (
+      <svg width="14" height="18" viewBox="0 0 14 18" aria-hidden>
+        <path d="M7 2 v5 M7 11 v5 M1 9 h5 M8 9 h5" stroke={pack.f} strokeWidth="1.5" fill="none" />
+      </svg>
+    );
+  }
+  return <CursorArrow size={14} fill={pack.f} stroke={pack.s} />;
+}
+
+export function CursorsDetail() {
+  const [cat, setCat] = useState(0);
+  const [applied, setApplied] = useState<CurPack>(WINDOWS_DEFAULT);
+  const [query, setQuery] = useState('');
+
+  const category = CUR_CATS[cat];
+  const packs = query
+    ? CUR_CATS.flatMap((c) => c.packs).filter((p) =>
+        p.n.toLowerCase().includes(query.toLowerCase())
+      )
+    : category.packs;
+
+  const bundled = CUR_CATS.reduce((t, c) => t + (c.name === 'Windows' ? 0 : c.count), 0);
+
+  return (
+    <div className="flex h-full flex-col p-4">
+      <div className="mb-3 flex items-center justify-between gap-3 border-b border-zinc-100 pb-2 dark:border-neutral-800">
+        <div className="flex items-baseline gap-2">
+          <span className="text-xs font-medium text-zinc-600 dark:text-neutral-300">Cursors</span>
+          <span className="text-[10px] text-zinc-400 dark:text-neutral-500">
+            {bundled} packs · 500 community sets
+          </span>
+        </div>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search packs…"
+          className="w-36 rounded-md border border-zinc-200 bg-transparent px-2 py-1 text-[11px] text-zinc-600 placeholder:text-zinc-300 focus:outline-none dark:border-neutral-800 dark:text-neutral-300 dark:placeholder:text-neutral-600"
+        />
+      </div>
+
+      <div className="flex min-h-0 flex-1 gap-3">
+        <div className="flex w-[124px] shrink-0 flex-col gap-0.5 overflow-y-auto pr-1">
+          {CUR_CATS.map((c, i) => (
+            <button
+              key={c.name}
+              onClick={() => {
+                setCat(i);
+                setQuery('');
+              }}
+              className={`flex items-center justify-between rounded px-2 py-1 text-left text-[11px] transition-colors ${
+                i === cat && !query
+                  ? 'bg-zinc-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                  : 'text-zinc-500 hover:bg-zinc-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+              }`}
+            >
+              <span className="truncate">{c.name}</span>
+              <span className="ml-1 shrink-0 tabular-nums opacity-60">{c.count}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="grid min-w-0 flex-1 auto-rows-min grid-cols-3 gap-1.5 overflow-y-auto">
+          {packs.map((p) => (
+            <button
+              key={p.n}
+              onClick={() => setApplied(p)}
+              className={`flex flex-col items-center justify-center gap-1 rounded-md border py-2.5 transition-colors ${
+                applied.n === p.n
+                  ? 'border-zinc-400 bg-zinc-50 dark:border-neutral-500 dark:bg-neutral-800'
+                  : 'border-zinc-200 hover:border-zinc-300 dark:border-neutral-800 dark:hover:border-neutral-700'
+              }`}
+            >
+              <CursorArrow size={17} fill={p.f} stroke={p.s} />
+              <span className="text-[9.5px] text-zinc-500 dark:text-neutral-400">{p.n}</span>
+            </button>
+          ))}
+          {packs.length === 0 && (
+            <p className="col-span-3 py-4 text-center text-[11px] text-zinc-400 dark:text-neutral-500">
+              Nothing matches “{query}”.
+            </p>
+          )}
+        </div>
+
+        <div className="flex w-[150px] shrink-0 flex-col rounded-md border border-zinc-200 p-2.5 dark:border-neutral-800">
+          <p className="text-[9px] uppercase tracking-[0.12em] text-zinc-400 dark:text-neutral-500">
+            Applied
+          </p>
+          <p className="mt-0.5 truncate text-[11px] font-medium text-zinc-700 dark:text-neutral-200">
+            {applied.n}
+          </p>
+
+          <div className="mt-2.5 grid grid-cols-5 gap-1">
+            {CUR_ROLES.map((role) => (
+              <div
+                key={role}
+                title={role}
+                className="flex h-7 items-center justify-center rounded bg-zinc-100 dark:bg-neutral-800"
+              >
+                <RoleGlyph role={role} pack={applied} />
+              </div>
+            ))}
+          </div>
+          <p className="mt-1.5 text-[9.5px] leading-snug text-zinc-400 dark:text-neutral-500">
+            5 of the 17 roles Windows defines. One click sets them all.
+          </p>
+
+          <button
+            onClick={() => setApplied(WINDOWS_DEFAULT)}
+            className="mt-auto rounded-md border border-zinc-200 py-1 text-[10px] text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-700"
+          >
+            Restore default
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Argus: four of the bot's systems, working — levels, strikes, AutoMod, webhooks ──
 
 const ARGUS_TABS = ['Levels', 'Strikes', 'AutoMod', 'Webhook'] as const;
