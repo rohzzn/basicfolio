@@ -8,10 +8,14 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   experimental: {
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   images: {
-    minimumCacheTTL: 86400, // Cache optimized images for 24 hours to reduce data transfer
+    // Every image on this site goes through <SiteImage>, a plain <img>. This
+    // flag is the backstop: even if next/image gets imported again by accident,
+    // it will emit a normal <img> instead of routing through Vercel's optimizer.
+    unoptimized: true,
+    minimumCacheTTL: 86400,
     formats: ['image/webp', 'image/avif'],
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.myanimelist.net' },

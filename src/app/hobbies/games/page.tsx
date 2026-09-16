@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Profile from './Profile';
-import Image from 'next/image';
+import Image from '@/components/SiteImage';
 import { X } from 'lucide-react';
 import { cs2Items, valorantItems, type CS2Item, type ValorantItem } from '@/data/inventory';
 

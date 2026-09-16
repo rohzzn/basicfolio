@@ -13,7 +13,6 @@
   "dependencies": {
     "@dicebear/adventurer": "^9.4.2",
     "@dicebear/core": "^9.4.2",
-    "@heroicons/react": "^2.2.0",
     "@mapbox/polyline": "^1.2.1",
     "@prisma/client": "^6.1.0",
     "@sendgrid/mail": "^8.1.5",
@@ -33,7 +32,6 @@
     "react": "^19.0.0",
     "react-activity-calendar": "^2.7.15",
     "react-dom": "^19.0.0",
-    "react-icons": "^5.4.0",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
