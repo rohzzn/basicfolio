@@ -5,15 +5,15 @@ import { ImageResponse } from 'next/og';
 export const ogSize = { width: 1200, height: 630 };
 export const ogContentType = 'image/png';
 
-const FONT_DIR = path.join(process.cwd(), 'public/font/WEB/fonts');
+const FONT_DIR = path.join(process.cwd(), 'public/font/geist');
 
 let fontsPromise: Promise<{ regular: Buffer; bold: Buffer }> | null = null;
 
 function loadFonts() {
   if (!fontsPromise) {
     fontsPromise = Promise.all([
-      readFile(path.join(FONT_DIR, 'Satoshi-Regular.ttf')),
-      readFile(path.join(FONT_DIR, 'Satoshi-Bold.ttf')),
+      readFile(path.join(FONT_DIR, 'Geist-400.ttf')),
+      readFile(path.join(FONT_DIR, 'Geist-700.ttf')),
     ]).then(([regular, bold]) => ({ regular, bold }));
   }
   return fontsPromise;
@@ -48,7 +48,7 @@ export async function renderOgImage({ eyebrow, title, description, tags }: OgIma
           height: '100%',
           display: 'flex',
           backgroundColor: '#F5F1EC',
-          fontFamily: 'Satoshi',
+          fontFamily: 'Geist',
           position: 'relative',
         }}
       >
@@ -151,8 +151,8 @@ export async function renderOgImage({ eyebrow, title, description, tags }: OgIma
     {
       ...ogSize,
       fonts: [
-        { name: 'Satoshi', data: regular, weight: 400, style: 'normal' },
-        { name: 'Satoshi', data: bold, weight: 700, style: 'normal' },
+        { name: 'Geist', data: regular, weight: 400, style: 'normal' },
+        { name: 'Geist', data: bold, weight: 700, style: 'normal' },
       ],
     },
   );

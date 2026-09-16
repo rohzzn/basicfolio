@@ -17,8 +17,8 @@ module.exports = {
         '10': '0.10',
       },
       fontFamily: {
-        sans: ['"Satoshi"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        heading: ['"Satoshi"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-geist)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-geist)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         serif: ['"Apple Garamond"', 'serif'],
       },
       colors: {

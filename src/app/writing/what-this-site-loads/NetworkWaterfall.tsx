@@ -32,16 +32,16 @@ const RESOURCES: Resource[] = [
     start: 78,
     duration: 12,
     url: '_next/static/css/app/layout.css',
-    note: 'Tailwind output. Only the utility classes actually referenced in the build are included — no unused styles, no global cascade drift. This file has barely grown despite adding dozens of pages.',
+    note: 'Tailwind output. Only the utility classes actually referenced in the build are included: no unused styles, no global cascade drift. This file has barely grown despite adding dozens of pages.',
   },
   {
-    name: 'Satoshi (variable)',
+    name: 'Geist (variable)',
     type: 'font',
     size: 34.8,
     start: 90,
-    duration: 195,
-    url: 'api.fontshare.com/v2/css?f[]=at.cb.satoshi@700,500…',
-    note: 'Variable-weight woff2 loaded from Fontshare CDN. One file covers every weight used on the site. The cross-origin DNS lookup is the price for not self-hosting it — something I should fix.',
+    duration: 68,
+    url: '_next/static/media/geist-latin-variable.woff2',
+    note: 'Variable-weight woff2, one file covering every weight used on the site. next/font/google downloads it at build time and serves it from this origin, so there is no third-party DNS lookup and no external CDN in the critical path.',
   },
   {
     name: 'webpack runtime',
@@ -59,7 +59,7 @@ const RESOURCES: Resource[] = [
     start: 86,
     duration: 98,
     url: '_next/static/chunks/1255-*.js',
-    note: 'React, React DOM, and the Next.js client runtime. Cached after first visit — returning visitors load this from disk in milliseconds.',
+    note: 'React, React DOM, and the Next.js client runtime. Cached after first visit. Returning visitors load this from disk in milliseconds.',
   },
   {
     name: 'vendor chunk',
@@ -68,7 +68,7 @@ const RESOURCES: Resource[] = [
     start: 86,
     duration: 115,
     url: '_next/static/chunks/4bd1b696-*.js',
-    note: 'Third-party libraries shared across all pages: react-github-calendar, lucide-react, and others. The largest single file in the bundle — auditing it with a bundle analyzer would probably surface something worth lazy-loading.',
+    note: 'Third-party libraries shared across all pages: react-github-calendar, lucide-react, and others. The largest single file in the bundle. Auditing it with a bundle analyzer would probably surface something worth lazy-loading.',
   },
   {
     name: 'page bundle',
@@ -86,7 +86,7 @@ const RESOURCES: Resource[] = [
     start: 285,
     duration: 310,
     url: 'github-contributions-api.jogruber.de/v4/rohzzn',
-    note: 'Called client-side by react-github-calendar after hydration. Returns JSON of all contribution activity for the past year. The last thing to arrive — and the most fragile point in the whole load. If this API goes down, the calendar disappears.',
+    note: 'Called client-side by react-github-calendar after hydration. Returns JSON of all contribution activity for the past year. The last thing to arrive, and the most fragile point in the whole load. If this API goes down, the calendar disappears.',
   },
 ];
 
@@ -112,7 +112,7 @@ const APIS: ApiEntry[] = [
     upstream: 'api.steampowered.com',
     usedOn: 'Games',
     cache: 'live',
-    note: 'Two routes: profile summary (player name, avatar, status) and game library with playtime. The games endpoint fetches owned games and recent playtime separately then merges them — Steam requires two API calls to get both.',
+    note: 'Two routes: profile summary (player name, avatar, status) and game library with playtime. The games endpoint fetches owned games and recent playtime separately then merges them. Steam requires two API calls to get both.',
   },
   {
     service: 'Valorant via HenrikDev',
@@ -121,7 +121,7 @@ const APIS: ApiEntry[] = [
     upstream: 'api.henrikdev.xyz/valorant/v3/mmr',
     usedOn: 'Games',
     cache: '1 hour',
-    note: 'Unofficial Valorant API by HenrikDev — Riot does not offer a public ranked API. Returns current MMR, rank tier, and recent rank history. Cached for an hour since my rank typically does not move during a single session.',
+    note: 'Unofficial Valorant API by HenrikDev. Riot does not offer a public ranked API. Returns current MMR, rank tier, and recent rank history. Cached for an hour since my rank typically does not move during a single session.',
   },
   {
     service: 'Leetify',
@@ -139,7 +139,7 @@ const APIS: ApiEntry[] = [
     upstream: 'a1.allstar.gg/graphql',
     usedOn: 'Gaming Clips',
     cache: 'live',
-    note: 'CS2 clips via Allstar GraphQL — paginated until all clips are fetched.',
+    note: 'CS2 clips via Allstar GraphQL, paginated until all clips are fetched.',
   },
   {
     service: 'Hevy',
@@ -148,7 +148,7 @@ const APIS: ApiEntry[] = [
     upstream: 'api.hevyapp.com/v1/workouts',
     usedOn: 'Move',
     cache: 'live',
-    note: 'Workout log from Hevy via the developer API — exercises, sets, reps, and weights per session.',
+    note: 'Workout log from Hevy via the developer API: exercises, sets, reps, and weights per session.',
   },
   {
     service: 'TMDB',
@@ -157,7 +157,7 @@ const APIS: ApiEntry[] = [
     upstream: 'api.themoviedb.org/3/account',
     usedOn: 'Watchlist',
     cache: 'live',
-    note: 'My rated movies and TV shows from The Movie Database. Uses an OAuth session — I connect my TMDB account and the site reads my personal ratings. /api/letterboxd is an alias for the same route, kept for backward compatibility.',
+    note: 'My rated movies and TV shows from The Movie Database. Uses an OAuth session: I connect my TMDB account and the site reads my personal ratings. /api/letterboxd is an alias for the same route, kept for backward compatibility.',
   },
   {
     service: 'MyAnimeList',
@@ -166,7 +166,7 @@ const APIS: ApiEntry[] = [
     upstream: 'api.myanimelist.net/v2/users/rohzzn/animelist',
     usedOn: 'Anime',
     cache: 'live',
-    note: 'Full anime list with watch status, personal scores, and genre tags. Handles pagination by recursively fetching the next page until there is none — MAL limits to 100 entries per request.',
+    note: 'Full anime list with watch status, personal scores, and genre tags. Handles pagination by recursively fetching the next page until there is none. MAL limits to 100 entries per request.',
   },
   {
     service: 'YouTube Data API',
@@ -202,7 +202,7 @@ const APIS: ApiEntry[] = [
     upstream: 'github-contributions-api.jogruber.de/v4/rohzzn',
     usedOn: 'Home',
     cache: 'browser',
-    note: 'The only external API called directly from the browser rather than a server proxy. Used by react-github-calendar. It is the last and largest item in the waterfall — and the one most likely to cause issues if the upstream goes down.',
+    note: 'The only external API called directly from the browser rather than a server proxy. Used by react-github-calendar. It is the last and largest item in the waterfall, and the one most likely to cause issues if the upstream goes down.',
   },
   {
     service: 'Upstash Redis',
@@ -212,15 +212,6 @@ const APIS: ApiEntry[] = [
     usedOn: 'Art',
     cache: 'real-time KV',
     note: 'Photo like counts stored in Upstash Redis via their HTTP API. Persists across sessions without a full database. Currently the only server-side persistent state on the site.',
-  },
-  {
-    service: 'Fontshare CDN',
-    category: 'infra',
-    internalRoute: '(direct, no proxy)',
-    upstream: 'api.fontshare.com',
-    usedOn: 'All pages',
-    cache: 'browser cache',
-    note: 'Satoshi loaded directly from Fontshare on every page. The third-party DNS lookup adds latency on first load. The fix is to self-host via next/font/local — it is a one-hour job I have been putting off.',
   },
 ];
 

@@ -1,14 +1,13 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import { Caveat } from "next/font/google";
+import { Geist } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import MultiPagePortfolio from '../components/multi-page-portfolio';
 
-const caveat = Caveat({
+const geist = Geist({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-caveat",
+  variable: "--font-geist",
   display: "swap",
 });
 export const metadata: Metadata = {
@@ -67,10 +66,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={caveat.variable} suppressHydrationWarning>
+    <html lang="en" className={geist.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        <Script id="microsoft-clarity" strategy="afterInteractive">
+        {/* The sidebar's Discord status hits Lanyard on every cold load, so get
+            the DNS and TLS handshake out of the way while the page is parsing. */}
+        <link rel="preconnect" href="https://api.lanyard.rest" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://api.lanyard.rest" />
+        {/* Analytics waits for the page to go idle rather than competing with
+            hydration for the main thread. */}
+        <Script id="microsoft-clarity" strategy="lazyOnload">
           {`(function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
               t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;

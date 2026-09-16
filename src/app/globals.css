@@ -4,32 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Satoshi Variable Font ─────────────────────────────────────── */
-@font-face {
-  font-family: 'Satoshi';
-  src: url('/font/WEB/fonts/Satoshi-Variable.woff2') format('woff2'),
-       url('/font/WEB/fonts/Satoshi-Variable.woff') format('woff'),
-       url('/font/WEB/fonts/Satoshi-Variable.ttf') format('truetype');
-  font-weight: 300 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Satoshi';
-  src: url('/font/WEB/fonts/Satoshi-VariableItalic.woff2') format('woff2'),
-       url('/font/WEB/fonts/Satoshi-VariableItalic.woff') format('woff'),
-       url('/font/WEB/fonts/Satoshi-VariableItalic.ttf') format('truetype');
-  font-weight: 300 900;
-  font-style: italic;
-  font-display: swap;
-}
+/* ─── Geist ─────────────────────────────────────────────────────── */
+/* Loaded by next/font/google in app/layout.tsx, which self-hosts the
+   files and exposes the family through --font-geist. */
 
 :root {
   --background: #F5F1EC;
   --foreground: #333333;
-  --font-heading: "Satoshi", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Apple Garamond", serif;
 }
 
@@ -86,22 +69,14 @@ a, button {
   backface-visibility: hidden;
 }
 
-/* Optimize image rendering */
-img {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
+/* Image scaling is left at the browser default. `crisp-edges` used to be set
+   here as a "performance" tweak, but it disables smooth downscaling, which is
+   exactly what the photo grids need. */
 
-/* Reduce layout shifts */
-.fixed {
-  contain: layout style paint;
-}
-
-/* Performance hints for interactive elements */
-button, a, [role="button"] {
-  will-change: transform;
-  contain: layout style paint;
-}
+/* No blanket `will-change` or `contain` on interactive elements. Promoting
+   every link and button to its own compositor layer costs memory and paint
+   time on pages with dozens of them, and buys nothing: these only animate
+   colour. Anything that genuinely needs promoting opts in via .transform-gpu. */
 
 /* Optimize scrollbar */
 ::-webkit-scrollbar {
@@ -330,16 +305,6 @@ html.e-reader-mode pre {
 
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in forwards;
-}
-
-/* Handwritten text style */
-.handwritten-text {
-  font-family: var(--font-caveat), cursive;
-  font-size: 1.1rem;
-  font-weight: 500;
-  transform: rotate(-2deg);
-  opacity: 0.85;
-  letter-spacing: 0.5px;
 }
 
 .scrollbar-hide {
