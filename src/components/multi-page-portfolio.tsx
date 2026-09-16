@@ -14,7 +14,6 @@ import WeatherToggle from './weather/WeatherToggle';
 // hydration instead of bundling them into every page's initial JS.
 const CommandPalette = dynamic(() => import('./CommandPalette'), { ssr: false });
 const CursorSound = dynamic(() => import('./CursorSound'), { ssr: false });
-const CustomCursor = dynamic(() => import('./CustomCursor'), { ssr: false });
 const EReaderEasterEgg = dynamic(() => import('./EReaderEasterEgg'), { ssr: false });
 
 interface NavLinkProps {
@@ -439,7 +438,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex min-h-screen bg-zinc-50 dark:bg-neutral-950">
       <CommandPalette />
       <CursorSound />
-      <CustomCursor />
       <EReaderEasterEgg />
 
       
