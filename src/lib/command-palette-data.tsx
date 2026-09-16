@@ -30,7 +30,6 @@ const writingIconBySlug: Record<string, React.ReactNode> = {
   'discord-article': <Gamepad2 className="w-4 h-4" />,
   'esports-journey': <Award className="w-4 h-4" />,
   'beginners-guide-design': <PenTool className="w-4 h-4" />,
-  'satoshi-font': <PenTool className="w-4 h-4" />,
   'security-article': <Target className="w-4 h-4" />,
   'what-this-site-loads': <TrendingUp className="w-4 h-4" />,
 };

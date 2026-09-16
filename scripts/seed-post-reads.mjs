@@ -40,7 +40,6 @@ const slugs = [
   'what-this-site-loads',
   'software-i-admire',
   'forty-projects',
-  'satoshi-font',
   'moving-to-cincinnati',
   'catan-coop',
   'first-spring',

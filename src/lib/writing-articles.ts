@@ -12,7 +12,6 @@ export const articleImports: Record<string, () => Promise<ArticleModule>> = {
   'what-this-site-loads': () => import('@/app/writing/what-this-site-loads/Article'),
   'software-i-admire': () => import('@/app/writing/software-i-admire/Article'),
   'forty-projects': () => import('@/app/writing/forty-projects/Article'),
-  'satoshi-font': () => import('@/app/writing/satoshi-font/Article'),
   'moving-to-cincinnati': () => import('@/app/writing/moving-to-cincinnati/Article'),
   'catan-coop': () => import('@/app/writing/catan-coop/Article'),
   'first-spring': () => import('@/app/writing/first-spring/Article'),

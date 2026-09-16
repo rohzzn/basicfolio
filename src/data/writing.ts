@@ -38,7 +38,7 @@ export const posts: Post[] = [
   {
     slug: 'discord-widgets',
     title: 'How to Build Discord Profile Widgets',
-    description: 'A practical guide to building Discord profile widgets using the new widgets v2 experiment — from setting up your application to displaying live data on your profile.',
+    description: 'A practical guide to building Discord profile widgets using the new widgets v2 experiment, from setting up your application to displaying live data on your profile.',
     date: '2026-05-29',
     displayDate: 'May 2026',
     category: 'tech',
@@ -54,7 +54,7 @@ export const posts: Post[] = [
   {
     slug: 'what-this-site-loads',
     title: 'Everything This Site Loads Over the Wire',
-    description: 'I opened the network tab on my own portfolio and wrote down every request. The fonts, the scripts, the API calls — and what I\'d change.',
+    description: 'I opened the network tab on my own portfolio and wrote down every request. The fonts, the scripts, the API calls, and what I\'d change.',
     date: '2026-05-02',
     displayDate: 'May 2026',
     category: 'tech',
@@ -76,14 +76,6 @@ export const posts: Post[] = [
     category: 'tech',
   },
   {
-    slug: 'satoshi-font',
-    title: 'Why I Use Satoshi on Everything I Build',
-    description: 'The font choices behind this site and why Satoshi specifically became my default for almost every project.',
-    date: '2024-10-15',
-    displayDate: 'Oct 2024',
-    category: 'tech',
-  },
-  {
     slug: 'moving-to-cincinnati',
     title: 'From Hyderabad to Cincinnati',
     description: 'The whole process of finishing a degree in India, applying to grad school, getting a visa, and arriving alone in a city 14,000km away.',
@@ -94,7 +86,7 @@ export const posts: Post[] = [
   {
     slug: 'catan-coop',
     title: 'Building Multiplayer Catan From Scratch',
-    description: 'How I built a full-featured online Settlers of Catan — hex grid geometry, server-authoritative game state, Socket.IO rooms, and Web Audio all from scratch.',
+    description: 'How I built a full-featured online Settlers of Catan: hex grid geometry, server-authoritative game state, Socket.IO rooms, and Web Audio all from scratch.',
     date: '2026-05-01',
     displayDate: 'May 2026',
     category: 'tech',
@@ -142,7 +134,7 @@ export const posts: Post[] = [
   {
     slug: 'boring-performance',
     title: 'Boring Guide to 10x Frontend Performance',
-    description: 'The unsexy, practical steps that actually make your frontend fast — no magic, just fundamentals done right.',
+    description: 'The unsexy, practical steps that actually make your frontend fast: no magic, just fundamentals done right.',
     date: '2024-04-15',
     displayDate: 'Apr 2024',
     category: 'tech',
@@ -158,7 +150,7 @@ export const posts: Post[] = [
   {
     slug: 'esports-journey',
     title: 'My Time in Esports',
-    description: 'From LAN cafes to online tournaments — my personal journey through competitive gaming and the esports scene.',
+    description: 'From LAN cafes to online tournaments: my personal journey through competitive gaming and the esports scene.',
     date: '2024-03-08',
     displayDate: 'Mar 2024',
     category: 'life',
