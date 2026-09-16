@@ -677,7 +677,7 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                 }}
                 tabIndex={0}
                 role="region"
-                aria-label="Seen — scroll the wheel over the gallery or swipe the strip. Arrow keys when focused."
+                aria-label="Seen: scroll the wheel over the gallery or swipe the strip. Arrow keys when focused."
                 onKeyDown={(e) => {
                   const next = e.key === "ArrowDown" || e.key === "ArrowRight";
                   const prev = e.key === "ArrowUp" || e.key === "ArrowLeft";

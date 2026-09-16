@@ -25,7 +25,7 @@ const hackathonsParticipated: Event[] = [
     time: "24 hours",
     location: "University of Cincinnati, OH",
     description:
-      "Built 'StudyPulse' — a cross-platform clinical trial recruitment engine. Patients use a React Native app with voice/text search; clinicians use a React dashboard with AI-powered triage. Both sync via Supabase. Built for the Medpace challenge track.",
+      "Built 'StudyPulse', a cross-platform clinical trial recruitment engine. Patients use a React Native app with voice/text search; clinicians use a React dashboard with AI-powered triage. Both sync via Supabase. Built for the Medpace challenge track.",
     technologies: ["Expo", "React Native", "React", "Vite", "Supabase", "Gemini API", "ElevenLabs"],
     role: "Full Stack Developer",
     projectUrl: "https://devpost.com/software/studypulse-ik341d",
@@ -38,7 +38,7 @@ const hackathonsParticipated: Event[] = [
     time: "12 hours",
     location: "CoKarma, Hyderabad",
     description:
-      "Built 'Jupiter Router' — an analytics and visualization tool for swap routes on Solana's leading liquidity aggregator. Features interactive route visualization, multi-route comparison, and protocol identification.",
+      "Built 'Jupiter Router', an analytics and visualization tool for swap routes on Solana's leading liquidity aggregator. Features interactive route visualization, multi-route comparison, and protocol identification.",
     technologies: ["Next.js", "React", "Jupiter API", "Solana", "Web3"],
     role: "Team Lead & Backend",
     projectUrl: "https://github.com/rohzzn/token_routes",
@@ -51,7 +51,7 @@ const hackathonsParticipated: Event[] = [
     time: "72 hours",
     location: "MREC, Hyderabad",
     description:
-      "Developed 'Meet' — a video calling app with Google/Slack/Microsoft auth, one-to-one or group calls, screen sharing, real-time messaging, and support for up to 30 users.",
+      "Developed 'Meet', a video calling app with Google/Slack/Microsoft auth, one-to-one or group calls, screen sharing, real-time messaging, and support for up to 30 users.",
     technologies: ["TypeScript", "Go", "NodeJS", "Agora", "Docker", "SQL"],
     achievement: "Winner",
     role: "Full Stack Developer",
@@ -65,7 +65,7 @@ const hackathonsParticipated: Event[] = [
     time: "36 hours",
     location: "MIT (Virtual)",
     description:
-      "Created 'Alert' — a safety app where users volunteer as companions, upload photos of danger zones, view interactive maps, and get insights about safe travel times.",
+      "Created 'Alert', a safety app where users volunteer as companions, upload photos of danger zones, view interactive maps, and get insights about safe travel times.",
     technologies: ["Node.js", "Express", "MongoDB", "Maps API"],
     achievement: "Finalist",
     role: "Team Lead & Full Stack",
@@ -110,7 +110,7 @@ const eventsOrganized: Event[] = [
     date: "August 2022",
     location: "MREC Seminar Hall",
     description:
-      "Implementing AI algorithms from scratch — custom ML models, computer vision, NLP, with hands-on optimization sessions.",
+      "Implementing AI algorithms from scratch: custom ML models, computer vision, NLP, with hands-on optimization sessions.",
     audience: "3rd & 4th Year Students",
     participants: 310,
     technologies: ["Python", "ML Algorithms", "Computer Vision", "NLP"],

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 export const metadata: Metadata = {
   title: 'Books',
-  description: 'A few books I have read — ratings and notes.',
+  description: 'A few books I have read, with ratings and notes.',
 };
 
 export default function BooksLayout({ children }: { children: ReactNode }) {

@@ -108,7 +108,7 @@ function BookingFieldControl({
           onChange={(e) => onChange(field.slug, e.target.value)}
           className={inputClass}
         >
-          {!field.required ? <option value="">—</option> : null}
+          {!field.required ? <option value="">-</option> : null}
           {field.options.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}

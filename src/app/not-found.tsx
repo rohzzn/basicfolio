@@ -153,7 +153,7 @@ export default function NotFound() {
       onMouseLeave={onMouseUp}
     >
       <p className="text-xs font-mono text-zinc-400 dark:text-neutral-400 uppercase tracking-widest mb-6">
-        404 — you&apos;re lost
+        404: you&apos;re lost
       </p>
 
       {/* TE-style panel */}

@@ -14,7 +14,7 @@ export function generatePostMetadata(slug: string): Metadata {
   const url = `${SITE}/writing/${post.slug}`;
 
   return {
-    title: `${post.title} — Rohan`,
+    title: `${post.title} · Rohan`,
     description: post.description,
     openGraph: {
       title: post.title,

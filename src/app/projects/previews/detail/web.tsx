@@ -13,7 +13,7 @@ const WINDOW_CONTENT: Record<string, React.ReactNode> = {
   Finder: <div className="grid grid-cols-4 gap-2 p-3">{['📁 Projects', '📁 Photos', '📄 resume.pdf', '📁 Music'].map((f) => <div key={f} className="flex flex-col items-center gap-1 text-[9px] text-zinc-600 dark:text-neutral-300"><span className="text-lg">{f.split(' ')[0]}</span>{f.split(' ')[1]}</div>)}</div>,
   Notes: <div className="p-3 text-xs text-zinc-700 dark:text-neutral-300"><p className="mb-1 font-semibold">Today</p><p className="text-zinc-500 dark:text-neutral-400">Ship the Mac desktop demo. Add drag support next.</p></div>,
   Photos: <div className="grid grid-cols-3 gap-1 p-2">{['#60a5fa', '#f472b6', '#fbbf24', '#34d399', '#a78bfa', '#f87171'].map((c, i) => <div key={i} className="aspect-square rounded" style={{ backgroundColor: c, opacity: 0.7 }} />)}</div>,
-  Mail: <div className="divide-y divide-zinc-100 text-xs dark:divide-neutral-800">{['Vanshita — lunch?', 'GitHub — new star', 'Vercel — deployed'].map((m) => <div key={m} className="px-3 py-1.5 text-zinc-600 dark:text-neutral-300">{m}</div>)}</div>,
+  Mail: <div className="divide-y divide-zinc-100 text-xs dark:divide-neutral-800">{['Vanshita: lunch?', 'GitHub: new star', 'Vercel: deployed'].map((m) => <div key={m} className="px-3 py-1.5 text-zinc-600 dark:text-neutral-300">{m}</div>)}</div>,
   Terminal: <div className="bg-zinc-950 p-3 font-mono text-[10px] text-emerald-400">$ whoami<br />rohan<br />$ █</div>,
 };
 export function MacDetail() {
@@ -69,7 +69,7 @@ export function MacDetail() {
 
 const QUIRE_PAGES = [
   ['Invoice #2291', 'Total due: $1,240.00', 'Payment terms: Net 30'],
-  ['Line items', '3x Design consult — $400', '1x Development — $840'],
+  ['Line items', '3x Design consult · $400', '1x Development · $840'],
   ['Signature', 'Signed, Rohan Pothuru', 'Date: 08/17/2026'],
 ];
 const QUIRE_TOOLS = ['Text', 'Sign', 'Image', 'Fill'];
@@ -571,7 +571,7 @@ export function PortfolioV4Detail() {
 const V3_STEPS = [
   'Building things that are useful, fast, and a little bit fun.',
   'Currently: subscription trackers, uptime monitors, screen recorders.',
-  'Say hi — hi@rohan.run',
+  'Say hi: hi@rohan.run',
 ];
 export function PortfolioV3Detail() {
   const [step, setStep] = useState(-1);

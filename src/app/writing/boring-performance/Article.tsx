@@ -49,7 +49,7 @@ const Chart = dynamic(() => import('./HeavyChart'), {
         <div className="bg-zinc-100 dark:bg-neutral-800 p-6 rounded-lg mb-8">
           <h3 className="text-sm font-medium mb-4 dark:text-paper">Missing cleanup vs correct cleanup</h3>
           <pre className="bg-zinc-900 text-zinc-200 p-4 rounded overflow-x-auto text-xs">
-{`// Leaks memory — interval keeps running after unmount
+{`// Leaks memory: interval keeps running after unmount
 useEffect(() => {
   const interval = setInterval(() => {
     setData(prev => [...prev, fetchLatest()]);

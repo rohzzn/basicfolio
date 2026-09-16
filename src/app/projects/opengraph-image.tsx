@@ -9,6 +9,6 @@ export default ogImageFor({
   eyebrow: 'Projects',
   title: `${projects.length} things I have built`,
   description:
-    'Apps, web toys, games and experiments — nearly all of them with a live demo you can poke at.',
+    'Apps, web toys, games and experiments, nearly all of them with a live demo you can poke at.',
   tags: ['Apps', 'Web', 'Games', 'Other'],
 });

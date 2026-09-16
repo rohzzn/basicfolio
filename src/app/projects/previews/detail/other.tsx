@@ -286,7 +286,7 @@ export function AnomalyDetectionDetail() {
           return <circle key={i} cx={x} cy={y} r={hov === i ? 5 : 3.5} fill="#ef4444" onMouseEnter={() => setHov(i)} onMouseLeave={() => setHov(null)} className="cursor-pointer transition-all" />;
         })}
       </svg>
-      <p className="text-center text-xs text-zinc-400 dark:text-neutral-400">{hov !== null ? `${TRAFFIC[hov]} pkts/s — flagged anomaly` : `${anomalies.length} anomalies detected · hover a red dot`}</p>
+      <p className="text-center text-xs text-zinc-400 dark:text-neutral-400">{hov !== null ? `${TRAFFIC[hov]} pkts/s · flagged anomaly` : `${anomalies.length} anomalies detected · hover a red dot`}</p>
       <div className="flex items-center justify-center gap-2">
         <span className="text-[10px] text-zinc-400 dark:text-neutral-500">threshold</span>
         <input type="range" min={20} max={55} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="w-32" />

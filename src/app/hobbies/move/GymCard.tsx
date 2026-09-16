@@ -37,7 +37,7 @@ export default function GymCard({ workout, model }: GymCardProps) {
           <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
             <div>
               <p className="text-2xl font-semibold tabular-nums leading-none text-zinc-900 dark:text-paper">
-                {model.volume > 0 ? fmtVolume(model.volume) : '—'}
+                {model.volume > 0 ? fmtVolume(model.volume) : '-'}
               </p>
               <p className="mt-1.5 text-xs text-zinc-500 dark:text-neutral-400">
                 {fmtDur(workout.start_time, workout.end_time)}
@@ -60,7 +60,7 @@ export default function GymCard({ workout, model }: GymCardProps) {
                   className="bg-zinc-200/60 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500 dark:bg-neutral-800/80 dark:text-neutral-400"
                 >
                   {tag.label}
-                  {tag.primary ? ' — primary' : ''}
+                  {tag.primary ? ' · primary' : ''}
                 </span>
               ))}
             </div>

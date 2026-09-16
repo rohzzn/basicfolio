@@ -27,7 +27,7 @@ const BeginnersGuideProgramming: React.FC = () => {
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">Pick one language and stay with it</h2>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4 text-sm">
-          The single biggest mistake beginners make is switching languages every few weeks. Python looks easier, then JavaScript looks more practical, then someone mentions Java and now you are doing all three badly. Programming concepts — loops, functions, data structures, recursion — are the same in every language. Once you know them solidly in one language, picking up another takes weeks rather than months. Pick Python or JavaScript. Commit. Do not switch for at least a year.
+          The single biggest mistake beginners make is switching languages every few weeks. Python looks easier, then JavaScript looks more practical, then someone mentions Java and now you are doing all three badly. Programming concepts (loops, functions, data structures, recursion) are the same in every language. Once you know them solidly in one language, picking up another takes weeks rather than months. Pick Python or JavaScript. Commit. Do not switch for at least a year.
         </p>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4 text-sm">
           I started with Python and I am glad I did. The syntax is clean, error messages are readable, and the standard library handles most things you want to do without third-party packages. Once I understood Python well, picking up JavaScript for web work felt natural. I now use TypeScript for almost everything. But none of that was possible without the Python foundation.
@@ -35,7 +35,7 @@ const BeginnersGuideProgramming: React.FC = () => {
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">Tutorials are a trap after the first week</h2>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4 text-sm">
-          Watch one beginner tutorial to understand the syntax. Then stop watching and start building something. Tutorials feel productive because you are following along and the code works. But you are not learning to problem-solve — you are learning to copy. The moment you try to do something not covered in the tutorial, you will feel like you know nothing, because you effectively do not.
+          Watch one beginner tutorial to understand the syntax. Then stop watching and start building something. Tutorials feel productive because you are following along and the code works. But you are not learning to problem-solve. You are learning to copy. The moment you try to do something not covered in the tutorial, you will feel like you know nothing, because you effectively do not.
         </p>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4 text-sm">
           The projects that actually taught me things were embarrassingly small: a script to rename files in a folder, a Discord bot that responded to commands, a webpage that fetched an API and displayed data. Each one forced me to read documentation, debug real errors, and make real decisions. That process is the actual learning.

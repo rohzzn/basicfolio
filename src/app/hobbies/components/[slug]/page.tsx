@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const component = getRohanComponent(slug);
   if (!component) return { title: "Component not found" };
   return {
-    title: `${component.name} — Components`,
+    title: `${component.name} · Components`,
     description: component.description,
   };
 }

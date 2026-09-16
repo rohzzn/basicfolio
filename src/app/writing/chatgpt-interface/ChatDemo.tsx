@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 const CONVERSATIONS: { role: 'user' | 'ai'; text: string }[][] = [
   [
     { role: 'user', text: 'What is the difference between useEffect and useLayoutEffect?' },
-    { role: 'ai',   text: 'useEffect runs after the browser paints the screen — it is non-blocking and best for most side effects like data fetching or subscriptions. useLayoutEffect fires synchronously after DOM mutations but before the paint, so it is useful when you need to measure layout or prevent visual flicker. In practice, start with useEffect and only switch if you see flickering.' },
+    { role: 'ai',   text: 'useEffect runs after the browser paints the screen. It is non-blocking and best for most side effects like data fetching or subscriptions. useLayoutEffect fires synchronously after DOM mutations but before the paint, so it is useful when you need to measure layout or prevent visual flicker. In practice, start with useEffect and only switch if you see flickering.' },
   ],
   [
     { role: 'user', text: 'Give me a quick Git command to undo my last commit but keep the changes.' },

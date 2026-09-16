@@ -52,10 +52,10 @@ const THREAD: ThreadPost[] = [
 const REPLY = {
   name: 'Evan Hubinger',
   handle: 'EvanHub',
-  bio: 'Alignment Science lead, Anthropic — “Opinions my own”',
+  bio: 'Alignment Science lead, Anthropic · “Opinions my own”',
   monogram: 'EH',
   id: '2097497037956891126',
-  text: 'Jacob is correct here—we really do earnestly believe AI could kill all humans! I personally think it is >10% within the next decade. I believe Anthropic is trying its best, but we do not yet have a plan to solve alignment for superintelligence and are not clearly on track to.',
+  text: 'Jacob is correct here: we really do earnestly believe AI could kill all humans! I personally think it is >10% within the next decade. I believe Anthropic is trying its best, but we do not yet have a plan to solve alignment for superintelligence and are not clearly on track to.',
   quoting: THREAD[2],
 };
 
@@ -205,7 +205,7 @@ export default function Thread() {
 
           <div className={`px-4 py-2.5 border-t border-zinc-200 dark:border-neutral-800 ${BAND}`}>
             <span className="text-xs text-zinc-500 dark:text-neutral-400">
-              Posted 9 September 2026, 01:27 UTC — 83 minutes after the thread
+              Posted 9 September 2026, 01:27 UTC, 83 minutes after the thread
             </span>
           </div>
         </div>

@@ -690,7 +690,7 @@ const MusicPage: React.FC = () => {
                 {artist.name}
               </h4>
               <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-neutral-400">
-                {artist.genres?.length ? artist.genres.slice(0, 2).join(", ") : "—"}
+                {artist.genres?.length ? artist.genres.slice(0, 2).join(", ") : "-"}
               </p>
             </a>
           ))}

@@ -199,7 +199,7 @@ export default function TypingTest() {
       <div className="flex items-baseline justify-between mb-8">
         <h2 className="text-lg font-medium dark:text-paper">Typing</h2>
         <span className="text-xs text-zinc-400 dark:text-neutral-400">
-          my best — {ROHAN_WPM} wpm
+          my best: {ROHAN_WPM} wpm
         </span>
       </div>
 
@@ -321,7 +321,7 @@ export default function TypingTest() {
             <p className="text-xs text-amber-500 mb-2">caps lock is on</p>
           )}
           <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-6">
-            tab — reset · space — next word
+            tab: reset · space: next word
           </p>
 
           {/* Keyboard */}

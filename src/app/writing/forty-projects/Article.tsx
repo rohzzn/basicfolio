@@ -20,7 +20,7 @@ export default function FortyProjects() {
       <div className="text-sm max-w-3xl">
 
         <p className="text-zinc-600 dark:text-neutral-400 mb-6">
-          I just counted. Forty public repositories that are actual projects — not forks, not homework, not hello world. Applications, web tools, games, browser extensions, CLI packages, VS Code themes, Discord bots, iOS apps. Some of them have thousands of users. Most of them have none. I built all of them while doing something else: finishing school, working a job, taking classes at UC. Looking back at them as a set, the patterns are clearer than I expected.
+          I just counted. Forty public repositories that are actual projects, not forks, not homework, not hello world. Applications, web tools, games, browser extensions, CLI packages, VS Code themes, Discord bots, iOS apps. Some of them have thousands of users. Most of them have none. I built all of them while doing something else: finishing school, working a job, taking classes at UC. Looking back at them as a set, the patterns are clearer than I expected.
         </p>
 
         <ProjectStats />
@@ -30,7 +30,7 @@ export default function FortyProjects() {
           Tanoshi, my VS Code theme, has 1,700 downloads. The DSA Roadmap has 12,000 visits. The Figma Pages plugin has 800 users. The Pokemon platformer has 6,800 visits. What those have in common is that I built them because I personally wanted them to exist and could not find an existing version I liked. Tanoshi started because I was bothered by how existing themes handled certain syntax colors. The DSA Roadmap started because I was frustrated by how fragmented existing algorithm learning resources were.
         </p>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
-          The projects I built for a portfolio, or to learn a technology, or because someone suggested it as a project idea — almost none of those got any traction. The motivation came from the wrong place. Building something to learn React is fine for learning React. It is not a good origin story for something other people want to use.
+          The projects I built for a portfolio, or to learn a technology, or because someone suggested it as a project idea. Almost none of those got any traction. The motivation came from the wrong place. Building something to learn React is fine for learning React. It is not a good origin story for something other people want to use.
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-3 dark:text-paper">Finishing is a separate skill from building</h2>

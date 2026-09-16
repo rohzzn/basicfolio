@@ -23,14 +23,14 @@ const VariablesExposure: React.FC = () => {
         </p>
 
         <p className="text-zinc-600 dark:text-neutral-400 mb-4 text-sm">
-          Let&#39;s be real: we&#39;ve all been there. You&#39;ve got some sensitive API keys, maybe a webhook URL or two, and you do the responsible thing — you throw them in environment variables. No more hardcoded secrets in your Git repository, right? Except here&#39;s the thing: that might be the digital equivalent of hiding your house key under a doormat that&#39;s made of clear plastic.
+          Let&#39;s be real: we&#39;ve all been there. You&#39;ve got some sensitive API keys, maybe a webhook URL or two, and you do the responsible thing: you throw them in environment variables. No more hardcoded secrets in your Git repository, right? Except here&#39;s the thing: that might be the digital equivalent of hiding your house key under a doormat that&#39;s made of clear plastic.
         </p>
 
         <EnvVarDemo />
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">The False Promise of .env Files</h2>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4 text-sm">
-          Environment variables are the darling of modern web development. They&#39;re the go-to solution for keeping secrets out of your code, and every deployment platform from Vercel to Netlify treats them like digital Fort Knox. The problem isn&#39;t with the concept — it&#39;s with how we&#39;re using them. And trust me, we&#39;re using them wrong.
+          Environment variables are the darling of modern web development. They&#39;re the go-to solution for keeping secrets out of your code, and every deployment platform from Vercel to Netlify treats them like digital Fort Knox. The problem isn&#39;t with the concept. It&#39;s with how we&#39;re using them. And trust me, we&#39;re using them wrong.
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">Breaking Into My Own App</h2>

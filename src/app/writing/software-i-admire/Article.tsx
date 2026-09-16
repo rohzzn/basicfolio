@@ -24,7 +24,7 @@ export default function SoftwareIAdmire() {
         </p>
 
         <p className="text-zinc-600 dark:text-neutral-400 mb-6">
-          I find this interesting as a category. There is software that I use constantly and understand well enough to configure and debug, but that I could not have built — not because of effort, but because the engineering discipline involved is genuinely foreign to me. The people who wrote SQLite or ripgrep were optimizing for things I have never had to optimize for. Reading about how they work has changed how I think about the software I do write.
+          I find this interesting as a category. There is software that I use constantly and understand well enough to configure and debug, but that I could not have built, not because of effort, but because the engineering discipline involved is genuinely foreign to me. The people who wrote SQLite or ripgrep were optimizing for things I have never had to optimize for. Reading about how they work has changed how I think about the software I do write.
         </p>
 
         <AdmiredSoftware />
@@ -47,10 +47,10 @@ export default function SoftwareIAdmire() {
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">What I actually learned</h2>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
-          Reading about how these systems work has changed how I write TypeScript and Python in a few specific ways. Studying how Redis implements its sorted sets made me much more careful about when I reach for a sorted array versus a different data structure. Understanding how SQLite handles concurrent reads made me think differently about locking strategies in the services I build. Reading about V8&apos;s hidden classes made me write JavaScript objects more carefully — consistent property order across objects, not adding properties after construction.
+          Reading about how these systems work has changed how I write TypeScript and Python in a few specific ways. Studying how Redis implements its sorted sets made me much more careful about when I reach for a sorted array versus a different data structure. Understanding how SQLite handles concurrent reads made me think differently about locking strategies in the services I build. Reading about V8&apos;s hidden classes made me write JavaScript objects more carefully: consistent property order across objects, not adding properties after construction.
         </p>
         <p className="text-zinc-600 dark:text-neutral-400">
-          I am not going to write a production C program. But understanding what the people who did write them were optimizing for — and why those constraints produced the designs they did — seems like useful context for writing software in any language.
+          I am not going to write a production C program. But understanding what the people who did write them were optimizing for (and why those constraints produced the designs they did) seems like useful context for writing software in any language.
         </p>
 
       </div>

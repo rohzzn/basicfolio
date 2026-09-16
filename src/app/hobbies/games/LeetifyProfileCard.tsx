@@ -30,12 +30,12 @@ type LeetifyProfile = {
 };
 
 function formatMaybeNumber(n: unknown, digits = 0) {
-  if (typeof n !== "number" || Number.isNaN(n)) return "—";
+  if (typeof n !== "number" || Number.isNaN(n)) return "-";
   return digits === 0 ? `${Math.round(n)}` : n.toFixed(digits);
 }
 
 function getWingmanRankName(rank: number | null | undefined): string {
-  if (typeof rank !== "number") return "—";
+  if (typeof rank !== "number") return "-";
   const ranks = [
     "Unranked",
     "Silver I",
@@ -57,7 +57,7 @@ function getWingmanRankName(rank: number | null | undefined): string {
     "Supreme Master First Class",
     "The Global Elite",
   ];
-  if (rank < 0 || rank >= ranks.length) return "—";
+  if (rank < 0 || rank >= ranks.length) return "-";
   return ranks[rank];
 }
 
@@ -163,7 +163,7 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
               <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-neutral-400">CS2 Matches</p>
                 <p className="text-sm font-medium dark:text-paper">
-                  {typeof data?.total_matches === "number" ? new Intl.NumberFormat().format(data.total_matches) : "—"}
+                  {typeof data?.total_matches === "number" ? new Intl.NumberFormat().format(data.total_matches) : "-"}
                 </p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
@@ -172,11 +172,11 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Peak Rank</p>
-                <p className="text-sm font-medium dark:text-paper">{valorantData?.data?.peak?.tier?.name || "—"}</p>
+                <p className="text-sm font-medium dark:text-paper">{valorantData?.data?.peak?.tier?.name || "-"}</p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Current Rank</p>
-                <p className="text-sm font-medium dark:text-paper">{valorantData?.data?.current?.tier?.name || "—"}</p>
+                <p className="text-sm font-medium dark:text-paper">{valorantData?.data?.current?.tier?.name || "-"}</p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Valorant Matches</p>
@@ -185,13 +185,13 @@ export default function LeetifyProfileCard({ totalSteamHours = 0 }: LeetifyProfi
                     ? new Intl.NumberFormat().format(
                         valorantData.data.seasonal.reduce((total, season) => total + (season.games || 0), 0)
                       )
-                    : "—"}
+                    : "-"}
                 </p>
               </div>
               <div className="rounded-md border border-zinc-200 dark:border-neutral-700 bg-white/60 dark:bg-neutral-900/20 p-3">
                 <p className="text-[11px] text-zinc-500 dark:text-neutral-400">Total Hours</p>
                 <p className="text-sm font-medium dark:text-paper">
-                  {totalSteamHours > 0 ? new Intl.NumberFormat().format(totalSteamHours + 4000) : "—"}
+                  {totalSteamHours > 0 ? new Intl.NumberFormat().format(totalSteamHours + 4000) : "-"}
                 </p>
               </div>
             </div>

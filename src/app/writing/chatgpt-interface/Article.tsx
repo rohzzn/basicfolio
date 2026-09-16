@@ -81,7 +81,7 @@ export async function POST(req: Request) {
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">What I Learned</h2>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4 text-sm">
-          Building the interface made me a lot more aware of how much of the AI experience is actually UI rather than model quality. The model is the same. But whether responses feel fast or slow, whether you feel in control or confused, whether you can find a conversation from last week — all of that is interface design. The underlying model could double in capability and a bad interface would still make it frustrating to use.
+          Building the interface made me a lot more aware of how much of the AI experience is actually UI rather than model quality. The model is the same. But whether responses feel fast or slow, whether you feel in control or confused, whether you can find a conversation from last week. All of that is interface design. The underlying model could double in capability and a bad interface would still make it frustrating to use.
         </p>
 
         <p className="text-zinc-600 dark:text-neutral-400 text-sm">

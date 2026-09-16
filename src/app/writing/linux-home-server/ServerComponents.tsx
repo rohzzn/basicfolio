@@ -134,7 +134,7 @@ export function CostComparison() {
           )}
           {savings === 0 && (
             <p className="mt-3 text-xs text-zinc-500 dark:text-neutral-400">
-              Hardware pays for itself at month {breakEvenMonths} — about {Math.ceil(breakEvenMonths / 12)} year in.
+              Hardware pays for itself at month {breakEvenMonths}, about {Math.ceil(breakEvenMonths / 12)} year in.
             </p>
           )}
         </div>
@@ -160,7 +160,7 @@ const SERVICES: Service[] = [
   { name: 'Portainer',           replaces: 'SSH commands',      access: 'private', desc: 'Web UI for managing containers, viewing logs, and restarting services without typing long commands.' },
   { name: 'Tailscale',           replaces: 'Manual WireGuard',  access: 'private', desc: 'WireGuard-based VPN mesh that connects all my devices. Every private service sits behind this.' },
   { name: 'PostgreSQL',          replaces: 'Managed Postgres',  access: 'private', desc: 'Shared database instance. Containers connect over the internal Docker network with no public port.' },
-  { name: 'Jellyfin',            replaces: 'Streaming services',access: 'private', desc: 'Local media server. V2 — not day one but on the list once the core stack is stable.' },
+  { name: 'Jellyfin',            replaces: 'Streaming services',access: 'private', desc: 'Local media server. V2: not day one but on the list once the core stack is stable.' },
 ];
 
 export function ServiceList() {

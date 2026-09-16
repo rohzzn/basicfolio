@@ -6,7 +6,7 @@ const MILESTONES = [
     date: 'Nov 2023',
     emoji: '📝',
     title: 'Started applications',
-    detail: 'Submitted to 3 universities. GRE, IELTS, LORs, SOP — the full stack of grad school paperwork.',
+    detail: 'Submitted to 3 universities. GRE, IELTS, LORs, SOP: the full stack of grad school paperwork.',
   },
   {
     date: 'Jan 2024',

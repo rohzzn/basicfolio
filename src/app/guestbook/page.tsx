@@ -492,7 +492,7 @@ export default function GuestbookPage() {
       ) : error ? (
         <p className="text-sm text-red-400">{error}</p>
       ) : threads.length === 0 ? (
-        <p className="text-sm text-zinc-400 dark:text-neutral-400">No entries yet — be the first.</p>
+        <p className="text-sm text-zinc-400 dark:text-neutral-400">No entries yet. Be the first.</p>
       ) : (
         <>
           <div>

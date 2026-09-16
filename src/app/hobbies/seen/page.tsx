@@ -745,8 +745,8 @@ function FramesStrip({ posts }: { posts: InstagramPost[] }) {
                 role="region"
                 aria-label={
                   stripHorizontal
-                    ? "Seen — swipe thumbnails sideways or scroll the wheel over the gallery. Arrow keys when focused."
-                    : "Seen — scroll the wheel over the gallery or swipe the strip vertically. Arrow keys when focused."
+                    ? "Seen: swipe thumbnails sideways or scroll the wheel over the gallery. Arrow keys when focused."
+                    : "Seen: scroll the wheel over the gallery or swipe the strip vertically. Arrow keys when focused."
                 }
                 onKeyDown={(e) => {
                   const next = e.key === "ArrowDown" || e.key === "ArrowRight";

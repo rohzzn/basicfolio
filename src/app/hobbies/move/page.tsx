@@ -99,19 +99,19 @@ export default function MovePage() {
   const statCards = [
     {
       label: 'Sessions',
-      value: stats.gymSessions > 0 ? stats.gymSessions.toLocaleString() : '—',
+      value: stats.gymSessions > 0 ? stats.gymSessions.toLocaleString() : '-',
     },
     {
       label: 'Volume',
-      value: stats.gymVolume > 0 ? fmtVolume(stats.gymVolume) : '—',
+      value: stats.gymVolume > 0 ? fmtVolume(stats.gymVolume) : '-',
     },
     {
       label: 'Sets',
-      value: stats.gymSets > 0 ? stats.gymSets.toLocaleString() : '—',
+      value: stats.gymSets > 0 ? stats.gymSets.toLocaleString() : '-',
     },
     {
       label: 'Active time',
-      value: stats.activeTimeSec > 0 ? fmtTime(stats.activeTimeSec) : '—',
+      value: stats.activeTimeSec > 0 ? fmtTime(stats.activeTimeSec) : '-',
     },
   ];
 

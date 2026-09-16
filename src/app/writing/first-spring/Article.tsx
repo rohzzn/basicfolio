@@ -20,7 +20,7 @@ const FirstSpring: React.FC = () => {
       <div className="text-sm max-w-3xl">
 
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
-          Spring semester was harder than fall. The coursework stepped up, I took on a team lead role I had not planned for, and I started a research position at Cincinnati Children&apos;s Hospital at the same time. By April I was running on less sleep than I should have been, but I finished with all A+ again — another 4.0 — and a clearer sense of what I want out of the rest of the program.
+          Spring semester was harder than fall. The coursework stepped up, I took on a team lead role I had not planned for, and I started a research position at Cincinnati Children&apos;s Hospital at the same time. By April I was running on less sleep than I should have been, but I finished with all A+ again (another 4.0) and a clearer sense of what I want out of the rest of the program.
         </p>
 
         <CourseCards />
@@ -35,12 +35,12 @@ const FirstSpring: React.FC = () => {
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">The other courses</h2>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
-          Advanced Algorithms II picked up exactly where the first one left off — harder problems, tighter time constraints, more expected of you. Network Security was the course I enjoyed most. The assignments were hands-on in a way that most courses are not: you were implementing things, not just studying them. The 2FA post on this site came directly out of work I did in that class, looking at how TOTP verification is commonly implemented wrong. Software Testing was a course I went in expecting to find dry, and it turned out to be one of the more useful ones — the habit of thinking about edge cases and failure modes before writing code is one I actually kept.
+          Advanced Algorithms II picked up exactly where the first one left off: harder problems, tighter time constraints, more expected of you. Network Security was the course I enjoyed most. The assignments were hands-on in a way that most courses are not: you were implementing things, not just studying them. The 2FA post on this site came directly out of work I did in that class, looking at how TOTP verification is commonly implemented wrong. Software Testing was a course I went in expecting to find dry, and it turned out to be one of the more useful ones. The habit of thinking about edge cases and failure modes before writing code is one I actually kept.
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">Research at CCHMC</h2>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
-          Partway through the semester I got a Graduate Research Assistant position at Cincinnati Children&apos;s Hospital. The work sits at the intersection of software engineering and healthcare infrastructure — the kind of thing where the stakes are different from building a web app because the systems you are working on actually matter to patient outcomes.
+          Partway through the semester I got a Graduate Research Assistant position at Cincinnati Children&apos;s Hospital. The work sits at the intersection of software engineering and healthcare infrastructure, the kind of thing where the stakes are different from building a web app because the systems you are working on actually matter to patient outcomes.
         </p>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
           It was the first time I was being paid to do research, which felt different from coursework in ways I found hard to articulate at first. The timeline is longer. The definition of done is fuzzier. You are not working toward a deadline set by a syllabus but toward understanding something that is genuinely not understood yet. I am still getting used to that mode of working, but I think it suits me.
@@ -48,12 +48,12 @@ const FirstSpring: React.FC = () => {
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">Cincinnati in spring</h2>
         <p className="text-zinc-600 dark:text-neutral-400 mb-4">
-          The city looks completely different in spring. Coming from Hyderabad, I had experienced seasons in theory but not the specific way a Midwestern city shifts from gray to color in March and April. Eden Park in April is genuinely worth the visit. The campus got better too — the walks that were just functional in the winter became actual reasons to leave the library.
+          The city looks completely different in spring. Coming from Hyderabad, I had experienced seasons in theory but not the specific way a Midwestern city shifts from gray to color in March and April. Eden Park in April is genuinely worth the visit. The campus got better too. The walks that were just functional in the winter became actual reasons to leave the library.
         </p>
 
         <h2 className="text-base font-medium mt-8 mb-4 dark:text-paper">Where things stand</h2>
         <p className="text-zinc-600 dark:text-neutral-400">
-          I finished with another 4.0 — all A+ again for the second semester in a row. I am going back to India for the summer before the fall semester starts — first time home since I left in August 2024. The research position continues in the fall. The program has two more semesters after that. I feel more settled in Cincinnati than I expected to after less than a year, and less certain than I expected to be about exactly what I want to do after graduation. Both of those feel like the right places to be at this point.
+          I finished with another 4.0, all A+ again for the second semester in a row. I am going back to India for the summer before the fall semester starts, first time home since I left in August 2024. The research position continues in the fall. The program has two more semesters after that. I feel more settled in Cincinnati than I expected to after less than a year, and less certain than I expected to be about exactly what I want to do after graduation. Both of those feel like the right places to be at this point.
         </p>
 
       </div>

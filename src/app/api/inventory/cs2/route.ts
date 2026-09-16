@@ -105,7 +105,7 @@ export async function GET() {
 
     if (res.status === 429) {
       return NextResponse.json(
-        { error: 'Steam is rate limiting — try again in a minute.' },
+        { error: 'Steam is rate limiting. Try again in a minute.' },
         { status: 200 }
       );
     }
