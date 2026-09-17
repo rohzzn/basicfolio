@@ -88,7 +88,9 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      {/* Two across, so each film is about 500 px wide and actually readable. One across on phones,
+          where half of 343 px would leave them a thumbnail again. */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {filtered.map((project) => (
           <ProjectCard key={project.slug} project={project} />
         ))}

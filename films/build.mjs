@@ -24,7 +24,9 @@ const outDir = path.join(here, 'out');
 
 const argv = process.argv.slice(2);
 const flag = (name, d) => { const k = argv.indexOf(name); return k >= 0 ? argv[k + 1] : d; };
-const jobs = +flag('--jobs', 4), width = +flag('--width', 720);
+// 960: the cards run two across in a max-w-5xl column, so a card is ~500 css px and a
+// 2x screen wants ~1000 device px of film.
+const jobs = +flag('--jobs', 4), width = +flag('--width', 960);
 const flagVals = new Set([flag('--jobs'), flag('--width')].filter(Boolean));
 const wanted = argv.filter(a => !a.startsWith('--') && !flagVals.has(a)).map(a => a.replace(/\.html$/, ''));
 const all = readdirSync(here).filter(f => f.endsWith('.html') && !f.startsWith('_')).map(f => f.replace(/\.html$/, '')).sort();
