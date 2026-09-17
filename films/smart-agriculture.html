@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>smart-agriculture</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Smart Agriculture, sensor-driven automated irrigation.
+// Look: flat screen print, field greens. Anchor: the sensor stake. Signature: the sprinkler sweeps, and every
+// pass it makes leaves the crop row behind it taller.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.7   field  the field in rows, a sensor stake reading dry, the valve shut         rows, gauge
+// 1.7   1.6   water  the sprinkler sweeps left and right; the rows grow behind it            arcs, dots
+// 3.3   1.8   sign   the field sign is painted: "smart agriculture"                          writeOn
+
+const PAL_AG = makePalette({
+  paper: '#dff0f7', paperBand: null, ink: '#23341f', night: '#1a2718', chalk: '#ffffff', chalkDim: '#8aa08a', guide: 'rgba(35,52,31,.3)',
+  fills: ['#6fa84f', '#3f7d3a', '#c9a227', '#8b5e34', '#a8d08d', '#4a9fd8'], shade: '#23341f', light: '#fdfff5', blush: '#d8622f',
+  accents: ['#4a9fd8', '#d8622f', '#c9a227', '#6fa84f'], inks: ['#3f7d3a', '#4a9fd8', '#c9a227'], finish: 'screen',
+}, 'screenSea');
+const HZ = 640;   // the horizon
+function field(c, growth, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, HZ), [0, 0, W, HZ], { color: PAL.fills[5], density: .12, cell: 16 });
+  const sun = CI(220, 180, 110); c.fillStyle = PAL.fills[2]; c.fill(sun.path); tex(c, sun.path, sun.box, { color: PAL.blush, density: .3, seed: 2 });
+  // hills behind the field
+  const hills = PG([[-20, HZ], [300, HZ - 150], [680, HZ - 60], [1040, HZ - 170], [1460, HZ]]);
+  c.fillStyle = PAL.fills[1]; c.fill(hills.path); tex(c, hills.path, hills.box, { color: PAL.shade, density: .25, seed: 3 });
+  // the soil, in perspective rows
+  const soil = rectPath(-10, HZ, W + 20, H - HZ + 20); c.fillStyle = PAL.fills[3]; c.fill(soil); tex(c, soil, [0, HZ, W, H - HZ], { color: PAL.shade, density: .3, seed: 4 });
+  stroke(c, [[-10, HZ], [W + 10, HZ]], 5, { lw: 6 });
+  for (let r = 0; r < 4; r++) {
+    const y = HZ + 60 + r * 110, spacing = 130 + r * 26, sz = .7 + r * .2;
+    for (let x = 60 + (r % 2) * 60; x < W; x += spacing) {
+      const g = clamp(growth - (x / W) * .5 - r * .05, 0, 1);
+      const hgt = (40 + g * 90) * sz;
+      stroke(c, [[x, y], [x, y - hgt]], 10 + r * 40 + x, { lw: 7 * sz, color: PAL.fills[1] });
+      for (const s of [-1, 1]) { draw(c, EL(x + s * hgt * .32, y - hgt * .72, hgt * .34, hgt * .16, s * .5), g > .5 ? PAL.fills[0] : PAL.fills[4], 20 + r * 40 + x + s, { lw: 3.4 * sz, texo: { density: .3 } }); }
+      if (g > .85) draw(c, CI(x, y - hgt - 14 * sz, 15 * sz), PAL.fills[2], 30 + r * 40 + x, { lw: 3, tex: false });
+    }
+  }
+}
+function stake(c, x, wet, i) {
+  stroke(c, [[x, H - 120], [x, 600]], 60, { lw: 14, color: PAL.fills[3] });
+  draw(c, RR(x - 90, 470, 180, 150, 16), PAL.light, 61, { lw: 6, tex: false });
+  draw(c, RR(x - 66, 494, 132, 68, 8), PAL.night, 62, { tex: false, lw: 4 });
+  // a two-bar readout: moisture climbing as the water lands
+  for (let b = 0; b < 2; b++) { const v = b ? wet : .8; draw(c, RR(x - 54, 508 + b * 26, 108 * clamp(v, .06, 1), 16, 8), b ? PAL.accents[0] : PAL.fills[2], 63 + b, { tex: false, line: false }); }
+  dot(c, x + 60, 590, 12, wet > .5 ? PAL.fills[0] : PAL.blush);
+  for (let k = 1; k <= 2; k++) if (pulse(i + k, 8, 4)) stroke(c, arcPts(x, 470, 40 + k * 26, 40 + k * 26, -2.4, -.7, 12), 70 + k, { raw: true, lw: 4, color: PAL.accents[0] });
+}
+function sprinkler(c, x, a, on, tau, i) {
+  stroke(c, [[x, H - 60], [x, 720]], 80, { lw: 16, color: PAL.chalkDim });
+  draw(c, CI(x, 700, 34), PAL.chalkDim, 81, { lw: 5, tex: false });
+  stroke(c, [[x, 700], [x + Math.cos(a) * 90, 700 + Math.sin(a) * 90]], 82, { lw: 12, color: PAL.chalkDim, raw: true });
+  if (!on) return;
+  const r = rng(90);
+  for (let k = 0; k < 40; k++) { const u = r(), d = 120 + u * 620, spread = (r() - .5) * .25;
+    const px = x + Math.cos(a + spread) * d, py = 700 + Math.sin(a + spread) * d + u * u * 420;
+    if (py > H - 30) continue; dot(c, px, py, 7 + r() * 7, alpha(PAL.accents[0], .8)); }
+  for (let k = 1; k <= 2; k++) stroke(c, arcPts(x, 700, 120 + k * 90, 120 + k * 90, a - .3, a + .3, 14), 95 + k, { raw: true, lw: 5, color: alpha(PAL.accents[0], .5) });
+}
+function sceneField(c, tau, i) {
+  field(c, .15, i);
+  stake(c, 320, .12 + tau * .05, i);
+  sprinkler(c, 1120, -1.2, false, tau, i);
+  draw(c, RR(W - 330, 150, 260, 120, 18), PAL.light, 100, { lw: 5, tex: false });
+  textBar(c, W - 290, 190, 120, alpha(PAL.ink, .5), 16);
+  draw(c, RR(W - 290, 220, 180 * .3, 20, 10), PAL.blush, 101, { tex: false, line: false });
+}
+function sceneWater(c, tau, i) {
+  const growth = sm(0, 1.5, tau, easeOut);
+  field(c, .15 + growth * .85, i);
+  const a = -1.6 + Math.sin(tau * 2.4) * .8;
+  stake(c, 320, .2 + growth * .7, i);
+  sprinkler(c, 1120, a, true, tau, i);
+  draw(c, RR(W - 330, 150, 260, 120, 18), PAL.light, 100, { lw: 5, tex: false });
+  textBar(c, W - 290, 190, 120, alpha(PAL.ink, .5), 16);
+  draw(c, RR(W - 290, 220, 180 * (.3 + growth * .7), 20, 10), PAL.fills[0], 101, { tex: false, line: false });
+}
+function sceneSign(c, tau, i) {
+  field(c, 1, i);
+  stake(c, 320, .9, i);
+  sprinkler(c, 1120, -1.9, false, tau, i);
+  const sx = CX, sy = 400, sw = 1040, sh = 260;
+  for (const lx of [sx - sw / 2 + 110, sx + sw / 2 - 110]) stroke(c, [[lx, sy + sh / 2], [lx, H - 100]], 110 + lx, { lw: 20, color: PAL.fills[3] });
+  c.fillStyle = alpha(PAL.shade, .2); c.beginPath(); c.roundRect(sx - sw / 2 + 14, sy - sh / 2 + 18, sw, sh, 14); c.fill();
+  draw(c, RR(sx - sw / 2, sy - sh / 2, sw, sh, 14), PAL.fills[3], 112, { lw: 8, texo: { density: .3 } });
+  draw(c, RR(sx - sw / 2 + 24, sy - sh / 2 + 24, sw - 48, sh - 48, 8), tint(PAL.fills[3], .55), 113, { lw: 4, texo: { density: .2 } });
+  const p = sm(.15, 1.1, tau, t => t);
+  writeOn(c, 'smart', sx, sy - 10, p, { size: 130, ink: PAL.ink, ink2: PAL.fills[0], pen: PAL.fills[0] });
+  if (p >= 1) writeOn(c, 'agriculture', sx, sy + 96, sm(1.05, 1.6, tau, t => t), { size: 110, ink: PAL.ink, ink2: null, pen: null });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_AG, poster: 4.9, crf: 28,
+  beats: [
+    { name: 'field', dur: 1.7, fn: sceneField },
+    { name: 'water', dur: 1.6, fn: sceneWater },
+    { name: 'sign', dur: 1.8, fn: sceneSign },
+  ],
+});
+</script>

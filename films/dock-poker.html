@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>dock-poker</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Dock Poker, private Texas Hold'em with friends.
+// Look: riso on green felt. Anchor: the pot. Signature: the deal - five cards fly out and flip face up one
+// every three frames, and the name is printed on the felt like a table logo.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.9   deal    cards fly from the deck to five places and flip                    scaleX flip
+// 1.9   1.2   chips   chips slide in, the pair is ringed, the pot counts up               coin stacks
+// 3.1   1.9   felt    the table's printed name: "dock poker"                              writeOn, dashedRing
+
+const PAL_PK = makePalette({
+  paper: '#1e5b45', paperBand: null, ink: '#f6f1e2', night: '#123526', chalk: '#f6f1e2', chalkDim: '#7fa894', guide: 'rgba(246,241,226,.3)',
+  fills: ['#f6f1e2', '#e63946', '#f2c14e', '#2a9d8f', '#1d3557', '#134a37'], shade: '#0f2c20', light: '#ffffff', blush: '#e63946',
+  accents: ['#f2c14e', '#e63946', '#2a9d8f', '#f6f1e2'], inks: ['#e63946', '#f2c14e', '#1d3557'], finish: 'riso',
+}, 'risoPop');
+const SUITS = [['spade', PAL_PK.ink], ['heart', '#e63946'], ['diamond', '#e63946'], ['club', PAL_PK.ink]];
+function pip(c, x, y, s, kind, col) {
+  c.save(); c.translate(x, y); c.scale(s, s); c.fillStyle = col;
+  if (kind === 'heart') { c.fill(polyPath(heartPts(0, 0, 1.1))); }
+  if (kind === 'diamond') { c.fill(polyPath([[0, -16], [12, 0], [0, 16], [-12, 0]])); }
+  if (kind === 'spade') { c.fill(polyPath(heartPts(0, 2, 1.0).map(([px, py]) => [px, -py]))); c.fillRect(-3, 2, 6, 14); }
+  if (kind === 'club') { for (const [dx, dy] of [[0, -8], [-9, 4], [9, 4]]) { c.beginPath(); c.arc(dx, dy, 8, 0, TAU); c.fill(); } c.fillRect(-3, 4, 6, 14); }
+  c.restore();
+}
+function playingCard(c, x, y, rot, flip, k, seed) {
+  const w = 230, h = 330;
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(Math.max(.03, Math.abs(flip)), 1);
+  c.fillStyle = alpha(PAL.shade, .3); c.beginPath(); c.roundRect(-w / 2 + 14, -h / 2 + 18, w, h, 18); c.fill();
+  if (flip > 0) {
+    draw(c, RR(-w / 2, -h / 2, w, h, 18), PAL.fills[0], seed, { lw: 6, tex: false });
+    const [kind, col] = SUITS[k % 4];
+    const rank = ['A', 'K', 'A', 'Q', 'K'][k % 5];
+    c.font = `bold 96px ${KIT_HAND}`; c.fillStyle = col; c.textAlign = 'center'; c.fillText(rank, -w / 2 + 56, -h / 2 + 106);
+    pip(c, -w / 2 + 56, -h / 2 + 150, 1.5, kind, col);
+    pip(c, 0, 20, 3.4, kind, col);
+  } else {
+    draw(c, RR(-w / 2, -h / 2, w, h, 18), PAL.fills[4], seed, { lw: 6, texo: { density: .45, color: PAL.fills[3] } });
+    draw(c, RR(-w / 2 + 22, -h / 2 + 22, w - 44, h - 44, 10), PAL.fills[1], seed + 1, { lw: 4, texo: { density: .4 } });
+  }
+  c.restore();
+}
+function felt(c, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .2, cell: 14 });
+  const table = EL(CX, CY + 120, 760, 520);
+  c.fillStyle = PAL.paper; c.fill(table.path); tex(c, table.path, table.box, { color: PAL.fills[5], density: .3, seed: 6 });
+  stroke(c, ellPts(CX, CY + 120, 760, 520, 0, 120), 7, { raw: true, close: true, lw: 16, color: PAL.fills[4] });
+  stroke(c, ellPts(CX, CY + 120, 700, 470, 0, 120), 8, { raw: true, close: true, lw: 4, color: alpha(PAL.ink, .4) });
+}
+const SPOTS = [[CX - 520, CY - 40], [CX - 260, CY - 80], [CX, CY - 100], [CX + 260, CY - 80], [CX + 520, CY - 40]];
+function sceneDeal(c, tau, i) {
+  felt(c, i);
+  const deck = [W - 180, 200];
+  for (let k = 0; k < 4; k++) playingCard(c, deck[0], deck[1] - k * 8, .1, -1, k, 10 + k);
+  SPOTS.forEach(([sx, sy], k) => {
+    const t0 = k * 3 / 12, p = sm(t0, t0 + .28, tau, easeOut); if (p <= 0) return;
+    const flipT = sm(t0 + .3, t0 + .55, tau, t => t);
+    const x = lerp(deck[0], sx, p), y = lerp(deck[1], sy, p), rot = lerp(.1, (k - 2) * .06, p);
+    playingCard(c, x, y, rot, flipT < .5 ? -(1 - flipT * 2) : (flipT - .5) * 2, k, 20 + k * 3);
+    if (p > 0 && p < 1) speedLines(c, x, y, Math.atan2(sy - deck[1], sx - deck[0]) + Math.PI, 40 + k + i, 5, .45, PAL.fills[2]);
+  });
+}
+function chipStack(c, x, y, n, colA, colB, seed) { for (let k = 0; k < n; k++) { const col = k % 2 ? colA : colB; draw(c, EL(x, y - k * 26, 72, 26), col, seed + k, { lw: 4, texo: { density: .4 } }); } }
+function sceneChips(c, tau, i) {
+  felt(c, i);
+  SPOTS.forEach(([sx, sy], k) => playingCard(c, sx, sy, (k - 2) * .06, 1, k, 20 + k * 3));
+  const p = sm(0, .5, tau, easeOut);
+  chipStack(c, CX - 180, CY + 320, 4 + Math.floor(p * 3), PAL.fills[1], PAL.fills[0], 50);
+  chipStack(c, CX, CY + 340, 3 + Math.floor(p * 4), PAL.fills[2], PAL.fills[0], 60);
+  chipStack(c, CX + 180, CY + 320, 2 + Math.floor(p * 5), PAL.fills[3], PAL.fills[0], 70);
+  if (tau > .45) { [0, 2].forEach(k => crayonShape(c, rrPts(SPOTS[k][0] - 130, SPOTS[k][1] - 185, 260, 370, 20), PAL.fills[2], 8, 80 + k + i)); }
+  if (tau > .7) for (let k = 0; k < 4; k++) sparkle(c, CX - 300 + k * 200, CY - 300, 28 + (pulse(i + k, 6, 3) ? 10 : 0), PAL.fills[2], k);
+}
+function sceneFelt(c, tau, i) {
+  felt(c, i);
+  const p = sm(.15, 1.1, tau, t => t);
+  for (let r = 1; r <= 3; r++) dashedRing(c, CX, CY + 60, 300 + r * 90, alpha(PAL.fills[2], .45), 90 + r, [26, 20], 4);
+  writeOn(c, 'dock poker', CX, CY + 110, p, { size: 210, ink: PAL.fills[2], ink2: PAL.blush, pen: PAL.blush });
+  if (p >= 1) { for (let k = 0; k < 4; k++) pip(c, CX - 300 + k * 200, CY + 300, 3, SUITS[k][0], k % 2 ? PAL.blush : PAL.fills[0]); }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_PK, poster: 4.6, crf: 27,
+  beats: [
+    { name: 'deal', dur: 1.9, fn: sceneDeal },
+    { name: 'chips', dur: 1.2, fn: sceneChips },
+    { name: 'felt', dur: 1.9, fn: sceneFelt },
+  ],
+});
+</script>

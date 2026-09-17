@@ -2,8 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import PreviewCard from "./previews/PreviewCard";
-import { getPreview } from "./previews";
+import ProjectFilm from "./ProjectFilm";
 import { projects, type Project } from "@/data/projects";
 
 type CategoryFilter = Project["category"] | "all";
@@ -24,13 +23,19 @@ function sortByLatest(list: Project[]): Project[] {
 }
 
 function ProjectCard({ project }: { project: Project }) {
-  const Preview = getPreview(project.slug);
+  const [hovered, setHovered] = useState(false);
   return (
     <Link
       href={`/projects/${project.slug}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
       className="group block overflow-hidden rounded-lg border border-zinc-200 transition-colors hover:border-zinc-300 dark:border-neutral-800 dark:hover:border-neutral-700"
     >
-      <PreviewCard>{Preview ? <Preview /> : null}</PreviewCard>
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#f0ebe0] dark:bg-neutral-900">
+        <ProjectFilm slug={project.slug} hovered={hovered} />
+      </div>
       <div className="border-t border-zinc-100 p-3 dark:border-neutral-800/60">
         <div className="flex items-baseline justify-between gap-2">
           <span className="truncate text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">

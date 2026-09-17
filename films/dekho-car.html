@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>dekho-car</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Dekho Car, car rental search and booking.
+// Look: flat screen print. Anchor: the car, which never moves. Signature: the protagonist stays exactly where
+// it is while the world cuts around it - six places in five seconds - and a billboard carries the name.
+// t     dur   scene  what changes                                                      kit
+// 0.0   3.4   drive  the car holds the centre; road, city, desert, dusk, tunnel, coast   hard cuts every .55
+// 3.4   1.6   board  the last cut is a billboard: "dekho car", and the car parks under it writeOn
+
+const PAL_DK = makePalette({
+  paper: '#eef0e2', paperBand: null, ink: '#20262e', night: '#181d26', chalk: '#fffdf2', chalkDim: '#8b94a0', guide: 'rgba(32,38,46,.3)',
+  fills: ['#e4572e', '#17bebb', '#ffc914', '#2e282a', '#76b041', '#c9d6c0'], shade: '#20262e', light: '#fffdf2', blush: '#e4572e',
+  accents: ['#e4572e', '#17bebb', '#ffc914', '#76b041'], inks: ['#17bebb', '#e4572e', '#ffc914'], finish: 'screen',
+}, 'screenSea');
+const ROAD_Y = 830;
+
+function car(c, tau, i, seed) {
+  const bob = pulse(i, 4, 2) ? 4 : 0;
+  c.save(); c.translate(CX, ROAD_Y - 120 + bob);
+  draw(c, PG([[-300, 60], [-260, -30], [-140, -40], [-70, -130], [110, -130], [190, -40], [300, -30], [310, 60]]), PAL.blush, seed, { lw: 6, texo: { density: .3 } });
+  draw(c, PG([[-120, -46], [-64, -118], [96, -118], [166, -46]]), PAL.fills[5], seed + 1, { lw: 5, texo: { density: .3 } });
+  stroke(c, [[20, -118], [20, -46]], seed + 2, { lw: 5 });
+  for (const wx of [-170, 180]) { draw(c, CI(wx, 66, 72), PAL.fills[3], seed + 10 + wx, { lw: 5, tex: false }); const rot = q12(tau) * 9; for (let k = 0; k < 4; k++) { const a = rot + k / 4 * Math.PI; stroke(c, [[wx + Math.cos(a) * 46, 66 + Math.sin(a) * 46], [wx - Math.cos(a) * 46, 66 - Math.sin(a) * 46]], seed + 20 + k + wx, { lw: 7, color: PAL.fills[5], raw: true }); } draw(c, CI(wx, 66, 20), PAL.fills[5], seed + 30 + wx, { tex: false, lw: 4 }); }
+  draw(c, RR(280, -14, 44, 28, 8), PAL.fills[2], seed + 40, { tex: false, lw: 3 });
+  c.restore();
+}
+function road(c, tau, night) {
+  const p = rectPath(-10, ROAD_Y, W + 20, H - ROAD_Y + 20); c.fillStyle = night ? shade(PAL.fills[3], .2) : PAL.fills[3]; c.fill(p);
+  tex(c, p, [0, ROAD_Y, W, H - ROAD_Y], { color: PAL.shade, density: .3, seed: 3 });
+  stroke(c, [[-10, ROAD_Y], [W + 10, ROAD_Y]], 4, { lw: 6, color: night ? PAL.chalkDim : PAL.ink });
+  const off = (q12(tau) * 1400) % 260;
+  for (let x = -260 - off; x < W + 260; x += 260) { c.fillStyle = PAL.fills[2]; c.fillRect(x, ROAD_Y + 110, 130, 18); }
+}
+const WORLDS = [
+  // 0 open road
+  (c, tau, i) => { const sky = rectPath(0, 0, W, ROAD_Y); c.fillStyle = PAL.paper; c.fill(sky); tex(c, sky, [0, 0, W, ROAD_Y], { color: PAL.fills[1], density: .12 });
+    for (let k = 0; k < 4; k++) { const x = ((k * 420 - q12(tau) * 300) % (W + 400)) - 200; draw(c, PG([[x, ROAD_Y], [x + 90, ROAD_Y - 260], [x + 180, ROAD_Y]]), PAL.fills[4], 10 + k, { lw: 5, texo: { density: .3 } }); } road(c, tau, false); },
+  // 1 city
+  (c, tau, i) => { const sky = rectPath(0, 0, W, ROAD_Y); c.fillStyle = PAL.fills[1]; c.fill(sky); tex(c, sky, [0, 0, W, ROAD_Y], { color: PAL.light, density: .2 });
+    const r = rng(20); let x = -80; while (x < W + 80) { const bw = 120 + r() * 120, bh = 200 + r() * 420; draw(c, RR(x, ROAD_Y - bh, bw, bh, 4), r() < .5 ? PAL.fills[5] : PAL.light, 21 + x, { lw: 5, texo: { density: .25 } }); for (let wy = ROAD_Y - bh + 40; wy < ROAD_Y - 40; wy += 60) for (let wx = x + 20; wx < x + bw - 30; wx += 46) { c.fillStyle = alpha(PAL.shade, .35); c.fillRect(wx, wy, 22, 28); } x += bw + 14; } road(c, tau, false); },
+  // 2 desert
+  (c, tau, i) => { const sky = rectPath(0, 0, W, ROAD_Y); c.fillStyle = PAL.fills[2]; c.fill(sky); tex(c, sky, [0, 0, W, ROAD_Y], { color: PAL.blush, density: .18 });
+    draw(c, CI(340, 230, 130), PAL.light, 30, { lw: 5, texo: { density: .3 } });
+    for (let k = 0; k < 3; k++) { const x = 300 + k * 420; stroke(c, [[x, ROAD_Y], [x, ROAD_Y - 220]], 31 + k, { lw: 26, color: PAL.fills[4] }); stroke(c, [[x, ROAD_Y - 140], [x - 90, ROAD_Y - 240]], 34 + k, { lw: 20, color: PAL.fills[4] }); stroke(c, [[x, ROAD_Y - 180], [x + 90, ROAD_Y - 270]], 37 + k, { lw: 20, color: PAL.fills[4] }); } road(c, tau, false); },
+  // 3 dusk hills
+  (c, tau, i) => { const sky = rectPath(0, 0, W, ROAD_Y); c.fillStyle = PAL.blush; c.fill(sky); tex(c, sky, [0, 0, W, ROAD_Y], { color: PAL.fills[2], density: .22 });
+    const pts = [[-20, ROAD_Y]]; for (let x = 0; x <= W; x += 60) pts.push([x, ROAD_Y - 260 - Math.sin(x / 300) * 150]); pts.push([W + 20, ROAD_Y]);
+    const p = polyPath(pts); c.fillStyle = PAL.fills[3]; c.fill(p); road(c, tau, false); },
+  // 4 tunnel at night
+  (c, tau, i) => { const sky = rectPath(0, 0, W, ROAD_Y); c.fillStyle = PAL.night; c.fill(sky); grain(c, sky, [0, 0, W, ROAD_Y], 200, PAL.light, .5, 40, 3);
+    for (let k = 0; k < 6; k++) { const x = ((k * 300 - q12(tau) * 900) % (W + 600)) - 300; draw(c, RR(x, 120, 60, 34, 17), PAL.fills[2], 41 + k, { tex: false, line: false }); c.fillStyle = alpha(PAL.fills[2], .18); c.beginPath(); c.moveTo(x, 154); c.lineTo(x + 60, 154); c.lineTo(x + 200, ROAD_Y); c.lineTo(x - 140, ROAD_Y); c.fill(); }
+    for (const s of [-1, 1]) { c.fillStyle = shade(PAL.fills[5], .55); c.fillRect(s > 0 ? W - 160 : 0, 0, 160, ROAD_Y); } road(c, tau, true); },
+  // 5 coast
+  (c, tau, i) => { const sky = rectPath(0, 0, W, ROAD_Y); c.fillStyle = PAL.fills[1]; c.fill(sky); tex(c, sky, [0, 0, W, ROAD_Y], { color: PAL.light, density: .14 });
+    const sea = rectPath(0, 520, W, ROAD_Y - 520); c.fillStyle = shade(PAL.fills[1], .3); c.fill(sea); tex(c, sea, [0, 520, W, ROAD_Y - 520], { color: PAL.light, density: .3, seed: 51 });
+    const r2 = rng(52); for (let k = 0; k < 24; k++) { const x = r2() * W, y = 560 + r2() * (ROAD_Y - 600); stroke(c, [[x, y], [x + 60, y]], 53 + k, { lw: 5, color: alpha(PAL.light, .8), raw: true }); }
+    road(c, tau, false); },
+];
+function sceneDrive(c, tau, i) {
+  const k = Math.min(WORLDS.length - 1, Math.floor(tau / .56));
+  resetT(c); WORLDS[k](c, tau, i);
+  car(c, tau, i, 60);
+  speedLines(c, CX - 330, ROAD_Y - 130, Math.PI, 70 + i, 7, .5, k === 4 ? PAL.light : PAL.ink);
+  for (let d = 0; d < WORLDS.length; d++) dot(c, 80 + d * 40, 80, 11, d === k ? PAL.accents[0] : alpha(k === 4 ? PAL.light : PAL.ink, .25));
+}
+function sceneBoard(c, tau, i) {
+  resetT(c);
+  const sky = rectPath(0, 0, W, ROAD_Y); c.fillStyle = PAL.paper; c.fill(sky); tex(c, sky, [0, 0, W, ROAD_Y], { color: PAL.fills[1], density: .12 });
+  const bx = CX, by = 380, bw = 1120, bh = 400;
+  for (const lx of [bx - bw / 2 + 120, bx + bw / 2 - 120]) stroke(c, [[lx, by + bh / 2], [lx, ROAD_Y]], 80 + lx, { lw: 16, color: PAL.fills[3] });
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(bx - bw / 2 + 16, by - bh / 2 + 20, bw, bh, 16); c.fill();
+  draw(c, RR(bx - bw / 2, by - bh / 2, bw, bh, 16), PAL.light, 82, { lw: 8, tex: false });
+  draw(c, RR(bx - bw / 2 + 30, by - bh / 2 + 30, bw - 60, bh - 60, 8), alpha(PAL.fills[1], .25), 83, { tex: false, lw: 4 });
+  writeOn(c, 'dekho car', bx, by + 70, sm(.2, 1.1, tau, t => t), { size: 205, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+  road(c, .5, false);
+  car(c, .5, i, 60);
+  if (tau > 1.0) { const g = sm(1.0, 1.3, tau, easeOut); draw(c, CI(W - 190, 200, 80 * g), PAL.fills[4], 90, { lw: 5 }); if (g > .6) checkMark(c, W - 190, 200, 38, (g - .6) * 2.5, 91, { color: PAL.light, lw: 11 }); }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_DK, poster: 4.5, crf: 29,
+  beats: [
+    { name: 'drive', dur: 3.4, fn: sceneDrive },
+    { name: 'board', dur: 1.6, fn: sceneBoard },
+  ],
+});
+</script>

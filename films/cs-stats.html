@@ -1,0 +1,121 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>cs-stats</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: CS Stats, CS2 stats on Steam profiles.
+// Look: riso on dark indigo stock. Anchor: the crosshair. Signature: the whole first half is seen down a scope.
+// t     dur   scene   what changes                                                        kit
+// 0.0   2.0   scope   a scope view: targets pop up, three shots, the frame kicks            iris, crosshair, recoil
+// 2.0   1.4   card    the scope drops away; the profile card slides up, bars fill            RR, bust, easeOut
+// 3.4   1.6   rank    the rank badge with a ribbon: "cs stats"                               starPts, writeOn
+
+const PAL_CS = makePalette({
+  paper: '#1c1b3a', paperBand: null, ink: '#f4f1e6', night: '#0b0a1c', chalk: '#f4f1e6', chalkDim: '#7a78a8', guide: 'rgba(46,196,182,.4)',
+  fills: ['#ff7a3d', '#2ec4b6', '#f9c80e', '#e84393', '#3b3a6b', '#2a2950'], shade: '#0f0e24', light: '#f4f1e6', blush: '#e84393',
+  accents: ['#ff7a3d', '#2ec4b6', '#f9c80e', '#e84393'], inks: ['#2ec4b6', '#ff7a3d', '#f9c80e'], finish: 'riso',
+}, 'risoPop');
+
+function crosshair(c, x, y, s, col, seed) {
+  const g = s * .28;
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) stroke(c, [[x + dx * g, y + dy * g], [x + dx * s, y + dy * s]], seed + dx * 3 + dy * 7, { lw: 10, color: col, raw: true });
+  dot(c, x, y, 6, col);
+}
+const SHOTS = [.75, 1.15, 1.5];
+function range(c, tau, i, seed) {
+  // the shooting range behind the scope: a lit wall, a rail, and targets big enough to read at card size
+  resetT(c);   // this scene is drawn into a layer, which starts in output pixels, not logical units
+  c.fillStyle = PAL.fills[4]; c.fillRect(0, 0, W, H);
+  const wall = rectPath(-10, -10, W + 20, 800); c.fillStyle = PAL.fills[5]; c.fill(wall); tex(c, wall, [0, 0, W, 800], { color: PAL.fills[4], density: .5, seed });
+  const floor = rectPath(-10, 790, W + 20, 400); c.fillStyle = shade(PAL.fills[4], .35); c.fill(floor);
+  stroke(c, [[-10, 790], [W + 10, 790]], seed + 90, { lw: 8, color: PAL.accents[1] });
+  for (let k = 0; k < 6; k++) { const x = 60 + k * 260; stroke(c, [[x, 790], [x, 300]], seed + k, { lw: 5, color: alpha(PAL.chalkDim, .45) }); }
+  const hit = SHOTS.filter(t => tau >= t).length;
+  [[430, 520, 215], [1010, 470, 175], [740, 600, 150]].forEach(([x, y, R], j) => {
+    const up = sm(.15 + j * .25, .45 + j * .25, tau, easeBack), down = j < hit ? sm(SHOTS[j], SHOTS[j] + .22, tau, easeIn) : 0;
+    const yy = y + (1 - up) * 420 + down * 460, rot = down * .6;
+    c.save(); c.translate(x, yy); c.rotate(rot);
+    stroke(c, [[0, R], [0, 790 - yy]], seed + 5 + j, { lw: 10, color: PAL.fills[4], raw: true });
+    draw(c, CI(0, 0, R), PAL.light, seed + 10 + j, { lw: 7 });
+    draw(c, CI(0, 0, R * .66), PAL.fills[0], seed + 20 + j, { lw: 6, texo: { density: .4 } });
+    draw(c, CI(0, 0, R * .3), PAL.light, seed + 30 + j, { lw: 5 });
+    if (j < hit) { dot(c, -R * .16, -R * .12, R * .14, PAL.night); for (let a = 0; a < 7; a++) stroke(c, [[-R * .16, -R * .12], [-R * .16 + Math.cos(a) * R * .34, -R * .12 + Math.sin(a) * R * .34]], seed + 40 + a + j * 9, { lw: 4, raw: true, color: PAL.night }); }
+    c.restore();
+  });
+}
+function sceneScope(c, tau, i) {
+  const kick = SHOTS.some(t => tau >= t && tau < t + 1 / 12) ? 1 : 0;
+  const sway = Math.sin(tau * 2.2) * 26, lift = kick ? -46 : 0;
+  const L = LA.getContext('2d'); range(L, tau, i, 5);
+  resetT(c); c.fillStyle = PAL.night; c.fillRect(0, 0, W, H);
+  const R = 470;
+  iris(c, CX + sway * .3, CY + lift * .3, R, cc => { cc.save(); cc.translate(sway, lift); blit(cc, LA); cc.restore(); });
+  // scope furniture: rim, reticle lines, range ticks
+  resetT(c);
+  stroke(c, ellPts(CX + sway * .3, CY + lift * .3, R, R, 0, 120), 60, { raw: true, close: true, lw: 14, color: PAL.shade });
+  stroke(c, ellPts(CX + sway * .3, CY + lift * .3, R - 14, R - 14, 0, 120), 61, { raw: true, close: true, lw: 4, color: PAL.accents[1] });
+  const hx = CX + sway, hy = CY + lift;
+  stroke(c, [[hx - R, hy], [hx - 60, hy]], 62, { lw: 5, color: PAL.accents[1], raw: true }); stroke(c, [[hx + 60, hy], [hx + R, hy]], 63, { lw: 5, color: PAL.accents[1], raw: true });
+  stroke(c, [[hx, hy - R], [hx, hy - 60]], 64, { lw: 5, color: PAL.accents[1], raw: true });
+  for (let k = 1; k <= 5; k++) stroke(c, [[hx - 22, hy + k * 52], [hx + 22, hy + k * 52]], 65 + k, { lw: 4, color: PAL.accents[1], raw: true });
+  crosshair(c, hx, hy, 70, PAL.light, 70);
+  if (kick) { for (let k = 0; k < 10; k++) { const a = rng(80 + i)() * TAU; stroke(c, [[hx, hy], [hx + Math.cos(a) * 180, hy + Math.sin(a) * 180]], 81 + k + i, { lw: 4, color: alpha(PAL.fills[2], .8), raw: true }); } }
+  for (let k = 0; k < SHOTS.filter(t => tau >= t).length; k++) dot(c, 110 + k * 46, H - 90, 18, PAL.fills[2]);
+}
+
+function profileCard(c, y, tau, i) {
+  const x = CX - 520, w = 1040, h = 560;
+  draw(c, RR(x, y, w, h, 30), PAL.fills[5], 10, { lw: 6, texo: { color: PAL.shade, density: .35 } });
+  draw(c, RR(x + 50, y + 50, 200, 200, 20), PAL.fills[1], 11, { lw: 5 });
+  c.save(); c.beginPath(); c.roundRect(x + 50, y + 50, 200, 200, 20); c.clip(); bust(c, x + 150, y + 155, 100, PAL.fills[0], PAL.fills[2], 12, { blink: pulse(i, 11, 1) }); c.restore();
+  textBar(c, x + 290, y + 100, 300, alpha(PAL.light, .8), 26); textBar(c, x + 290, y + 150, 190, alpha(PAL.light, .35), 16);
+  dot(c, x + 300, y + 210, 12, PAL.fills[1]); textBar(c, x + 330, y + 210, 120, alpha(PAL.light, .35), 12);
+  [[.78, PAL.fills[0]], [.56, PAL.fills[1]], [.9, PAL.fills[2]]].forEach(([v, col], k) => {
+    const by = y + 330 + k * 76, bw = w - 420;
+    textBar(c, x + 50, by, 170, alpha(PAL.light, .5), 14);
+    draw(c, RR(x + 260, by - 24, bw, 48, 24), alpha(PAL.light, .1), 20 + k, { tex: false, lw: 3 });
+    const p = sm(.15 + k * .12, .8 + k * .12, tau, easeOut);
+    if (p > .02) draw(c, RR(x + 260, by - 24, Math.max(48, bw * v * p), 48, 24), col, 30 + k, { lw: 3, texo: { density: .4 } });
+  });
+  return [x, y, w, h];
+}
+function sceneCard(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .2, cell: 16 });
+  const L = LA.getContext('2d'); range(L, 2, i, 5);
+  c.save(); c.globalAlpha = .35; blit(c, LA); c.restore();
+  const y = lerp(H + 40, CY - 280, sm(0, .5, tau, easeOut));
+  profileCard(c, y, tau, i);
+  crosshair(c, CX, y - 120, 60, alpha(PAL.light, .5), 90);
+}
+
+function sceneRank(c, tau, i) {
+  paper(c);
+  for (let r = 1; r <= 5; r++) dottedArc(c, CX, CY - 60, 120 + r * 90, alpha(PAL.chalkDim, .5), 10 + r, 20, 3);
+  const pop = easeBack(sm(0, .35, tau, t => t));
+  c.save(); c.translate(CX, CY - 120); c.scale(pop, pop);
+  const hex = []; for (let k = 0; k < 6; k++) hex.push([Math.cos(k / 6 * TAU - Math.PI / 2) * 230, Math.sin(k / 6 * TAU - Math.PI / 2) * 230]);
+  draw(c, PG(hex), PAL.fills[0], 20, { lw: 8, texo: { density: .45 } });
+  draw(c, PG(starPts(0, 10, 130)), PAL.fills[2], 21, { lw: 6, texo: { density: .3 } });
+  for (let k = 0; k < 3; k++) sparkle(c, [-260, 250, 60][k], [-160, -60, -280][k], 40 + (i % 2) * 8, PAL.fills[1], i * .4 + k);
+  c.restore();
+  const ry = CY + 240;
+  draw(c, PG([[CX - 560, ry - 80], [CX + 560, ry - 80], [CX + 560, ry + 80], [CX - 560, ry + 80]]), PAL.fills[3], 30, { lw: 6, texo: { density: .3 } });
+  for (const sx of [-1, 1]) draw(c, PG([[CX + sx * 560, ry - 80], [CX + sx * 700, ry - 130], [CX + sx * 700, ry + 130], [CX + sx * 560, ry + 80], [CX + sx * 620, ry]]), shade(PAL.fills[3], .3), 31 + sx, { lw: 6, tex: false });
+  writeOn(c, 'cs stats', CX, ry + 46, sm(.3, 1.1, tau, t => t), { size: 190, ink: PAL.light, ink2: PAL.fills[1], pen: PAL.fills[2] });
+  crosshair(c, CX, CY - 120, 340, alpha(PAL.light, .25), 40);
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_CS, poster: 4.6,
+  beats: [
+    { name: 'scope', dur: 2.0, fn: sceneScope },
+    { name: 'card', dur: 1.4, fn: sceneCard },
+    { name: 'rank', dur: 1.6, fn: sceneRank },
+  ],
+});
+</script>

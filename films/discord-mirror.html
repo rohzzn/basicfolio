@@ -1,0 +1,92 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>discord-mirror</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Discord Mirror, sync channels across servers.
+// Look: riso duotone, violet and teal on cream. Anchor: the seam down the middle. Signature: the frame is
+// mirrored - everything that happens on the left happens on the right a beat later, name included.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.7   two     two channel columns either side of a seam, one message landing       bubble
+// 1.7   1.5   sync    each message crosses the seam and lands mirrored on the other side     bez, ringsOut
+// 3.2   1.8   name    the name is written on the left and mirror-written on the right        writeOn (scale -1)
+
+const PAL_DM = duotone('#5b4bd8', '#18a999', '#f2eee4', 'riso');
+const SEAM = CX;
+function column(c, side, msgs, tau, i, seed) {
+  // side -1 left, +1 right. The right column is the left one flipped through the seam.
+  c.save(); c.translate(SEAM, 0); c.scale(side, 1); c.translate(-SEAM, 0);
+  const x = SEAM - 640, w = 560;
+  draw(c, RR(x, 90, w, H - 180, 22), PAL.light, seed, { lw: 6, tex: false });
+  const hb = rectPath(x, 90, w, 96);
+  c.save(); c.clip(roundRectPath(x, 90, w, H - 180, 22)); c.fillStyle = side < 0 ? PAL.fills[0] : PAL.fills[1]; c.fill(hb); tex(c, hb, [x, 90, w, 96], { density: .4, seed: seed + 1 }); c.restore();
+  draw(c, CI(x + 66, 138, 32), PAL.light, seed + 2, { lw: 4, tex: false });
+  textBar(c, x + 120, 138, 220, alpha(PAL.light, .9), 20);
+  stroke(c, [[x, 186], [x + w, 186]], seed + 3, { lw: 5 });
+  msgs.forEach(([t0, k], m) => {
+    const p = sm(t0, t0 + .25, tau, easeOut); if (p <= 0) return;
+    const y = 250 + m * 190;
+    c.save(); c.globalAlpha = Math.min(1, p * 1.4); c.translate(0, (1 - p) * 40);
+    draw(c, CI(x + 66, y + 54, 34), [PAL.fills[0], PAL.fills[1], PAL.fills[3]][k % 3], seed + 10 + m, { lw: 4, texo: { density: .35 } });
+    bubble(c, x + 130, y, w - 180, 116, side < 0 ? tint(PAL.fills[0], .8) : tint(PAL.fills[1], .8), seed + 20 + m * 5, { lines: true, lw: 5, textColor: PAL.ink });
+    c.restore();
+  });
+  c.restore();
+}
+function seam(c, tau, i) {
+  stroke(c, [[SEAM, 0], [SEAM, H]], 5, { lw: 6, color: alpha(PAL.ink, .5), dash: [26, 20] });
+  for (let k = 0; k < 6; k++) { const y = 120 + k * 170; dot(c, SEAM, y, pulse(i + k * 2, 8, 4) ? 16 : 10, PAL.ink); }
+}
+function bg(c) { paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[3], density: .12, cell: 15 }); }
+function sceneTwo(c, tau, i) {
+  bg(c);
+  column(c, -1, [[0, 0], [.5, 1]], tau, i, 10);
+  column(c, 1, [[.9, 0]], tau, i, 40);
+  seam(c, tau, i);
+}
+function sceneSync(c, tau, i) {
+  bg(c);
+  const left = [[0, 0], [0, 1], [.35, 2]], right = [[0, 0], [.25, 1], [.7, 2]];
+  column(c, -1, left, tau + .6, i, 10);
+  column(c, 1, right, tau, i, 40);
+  seam(c, tau, i);
+  // a packet crossing the seam for each message that has just landed on the left
+  [[.35, 2], [.05, 1]].forEach(([t0, m], k) => {
+    const p = sm(t0, t0 + .35, tau, easeIO); if (p <= 0 || p >= 1) return;
+    const y = 250 + m * 190 + 58;
+    const [px, py] = bez([SEAM - 200, y], [SEAM - 60, y - 160], [SEAM + 60, y - 160], [SEAM + 200, y], p);
+    dot(c, px, py, 18, PAL.fills[1]); speedLines(c, px, py, Math.PI, 60 + i + k, 4, .4);
+  });
+  if (tau > .7) ringsOut(c, SEAM + 200, 250 + 2 * 190 + 58, tau - .7, { every: 1 / 6, t1: .2, speed: 500, colors: [PAL.fills[1], PAL.ink], width: 5, seed: 70, max: 260 });
+}
+function sceneName(c, tau, i) {
+  bg(c);
+  column(c, -1, [[0, 0], [0, 1], [0, 2]], 9, i, 10);
+  column(c, 1, [[0, 0], [0, 1], [0, 2]], 9, i, 40);
+  seam(c, tau, i);
+  const p = sm(.1, 1.1, tau, t => t);
+  // written once on the left, mirrored through the seam on the right a beat later
+  c.save(); c.translate(0, 0);
+  writeOn(c, 'mirror', SEAM - 340, CY + 60, p, { size: 180, ink: PAL.ink, ink2: PAL.fills[0], pen: PAL.fills[0] });
+  c.restore();
+  const q = sm(.35, 1.35, tau, t => t);
+  c.save(); c.translate(SEAM, 0); c.scale(-1, 1); c.translate(-SEAM, 0);
+  writeOn(c, 'mirror', SEAM - 340, CY + 60, q, { size: 180, ink: PAL.ink, ink2: PAL.fills[1], pen: PAL.fills[1] });
+  c.restore();
+  if (p > .6) { writeOn(c, 'discord', SEAM - 340, CY - 90, sm(.6, 1.2, tau, t => t), { size: 96, ink: PAL.fills[0], ink2: null, pen: null }); }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_DM, poster: 2.6, crf: 28,
+  beats: [
+    { name: 'two', dur: 1.7, fn: sceneTwo },
+    { name: 'sync', dur: 1.5, fn: sceneSync },
+    { name: 'name', dur: 1.8, fn: sceneName },
+  ],
+});
+</script>

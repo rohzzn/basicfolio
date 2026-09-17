@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>mac</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Mac, macOS running in the browser.
+// Look: flat screen print, desert wallpaper. Anchor: the dock. Signature: the dock magnifies under the pointer
+// and a window genies out of the icon that gets clicked.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   desk    the desktop; the pointer runs the dock, icons swelling under it     dock magnify
+// 1.6   1.4   genie   the clicked icon stretches up into a window that settles            skew lerp
+// 3.0   1.8   note    a sticky note is written on the desktop: "mac"                       stickyNote, writeOn
+
+const PAL_MAC = makePalette({
+  paper: '#f3e2cf', paperBand: null, ink: '#2b2233', night: '#1f1a2b', chalk: '#fff8ee', chalkDim: '#9b8ba0', guide: 'rgba(43,34,51,.3)',
+  fills: ['#e98b57', '#c05e57', '#f2c078', '#6d8a96', '#8a5c7c', '#f7e6d0'], shade: '#2b2233', light: '#fff8ee', blush: '#c05e57',
+  accents: ['#e98b57', '#6d8a96', '#f2c078', '#8a5c7c'], inks: ['#c05e57', '#2b2233', '#f2c078'], finish: 'screen',
+}, 'screenSea');
+const DOCK_N = 7, DOCK_Y = H - 130;
+function wallpaper(c, i) {
+  paper(c);
+  const sky = rectPath(0, 0, W, 700); c.fillStyle = PAL.fills[2]; c.fill(sky); tex(c, sky, [0, 0, W, 700], { color: PAL.fills[0], density: .3, seed: 1 });
+  const sun = CI(1080, 250, 120); c.fillStyle = PAL.light; c.fill(sun.path); tex(c, sun.path, sun.box, { color: PAL.fills[2], density: .3, seed: 2 });
+  const dunes = [[560, PAL.fills[0]], [700, PAL.blush], [850, PAL.fills[4]]];
+  dunes.forEach(([y, col], k) => { const pts = [[-20, y]]; for (let x = 0; x <= W + 20; x += 60) pts.push([x, y + Math.sin(x / 260 + k) * 60 - k * 10]); pts.push([W + 20, H], [-20, H]); const p = polyPath(pts); c.fillStyle = col; c.fill(p); tex(c, p, [0, y - 60, W, H - y + 60], { color: shade(col, .3), density: .3, seed: 3 + k }); stroke(c, pts.slice(0, -2), 10 + k, { lw: 5, raw: true }); });
+  // menu bar
+  const mb = rectPath(0, 0, W, 60); c.fillStyle = alpha(PAL.light, .85); c.fill(mb); stroke(c, [[0, 60], [W, 60]], 20, { lw: 3 });
+  draw(c, CI(70, 30, 16), PAL.ink, 21, { tex: false, line: false });
+  for (let k = 0; k < 4; k++) textBar(c, 130 + k * 130, 30, 90 - k * 10, alpha(PAL.ink, .45), 12);
+  textBar(c, W - 220, 30, 160, alpha(PAL.ink, .45), 12);
+}
+function dock(c, px, pressK, seed) {
+  const gap = 150, x0 = CX - (DOCK_N - 1) * gap / 2;
+  const scales = [];
+  for (let k = 0; k < DOCK_N; k++) { const x = x0 + k * gap, d = Math.abs(px - x) / 260; scales.push(1 + Math.max(0, 1 - d) * .85); }
+  const w = (DOCK_N - 1) * gap + 210;
+  draw(c, RR(CX - w / 2, DOCK_Y - 80, w, 160, 44), alpha(PAL.light, .8), seed, { tex: false, lw: 4 });
+  const cols = [PAL.fills[3], PAL.blush, PAL.fills[0], PAL.fills[4], PAL.fills[2], PAL.fills[3], PAL.blush];
+  for (let k = 0; k < DOCK_N; k++) {
+    const s = scales[k], x = x0 + k * gap, side = 104 * s, y = DOCK_Y + 20 - side / 2 - (s - 1) * 40 - (k === pressK ? 26 : 0);
+    draw(c, RR(x - side / 2, y - side / 2, side, side, side * .26), cols[k], seed + 10 + k, { lw: 4, texo: { density: .3 } });
+    if (k % 3 === 0) draw(c, CI(x, y, side * .2), PAL.light, seed + 20 + k, { tex: false, lw: 3 });
+    if (k % 3 === 1) stroke(c, [[x - side * .22, y + side * .16], [x - side * .06, y - side * .08], [x + side * .1, y + side * .1], [x + side * .24, y - side * .18]], seed + 30 + k, { lw: 5, color: PAL.light, raw: true });
+    if (k % 3 === 2) draw(c, PG([[x - side * .16, y - side * .2], [x + side * .22, y], [x - side * .16, y + side * .2]]), PAL.light, seed + 40 + k, { tex: false, lw: 3 });
+    if (k < 3) dot(c, x, DOCK_Y + 62, 8, alpha(PAL.ink, .5));
+  }
+  return { x0, gap, scales };
+}
+function appWindow(c, x, y, w, h, seed, squeeze = 1) {
+  c.save(); c.translate(x + w / 2, y + h); c.scale(1, squeeze); c.translate(-x - w / 2, -y - h);
+  c.fillStyle = alpha(PAL.shade, .2); c.beginPath(); c.roundRect(x + 16, y + 20, w, h, 22); c.fill();
+  draw(c, RR(x, y, w, h, 22), PAL.light, seed, { tex: false, lw: 5 });
+  const bar = rectPath(x, y, w, 64); c.save(); c.clip(roundRectPath(x, y, w, h, 22)); c.fillStyle = PAL.fills[5]; c.fill(bar); c.restore();
+  stroke(c, [[x, y + 64], [x + w, y + 64]], seed + 1, { lw: 4 });
+  [PAL.blush, PAL.fills[2], PAL.fills[3]].forEach((col, k) => draw(c, CI(x + 34 + k * 30, y + 32, 11), col, seed + 10 + k, { tex: false, lw: 2.6 }));
+  draw(c, RR(x + 20, y + 84, 200, h - 104, 12), alpha(PAL.fills[3], .25), seed + 20, { tex: false, lw: 3 });
+  for (let k = 0; k < 5; k++) textBar(c, x + 40, y + 120 + k * 46, 150 - (k * 23) % 60, alpha(PAL.ink, .35), 14);
+  squig(c, x + 250, y + 130, w - 300, 5, { seed: seed + 30, lineH: 58, width: 4 });
+  c.restore();
+}
+function sceneDesk(c, tau, i) {
+  wallpaper(c, i);
+  const px = lerp(260, CX + 150, sm(.1, 1.3, tau, easeIO));
+  dock(c, px, tau > 1.35 ? 5 : -1, 40);
+  cursor(c, px, DOCK_Y - 40, 120, PAL.light, 60, { lc: PAL.ink, lw: 5, tex: false });
+}
+function sceneGenie(c, tau, i) {
+  wallpaper(c, i);
+  const p = sm(0, .8, tau, easeOut), gap = 150, x0 = CX - (DOCK_N - 1) * gap / 2, ix = x0 + 5 * gap;
+  const w = lerp(150, 980, p), h = lerp(120, 660, p), x = lerp(ix - 75, CX - 490, p), y = lerp(DOCK_Y - 60, 180, p);
+  appWindow(c, x, y, w, h, 70, 1);
+  dock(c, ix, p < .3 ? 5 : -1, 40);
+  cursor(c, ix, DOCK_Y - 40, 120, PAL.light, 60, { lc: PAL.ink, lw: 5, tex: false });
+}
+function sceneNote(c, tau, i) {
+  wallpaper(c, i);
+  appWindow(c, CX - 490, 180, 980, 660, 70, 1);
+  dock(c, -400, -1, 40);
+  const nx = W - 430, ny = 160, s = 380, pop = easeBack(sm(0, .3, tau, t => t));
+  if (pop > .02) {
+    c.save(); c.translate(nx + s / 2, ny + s / 2); c.scale(pop, pop); c.rotate(-.05); c.translate(-nx - s / 2, -ny - s / 2);
+    c.fillStyle = alpha(PAL.shade, .2); c.fillRect(nx + 14, ny + 18, s, s);
+    c.fillStyle = PAL.fills[2]; c.fillRect(nx, ny, s, s);
+    tex(c, rectPath(nx, ny, s, s), [nx, ny, s, s], { color: PAL.fills[0], density: .25, seed: 90 });
+    stroke(c, rrPts(nx, ny, s, s, 2), 91, { raw: true, close: true, lw: 4 });
+    writeOn(c, 'mac', nx + s / 2, ny + s * .62, sm(.25, .95, tau, t => t), { size: 200, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+    squig(c, nx + 40, ny + s * .82, s - 80, 1, { seed: 92, width: 4, color: alpha(PAL.ink, .5) });
+    c.restore();
+  }
+  cursor(c, nx - 60, ny + s + 40, 120, PAL.light, 60, { lc: PAL.ink, lw: 5, tex: false });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_MAC, poster: 4.4,
+  beats: [
+    { name: 'desk', dur: 1.6, fn: sceneDesk },
+    { name: 'genie', dur: 1.4, fn: sceneGenie },
+    { name: 'note', dur: 1.8, fn: sceneNote },
+  ],
+});
+</script>

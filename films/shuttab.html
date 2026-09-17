@@ -1,0 +1,107 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>shuttab</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: ShutTab, a Chrome extension that blocks distracting sites.
+// Look: ink on sage paper. Anchor: the tab strip. Signature: a roller shutter slams down; the name is sprayed on it.
+// t     dur   scene   what changes                                                       kit
+// 0.0   1.6   noise   tabs multiply, distractions hop around the page                     tabbed, hop
+// 1.6   1.1   slam    the shutter drops, one flash, dust, the slats settle                 shutter, flash
+// 2.7   2.0   spray   "shuttab" sprayed on the shutter, a plant grows at its foot          writeOn, plant
+
+const PAL_SHUT = makePalette({
+  paper: '#e3e8d8', paperBand: null, ink: '#1e2a24', night: '#1b2420', chalk: '#f7f5ec', chalkDim: '#8fa097', guide: 'rgba(30,42,36,.3)',
+  fills: ['#9aae8c', '#5f7a61', '#d9c8a9', '#b8c4a6'], shade: '#26352c', light: '#f7f5ec', blush: '#c46b4d',
+  accents: ['#e85d75', '#3d7dd8', '#f2b134', '#58a55c'], inks: ['#1e2a24', '#c46b4d', '#5f7a61'], finish: 'ink',
+}, 'paperInk');
+
+const WX = 150, WY = 130, WW = 1140, WH = 840, BAR = 96;
+function tabbed(c, tabs, active, seed) {
+  c.fillStyle = alpha(PAL.shade, .18); c.beginPath(); c.roundRect(WX + 20, WY + 24, WW, WH, 28); c.fill();
+  draw(c, RR(WX, WY, WW, WH, 28), PAL.light, seed, { tex: false });
+  c.save(); c.clip(roundRectPath(WX, WY, WW, WH, 28)); const b = rectPath(WX, WY, WW, BAR); c.fillStyle = PAL.fills[3]; c.fill(b); tex(c, b, [WX, WY, WW, BAR], { seed: seed + 1, density: .6 }); c.restore();
+  const tw = Math.min(250, (WW - 60) / Math.max(1, tabs.length));
+  tabs.forEach((col, k) => {
+    const x = WX + 30 + k * (tw - 8), on = k === active, y = WY + 24, pts = [[x, WY + BAR], [x + 16, y], [x + tw - 16, y], [x + tw, WY + BAR]];
+    c.fillStyle = on ? PAL.light : tint(PAL.fills[3], .3); c.fill(polyPath(pts));
+    stroke(c, pts, seed + 10 + k, { lw: 4 });
+    dot(c, x + 38, y + 36, 12, col);
+    textBar(c, x + 62, y + 36, Math.max(20, tw - 110), alpha(PAL.ink, on ? .5 : .25), 10);
+  });
+  stroke(c, [[WX, WY + BAR], [WX + WW, WY + BAR]], seed + 3, { lw: 6 });
+  return [WX, WY + BAR, WW, WH - BAR];
+}
+const NOISY = () => [PAL.blush, PAL.accents[1], PAL.accents[0], PAL.accents[2], PAL.fills[1], PAL.accents[3], PAL.blush, PAL.accents[1]];
+function distraction(c, k, x, y, s, seed) {
+  if (k === 0) { draw(c, RR(x - s, y - s * .7, s * 2, s * 1.4, s * .35), PAL.blush, seed, {}); draw(c, PG([[x - s * .25, y - s * .38], [x + s * .42, y], [x - s * .25, y + s * .38]]), PAL.light, seed + 1, { tex: false, lw: 4 }); }
+  if (k === 1) draw(c, PG(heartPts(x, y, s * .95)), PAL.accents[0], seed, {});
+  if (k === 2) { bubble(c, x - s, y - s * .6, s * 2, s * 1.1, PAL.accents[1], seed, { lines: false }); for (let d = -1; d <= 1; d++) dot(c, x + d * s * .45, y - s * .05, s * .12, PAL.light); }
+  if (k === 3) { draw(c, CI(x, y, s * .8), PAL.accents[2], seed, {}); draw(c, CI(x + s * .62, y - s * .62, s * .32), PAL.blush, seed + 1, { tex: false, lw: 4 }); }
+  if (k === 4) draw(c, PG(starPts(x, y, s)), PAL.fills[1], seed, {});
+}
+const SPOTS = [[.18, .28, 0], [.52, .2, 1], [.84, .32, 2], [.3, .68, 3], [.64, .62, 4], [.9, .76, 1], [.12, .86, 2]];
+function pageNoise(c, [x, y, w, h], tau, i, seed) {
+  SPOTS.forEach(([u, v, k], j) => { const [dy, sq] = hop(tau + j * .19, .55 + j * .05, 46); c.save(); c.translate(x + u * w, y + v * h + dy); c.scale(1 / sq, sq); distraction(c, k, 0, 0, 74, seed + j * 10); c.restore(); });
+}
+function sceneNoise(c, tau, i) {
+  paper(c);
+  const tabs = NOISY().slice(0, 2 + Math.min(6, Math.floor(tau * 5)));
+  const box = tabbed(c, tabs, tabs.length - 1, 20);
+  c.save(); c.beginPath(); c.rect(...box); c.clip(); pageNoise(c, box, tau, i, 40); c.restore();
+  if (pulse(i, 5, 1)) scribble(c, roundRectPath(WX, WY, WW, WH, 28), CX, CY, { seed: 50 + i, amp: 12, width: 3.4, alpha: .5 });
+}
+
+function shutter(c, [x, y, w, h], p, seed, nameP) {
+  const hh = h * clamp(p, 0, 1); if (hh <= 0) return;
+  const s = RR(x, y, w, hh, 0); c.fillStyle = PAL.fills[1]; c.fill(s.path); tex(c, s.path, s.box, { angle: 0, density: 1.1, seed, color: PAL.shade });
+  for (let sy = y + 52; sy < y + hh - 12; sy += 52) stroke(c, [[x, sy], [x + w, sy]], seed + (sy | 0), { lw: 4, alpha: .8 });
+  const bar = RR(x, y + hh - 46, w, 46, 0); draw(c, bar, shade(PAL.fills[1], .4), seed + 1, { tex: false });
+  draw(c, RR(x + w / 2 - 80, y + hh - 32, 160, 18, 9), PAL.ink, seed + 2, { tex: false });
+  if (nameP > 0) {
+    const r = rng(77);
+    c.save(); c.beginPath(); c.rect(x, y, w, hh); c.clip();
+    for (let k = 0; k < 90; k++) { const a = r() * TAU, d = r() * 330; c.fillStyle = alpha(PAL.accents[0], .18 * nameP); c.beginPath(); c.arc(x + w / 2 + Math.cos(a) * d * 1.6, y + hh * .42 + Math.sin(a) * d * .5, 3 + r() * 9, 0, TAU); c.fill(); }
+    writeOn(c, 'shuttab', x + w / 2, y + hh * .5, nameP, { size: 260, ink: PAL.accents[0], ink2: PAL.light, rot: -.03, pen: null });
+    for (let k = 0; k < 5; k++) { const dx = x + w / 2 - 300 + k * 150, len = 30 + ((k * 37) % 60) * nameP; c.strokeStyle = alpha(PAL.accents[0], .7); c.lineWidth = 6; c.beginPath(); c.moveTo(dx, y + hh * .5 + 30); c.lineTo(dx, y + hh * .5 + 30 + len); c.stroke(); }
+    c.restore();
+  }
+}
+function sceneSlam(c, tau, i) {
+  const drop = .32;
+  if (tau >= drop && tau < drop + 1 / 12) { flash(c, tint(PAL.paper, .5)); return; }
+  paper(c);
+  const box = tabbed(c, NOISY(), 7, 20);
+  c.save(); c.beginPath(); c.rect(...box); c.clip();
+  pageNoise(c, box, 1.6, i, 40);
+  const shake = tau > drop ? Math.sin((tau - drop) * 34) * 18 * (1 - sm(drop, drop + .45, tau)) : 0;
+  c.translate(0, shake); shutter(c, box, sm(0, drop, tau, easeIn), 60, 0);
+  c.restore();
+  if (tau > drop) { const d = tau - drop; speedLines(c, WX + 60, WY + WH - 20, Math.PI, 70, 9, .8 * (1 - sm(0, .45, d))); speedLines(c, WX + WW - 60, WY + WH - 20, 0, 71, 9, .8 * (1 - sm(0, .45, d))); }
+}
+function sceneSpray(c, tau, i) {
+  paper(c);
+  const box = tabbed(c, NOISY().slice(0, 2), 0, 20);
+  c.save(); c.beginPath(); c.rect(...box); c.clip(); shutter(c, box, 1, 60, sm(.1, .9, tau, t => t)); c.restore();
+  const g = sm(.5, 1.7, tau, easeOut);
+  if (g > 0) { const px = WX + WW - 190, py = WY + WH + 30;
+    c.save(); c.translate(px, py - 140); c.scale(g * 2.6, g * 2.6); plant(c, 0, 0, 70, 4, 91, { stem: PAL.ink, leaf: shade(PAL.accents[3], .2), flower: PAL.blush, width: 2.4 }); c.restore();
+    draw(c, PG([[px - 110, py - 150], [px + 110, py - 150], [px + 82, py], [px - 82, py]]), PAL.fills[2], 92, {});
+    draw(c, RR(px - 124, py - 172, 248, 40, 10), shade(PAL.fills[2], .15), 93, { tex: false });
+  }
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_SHUT, poster: 4.2,
+  beats: [
+    { name: 'noise', dur: 1.6, fn: sceneNoise },
+    { name: 'slam', dur: 1.1, fn: sceneSlam },
+    { name: 'spray', dur: 2.0, fn: sceneSpray },
+  ],
+});
+</script>

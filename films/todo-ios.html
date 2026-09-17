@@ -1,0 +1,104 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>todo-ios</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Todo iOS App, native todos with iCloud sync.
+// Look: flat screen print, daylight blue. Anchor: the check. Signature: rows are swiped, not clicked: each one
+// slides right onto a green field before it ticks; at the end the phone's own big title writes itself.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.8   swipe   four rows swipe away and tick, one after another                   phone, easeOut
+// 1.8   1.5   sync    the same list on a second device, the cloud passing ticks across     cloud, dashed arcs
+// 3.3   1.6   title   back on the phone: the large title writes "todo", all rows done      writeOn
+
+const PAL_TD = makePalette({
+  paper: '#eef3fb', paperBand: null, ink: '#1c2340', night: '#101830', chalk: '#ffffff', chalkDim: '#8fa0c4', guide: 'rgba(28,35,64,.25)',
+  fills: ['#ffffff', '#3d7bf7', '#ff6b6b', '#ffd166', '#06d6a0', '#c7d2e8'], shade: '#1c2340', light: '#ffffff', blush: '#ff6b6b',
+  accents: ['#3d7bf7', '#ff6b6b', '#ffd166', '#06d6a0'], inks: ['#3d7bf7', '#1c2340', '#06d6a0'], finish: 'screen',
+}, 'screenSea');
+
+function rows(c, [x, y, w, h], n, prog, seed, s = 1, titleP = -1) {
+  const rh = 112 * s, top = y + 170 * s;
+  if (titleP >= 0) writeOn(c, 'todo', x + 46 * s, y + 130 * s, titleP, { size: 110 * s, align: 'left', ink: PAL.ink, ink2: PAL.accents[0], pen: PAL.accents[0] });
+  else textBar(c, x + 40 * s, y + 96 * s, 200 * s, alpha(PAL.ink, .8), 30 * s);
+  textBar(c, x + w - 120 * s, y + 96 * s, 60 * s, alpha(PAL.accents[0], .8), 18 * s);
+  for (let k = 0; k < n; k++) {
+    const ry = top + k * rh, p = clamp(prog - k, 0, 1), slide = p > 0 ? Math.sin(Math.min(1, p * 1.6) * Math.PI) * 190 * s : 0;
+    if (p > 0) { const f = RR(x + 20 * s, ry - rh / 2 + 8 * s, w - 40 * s, rh - 16 * s, 22 * s); c.fillStyle = PAL.fills[4]; c.fill(f.path); checkMark(c, x + 70 * s, ry, 22 * s, 1, seed + k, { color: PAL.light, lw: 8 * s }); }
+    c.save(); c.translate(slide, 0);
+    draw(c, RR(x + 20 * s, ry - rh / 2 + 8 * s, w - 40 * s, rh - 16 * s, 22 * s), PAL.fills[0], seed + 10 + k, { tex: false, lw: 3.4 * s });
+    const col = [PAL.accents[1], PAL.accents[0], PAL.accents[3], PAL.accents[2], PAL.fills[1]][k % 5];
+    if (p >= 1) { draw(c, CI(x + 70 * s, ry, 26 * s), PAL.fills[4], seed + 20 + k, { tex: false, lw: 3.4 * s }); checkMark(c, x + 70 * s, ry, 15 * s, 1, seed + 30 + k, { color: PAL.light, lw: 7 * s }); }
+    else draw(c, CI(x + 70 * s, ry, 26 * s), PAL.fills[0], seed + 20 + k, { tex: false, lw: 3.4 * s, lc: col });
+    const tw = (w - 220 * s) - ((k * 41) % 70) * s;
+    textBar(c, x + 118 * s, ry, tw, alpha(PAL.ink, p >= 1 ? .3 : .6), 15 * s);
+    if (p >= 1) stroke(c, [[x + 118 * s, ry], [x + 118 * s + tw, ry]], seed + 40 + k, { lw: 4 * s, color: alpha(PAL.ink, .45) });
+    dot(c, x + w - 66 * s, ry, 7 * s, alpha(PAL.ink, .25));
+    c.restore();
+  }
+}
+function phoneOn(c, x, y, w, h, seed) {
+  c.fillStyle = alpha(PAL.shade, .18); c.beginPath(); c.roundRect(x + 18, y + 22, w, h, w * .16); c.fill();
+  draw(c, RR(x, y, w, h, w * .16), PAL.ink, seed, { tex: false });
+  const m = w * .05, sx = x + m, sy = y + m, sw = w - 2 * m, sh = h - 2 * m;
+  draw(c, RR(sx, sy, sw, sh, w * .12), PAL.paper, seed + 1, { tex: false, line: false });
+  c.fillStyle = PAL.ink; c.beginPath(); c.roundRect(x + w / 2 - w * .15, sy + 14, w * .3, 20, 10); c.fill();
+  return [sx, sy, sw, sh];
+}
+function sceneSwipe(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .16, cell: 15 });
+  const scr = phoneOn(c, CX - 260, 60, 520, 960, 10);
+  rows(c, scr, 5, q12(tau) * 2.6, 30);
+  cursor(c, CX + 120, 420 + Math.sin(tau * 5) * 30, 110, PAL.light, 60, { lc: PAL.ink, lw: 5, tex: false });
+}
+function cloudPts(cx, cy, w, h) {
+  const p = [], bumps = [[-.34, -.02, .3], [-.02, -.3, .4], [.32, -.06, .3]];
+  for (let k = 0; k <= 64; k++) { const a = Math.PI + k / 64 * Math.PI, dx = Math.cos(a), dy = Math.sin(a); let best = 0;
+    for (const [bx, by, br] of bumps) { const t = (bx * dx + by * dy) + Math.sqrt(Math.max(0, br * br - Math.pow(bx * dy - by * dx, 2))); best = Math.max(best, t); }
+    p.push([cx + dx * best * w, cy + dy * best * h]); }
+  p.push([cx + .62 * w, cy + .2 * h], [cx - .62 * w, cy + .2 * h]);
+  return p;
+}
+function sceneSync(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .16, cell: 15 });
+  const prog = 2 + q12(tau) * 2.2;
+  const a = phoneOn(c, 70, 360, 380, 680, 10); rows(c, a, 4, prog, 30, .7);
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(W - 560 + 16, 380 + 20, 500, 640, 36); c.fill();
+  draw(c, RR(W - 560, 380, 500, 640, 36), PAL.ink, 40, { tex: false });
+  const tb = [W - 530, 410, 440, 580];
+  draw(c, RR(...tb, 20), PAL.paper, 41, { tex: false, line: false });
+  rows(c, tb, 4, prog - .8, 50, .74);
+  const cl = cloudPts(CX, 220, 330, 250);
+  draw(c, { path: polyPath(cl), pts: subdiv(cl, 24), box: [CX - 240, 30, 480, 300] }, PAL.fills[0], 60, { lw: 6, texo: { color: PAL.fills[1], density: .3 } });
+  for (const s of [-1, 1]) {
+    const a0 = s > 0 ? -.2 : Math.PI + .2, pts = arcPts(CX, 430, 420, 260, a0, a0 + s * 1.15, 22);
+    stroke(c, pts, 70 + s, { raw: true, lw: 6, dash: [22, 16], color: PAL.fills[1] });
+    const [ex, ey] = pts[pts.length - 1], [qx, qy] = pts[pts.length - 3], an = Math.atan2(ey - qy, ex - qx);
+    stroke(c, [[ex - Math.cos(an - .5) * 34, ey - Math.sin(an - .5) * 34], [ex, ey], [ex - Math.cos(an + .5) * 34, ey - Math.sin(an + .5) * 34]], 72 + s, { raw: true, lw: 7, color: PAL.fills[1] });
+    const u = (q12(tau) * 1.1 + (s > 0 ? 0 : .5)) % 1, [dx, dy] = pts[Math.floor(u * (pts.length - 1))]; dot(c, dx, dy, 13, PAL.accents[3]);
+  }
+}
+function sceneTitle(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .16, cell: 15 });
+  const z = lerp(1, 1.12, sm(0, 1.6, tau, easeIO));
+  c.save(); c.translate(CX, CY); c.scale(z, z); c.translate(-CX, -CY);
+  const scr = phoneOn(c, CX - 260, 60, 520, 960, 10);
+  rows(c, scr, 5, 6, 30, 1, sm(.1, .8, tau, t => t));
+  c.restore();
+  if (tau > .9) { const r = rng(90); for (let k = 0; k < 16; k++) { const a = r() * TAU, d = 120 + (tau - .9) * (300 + r() * 400); const x = CX + Math.cos(a) * d, y = 300 + Math.sin(a) * d * .7 + (tau - .9) * 400; c.fillStyle = [PAL.accents[0], PAL.accents[1], PAL.accents[2], PAL.accents[3]][k % 4]; c.save(); c.translate(x, y); c.rotate(a + tau * 4); c.fillRect(-12, -6, 24, 12); c.restore(); } }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_TD, poster: 4.3,
+  beats: [
+    { name: 'swipe', dur: 1.8, fn: sceneSwipe },
+    { name: 'sync', dur: 1.5, fn: sceneSync },
+    { name: 'title', dur: 1.6, fn: sceneTitle },
+  ],
+});
+</script>

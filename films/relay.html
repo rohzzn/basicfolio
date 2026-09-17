@@ -1,0 +1,90 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>relay</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Relay, uptime monitoring and status pages in one binary.
+// Look: riso duotone, green and navy. Anchor: the heartbeat line.
+// Signature: one unbroken tracking shot; the camera rides the heartbeat from the server
+// to the status page, and at the end the line turns into the handwriting.
+// t     cam x    what happens
+// 0.0   620      the server, LEDs blinking, the pulse leaves it
+// 1.1   ->2400   pan along the pulse
+// 1.8   2400     status page: bars fill, one gap (downtime), the row recovers
+// 3.0   ->4150   pan along the pulse
+// 3.7   4150     the pulse writes "relay"
+
+const PAL_RELAY = duotone('#1f3a93', '#00a95c', '#eef0e6', 'riso');
+const CAMS = [[0, 620], [1.1, 620], [1.8, 2400], [3.0, 2400], [3.7, 4150], [9, 4150]];
+function camX(t) { for (let k = 1; k < CAMS.length; k++) { const [t0, x0] = CAMS[k - 1], [t1, x1] = CAMS[k]; if (t <= t1) return lerp(x0, x1, sm(t0, t1, t, easeIO)); } return CAMS[CAMS.length - 1][1]; }
+const LINE_Y = CY + 330;
+function ekgPts(x0, x1, amp) { const p = []; for (let x = x0; x <= x1; x += 14) { const u = ((x - x0) % 420) / 420; let y = 0; if (u > .42 && u < .46) y = -amp * .25; else if (u > .5 && u < .53) y = amp * .3; else if (u >= .53 && u < .58) y = -amp * lerp(0, 1, (u - .53) / .05); else if (u >= .58 && u < .64) y = lerp(-amp, amp * .5, (u - .58) / .06); else if (u >= .64 && u < .68) y = lerp(amp * .5, 0, (u - .64) / .04); p.push([x, LINE_Y + y]); } return p; }
+
+function server(c, cx, cy, i) {
+  const b = RR(cx - 180, cy - 320, 360, 640, 30); draw(c, b, PAL.fills[3], 10, { lw: 6, texo: { density: .5 } });
+  for (let k = 0; k < 3; k++) {
+    const y = cy - 270 + k * 160;
+    draw(c, RR(cx - 135, y, 270, 125, 16), PAL.light, 11 + k, { tex: false, lw: 5 });
+    textBar(c, cx - 100, y + 44, 120, alpha(PAL.ink, .5), 14); textBar(c, cx - 100, y + 82, 80, alpha(PAL.ink, .3), 14);
+    for (let l = 0; l < 2; l++) { const on = pulse(i + k * 4 + l * 3, 6 + l, 3); dot(c, cx + 70 + l * 36, y + 62, 12, on ? PAL.fills[1] : alpha(PAL.ink, .25)); }
+  }
+  for (let v = 0; v < 4; v++) stroke(c, [[cx - 110, cy + 220 + v * 20], [cx + 110, cy + 220 + v * 20]], 20 + v, { lw: 4 });
+  stroke(c, [[cx + 180, LINE_Y], [cx + 180, cy + 200]], 30, { lw: 6, color: PAL.fills[1] });
+}
+function statusPage(c, cx, tau, i) {
+  const x = cx - 560, y = 150, w = 1120, hgt = 650;
+  c.fillStyle = alpha(PAL.ink, .15); c.beginPath(); c.roundRect(x + 18, y + 20, w, hgt, 26); c.fill();
+  draw(c, RR(x, y, w, hgt, 26), PAL.light, 40, { lw: 6, tex: false });
+  const local = tau - 1.7, n = clamp(Math.floor(local * 12) + 6, 0, 24), gap = 15;
+  const ok = !(n > gap && n < gap + 6);
+  draw(c, CI(x + 110, y + 105, 50), ok ? PAL.fills[1] : PAL.light, 41, { lw: 6 });
+  if (ok) checkMark(c, x + 110, y + 105, 22, 1, 42, { color: PAL.light, lw: 8 }); else crossMark(c, x + 110, y + 105, 20, 43, { lw: 7 });
+  textBar(c, x + 200, y + 85, 340, alpha(PAL.ink, .7), 24); textBar(c, x + 200, y + 130, 200, alpha(PAL.ink, .35), 14);
+  for (let r = 0; r < 3; r++) {
+    const ry = y + 270 + r * 130;
+    textBar(c, x + 60, ry, 190, alpha(PAL.ink, .55), 16);
+    for (let k = 0; k < 24; k++) {
+      const bx = x + 300 + k * 32, filled = k < n, down = r === 1 && k === gap;
+      const bar = RR(bx, ry - 38, 22, 76, 6);
+      if (filled && !down) { c.fillStyle = PAL.fills[1]; c.fill(bar.path); tex(c, bar.path, bar.box, { density: .35, seed: 50 + k }); }
+      stroke(c, bar.pts, 60 + r * 30 + k, { raw: true, close: true, lw: down && filled ? 5 : 2.6, alpha: filled ? 1 : .35 });
+      if (down && filled) crossMark(c, bx + 11, ry, 10, 70, { lw: 4 });
+    }
+    if (r === 1 && n > gap) ringsOut(c, x + 300 + gap * 32 + 11, ry, local - (gap - 6 + 1) / 12, { every: 1 / 6, t1: .3, speed: 420, colors: [PAL.ink, PAL.fills[1]], width: 5, seed: 80, max: 260 });
+  }
+}
+
+function scene(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[4], density: .14, cell: 15 });
+  const cx = camX(tau);
+  cam(c, cx, CY, 1);
+  // a strip of ground under the whole world, printed in the second ink
+  const ground = rectPath(-400, LINE_Y + 120, 5200, 400); c.fillStyle = tint(PAL.fills[1], .55); c.fill(ground); tex(c, ground, [cx - W / 2, LINE_Y + 120, W, 400], { color: PAL.fills[1], density: .45, seed: 5 });
+  server(c, 450, CY - 60, i);
+  statusPage(c, 2400, tau, i);
+  // the pulse: drawn up to its head, which leads the camera
+  const head = Math.min(3830, lerp(640, 3830, sm(0, 3.7, tau, t => t)) + (tau < 1.1 ? 0 : 0));
+  const headX = Math.max(640, Math.min(head, cx + 560));
+  const pts = ekgPts(630, headX, 190);
+  stroke(c, pts, 90, { raw: true, lw: 10, color: PAL.ink });
+  const [hx, hy] = pts[pts.length - 1];
+  const p = sm(3.7, 4.8, tau, t => t);
+  if (p <= 0) { dot(c, hx, hy, 18, PAL.fills[1]); if (flicker(i, 2)) dot(c, hx, hy, 34, alpha(PAL.fills[1], .35)); }
+  else {
+    const [px, py] = writeOn(c, 'relay', 4150, CY + 120, p, { size: 360, ink: PAL.ink, ink2: PAL.fills[1], pen: null });
+    if (p < 1) { stroke(c, curvePts([hx, hy], [hx + 60, py + 100], [px, py], 16), 91, { raw: true, lw: 10, color: PAL.ink }); dot(c, px, py, 16, PAL.fills[1]); }
+    else stroke(c, curvePts([hx, hy], [hx + 60, hy - 40], [4150 - handWidth(c, 'relay', 360) / 2, CY + 60], 16), 92, { raw: true, lw: 10, color: PAL.ink });
+  }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_RELAY, poster: 2.6,
+  beats: [{ name: 'track', dur: 5.25, fn: scene }],
+});
+</script>

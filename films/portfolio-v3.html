@@ -1,0 +1,75 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>portfolio-v3</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Framer Scroll (v3), a one-page scrolling portfolio.
+// Look: flat screen print, off-white and one hot accent. Anchor: the scroll bar.
+// Signature: the whole film is one scroll: four sections passing at different speeds, ending on the hero.
+// t     scroll    what passes
+// 0.0   0         hero blocks, the scroll bar at the top
+// 1.2   ->        cards section, parallax shapes drifting slower than the text
+// 2.6   ->        a wide image band with a caption
+// 3.6   ->        the footer, where "framer scroll" is written large
+
+const PAL_V3 = makePalette({
+  paper: '#f7f5f0', paperBand: null, ink: '#151515', night: '#151515', chalk: '#ffffff', chalkDim: '#9a9a95', guide: 'rgba(21,21,21,.25)',
+  fills: ['#ff4d17', '#151515', '#e8e4da', '#2f6df6', '#ffd400', '#c8c4b8'], shade: '#151515', light: '#ffffff', blush: '#ff4d17',
+  accents: ['#ff4d17', '#2f6df6', '#ffd400', '#151515'], inks: ['#ff4d17', '#151515'], finish: 'screen',
+}, 'screenSea');
+const PAGE_H = 4200;
+function scrollY(t) { return sm(0, 4.3, t, easeIO) * (PAGE_H - H); }
+
+function page(c, tau, i, nameP) {
+  // section 1: hero
+  textBar(c, 140, 260, 900, PAL.ink, 70); textBar(c, 140, 380, 640, PAL.ink, 70);
+  textBar(c, 140, 500, 520, alpha(PAL.ink, .4), 26);
+  draw(c, RR(140, 580, 300, 96, 48), PAL.fills[0], 10, { tex: false, lw: 5 }); textBar(c, 200, 628, 180, alpha(PAL.light, .9), 18);
+  draw(c, CI(1120, 380, 220), PAL.fills[0], 11, { lw: 6, texo: { density: .3 } });
+  // section 2: cards
+  for (let k = 0; k < 3; k++) { const x = 140 + k * 400, y = 1150 + (k % 2) * 60;
+    draw(c, RR(x, y, 340, 460, 24), PAL.light, 20 + k, { tex: false, lw: 5 });
+    draw(c, RR(x + 24, y + 24, 292, 240, 14), [PAL.fills[3], PAL.fills[4], PAL.fills[0]][k], 30 + k, { lw: 4, texo: { density: .35 } });
+    textBar(c, x + 24, y + 320, 220, alpha(PAL.ink, .6), 22); textBar(c, x + 24, y + 366, 160, alpha(PAL.ink, .3), 16); }
+  textBar(c, 140, 1020, 420, PAL.ink, 40);
+  // section 3: a wide band
+  const band = rectPath(0, 1900, W, 620); c.fillStyle = PAL.fills[1]; c.fill(band); tex(c, band, [0, 1900, W, 620], { color: PAL.fills[5], density: .18, seed: 40 });
+  for (let k = 0; k < 5; k++) draw(c, CI(240 + k * 260, 2210 + Math.sin(k * 1.4) * 90, 70 + (k % 3) * 26), [PAL.fills[0], PAL.fills[4], PAL.fills[3], PAL.light, PAL.fills[0]][k], 50 + k, { lw: 4, texo: { density: .3 } });
+  textBar(c, 140, 2010, 520, alpha(PAL.light, .85), 30);
+  // section 4: numbers
+  for (let k = 0; k < 3; k++) { textBar(c, 180 + k * 400, 2760, 220, PAL.ink, 60); textBar(c, 180 + k * 400, 2850, 300, alpha(PAL.ink, .35), 20); }
+  // section 5: the footer, with the name
+  const foot = rectPath(0, 3200, W, PAGE_H - 3200); c.fillStyle = PAL.fills[0]; c.fill(foot); tex(c, foot, [0, 3200, W, PAGE_H - 3200], { color: PAL.blush, density: .25, seed: 60 });
+  if (nameP > 0) writeOn(c, 'framer scroll', CX, 3620, nameP, { size: 220, ink: PAL.light, ink2: PAL.ink, pen: PAL.ink });
+  for (let k = 0; k < 4; k++) textBar(c, 200 + k * 280, 3860, 180, alpha(PAL.light, .7), 18);
+}
+function scene(c, tau, i) {
+  const sy = scrollY(tau);
+  resetT(c); c.fillStyle = PAL.paper; c.fillRect(0, 0, W, H);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .1, cell: 16 });
+  // parallax: the shapes behind move at two thirds of the scroll
+  c.save(); c.translate(0, -sy * .62);
+  for (let k = 0; k < 7; k++) { const y = 400 + k * 620; draw(c, CI(k % 2 ? 1240 : 200, y, 140 + (k % 3) * 60), alpha([PAL.fills[3], PAL.fills[4], PAL.fills[0]][k % 3], .22), 70 + k, { tex: false, line: false }); }
+  c.restore();
+  c.save(); c.translate(0, -sy);
+  page(c, tau, i, sm(3.5, 4.4, tau, t => t));
+  c.restore();
+  // the scroll bar, which is the anchor: it is the only thing that never moves
+  const barH = 260, y = 60 + (H - 180 - barH) * (sy / (PAGE_H - H));
+  c.fillStyle = alpha(PAL.ink, .12); c.fillRect(W - 46, 60, 16, H - 120);
+  c.fillStyle = PAL.ink; c.beginPath(); c.roundRect(W - 50, y, 24, barH, 12); c.fill();
+  // a fixed nav pill, like the real site
+  draw(c, RR(CX - 300, 40, 600, 92, 46), alpha(PAL.light, .92), 80, { tex: false, lw: 4 });
+  for (let k = 0; k < 4; k++) textBar(c, CX - 240 + k * 140, 86, 90, alpha(PAL.ink, k === Math.min(3, Math.floor(tau)) ? .8 : .3), 16);
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_V3, poster: 4.5, crf: 27,
+  beats: [{ name: 'scroll', dur: 4.8, fn: scene }],
+});
+</script>

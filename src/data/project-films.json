@@ -1,0 +1,394 @@
+{
+  "anomaly-detection": {
+    "src": "/projects/films/anomaly-detection.mp4",
+    "poster": "/projects/films/anomaly-detection.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "398e12f9"
+  },
+  "api-clinic": {
+    "src": "/projects/films/api-clinic.mp4",
+    "poster": "/projects/films/api-clinic.webp",
+    "duration": 4.833,
+    "width": 720,
+    "height": 540,
+    "v": "a82a97e1"
+  },
+  "argus": {
+    "src": "/projects/films/argus.mp4",
+    "poster": "/projects/films/argus.webp",
+    "duration": 5.25,
+    "width": 720,
+    "height": 540,
+    "v": "4d172aca"
+  },
+  "automobile-analytics": {
+    "src": "/projects/films/automobile-analytics.mp4",
+    "poster": "/projects/films/automobile-analytics.webp",
+    "duration": 5.333,
+    "width": 720,
+    "height": 540,
+    "v": "25f47421"
+  },
+  "beam": {
+    "src": "/projects/films/beam.mp4",
+    "poster": "/projects/films/beam.webp",
+    "duration": 4.5,
+    "width": 720,
+    "height": 540,
+    "v": "c7fcde17"
+  },
+  "block-steam-invites": {
+    "src": "/projects/films/block-steam-invites.mp4",
+    "poster": "/projects/films/block-steam-invites.webp",
+    "duration": 4.917,
+    "width": 720,
+    "height": 540,
+    "v": "a0ce90ad"
+  },
+  "catan-online": {
+    "src": "/projects/films/catan-online.mp4",
+    "poster": "/projects/films/catan-online.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "c1c24d0c"
+  },
+  "codechef-mrec": {
+    "src": "/projects/films/codechef-mrec.mp4",
+    "poster": "/projects/films/codechef-mrec.webp",
+    "duration": 4.917,
+    "width": 720,
+    "height": 540,
+    "v": "ef54b44d"
+  },
+  "contests": {
+    "src": "/projects/films/contests.mp4",
+    "poster": "/projects/films/contests.webp",
+    "duration": 4.5,
+    "width": 720,
+    "height": 540,
+    "v": "9788a3d5"
+  },
+  "cs-stats": {
+    "src": "/projects/films/cs-stats.mp4",
+    "poster": "/projects/films/cs-stats.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "bd06dec8"
+  },
+  "cursors": {
+    "src": "/projects/films/cursors.mp4",
+    "poster": "/projects/films/cursors.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "e4f22c73"
+  },
+  "customer-management": {
+    "src": "/projects/films/customer-management.mp4",
+    "poster": "/projects/films/customer-management.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "9d721159"
+  },
+  "dekho-car": {
+    "src": "/projects/films/dekho-car.mp4",
+    "poster": "/projects/films/dekho-car.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "abf05d16"
+  },
+  "discord-mirror": {
+    "src": "/projects/films/discord-mirror.mp4",
+    "poster": "/projects/films/discord-mirror.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "cd8a7996"
+  },
+  "dock-poker": {
+    "src": "/projects/films/dock-poker.mp4",
+    "poster": "/projects/films/dock-poker.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "7fcc66eb"
+  },
+  "dsa-roadmap": {
+    "src": "/projects/films/dsa-roadmap.mp4",
+    "poster": "/projects/films/dsa-roadmap.webp",
+    "duration": 4.833,
+    "width": 720,
+    "height": 540,
+    "v": "a92bd043"
+  },
+  "git-time-machine": {
+    "src": "/projects/films/git-time-machine.mp4",
+    "poster": "/projects/films/git-time-machine.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "ce93e998"
+  },
+  "github-any-year": {
+    "src": "/projects/films/github-any-year.mp4",
+    "poster": "/projects/films/github-any-year.webp",
+    "duration": 5.167,
+    "width": 720,
+    "height": 540,
+    "v": "2eedd1da"
+  },
+  "greed-island-dex": {
+    "src": "/projects/films/greed-island-dex.mp4",
+    "poster": "/projects/films/greed-island-dex.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "16b3d16c"
+  },
+  "hexr": {
+    "src": "/projects/films/hexr.mp4",
+    "poster": "/projects/films/hexr.webp",
+    "duration": 4.583,
+    "width": 720,
+    "height": 540,
+    "v": "1ebb9f25"
+  },
+  "interactions": {
+    "src": "/projects/films/interactions.mp4",
+    "poster": "/projects/films/interactions.webp",
+    "duration": 4.583,
+    "width": 720,
+    "height": 540,
+    "v": "cce1a694"
+  },
+  "ipynb-extractor": {
+    "src": "/projects/films/ipynb-extractor.mp4",
+    "poster": "/projects/films/ipynb-extractor.webp",
+    "duration": 5.083,
+    "width": 720,
+    "height": 540,
+    "v": "5a5ab955"
+  },
+  "keel": {
+    "src": "/projects/films/keel.mp4",
+    "poster": "/projects/films/keel.webp",
+    "duration": 5.25,
+    "width": 720,
+    "height": 540,
+    "v": "864af3c6"
+  },
+  "languages-lat": {
+    "src": "/projects/films/languages-lat.mp4",
+    "poster": "/projects/films/languages-lat.webp",
+    "duration": 5.333,
+    "width": 720,
+    "height": 540,
+    "v": "004cf0f0"
+  },
+  "mac": {
+    "src": "/projects/films/mac.mp4",
+    "poster": "/projects/films/mac.webp",
+    "duration": 4.833,
+    "width": 720,
+    "height": 540,
+    "v": "c9c4b38c"
+  },
+  "margin": {
+    "src": "/projects/films/margin.mp4",
+    "poster": "/projects/films/margin.webp",
+    "duration": 4.917,
+    "width": 720,
+    "height": 540,
+    "v": "12b0017c"
+  },
+  "mcu-timeline": {
+    "src": "/projects/films/mcu-timeline.mp4",
+    "poster": "/projects/films/mcu-timeline.webp",
+    "duration": 5.083,
+    "width": 720,
+    "height": 540,
+    "v": "0e0eff7c"
+  },
+  "meet": {
+    "src": "/projects/films/meet.mp4",
+    "poster": "/projects/films/meet.webp",
+    "duration": 5.333,
+    "width": 720,
+    "height": 540,
+    "v": "41a6986a"
+  },
+  "overthewire": {
+    "src": "/projects/films/overthewire.mp4",
+    "poster": "/projects/films/overthewire.webp",
+    "duration": 5.333,
+    "width": 720,
+    "height": 540,
+    "v": "cc9582e4"
+  },
+  "pages-figma": {
+    "src": "/projects/films/pages-figma.mp4",
+    "poster": "/projects/films/pages-figma.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "245c7ca9"
+  },
+  "pokedex": {
+    "src": "/projects/films/pokedex.mp4",
+    "poster": "/projects/films/pokedex.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "4ffb5f8e"
+  },
+  "pokemon-platformer": {
+    "src": "/projects/films/pokemon-platformer.mp4",
+    "poster": "/projects/films/pokemon-platformer.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "09c6415e"
+  },
+  "portfolio-v1": {
+    "src": "/projects/films/portfolio-v1.mp4",
+    "poster": "/projects/films/portfolio-v1.webp",
+    "duration": 4.417,
+    "width": 720,
+    "height": 540,
+    "v": "0a99a792"
+  },
+  "portfolio-v2": {
+    "src": "/projects/films/portfolio-v2.mp4",
+    "poster": "/projects/films/portfolio-v2.webp",
+    "duration": 4.917,
+    "width": 720,
+    "height": 540,
+    "v": "077bc5b0"
+  },
+  "portfolio-v3": {
+    "src": "/projects/films/portfolio-v3.mp4",
+    "poster": "/projects/films/portfolio-v3.webp",
+    "duration": 4.833,
+    "width": 720,
+    "height": 540,
+    "v": "eaee7cf3"
+  },
+  "portfolio-v4": {
+    "src": "/projects/films/portfolio-v4.mp4",
+    "poster": "/projects/films/portfolio-v4.webp",
+    "duration": 4.833,
+    "width": 720,
+    "height": 540,
+    "v": "acf79a92"
+  },
+  "qr-generator": {
+    "src": "/projects/films/qr-generator.mp4",
+    "poster": "/projects/films/qr-generator.webp",
+    "duration": 5.083,
+    "width": 720,
+    "height": 540,
+    "v": "68a609b3"
+  },
+  "quire": {
+    "src": "/projects/films/quire.mp4",
+    "poster": "/projects/films/quire.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "e3a3c67f"
+  },
+  "relay": {
+    "src": "/projects/films/relay.mp4",
+    "poster": "/projects/films/relay.webp",
+    "duration": 5.25,
+    "width": 720,
+    "height": 540,
+    "v": "80e3d06e"
+  },
+  "scrapetron": {
+    "src": "/projects/films/scrapetron.mp4",
+    "poster": "/projects/films/scrapetron.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "f6d9e0df"
+  },
+  "shuttab": {
+    "src": "/projects/films/shuttab.mp4",
+    "poster": "/projects/films/shuttab.webp",
+    "duration": 4.667,
+    "width": 720,
+    "height": 540,
+    "v": "fa58a07b"
+  },
+  "smart-agriculture": {
+    "src": "/projects/films/smart-agriculture.mp4",
+    "poster": "/projects/films/smart-agriculture.webp",
+    "duration": 5.083,
+    "width": 720,
+    "height": 540,
+    "v": "9bfd5f88"
+  },
+  "space": {
+    "src": "/projects/films/space.mp4",
+    "poster": "/projects/films/space.webp",
+    "duration": 5.167,
+    "width": 720,
+    "height": 540,
+    "v": "34f3109f"
+  },
+  "tanoshi": {
+    "src": "/projects/films/tanoshi.mp4",
+    "poster": "/projects/films/tanoshi.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "671fdc8f"
+  },
+  "todo-ios": {
+    "src": "/projects/films/todo-ios.mp4",
+    "poster": "/projects/films/todo-ios.webp",
+    "duration": 4.917,
+    "width": 720,
+    "height": 540,
+    "v": "24dacddb"
+  },
+  "wordle": {
+    "src": "/projects/films/wordle.mp4",
+    "poster": "/projects/films/wordle.webp",
+    "duration": 4.833,
+    "width": 720,
+    "height": 540,
+    "v": "0fdecde5"
+  },
+  "world-clock": {
+    "src": "/projects/films/world-clock.mp4",
+    "poster": "/projects/films/world-clock.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "d1846839"
+  },
+  "youtube-thumbnails": {
+    "src": "/projects/films/youtube-thumbnails.mp4",
+    "poster": "/projects/films/youtube-thumbnails.webp",
+    "duration": 4.917,
+    "width": 720,
+    "height": 540,
+    "v": "8f98fe05"
+  },
+  "zenitsu-bot": {
+    "src": "/projects/films/zenitsu-bot.mp4",
+    "poster": "/projects/films/zenitsu-bot.webp",
+    "duration": 5,
+    "width": 720,
+    "height": 540,
+    "v": "7d3fbb18"
+  }
+}

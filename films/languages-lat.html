@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>languages-lat</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Languages, the history of human language.
+// Look: graphite and pressed colour on cream, a herbarium page. Anchor: the trunk. Signature: the tree grows
+// branch by branch out of one root, and a torn section rises to become the ground it grew from.
+// t     dur   scene   what changes                                                     kit
+// 0.0   2.2   grow    a family tree grows, nodes budding at the branch ends              plant-style recursion
+// 2.2   1.3   spread  the leaves turn into little speech marks; a torn section rises       section, dottedArc
+// 3.5   1.8   banner  a paper banner across the trunk is written: "languages"              writeOn
+
+const PAL_LANG = makePalette({
+  paper: '#f4efe4', paperBand: null, ink: '#2a2721', night: '#2b2a24', chalk: '#ffffff', chalkDim: '#9a9488', guide: 'rgba(42,39,33,.3)',
+  fills: ['#e8d6cc', '#dfe3d2', '#cdd7c4', '#f0e3c8'], shade: '#5f5a4e', light: '#ffffff', blush: '#c17f6a',
+  accents: ['#8a8a55', '#b0483a', '#7e8aa0', '#c9a15a'], inks: ['#2a2721', '#8a8a55'], finish: 'pencil',
+}, 'pencilMinimal');
+
+// the tree: a deterministic branch list, so growth is just a progress cut
+const BRANCHES = [];
+(function build(x, y, len, a, d, w, t0) {
+  const x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
+  BRANCHES.push({ x, y, x2, y2, w, d, t0, t1: t0 + .3 });
+  if (d <= 0) return;
+  const r = rng(100 + BRANCHES.length), n = d > 2 ? 2 : (r() < .6 ? 2 : 3);
+  for (let k = 0; k < n; k++) build(x2, y2, len * (.62 + r() * .2), a + (k - (n - 1) / 2) * (.55 + r() * .3), d - 1, w * .72, t0 + .26);
+})(CX, 1000, 260, -Math.PI / 2, 3, 22, 0);
+function tree(c, p, i, leafP) {
+  BRANCHES.forEach((b, k) => {
+    const g = clamp((p - b.t0) / (b.t1 - b.t0), 0, 1); if (g <= 0) return;
+    const x2 = lerp(b.x, b.x2, g), y2 = lerp(b.y, b.y2, g);
+    stroke(c, [[b.x, b.y], [lerp(b.x, x2, .5) + (k % 3 - 1) * 6, lerp(b.y, y2, .5)], [x2, y2]], 10 + k, { lw: b.w, color: PAL.ink });
+    if (b.d === 0 && g >= 1) {
+      const lp = clamp(leafP - (k % 7) * .06, 0, 1);
+      if (lp <= 0) { dot(c, x2, y2, 9, PAL.accents[0]); return; }
+      // a leaf that is also a speech mark
+      c.save(); c.translate(x2, y2); c.rotate((k % 5 - 2) * .3); c.scale(lp, lp);
+      draw(c, EL(0, -22, 36, 26), [PAL.fills[0], PAL.fills[1], PAL.fills[2]][k % 3], 40 + k, { lw: 2.6, texo: { density: .3 } });
+      draw(c, PG([[-10, -2], [10, -2], [-2, 20]]), [PAL.fills[0], PAL.fills[1], PAL.fills[2]][k % 3], 50 + k, { tex: false, lw: 2.4 });
+      for (let d = -1; d <= 1; d++) dot(c, d * 11, -22, 3.4, alpha(PAL.ink, .6));
+      c.restore();
+    }
+  });
+}
+function pageDressing(c, i) {
+  paper(c);
+  squig(c, 90, 130, 430, 3, { seed: 1, lineH: 46, width: 3, color: alpha(PAL.ink, .45) });
+  for (let r = 1; r <= 4; r++) dottedArc(c, CX, 1000, 120 + r * 130, alpha(PAL.ink, .22), 5 + r, 24, 2.6);
+  thread(c, 130, 8, PAL.accents[0], 2.2);
+}
+function sceneGrow(c, tau, i) {
+  pageDressing(c, i);
+  tree(c, sm(0, 2.0, tau, t => t) * 1.15, i, 0);
+  dot(c, CX, 1000, 16, PAL.ink);
+}
+function sceneSpread(c, tau, i) {
+  pageDressing(c, i);
+  const rise = sm(.35, 1.2, tau, easeOut);
+  tree(c, 1.2, i, sm(0, .8, tau, easeOut));
+  if (rise > 0) { section(c, lerp(H + 30, 860, rise), PAL.fills[0], 60); for (let k = 0; k < 5; k++) { const x = 160 + k * 280, g = clamp(rise * 1.4 - k * .12, 0, 1); if (g > 0) { c.save(); c.translate(x, 1070); c.scale(g * 2.2, g * 2.2); plant(c, 0, 0, 54, 3, 70 + k, { stem: PAL.shade, leaf: PAL.accents[0], flower: PAL.blush, width: 2 }); c.restore(); } } }
+  dot(c, CX, 1000, 16, PAL.ink);
+}
+function sceneBanner(c, tau, i) {
+  pageDressing(c, i);
+  tree(c, 1.2, i, 1);
+  section(c, 860, PAL.fills[0], 60);
+  for (let k = 0; k < 5; k++) { const x = 160 + k * 280; c.save(); c.translate(x, 1070); c.scale(2.2, 2.2); plant(c, 0, 0, 54, 3, 70 + k, { stem: PAL.shade, leaf: PAL.accents[0], flower: PAL.blush, width: 2 }); c.restore(); }
+  const pop = easeBack(sm(0, .35, tau, t => t));
+  if (pop > .02) {
+    const by = 760, bw = 1020 * pop, bh = 200;
+    c.save(); c.translate(CX, by); c.rotate(-.02);
+    c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.moveTo(-bw / 2 + 12, -bh / 2 + 16); c.lineTo(bw / 2 + 12, -bh / 2 + 16); c.lineTo(bw / 2 + 12, bh / 2 + 16); c.lineTo(-bw / 2 + 12, bh / 2 + 16); c.fill();
+    draw(c, PG([[-bw / 2, -bh / 2], [bw / 2, -bh / 2], [bw / 2, bh / 2], [bw / 2 - 70, bh / 2 - 46], [-bw / 2 + 70, bh / 2 - 46], [-bw / 2, bh / 2]]), PAL.light, 80, { lw: 4, texo: { density: .2 } });
+    if (pop > .9) writeOn(c, 'languages', 0, 34, sm(.3, 1.2, tau, t => t), { size: 165, ink: PAL.ink, ink2: PAL.accents[1], pen: PAL.accents[1] });
+    c.restore();
+  }
+  dot(c, CX, 1000, 16, PAL.ink);
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_LANG, poster: 4.9,
+  beats: [
+    { name: 'grow', dur: 2.2, fn: sceneGrow },
+    { name: 'spread', dur: 1.3, fn: sceneSpread },
+    { name: 'banner', dur: 1.8, fn: sceneBanner },
+  ],
+});
+</script>

@@ -1,0 +1,108 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>keel</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Keel, a subscription tracker with renewal reminders.
+// Look: flat screen print, sea blues. Anchor: the boat. Signature: a vertical camera, sail to seabed and back.
+// t     cam (y, zoom)     what happens
+// 0.0   -700, 1.15        the sail is a calendar: days crossed off, the renewal circled, the mast bell rings
+// 1.3   -> 1150, .9       down the mast, through the waterline, bubbles
+// 2.2   1150              the seabed: a stack of coins for every month, the last one glints
+// 3.2   -> -150, .72      back up to the whole boat
+// 3.9   -150              "keel" is painted along the hull
+
+const PAL_KEEL = makePalette({
+  paper: '#f4efe3', paperBand: null, ink: '#1f2a44', night: '#16213a', chalk: '#fffaf0', chalkDim: '#8fa3bf', guide: 'rgba(31,42,68,.3)',
+  fills: ['#2a6f97', '#61a5c2', '#f4a259', '#bc4b51', '#f4e285', '#8cb369', '#1f2a44', '#173f5f'], shade: '#1f2a44', light: '#fffaf0', blush: '#bc4b51',
+  accents: ['#bc4b51', '#f4a259', '#f4e285', '#8cb369'], inks: ['#2a6f97', '#1f2a44', '#f4a259'], finish: 'screen',
+}, 'screenSea');
+const KEYS = [[0, -620, 1.0], [1.3, -620, 1.0], [2.2, 1150, .9], [3.2, 1150, .9], [3.9, -150, .72], [9, -150, .72]];
+function camAt(t) { for (let k = 1; k < KEYS.length; k++) { const [t0, y0, z0] = KEYS[k - 1], [t1, y1, z1] = KEYS[k]; if (t <= t1) { const u = sm(t0, t1, t, easeIO); return [lerp(y0, y1, u), lerp(z0, z1, u)]; } } return KEYS[KEYS.length - 1].slice(1); }
+
+// Flat bands, no screen: the camera moves the whole time, and a dot screen that
+// travels with it gives the encoder a new frame to chew on every twelfth of a second.
+// The dots live on the things that hold still in frame instead: sail, sun, hull, coins.
+function band(c, y0, y1, col, vis) {
+  const top = Math.max(y0, vis[1] - 20), bot = Math.min(y1, vis[1] + vis[3] + 20); if (bot <= top) return;
+  c.fillStyle = col; c.fillRect(vis[0] - 20, top, vis[2] + 40, bot - top);
+}
+const DUE = 18;
+function sail(c, tau, i) {
+  const x = -390, y = -1060, w = 700, h = 720;
+  const s = PG([[x, y + 30], [x + w, y], [x + w - 30, y + h], [x + 20, y + h - 20]]);
+  draw(c, s, PAL.light, 10, { lw: 6, texo: { color: PAL.fills[1], density: .15 } });
+  const head = PG([[x, y + 30], [x + w, y], [x + w - 6, y + 120], [x + 6, y + 146]]); draw(c, head, PAL.blush, 11, { lw: 6, texo: { density: .3 } });
+  textBar(c, x + w / 2 - 120, y + 80, 240, alpha(PAL.light, .9), 26);
+  const crossed = Math.min(DUE, Math.floor(tau * 16)), cw = (w - 80) / 7, ch = (h - 220) / 5;
+  for (let d = 0; d < 35; d++) {
+    const cx = x + 50 + (d % 7) * cw + cw / 2, cy = y + 200 + Math.floor(d / 7) * ch + ch / 2;
+    textBar(c, cx - 16, cy, 32, alpha(PAL.ink, d === DUE ? .9 : .35), 12);
+    if (d < crossed) stroke(c, [[cx - cw * .32, cy + ch * .3], [cx + cw * .32, cy - ch * .3]], 20 + d, { lw: 5, color: alpha(PAL.fills[0], .8) });
+  }
+  const dx = x + 50 + (DUE % 7) * cw + cw / 2, dy = y + 200 + Math.floor(DUE / 7) * ch + ch / 2, pr = sm(DUE / 16, DUE / 16 + .25, tau, easeOut);
+  if (pr > 0) strokeOn(c, ellPts(dx, dy, cw * .62, ch * .58, -.2, 40).concat([ellPts(dx, dy, cw * .62, ch * .58, -.2, 40)[0]]), pr, 60, { raw: true, lw: 9, color: PAL.blush });
+}
+function bell(c, x, y, rot) {
+  c.save(); c.translate(x, y); c.rotate(rot);
+  const pts = [[0, 0], [30, 8], [44, 50], [52, 100], [80, 128], [-80, 128], [-52, 100], [-44, 50], [-30, 8]];
+  draw(c, PG(pts), PAL.fills[4], 70, { lw: 6 }); dot(c, 0, 138, 16, PAL.ink);
+  c.restore();
+}
+function boat(c, tau, i, nameP) {
+  const bob = Math.sin(tau * 3) * 8;
+  c.save(); c.translate(0, bob);
+  stroke(c, [[-20, -1180], [-20, -40]], 80, { lw: 16 });
+  stroke(c, [[-20, -380], [360, -380]], 81, { lw: 10 });
+  sail(c, tau, i);
+  const ring = tau > 1.05 && tau < 1.6, rot = ring ? Math.sin(tau * 26) * .45 : 0;
+  bell(c, -20, -1180, rot);
+  if (ring) for (const s of [-1, 1]) for (let k = 1; k <= 2; k++) stroke(c, arcPts(-20, -1110, 110 + k * 40, 110 + k * 40, s > 0 ? -.6 : Math.PI - .6, s > 0 ? .6 : Math.PI + .6, 12), 82 + k + s, { raw: true, lw: 6, color: k % 2 ? PAL.blush : PAL.ink });
+  const keel = PG([[-120, 120], [140, 120], [40, 470], [-10, 470]]); draw(c, keel, PAL.fills[6], 83, { lw: 6, texo: { color: PAL.light, density: .12 } });
+  const hull = PG([[-600, -60], [600, -60], [470, 150], [-470, 150]]); draw(c, hull, PAL.blush, 84, { lw: 7, texo: { density: .3 } });
+  const trim = PG([[-600, -60], [600, -60], [586, -30], [-586, -30]]); draw(c, trim, PAL.light, 85, { lw: 5, tex: false });
+  for (let k = -2; k <= 2; k++) draw(c, CI(k * 200, 20, 26), PAL.fills[6], 86 + k, { tex: false, lw: 4 });   // portholes
+  if (nameP > 0) writeOn(c, 'keel', 0, 110, nameP, { size: 170, ink: PAL.light, ink2: PAL.fills[4], pen: PAL.fills[4] });
+  c.restore();
+}
+function scene(c, tau, i) {
+  const [cy, z] = camAt(tau);
+  resetT(c); c.fillStyle = PAL.paper; c.fillRect(0, 0, W, H);
+  cam(c, 0, cy, z);
+  const vis = [-W / 2 / z, cy - H / 2 / z, W / z, H / z];
+  band(c, -3000, 0, PAL.paper, vis);
+  // sun and gulls in the sky
+  const sun = CI(560, -1000, 120); c.fillStyle = PAL.fills[4]; c.fill(sun.path); tex(c, sun.path, sun.box, { color: PAL.fills[2], density: .35 });
+  for (let g = 0; g < 3; g++) { const gx = -700 + g * 180 + ((tau * 60) % 200), gy = -900 + g * 60, f = pulse(i + g * 2, 6, 3) ? 20 : -10; stroke(c, [[gx - 40, gy + f], [gx, gy], [gx + 40, gy + f]], 90 + g, { raw: true, lw: 5 }); }
+  band(c, 0, 360, PAL.fills[1], vis);
+  band(c, 360, 900, PAL.fills[0], vis);
+  band(c, 900, 1500, PAL.fills[7], vis);
+  band(c, 1500, 3000, PAL.fills[2], vis);
+  for (const [by, col] of [[360, PAL.fills[0]], [900, PAL.fills[7]], [1500, PAL.fills[2]]]) { c.fillStyle = alpha(PAL.light, .18); c.fillRect(vis[0] - 20, by, vis[2] + 40, 10); }
+  // waterline waves
+  const wv = []; for (let x = -1200; x <= 1200; x += 30) wv.push([x, Math.sin(x / 60 + tau * 4) * 10]);
+  stroke(c, wv, 6, { raw: true, lw: 6, color: PAL.light });
+  const nameP = sm(3.95, 4.8, tau, t => t);
+  boat(c, tau, i, nameP);
+  // bubbles rising
+  const r = rng(9); for (let b = 0; b < 26; b++) { const bx = (r() - .5) * 1600, sp = 180 + r() * 200, by = 1450 - ((tau * sp + r() * 1400) % 1400); if (by > 20) { c.strokeStyle = alpha(PAL.light, .8); c.lineWidth = 4; c.beginPath(); c.arc(bx + Math.sin(tau * 3 + b) * 12, by, 8 + r() * 12, 0, TAU); c.stroke(); } }
+  // the seabed: a stack per month
+  const heights = [3, 5, 4, 7, 6, 9];
+  heights.forEach((hN, k) => {
+    const x = -560 + k * 225, n = Math.floor(hN * sm(1.9 + k * .1, 2.6 + k * .1, tau, easeOut));
+    for (let j = 0; j < n; j++) coin(c, x, 1480 - j * 46, 80, j === n - 1 && k === 5 ? PAL.fills[4] : PAL.fills[2], 100 + k * 20 + j);
+  });
+  if (tau > 2.7 && tau < 3.4) sparkle(c, -560 + 5 * 225 + 60, 1480 - 9 * 46 - 30, 40 + (i % 2) * 10, PAL.fills[4], i * .3);
+  for (let k = 0; k < 7; k++) { const x = -700 + k * 240; stroke(c, [[x, 1500], [x - 20 + Math.sin(tau * 3 + k) * 20, 1360], [x + 10, 1260]], 110 + k, { lw: 8, color: PAL.fills[5] }); }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_KEEL, poster: 4.9,
+  beats: [{ name: 'dive', dur: 5.25, fn: scene }],
+});
+</script>

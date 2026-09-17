@@ -1,0 +1,102 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>api-clinic</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: API Clinic, API testing in the browser.
+// Look: flat screen print, clinic mint. Anchor: the request envelope. Signature: request and response are a
+// rally - the envelope crosses, comes back stamped, and the third one comes back sick.
+// t     dur   scene    what changes                                                    kit
+// 0.0   1.7   rally    an envelope crosses to the server and returns with a green stamp    bez, stamp
+// 1.7   1.2   sick     the next one returns red; the vitals line spikes                    ekg-style line
+// 2.9   1.9   sign     the clinic's hanging sign is painted: "api clinic"                   writeOn
+
+const PAL_API = makePalette({
+  paper: '#e9f4ef', paperBand: null, ink: '#1d3b35', night: '#14282a', chalk: '#ffffff', chalkDim: '#7fa39a', guide: 'rgba(29,59,53,.3)',
+  fills: ['#ffffff', '#57c4a8', '#f4a259', '#e05263', '#bfe3d5', '#1d3b35'], shade: '#1d3b35', light: '#ffffff', blush: '#e05263',
+  accents: ['#57c4a8', '#e05263', '#f4a259', '#3d7068'], inks: ['#57c4a8', '#1d3b35', '#e05263'], finish: 'screen',
+}, 'screenSea');
+const CLIENT = [270, 520], SERVER = [1170, 520];
+
+function room(c, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[4], density: .16, cell: 16 });
+  const floor = rectPath(-10, 820, W + 20, 280); c.fillStyle = PAL.fills[4]; c.fill(floor); stroke(c, [[-10, 820], [W + 10, 820]], 5, { lw: 5 });
+  // client on the left, server rack on the right
+  const [cx, cy] = CLIENT;
+  draw(c, RR(cx - 170, cy - 200, 340, 260, 18), PAL.ink, 10, { tex: false });
+  draw(c, RR(cx - 150, cy - 180, 300, 200, 8), PAL.fills[0], 11, { tex: false, line: false });
+  squig(c, cx - 120, cy - 130, 230, 3, { seed: 12, lineH: 46, width: 4 });
+  draw(c, PG([[cx - 60, cy + 60], [cx + 60, cy + 60], [cx + 100, cy + 140], [cx - 100, cy + 140]]), PAL.fills[5], 13, { lw: 5, tex: false });
+  const [sx, sy] = SERVER;
+  draw(c, RR(sx - 130, sy - 240, 260, 480, 20), PAL.fills[1], 20, { lw: 6, texo: { density: .3 } });
+  for (let k = 0; k < 4; k++) { draw(c, RR(sx - 100, sy - 200 + k * 110, 200, 80, 10), PAL.fills[0], 21 + k, { tex: false, lw: 4 }); dot(c, sx + 70, sy - 160 + k * 110, 11, pulse(i + k * 3, 7, 4) ? PAL.accents[0] : alpha(PAL.ink, .25)); }
+  // the cross above the server, because it is a clinic
+  draw(c, PG([[sx - 34, sy - 330], [sx + 34, sy - 330], [sx + 34, sy - 296], [sx + 68, sy - 296], [sx + 68, sy - 228], [sx + 34, sy - 228], [sx + 34, sy - 194], [sx - 34, sy - 194], [sx - 34, sy - 228], [sx - 68, sy - 228], [sx - 68, sy - 296], [sx - 34, sy - 296]]), PAL.blush, 30, { lw: 5, texo: { density: .35 } });
+}
+function envelope(c, x, y, rot, s, stamp, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  draw(c, RR(-110, -74, 220, 148, 10), PAL.fills[0], seed, { lw: 5, tex: false });
+  stroke(c, [[-110, -74], [0, 10], [110, -74]], seed + 1, { lw: 5, raw: true });
+  if (stamp) { c.save(); c.rotate(-.2); draw(c, CI(60, 30, 44), stamp === 1 ? PAL.accents[0] : PAL.blush, seed + 2, { lw: 4, texo: { density: .4 } }); if (stamp === 1) checkMark(c, 60, 30, 20, 1, seed + 3, { color: PAL.light, lw: 7 }); else crossMark(c, 60, 30, 18, seed + 4, { lw: 7, color: PAL.light }); c.restore(); }
+  c.restore();
+}
+function rally(c, tau, i, legs) {
+  // legs: [[t0, t1, dir, stamp]]
+  legs.forEach(([t0, t1, dir, stamp], k) => {
+    if (tau < t0 || tau > t1 + .1) return;
+    const p = sm(t0, t1, tau, easeIO), from = dir > 0 ? CLIENT : SERVER, to = dir > 0 ? SERVER : CLIENT;
+    const [x, y] = bez([from[0], from[1] - 120], [lerp(from[0], to[0], .3), from[1] - 420 - k * 40], [lerp(from[0], to[0], .7), to[1] - 420 - k * 40], [to[0], to[1] - 120], p);
+    envelope(c, x, y, dir > 0 ? .2 : -.2, 1, dir > 0 ? 0 : stamp, 40 + k * 5);
+    speedLines(c, x, y, dir > 0 ? Math.PI : 0, 60 + i + k, 5, .4);
+  });
+}
+function vitals(c, y, tau, bad, seed) {
+  const pts = []; for (let x = 120; x <= W - 120; x += 12) { const u = (x - 120) / (W - 240); let v = Math.sin(u * 26) * 10; if (Math.abs(u - .5) < .04) v = -110 * (bad ? 1.6 : 1); if (bad && Math.abs(u - .62) < .03) v = 90; pts.push([x, y + v]); }
+  stroke(c, pts, seed, { raw: true, lw: 6, color: bad ? PAL.blush : PAL.accents[0] });
+  stroke(c, [[120, y + 60], [W - 120, y + 60]], seed + 1, { lw: 3, color: alpha(PAL.ink, .2) });
+}
+function sceneRally(c, tau, i) {
+  room(c, i);
+  rally(c, tau, i, [[.1, .7, 1, 0], [.8, 1.5, -1, 1]]);
+  vitals(c, 960, tau, false, 70);
+  if (tau > 1.45) ringsOut(c, CLIENT[0], CLIENT[1] - 120, tau - 1.45, { every: 1 / 6, t1: .2, speed: 500, colors: [PAL.accents[0]], width: 6, seed: 80, max: 300 });
+}
+function sceneSick(c, tau, i) {
+  room(c, i);
+  rally(c, tau, i, [[0, .5, 1, 0], [.55, 1.1, -1, 2]]);
+  vitals(c, 960, tau, tau > .9, 70);
+  if (tau > 1.05) { const d = tau - 1.05; ringsOut(c, CLIENT[0], CLIENT[1] - 120, d, { every: 1 / 6, t1: .2, speed: 500, colors: [PAL.blush], width: 6, seed: 81, max: 300 });
+    c.save(); c.translate(CLIENT[0], CLIENT[1] - 320); c.scale(easeBack(sm(1.05, 1.2, tau, t => t)), easeBack(sm(1.05, 1.2, tau, t => t)));
+    draw(c, RR(-120, -60, 240, 120, 60), PAL.blush, 90, { lw: 5, texo: { density: .35 } }); textBar(c, -70, 0, 140, alpha(PAL.light, .9), 18); c.restore(); }
+}
+function sceneSign(c, tau, i) {
+  room(c, i);
+  vitals(c, 960, 1, false, 70);
+  const sx = CX, sy = 250, sw = 900, sh = 250;
+  stroke(c, [[sx - sw / 2 + 60, sy - sh / 2], [sx - sw / 2 + 60, -20]], 100, { lw: 8 });
+  stroke(c, [[sx + sw / 2 - 60, sy - sh / 2], [sx + sw / 2 - 60, -20]], 101, { lw: 8 });
+  const swing = Math.sin(tau * 3) * .012;
+  c.save(); c.translate(sx, sy - sh / 2); c.rotate(swing); c.translate(-sx, -(sy - sh / 2));
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(sx - sw / 2 + 16, sy - sh / 2 + 20, sw, sh, 20); c.fill();
+  draw(c, RR(sx - sw / 2, sy - sh / 2, sw, sh, 20), PAL.fills[0], 102, { lw: 7, tex: false });
+  draw(c, RR(sx - sw / 2 + 40, sy - sh / 2 + 40, 60, sh - 80, 8), PAL.blush, 103, { tex: false, lw: 4 });
+  writeOn(c, 'api clinic', sx + 40, sy + 46, sm(.15, 1.1, tau, t => t), { size: 165, ink: PAL.ink, ink2: PAL.accents[0], pen: PAL.accents[0] });
+  c.restore();
+  envelope(c, CLIENT[0], CLIENT[1] - 150, -.1, 1, 1, 110);
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_API, poster: 0.9,
+  beats: [
+    { name: 'rally', dur: 1.7, fn: sceneRally },
+    { name: 'sick', dur: 1.2, fn: sceneSick },
+    { name: 'sign', dur: 1.9, fn: sceneSign },
+  ],
+});
+</script>

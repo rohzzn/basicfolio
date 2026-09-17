@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>catan-online</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Catan Online, multiplayer Catan in the browser.
+// Look: flat screen print on parchment. Anchor: the board. Signature: the island builds itself, one hex landing
+// every two frames, and the name unrolls on a scroll at the end.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.9   build   nineteen hexes drop in from above, number tokens popping on         hexPath, easeBack
+// 1.9   1.2   roll    two dice tumble, land on seven pips, the matching hexes pulse        die, ringsOut
+// 3.1   1.9   scroll  a road and a settlement snap on; a scroll unrolls: "catan online"    writeOn
+
+const PAL_CT = makePalette({
+  paper: '#efe3c8', paperBand: null, ink: '#3b2a1a', night: '#2a1e14', chalk: '#fdf6e6', chalkDim: '#a08a6a', guide: 'rgba(59,42,26,.3)',
+  fills: ['#8db255', '#d9a54b', '#b5603a', '#7f9aa6', '#c9c2a8', '#5d7f3f'], shade: '#3b2a1a', light: '#fdf6e6', blush: '#b5603a',
+  accents: ['#b5603a', '#8db255', '#d9a54b', '#7f9aa6'], inks: ['#8db255', '#b5603a', '#3b2a1a'], finish: 'screen',
+}, 'screenSea');
+const HS = 128, HW = Math.sqrt(3) * HS, HH = 1.5 * HS;
+// the classic 3-4-5-4-3 island
+const TILES = [];
+[3, 4, 5, 4, 3].forEach((n, row) => { for (let k = 0; k < n; k++) TILES.push([CX + (k - (n - 1) / 2) * HW, CY - 60 + (row - 2) * HH, (row * 5 + k * 3) % 6]); });
+function tile(c, x, y, kind, seed, tokenP, hot) {
+  const p = hexPath(x, y, HS - 4), box = [x - HS, y - HS, HS * 2, HS * 2];
+  c.fillStyle = [PAL.fills[0], PAL.fills[1], PAL.fills[2], PAL.fills[3], PAL.fills[5], PAL.fills[4]][kind]; c.fill(p);
+  tex(c, p, box, { color: PAL.shade, density: hot ? .5 : .28, seed, cell: 12 });
+  c.strokeStyle = PAL.ink; c.lineWidth = 5; c.stroke(p);
+  // a mark per resource: tree, wheat, brick, sheep, ore
+  c.save(); c.clip(p);
+  if (kind === 0 || kind === 4) { for (let k = 0; k < 3; k++) { const tx = x + (k - 1) * 48, ty = y + 20 + (k % 2) * 18; draw(c, PG([[tx - 26, ty], [tx, ty - 74], [tx + 26, ty]]), PAL.fills[5], seed + 10 + k, { tex: false, lw: 4 }); } }
+  if (kind === 1) { for (let k = 0; k < 4; k++) { const tx = x + (k - 1.5) * 38; stroke(c, [[tx, y + 40], [tx, y - 30]], seed + 20 + k, { lw: 8, color: shade(PAL.fills[1], .35), raw: true }); draw(c, EL(tx, y - 44, 14, 30), shade(PAL.fills[1], .3), seed + 30 + k, { tex: false, lw: 3 }); } }
+  if (kind === 2) { for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) { c.fillStyle = shade(PAL.fills[2], .25); c.fillRect(x - 66 + q * 46 + (r % 2) * 18, y - 40 + r * 34, 38, 24); } }
+  if (kind === 3) { for (let k = 0; k < 2; k++) { draw(c, EL(x + (k - .5) * 60, y + 10, 42, 30), PAL.light, seed + 40 + k, { tex: false, lw: 4 }); draw(c, CI(x + (k - .5) * 60 + 30, y - 4, 16), PAL.light, seed + 50 + k, { tex: false, lw: 3 }); } }
+  if (kind === 5) { for (let k = 0; k < 3; k++) draw(c, PG([[x - 40 + k * 34, y + 30], [x - 20 + k * 34, y - 20], [x + 4 + k * 34, y + 30]]), PAL.chalkDim, seed + 60 + k, { tex: false, lw: 3 }); }
+  c.restore();
+  if (tokenP > 0) { const s = easeBack(tokenP); draw(c, CI(x, y, 44 * s), PAL.light, seed + 70, { tex: false, lw: 5 }); if (s > .6) { c.font = `bold ${54}px ${KIT_HAND}`; c.fillStyle = [8, 9, 6, 5, 10].includes(kind) ? PAL.blush : PAL.ink; c.textAlign = 'center'; c.fillText(String(2 + (kind * 3) % 10), x, y + 20); } }
+}
+function board(c, n, tau, hotKind) {
+  TILES.forEach(([x, y, kind], k) => {
+    const t0 = k * 2 / 12, p = sm(t0, t0 + .22, tau, easeOut); if (p <= 0) return;
+    const yy = lerp(y - 900, y, p);
+    c.save(); if (p < 1) c.globalAlpha = .4 + p * .6;
+    tile(c, x, yy, kind, 20 + k * 7, sm(t0 + .2, t0 + .4, tau, t => t), hotKind === kind);
+    c.restore();
+  });
+}
+function sea(c) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[3], density: .14, cell: 16 });
+  const water = EL(CX, CY - 60, 700, 620);
+  c.fillStyle = tint(PAL.fills[3], .25); c.fill(water.path); tex(c, water.path, water.box, { color: PAL.fills[3], density: .3, seed: 3 });
+  stroke(c, ellPts(CX, CY - 60, 700, 620, 0, 120), 4, { raw: true, close: true, lw: 8 });
+}
+function sceneBuild(c, tau, i) { sea(c); board(c, 19, tau, -1); }
+const PIPS = { 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]] };
+function die(c, x, y, s, rot, n, seed) { c.save(); c.translate(x, y); c.rotate(rot); draw(c, RR(-s, -s, 2 * s, 2 * s, s * .24), PAL.light, seed, { lw: 6, tex: false }); for (const [u, v] of (PIPS[n] || PIPS[4])) dot(c, u * s * .5, v * s * .5, s * .14, PAL.ink); c.restore(); }
+function sceneRoll(c, tau, i) {
+  sea(c); board(c, 19, 9, tau > .8 ? 1 : -1);
+  const land = .78;
+  [[-150, 3], [150, 4]].forEach(([dx, n], k) => {
+    const p = sm(0, land, tau, t => t), [hy] = hop(p * 2.4, 1, 260 * (1 - p));
+    const x = CX + dx * lerp(2.6, 1, easeOut(p)), y = CY + 300 + (tau < land ? hy : 0);
+    die(c, x, y, 96, tau < land ? i * (.5 + k * .2) : (k ? .06 : -.08), tau < land ? 3 + ((i + k) % 2) : n, 80 + k);
+  });
+  if (tau > .8) TILES.forEach(([x, y, kind], k) => { if (kind !== 1) return; ringsOut(c, x, y, tau - .8, { every: 1 / 6, t1: .25, speed: 420, colors: [PAL.fills[1], PAL.light], width: 5, seed: 100 + k, max: 240 }); });
+}
+function sceneScroll(c, tau, i) {
+  sea(c); board(c, 19, 9, -1);
+  // a road and a settlement snapping on
+  const rp = sm(0, .3, tau, easeOut), sp = easeBack(sm(.25, .6, tau, t => t));
+  const [ax, ay] = [TILES[8][0] - HW / 2, TILES[8][1] - HS * .5], [bx, by] = [TILES[8][0] + HW / 2, TILES[8][1] - HS * .5];
+  if (rp > 0) stroke(c, [[ax, ay], [lerp(ax, bx, rp), lerp(ay, by, rp)]], 110, { lw: 26, color: PAL.blush, raw: true });
+  if (sp > .02) { c.save(); c.translate(bx, by); c.scale(sp, sp); draw(c, PG([[-50, 30], [-50, -20], [0, -66], [50, -20], [50, 30]]), PAL.fills[3], 111, { lw: 6, texo: { density: .4 } }); c.restore(); }
+  // the scroll unrolling
+  const p = sm(.5, 1.0, tau, easeOut);
+  if (p > 0) {
+    const sw = 1080 * p, sh = 260, sy = H - 240;
+    c.fillStyle = alpha(PAL.shade, .2); c.beginPath(); c.roundRect(CX - sw / 2 + 14, sy - sh / 2 + 18, sw, sh, 10); c.fill();
+    draw(c, RR(CX - sw / 2, sy - sh / 2, sw, sh, 10), PAL.light, 120, { lw: 6, texo: { density: .18 } });
+    for (const s of [-1, 1]) draw(c, RR(CX + s * sw / 2 - 30, sy - sh / 2 - 26, 60, sh + 52, 30), PAL.fills[1], 121 + s, { lw: 6, texo: { density: .4 } });
+    if (p >= 1) writeOn(c, 'catan online', CX, sy + 46, sm(1.0, 1.8, tau, t => t), { size: 150, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+  }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_CT, poster: 2.6, crf: 27,
+  beats: [
+    { name: 'build', dur: 1.9, fn: sceneBuild },
+    { name: 'roll', dur: 1.2, fn: sceneRoll },
+    { name: 'scroll', dur: 1.9, fn: sceneScroll },
+  ],
+});
+</script>

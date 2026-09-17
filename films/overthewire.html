@@ -1,0 +1,104 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>overthewire</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: OverTheWire Challenges, writeups for the wargames.
+// Look: graphite on cream, one dark section. Anchor: the wire. Signature: the wire is the whole film - a
+// figure walks it, level flags pass under their feet, and the name is written along it.
+// t     dur   scene  what changes                                                      kit
+// 0.0   2.2   walk   a figure crosses the wire, flags ticking off level by level           thread, hop
+// 2.2   1.3   below  a torn dark section rises under the wire, dotted arcs and bursts       section, dotBurst
+// 3.5   1.8   name   the name is written along the wire itself                              writeOn (rot)
+
+const PAL_OW = makePalette({
+  paper: '#f4f1e8', paperBand: null, ink: '#242320', night: '#1c1b18', chalk: '#f4f1e8', chalkDim: '#8f8b80', guide: 'rgba(36,35,32,.3)',
+  fills: ['#e6e2d4', '#d2ccbb', '#ffffff', '#cfd8c4'], shade: '#6a665c', light: '#ffffff', blush: '#a8503c',
+  accents: ['#a8503c', '#5f7f6a', '#3f5f8a', '#c9a24a'], inks: ['#242320', '#a8503c'], finish: 'pencil',
+}, 'pencilMinimal');
+const WY = 560;
+function wire(c, sag, seed) {
+  const pts = []; for (let x = -20; x <= W + 20; x += 30) { const u = (x + 20) / (W + 40); pts.push([x, WY + Math.sin(u * Math.PI) * sag]); }
+  stroke(c, pts, seed, { raw: true, lw: 7 });
+  for (const px of [-10, W + 10]) stroke(c, [[px, WY - 220], [px, H - 60]], seed + 1 + px, { lw: 16, color: PAL.fills[1] });
+  return pts;
+}
+function wireY(x, sag) { const u = clamp((x + 20) / (W + 40), 0, 1); return WY + Math.sin(u * Math.PI) * sag; }
+function walker(c, x, y, tau, seed) {
+  const sway = Math.sin(tau * 3) * .06;
+  c.save(); c.translate(x, y); c.rotate(sway);
+  stroke(c, [[-120, -10], [120, 10]], seed, { lw: 5, raw: true });          // the balance pole
+  draw(c, CI(0, -150, 40), PAL.blush, seed + 1, { lw: 5, tex: false });
+  draw(c, RR(-30, -112, 60, 86, 20), PAL.ink, seed + 2, { tex: false });
+  for (const s of [-1, 1]) stroke(c, [[s * 12, -30], [s * 20 + Math.sin(tau * 6 + s) * 14, -2]], seed + 3 + s, { lw: 7, raw: true });
+  for (const s of [-1, 1]) stroke(c, [[s * 8, -96], [s * 70, -20]], seed + 5 + s, { lw: 6, raw: true });
+  c.restore();
+}
+const FLAGS = [.16, .34, .52, .7, .88];
+function flags(c, x, sag, tau) {
+  FLAGS.forEach((u, k) => {
+    const fx = -20 + u * (W + 40), fy = wireY(fx, sag), done = x > fx;
+    stroke(c, [[fx, fy], [fx, fy + 90]], 30 + k, { lw: 5, raw: true });
+    draw(c, PG([[fx, fy + 90], [fx + 70, fy + 110], [fx, fy + 130]]), done ? PAL.accents[1] : PAL.fills[1], 40 + k, { lw: 4, texo: { density: .25 } });
+    if (done) checkMark(c, fx + 34, fy + 110, 14, 1, 50 + k, { color: PAL.light, lw: 5 });
+  });
+}
+function pageTop(c) {
+  paper(c);
+  squig(c, 90, 120, 520, 2, { seed: 1, lineH: 46, width: 3.4, color: alpha(PAL.ink, .5) });
+  for (let r = 1; r <= 3; r++) dottedArc(c, CX, 250, 300 + r * 160, alpha(PAL.ink, .16), 5 + r, 26, 2.4);
+}
+function sceneWalk(c, tau, i) {
+  pageTop(c);
+  const sag = 90;
+  wire(c, sag, 10);
+  const x = lerp(-40, W * .72, sm(.1, 2.1, tau, easeIO));
+  flags(c, x, sag, tau);
+  walker(c, x, wireY(x, sag), tau, 60);
+}
+function sceneBelow(c, tau, i) {
+  pageTop(c);
+  const sag = 90;
+  const rise = sm(0, .9, tau, easeOut);
+  wire(c, sag, 10);
+  flags(c, W * .72, sag, tau);
+  walker(c, W * .72, wireY(W * .72, sag), 2.2 + tau, 60);
+  if (rise > 0) {
+    section(c, lerp(H + 30, 700, rise), PAL.night, 70);
+    for (let r = 1; r <= 4; r++) dottedArc(c, CX, 1030, 90 + r * 100, alpha(PAL.chalk, .4), 80 + r, 22, 2.6);
+    dotBurst(c, 300, 960, 120 * rise, 12, PAL.accents[3], 90, rise);
+    dotBurst(c, 1150, 930, 100 * rise, 10, PAL.accents[1], 91, rise);
+    squig(c, 120, 900, 420, 2, { seed: 92, lineH: 44, width: 3.4, color: alpha(PAL.chalk, .6) });
+  }
+}
+function sceneName(c, tau, i) {
+  pageTop(c);
+  const sag = 90;
+  section(c, 700, PAL.night, 70);
+  for (let r = 1; r <= 4; r++) dottedArc(c, CX, 1030, 90 + r * 100, alpha(PAL.chalk, .4), 80 + r, 22, 2.6);
+  dotBurst(c, 300, 960, 120, 12, PAL.accents[3], 90, 1);
+  dotBurst(c, 1150, 930, 100, 10, PAL.accents[1], 91, 1);
+  wire(c, sag, 10);
+  flags(c, W, sag, tau);
+  // the name sitting on the wire, following its curve
+  const p = sm(.1, 1.2, tau, t => t);
+  const mid = wireY(CX, sag);
+  writeOn(c, 'over the wire', CX, mid - 30, p, { size: 165, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush, rot: .01 });
+  walker(c, W - 120, wireY(W - 120, sag), 3.5 + tau, 60);
+  if (p >= 1) for (let k = 0; k < 3; k++) sparkle(c, 240 + k * 480, 380, 26 + (pulse(i + k, 7, 3) ? 10 : 0), PAL.accents[3], k);
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_OW, poster: 4.7,
+  beats: [
+    { name: 'walk', dur: 2.2, fn: sceneWalk },
+    { name: 'below', dur: 1.3, fn: sceneBelow },
+    { name: 'name', dur: 1.8, fn: sceneName },
+  ],
+});
+</script>

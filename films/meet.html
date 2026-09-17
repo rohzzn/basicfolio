@@ -1,0 +1,120 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>meet</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Meet, group video calls with screen share.
+// Look: flat screen print, lilac. Anchor: the tile grid. Signature: the grid itself is the animation, one tile
+// splitting into two and then four, and later collapsing into a column beside the shared screen.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.5   join    one tile becomes two becomes four, each face arriving              boxes lerp, bust
+// 1.5   1.2   talk    the speaker ring hops between tiles, mouths move, bars jump        crayonShape
+// 2.7   1.2   share   the first tile grows into the shared screen, the rest go right      lerp boxes, cursor
+// 3.9   1.4   hello   a speech bubble from the speaker says "meet"                        bubble, writeOn
+
+const PAL_MEET = makePalette({
+  paper: '#ece6f5', paperBand: null, ink: '#2d2446', night: '#1d1733', chalk: '#fbf9ff', chalkDim: '#8d84ad', guide: 'rgba(45,36,70,.3)',
+  fills: ['#b8a4e3', '#ffcf99', '#8fd3c1', '#ff9aa2', '#f6e27f', '#6c5ba7'], shade: '#2d2446', light: '#fbf9ff', blush: '#ff9aa2',
+  accents: ['#ff6f91', '#6c5ba7', '#f6e27f', '#3fb68b'], inks: ['#6c5ba7', '#ff6f91', '#f6e27f'], finish: 'screen',
+}, 'screenSea');
+const WIN = [CX - 620, 120, 1240, 840], PAD = 26;
+const SKIN = () => [[PAL.fills[1], PAL.fills[5]], [PAL.fills[2], PAL.fills[3]], [PAL.fills[4], PAL.fills[0]], [PAL.fills[3], PAL.fills[1]]];
+
+function shell(c, seed) {
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(WIN[0] + 18, WIN[1] + 22, WIN[2], WIN[3], 30); c.fill();
+  draw(c, RR(...WIN, 30), PAL.light, seed, { tex: false });
+  const bar = rectPath(WIN[0], WIN[1], WIN[2], 74);
+  c.save(); c.clip(roundRectPath(...WIN, 30)); c.fillStyle = PAL.fills[0]; c.fill(bar); tex(c, bar, [WIN[0], WIN[1], WIN[2], 74], { density: .35 }); c.restore();
+  stroke(c, [[WIN[0], WIN[1] + 74], [WIN[0] + WIN[2], WIN[1] + 74]], seed + 1, { lw: 5 });
+  [PAL.blush, PAL.fills[4], PAL.fills[2]].forEach((col, k) => draw(c, CI(WIN[0] + 40 + k * 34, WIN[1] + 37, 12), col, seed + 10 + k, { tex: false, lw: 3 }));
+  textBar(c, WIN[0] + WIN[2] / 2 - 80, WIN[1] + 37, 160, alpha(PAL.ink, .3), 12);
+  return [WIN[0] + PAD, WIN[1] + 74 + PAD, WIN[2] - PAD * 2, WIN[3] - 74 - PAD * 2 - 90];
+}
+function controls(c, cy, seed) {
+  [[PAL.light, 0], [PAL.light, 1], [PAL.blush, 2]].forEach(([col, k]) => {
+    const x = CX + (k - 1) * 120; draw(c, CI(x, cy, 40), col, seed + k, { tex: k === 2, lw: 4 });
+    if (k === 2) stroke(c, [[x - 19, cy + 5], [x + 19, cy + 5]], seed + 20, { lw: 8, color: PAL.light, raw: true });
+    else draw(c, k ? RR(x - 19, cy - 13, 28, 26, 5) : RR(x - 9, cy - 19, 18, 32, 9), PAL.ink, seed + 30 + k, { tex: false, lw: 2 });
+  });
+}
+function tile(c, [x, y, w, h], k, i, speaking, seed) {
+  const [bg, hair] = SKIN()[k];
+  draw(c, RR(x, y, w, h, 20), tint(bg, .35), seed, { lw: speaking ? 7 : 4, texo: { density: .3, color: bg } });
+  c.save(); c.beginPath(); c.roundRect(x, y, w, h, 20); c.clip();
+  bust(c, x + w / 2, y + h * .48, Math.min(w, h) * .36, hair, PAL.fills[1], seed + 3, { blink: pulse(i + k * 5, 13, 1), talk: speaking && flicker(i, 2) });
+  c.restore();
+  draw(c, RR(x + 16, y + h - 48, Math.min(150, w * .45), 32, 16), alpha(PAL.ink, .65), seed + 6, { tex: false, line: false });
+  if (speaking) { crayonShape(c, rrPts(x - 9, y - 9, w + 18, h + 18, 26), PAL.accents[0], 8, seed + 40 + i); for (let b = 0; b < 3; b++) { const bh = 12 + ((i + b * 2) % 4) * 9; c.fillStyle = PAL.light; c.fillRect(x + 32 + b * 16, y + h - 32 - bh / 2, 9, bh); } }
+}
+const quad = (box, k) => { const [x, y, w, h] = box, tw = (w - PAD) / 2, th = (h - PAD) / 2; return [x + (k % 2) * (tw + PAD), y + Math.floor(k / 2) * (th + PAD), tw, th]; };
+function sceneJoin(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .12, cell: 16 });
+  const box = shell(c, 10);
+  const two = sm(.35, .7, tau, easeIO), four = sm(.8, 1.2, tau, easeIO);
+  const full = box, left = [box[0], box[1], (box[2] - PAD) / 2, box[3]];
+  const b0 = full.map((v, j) => lerp(v, lerp(left[j], quad(box, 0)[j], four), two));
+  tile(c, b0, 0, i, false, 20);
+  if (two > 0) { const right = [box[0] + (box[2] + PAD) / 2, box[1], (box[2] - PAD) / 2, box[3]]; const b1 = right.map((v, j) => lerp(v, quad(box, 1)[j], four)); c.save(); c.globalAlpha = Math.min(1, two * 2); tile(c, b1, 1, i, false, 30); c.restore(); }
+  if (four > 0) for (const k of [2, 3]) { const p = easeBack(sm(.85 + (k - 2) * .12, 1.25 + (k - 2) * .12, tau, t => t)); if (p <= .02) continue; const b = quad(box, k), cx = b[0] + b[2] / 2, cy = b[1] + b[3] / 2; c.save(); c.translate(cx, cy); c.scale(p, p); c.translate(-cx, -cy); tile(c, b, k, i, false, 40 + k * 7); c.restore(); }
+  controls(c, WIN[1] + WIN[3] - 52, 60);
+}
+const SPK = [0, 3, 1, 2];
+function sceneTalk(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .12, cell: 16 });
+  const box = shell(c, 10), spk = SPK[Math.floor(tau * 3) % 4];
+  for (let k = 0; k < 4; k++) tile(c, quad(box, k), k, i, k === spk, 20 + k * 7);
+  controls(c, WIN[1] + WIN[3] - 52, 60);
+}
+function sharedScreen(c, [x, y, w, h], tau, i, seed) {
+  draw(c, RR(x, y, w, h, 20), PAL.light, seed, { lw: 5, tex: false });
+  c.save(); c.beginPath(); c.roundRect(x, y, w, h, 20); c.clip();
+  squig(c, x + w * .08, y + h * .18, w * .5, 2, { seed: seed + 1, lineH: 44, width: 4 });
+  const bars = [.45, .7, .55, .95, .8], bw = w * .1;
+  bars.forEach((v, k) => { const bh = h * .5 * v * sm(.1 + k * .07, .5 + k * .07, tau, easeOut); if (bh > 3) draw(c, RR(x + w * .1 + k * bw * 1.5, y + h * .8 - bh, bw, bh, 8), [PAL.fills[5], PAL.fills[2], PAL.accents[0], PAL.fills[4], PAL.fills[0]][k], seed + 10 + k, { lw: 4, texo: { density: .35 } }); });
+  stroke(c, [[x + w * .06, y + h * .8], [x + w * .94, y + h * .8]], seed + 20, { lw: 5 });
+  c.restore();
+  draw(c, RR(x + 20, y + 20, 200, 44, 22), PAL.accents[0], seed + 30, { tex: false, lw: 3 }); dot(c, x + 48, y + 42, 9, PAL.light); textBar(c, x + 70, y + 42, 120, alpha(PAL.light, .9), 10);
+}
+function sceneShare(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .12, cell: 16 });
+  const box = shell(c, 10), p = sm(0, .7, tau, easeIO), colW = 250;
+  const big = [box[0], box[1], box[2] - colW - PAD, box[3]];
+  const to = k => [box[0] + box[2] - colW, box[1] + (k - 1) * (box[3] / 3), colW, box[3] / 3 - PAD];
+  for (let k = 1; k < 4; k++) { const b = quad(box, k).map((v, j) => lerp(v, to(k)[j], p)); tile(c, b, k, i, k === 1 && tau > .8, 20 + k * 7); }
+  const sb = quad(box, 0).map((v, j) => lerp(v, big[j], p));
+  if (p < .35) tile(c, sb, 0, i, false, 20); else sharedScreen(c, sb, tau - .35, i, 60);
+  if (p >= 1) { const t = sm(.75, 1.2, tau, easeIO); cursor(c, lerp(sb[0] + sb[2] * .8, sb[0] + sb[2] * .55, t), lerp(sb[1] + sb[3] * .7, sb[1] + sb[3] * .34, t), 100, PAL.light, 70, { lc: PAL.ink, lw: 5, tex: false }); }
+  controls(c, WIN[1] + WIN[3] - 52, 60);
+}
+function sceneHello(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .12, cell: 16 });
+  const box = shell(c, 10), colW = 250, big = [box[0], box[1], box[2] - colW - PAD, box[3]];
+  const to = k => [box[0] + box[2] - colW, box[1] + (k - 1) * (box[3] / 3), colW, box[3] / 3 - PAD];
+  for (let k = 1; k < 4; k++) tile(c, to(k), k, i, k === 1, 20 + k * 7);
+  sharedScreen(c, big, 1.2, i, 60);
+  const pop = easeBack(sm(0, .3, tau, t => t));
+  if (pop > .02) {
+    const bx = big[0] + 90, by = big[1] + 120, bw = 620, bh = 230;
+    c.save(); c.translate(bx + bw / 2, by + bh); c.scale(pop, pop); c.translate(-bx - bw / 2, -by - bh);
+    bubble(c, bx, by, bw, bh, PAL.light, 80, { lines: false, lw: 6 });
+    writeOn(c, 'meet', bx + bw / 2, by + bh * .72, sm(.15, .85, tau, t => t), { size: 190, ink: PAL.ink, ink2: PAL.accents[0], pen: PAL.accents[0] });
+    c.restore();
+  }
+  controls(c, WIN[1] + WIN[3] - 52, 60);
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_MEET, poster: 5.2,
+  beats: [
+    { name: 'join', dur: 1.5, fn: sceneJoin },
+    { name: 'talk', dur: 1.2, fn: sceneTalk },
+    { name: 'share', dur: 1.2, fn: sceneShare },
+    { name: 'hello', dur: 1.4, fn: sceneHello },
+  ],
+});
+</script>

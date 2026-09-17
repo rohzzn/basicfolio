@@ -1,0 +1,109 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>wordle</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Wordle Clone, a weekend build.
+// Look: flat, near-monochrome with the two familiar tile colours. Anchor: the grid.
+// Signature: the tiles themselves are the lettering - they flip one every two frames and the winning row
+// spells the name, so the film never needs a title card.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.5   guess   the first guess is typed and flipped: two yellows                  scaleY flip
+// 1.5   1.3   again   the second guess flips: three greens                                 flip
+// 2.8   2.0   win     the last row flips green and spells "wordle", the grid nodding        flip, sparkle
+
+const PAL_W = makePalette({
+  paper: '#f7f7f5', paperBand: null, ink: '#1a1a1b', night: '#242426', chalk: '#ffffff', chalkDim: '#a4aec4', guide: 'rgba(26,26,27,.25)',
+  fills: ['#d3d6da', '#787c7e', '#c9b458', '#6aaa64', '#ffffff'], shade: '#787c7e', light: '#ffffff', blush: '#c9b458',
+  accents: ['#6aaa64', '#c9b458', '#787c7e', '#1a1a1b'], inks: ['#6aaa64', '#c9b458'], finish: 'flat',
+}, 'pencilMinimal');
+const ROWS = [
+  { word: 'crates', state: [0, 2, 0, 1, 0, 0] },
+  { word: 'gloomy', state: [0, 0, 3, 0, 1, 0] },
+  { word: 'wordle', state: [3, 3, 3, 3, 3, 3] },
+];
+const COLS = [PAL_W.fills[0], PAL_W.fills[1], PAL_W.fills[2], PAL_W.fills[3]];
+const TS = 150, GAP = 16;
+function rowY(r) { return CY - 300 + r * (TS + GAP); }
+function tile(c, x, y, s, letter, state, flip, seed) {
+  const sq = Math.max(.04, Math.abs(flip));
+  c.save(); c.translate(x + s / 2, y + s / 2); c.scale(1, sq);
+  const filled = flip < 0 || state === undefined;
+  const col = flip < 0 ? PAL.paper : COLS[state];
+  c.fillStyle = col; c.fillRect(-s / 2, -s / 2, s, s);
+  c.strokeStyle = flip < 0 ? (letter ? PAL.shade : PAL.fills[0]) : col; c.lineWidth = 6; c.strokeRect(-s / 2, -s / 2, s, s);
+  if (letter && sq > .35) { c.font = `bold ${s * .62}px ${KIT_HAND}`; c.fillStyle = flip < 0 ? PAL.ink : (state ? PAL.light : PAL.ink); c.textAlign = 'center'; c.textBaseline = 'alphabetic'; c.fillText(letter.toUpperCase(), 0, s * .22); }
+  c.restore();
+}
+function grid(c, upto, typing, flipT, i) {
+  ROWS.forEach((row, r) => {
+    const n = row.word.length, x0 = CX - (n * TS + (n - 1) * GAP) / 2;
+    for (let k = 0; k < n; k++) {
+      const x = x0 + k * (TS + GAP), y = rowY(r);
+      if (r > upto) { tile(c, x, y, TS, '', undefined, -1, 10 + r * 9 + k); continue; }
+      if (r === upto) {
+        const typed = k < typing, ft = clamp((flipT - k * .14) / .28, 0, 1);
+        if (!typed) { tile(c, x, y, TS, '', undefined, -1, 10 + r * 9 + k); continue; }
+        if (ft <= 0) { tile(c, x, y, TS, row.word[k], undefined, -1, 10 + r * 9 + k); continue; }
+        tile(c, x, y, TS, row.word[k], row.state[k], ft < .5 ? -(1 - ft * 2) : (ft - .5) * 2, 10 + r * 9 + k);
+        continue;
+      }
+      tile(c, x, y, TS, row.word[k], row.state[k], 1, 10 + r * 9 + k);
+    }
+  });
+}
+function keyboard(c, hot, i) {
+  const rows = [10, 9, 7], y0 = H - 250;
+  rows.forEach((n, r) => {
+    const kw = 96, gap = 12, x0 = CX - (n * kw + (n - 1) * gap) / 2;
+    for (let k = 0; k < n; k++) { const on = hot === `${r}-${k}`; c.fillStyle = on ? PAL.fills[1] : PAL.fills[0]; const x = x0 + k * (kw + gap); c.beginPath(); c.roundRect(x, y0 + r * 78, kw, 66, 10); c.fill(); }
+  });
+}
+function sceneGuess(c, tau, i) {
+  paper(c);
+  stroke(c, [[0, 130], [W, 130]], 5, { lw: 4, color: PAL.fills[0] });
+  textBar(c, CX - 130, 74, 260, PAL.ink, 34);
+  const typing = Math.min(6, Math.floor(tau * 12 / 2));
+  grid(c, 0, typing, tau > .9 ? tau - .9 : 0, i);
+  keyboard(c, `${typing % 3}-${(typing * 3) % 7}`, i);
+}
+function sceneAgain(c, tau, i) {
+  paper(c);
+  stroke(c, [[0, 130], [W, 130]], 5, { lw: 4, color: PAL.fills[0] });
+  textBar(c, CX - 130, 74, 260, PAL.ink, 34);
+  const typing = Math.min(6, Math.floor(tau * 12 / 2));
+  grid(c, 1, typing, tau > .75 ? tau - .75 : 0, i);
+  keyboard(c, `${(typing + 1) % 3}-${(typing * 5) % 7}`, i);
+}
+function sceneWin(c, tau, i) {
+  paper(c);
+  stroke(c, [[0, 130], [W, 130]], 5, { lw: 4, color: PAL.fills[0] });
+  textBar(c, CX - 130, 74, 260, PAL.ink, 34);
+  const typing = Math.min(6, Math.floor(tau * 12 / 2));
+  // the win nod: the row lifts a little, one tile at a time, after it has flipped
+  const flipT = tau > .55 ? tau - .55 : 0;
+  if (tau <= 1.35) grid(c, 2, typing, flipT, i);
+  else {
+    // the grid first, then the winning row nodding over the top of it, one tile at a time
+    grid(c, 1, 6, 9, i);
+    const n = 6, x0 = CX - (n * TS + (n - 1) * GAP) / 2;
+    for (let k = 0; k < n; k++) { const d = clamp((tau - 1.35 - k * .05) * 6, 0, 1), lift = Math.sin(d * Math.PI) * 40; tile(c, x0 + k * (TS + GAP), rowY(2) - lift, TS, 'wordle'[k], 3, 1, 90 + k); }
+  }
+  keyboard(c, '', i);
+  if (tau > 1.4) { const r = rng(120); for (let k = 0; k < 24; k++) { const a = r() * TAU, d = (tau - 1.4) * (420 + r() * 700), x = CX + Math.cos(a) * d, y = rowY(2) + 70 + Math.sin(a) * d * .55; c.save(); c.translate(x, y); c.rotate(a + tau * 4); c.fillStyle = [PAL.fills[3], PAL.fills[2], PAL.ink][k % 3]; c.fillRect(-14, -7, 28, 14); c.restore(); } }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_W, poster: 4.4,
+  beats: [
+    { name: 'guess', dur: 1.5, fn: sceneGuess },
+    { name: 'again', dur: 1.3, fn: sceneAgain },
+    { name: 'win', dur: 2.0, fn: sceneWin },
+  ],
+});
+</script>

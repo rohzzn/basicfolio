@@ -1,0 +1,114 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ipynb-extractor</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Ipynb Image Extractor, pulls the images out of Jupyter notebooks.
+// Look: graphite on graph paper. Anchor: the plot. Signature: the plots peel off the page along arcs and land
+// as prints pinned to the paper.
+// t     dur   scene      what changes                                                    kit
+// 0.0   1.6   notebook   cells run, each printing a plot under it                         sheet, plots
+// 1.6   1.6   peel       the plots lift, arc across, drop into the tray                    bez arcs, speedLines
+// 3.2   1.9   pinned     three prints pinned on the graph paper, the last captioned         writeOn
+
+const PAL_NB = makePalette({
+  paper: '#f7f7f2', paperBand: null, ink: '#2b2b2b', night: '#26262b', chalk: '#ffffff', chalkDim: '#9a9a96', guide: 'rgba(60,90,128,.35)',
+  fills: ['#f2a65a', '#5b8e7d', '#e9e4d4', '#bc4b51', '#8cb8d9'], shade: '#6a6a66', light: '#ffffff', blush: '#f2a65a',
+  accents: ['#bc4b51', '#5b8e7d', '#f2a65a', '#3d5a80'], inks: ['#2b2b2b', '#5b8e7d'], finish: 'pencil',
+}, 'pencilMinimal');
+
+function graphPaper(c) {
+  paper(c);
+  c.save();
+  c.strokeStyle = alpha(PAL.accents[3], .18); c.lineWidth = 1.4;
+  for (let x = 0; x <= W; x += 40) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 40) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.strokeStyle = alpha(PAL.accents[3], .32); c.lineWidth = 2;
+  for (let x = 0; x <= W; x += 200) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 200) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.restore();
+}
+function plot(c, x, y, w, h, kind, seed) {
+  draw(c, RR(x, y, w, h, 6), PAL.light, seed, { tex: false, lw: 3.4 });
+  const px = x + w * .14, py = y + h * .12, pw = w * .74, ph = h * .7, r = rng(seed);
+  stroke(c, [[px, py], [px, py + ph], [px + pw, py + ph]], seed + 1, { lw: 3, raw: true });
+  if (kind === 0) { const pts = []; for (let k = 0; k <= 18; k++) pts.push([px + pw * k / 18, py + ph * (.6 - .42 * Math.sin(k / 18 * 4.4) * (1 - k / 40))]); stroke(c, pts, seed + 2, { lw: 5, color: PAL.accents[1] }); for (const [qx, qy] of pts.filter((_, k) => k % 3 === 0)) dot(c, qx, qy, 6, PAL.accents[0]); }
+  if (kind === 1) for (let k = 0; k < 26; k++) { const u = r(), v = clamp(u * .8 + (r() - .5) * .4, 0, 1); dot(c, px + pw * u, py + ph * (1 - v), 7, k % 3 ? PAL.accents[0] : PAL.accents[3]); }
+  if (kind === 2) for (let k = 0; k < 6; k++) { const bh = ph * (.2 + r() * .75); draw(c, RR(px + 6 + k * pw / 6, py + ph - bh, pw / 6 - 10, bh, 2), [PAL.fills[0], PAL.fills[1], PAL.fills[4], PAL.fills[3], PAL.fills[0], PAL.fills[1]][k], seed + 10 + k, { lw: 2.4, tex: false }); }
+  if (kind === 3) hexCells([px, py, pw, ph], 15, (hx, hy) => { if (hx < px || hy < py || hx > px + pw || hy > py + ph) return; const d = Math.hypot(hx - px - pw * .45, hy - py - ph * .5) / (pw * .5); c.fillStyle = mix(PAL.fills[0], PAL.fills[4], clamp(d, 0, 1)); c.fill(hexPath(hx, hy, 14)); });
+}
+const PX = 130, PW = 700, CELLS = [[200, 0], [500, 2], [800, 1]];
+function notebook(c, tau, gone, seed) {
+  c.fillStyle = alpha(PAL.shade, .12); c.beginPath(); c.roundRect(PX + 16, 80, PW, H, 14); c.fill();
+  draw(c, RR(PX, 60, PW, H + 60, 14), PAL.light, seed, { tex: false, lw: 4 });
+  draw(c, RR(PX + 34, 96, 56, 56, 10), PAL.fills[0], seed + 1, { lw: 3, tex: false });
+  textBar(c, PX + 120, 124, 230, alpha(PAL.ink, .5), 16);
+  stroke(c, [[PX, 176], [PX + PW, 176]], seed + 2, { lw: 3 });
+  CELLS.forEach(([cy, kind], k) => {
+    const on = sm(k * .3, k * .3 + .22, tau); if (on <= 0) return;
+    c.font = '30px "Consolas", monospace'; c.fillStyle = alpha(PAL.accents[3], .8); c.fillText(`In [${k + 1}]:`, PX + 30, cy + 34);
+    draw(c, RR(PX + 170, cy, PW - 210, 64, 6), alpha(PAL.fills[2], .8), seed + 10 + k, { tex: false, lw: 2.6 });
+    squig(c, PX + 190, cy + 40, (PW - 250) * on, 1, { seed: seed + 20 + k, width: 3.4, color: alpha(PAL.ink, .7) });
+    if (on >= 1 && !gone.includes(k)) plot(c, PX + 170, cy + 86, 330, 190, kind, seed + 30 + k);
+    else if (on >= 1) { c.save(); c.setLineDash([14, 12]); stroke(c, rrPts(PX + 170, cy + 86, 330, 190, 6), seed + 40 + k, { raw: true, close: true, lw: 3, color: alpha(PAL.ink, .35) }); c.restore(); }
+  });
+}
+function tray(c, n, i, seed) {
+  const x = CX + 330, y = 700, w = 420, h = 240;
+  draw(c, PG([[x - w / 2, y], [x + w / 2, y], [x + w / 2 - 30, y + h], [x - w / 2 + 30, y + h]]), alpha(PAL.fills[2], .9), seed, { lw: 4 });
+  stroke(c, [[x - w / 2 + 14, y + 46], [x + w / 2 - 14, y + 46]], seed + 1, { lw: 3, alpha: .5 });
+  for (let k = 0; k < n; k++) { c.save(); c.translate(x, y - 8 - k * 18); c.rotate((k - 1) * .03); draw(c, RR(-150, -18, 300, 30, 4), PAL.light, seed + 10 + k, { tex: false, lw: 3 }); c.restore(); }
+  if (n) textBar(c, x - 40, y + 150, 80, alpha(PAL.ink, .4), 12);
+}
+function sceneNotebook(c, tau, i) {
+  graphPaper(c);
+  notebook(c, tau, [], 20);
+  tray(c, 0, i, 60);
+  if (tau > 1.1) for (let k = 0; k < 3; k++) { const p = sm(1.15, 1.6, tau); if (p > 0) stroke(c, [[PX + 500, CELLS[k][0] + 180], [PX + 500 + 120 * p, CELLS[k][0] + 180]], 70 + k, { lw: 3, dash: [12, 10], color: alpha(PAL.accents[0], .6) }); }
+}
+function scenePeel(c, tau, i) {
+  graphPaper(c);
+  const gone = CELLS.map((_, k) => k).filter(k => tau > .15 + k * .38);
+  notebook(c, 2, gone, 20);
+  const landed = CELLS.filter((_, k) => tau > .15 + k * .38 + .5).length;
+  tray(c, landed, i, 60);
+  CELLS.forEach(([cy, kind], k) => {
+    const t0 = .15 + k * .38, p = sm(t0, t0 + .5, tau, easeIO); if (p <= 0 || p >= 1) return;
+    const [bx, by] = bez([PX + 170, cy + 86], [PX + 500, cy - 200], [CX + 200, 300], [CX + 180, 660], p);
+    const s = lerp(1, .82, p), rot = lerp(-.05, .22, p);
+    c.fillStyle = alpha(PAL.shade, .12); c.fillRect(bx + 24, by + 40, 330 * s, 190 * s);
+    c.save(); c.translate(bx, by); c.rotate(rot); c.scale(s, s); plot(c, 0, 0, 330, 190, kind, 30 + k); c.restore();
+    speedLines(c, bx, by + 95, Math.atan2(660 - cy, -200) + Math.PI, 80 + i, 5, .45, PAL.shade);
+  });
+}
+function scenePinned(c, tau, i) {
+  graphPaper(c);
+  const items = [[300, 330, -.04, 0], [740, 300, .03, 2], [1120, 360, -.02, 1]];
+  items.forEach(([x, y, rot, kind], k) => {
+    const pop = easeBack(sm(k * .12, k * .12 + .34, tau, t => t)); if (pop <= .02) return;
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(pop, pop);
+    c.fillStyle = alpha(PAL.shade, .14); c.fillRect(-160 + 14, -110 + 18, 340, 320);
+    draw(c, RR(-160, -110, 340, 320, 4), PAL.light, 20 + k, { tex: false, lw: 4 });
+    plot(c, -140, -88, 300, 190, kind, 30 + k);
+    if (k === 2) writeOn(c, 'ipynb', 10, 158, sm(.5, 1.1, tau, t => t), { size: 96, ink: PAL.ink, ink2: PAL.accents[0], pen: PAL.accents[0] });
+    else squig(c, -130, 150, 280, 1, { seed: 40 + k, width: 3, color: alpha(PAL.ink, .5) });
+    c.restore();
+    draw(c, CI(x + 14, y - 96, 18), PAL.accents[0], 50 + k, { tex: false, lw: 3 });
+  });
+  if (tau > 1.2) { const y = 800; writeOn(c, 'extractor', CX, y + 90, sm(1.2, 1.8, tau, t => t), { size: 130, ink: PAL.ink, ink2: PAL.accents[1], pen: PAL.accents[1] }); }
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_NB, poster: 2.6,
+  beats: [
+    { name: 'notebook', dur: 1.6, fn: sceneNotebook },
+    { name: 'peel', dur: 1.6, fn: scenePeel },
+    { name: 'pinned', dur: 1.9, fn: scenePinned },
+  ],
+});
+</script>

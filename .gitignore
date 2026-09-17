@@ -42,3 +42,7 @@ next-env.d.ts
 
 .env.local
 data/tmdb-owner-auth.json
+
+# film render workspace (sources are committed, renders and deps are not)
+/films/node_modules
+/films/out

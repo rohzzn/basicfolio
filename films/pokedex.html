@@ -1,0 +1,97 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>pokedex</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Pokedex, an encyclopedia built on the PokeAPI.
+// Look: ink on warm paper, one red device. Anchor: the device. Signature: the lid opens on a hinge, and the
+// entries then flip past on the screen four a second before one settles with the name.
+// t     dur   scene   what changes                                                    kit
+// 0.0   1.5   open    the closed device, its lid swinging open, the screen waking        scaleY hinge
+// 1.5   1.5   browse  silhouettes flip past on the screen, the stat bars jumping          montage cadence
+// 3.0   2.0   entry   one entry settles; the header is written "pokedex"                   writeOn
+
+const PAL_PD = makePalette({
+  paper: '#f3e9d8', paperBand: null, ink: '#2a1c18', night: '#221a18', chalk: '#fdf6e8', chalkDim: '#a08e7c', guide: 'rgba(42,28,24,.3)',
+  fills: ['#d63b2f', '#a52c22', '#f0e4cf', '#3b6ea5', '#e8c75a', '#7fae6a'], shade: '#4a2c22', light: '#fdf6e8', blush: '#d63b2f',
+  accents: ['#d63b2f', '#3b6ea5', '#e8c75a', '#7fae6a'], inks: ['#2a1c18', '#d63b2f', '#3b6ea5'], finish: 'ink',
+}, 'paperInk');
+const DX = CX - 470, DY = 330, DW = 940, DH = 700, LH = 300;   // LH: the lid, short enough to stay in frame when it swings up
+
+function creature(c, x, y, s, k, col, seed) {
+  // five simple creature silhouettes, no likenesses: a blob, a bird, a bug, a fish, a cat-ish one
+  c.save(); c.translate(x, y); c.scale(s, s);
+  if (k % 5 === 0) { draw(c, EL(0, 0, 130, 110), col, seed, { lw: 6, texo: { density: .35 } }); for (const sx of [-1, 1]) draw(c, PG([[sx * 60, -80], [sx * 110, -180], [sx * 20, -100]]), col, seed + 1 + sx, { lw: 5, texo: { density: .3 } }); for (const sx of [-1, 1]) dot(c, sx * 44, -20, 16, PAL.ink); }
+  if (k % 5 === 1) { draw(c, EL(0, 0, 100, 120), col, seed, { lw: 6, texo: { density: .35 } }); draw(c, PG([[-90, -20], [-210, -90], [-70, 60]]), col, seed + 2, { lw: 5, texo: { density: .3 } }); draw(c, PG([[70, -60], [150, -30], [70, -10]]), PAL.fills[4], seed + 3, { lw: 4, tex: false }); dot(c, 30, -60, 15, PAL.ink); }
+  if (k % 5 === 2) { draw(c, EL(0, 20, 120, 90), col, seed, { lw: 6, texo: { density: .35 } }); draw(c, CI(0, -80, 66), col, seed + 4, { lw: 5, texo: { density: .3 } }); for (const sx of [-1, 1]) { stroke(c, [[sx * 40, -130], [sx * 90, -210]], seed + 5 + sx, { lw: 7, raw: true }); dot(c, sx * 90, -215, 14, PAL.ink); dot(c, sx * 26, -86, 13, PAL.ink); } }
+  if (k % 5 === 3) { draw(c, EL(10, 0, 140, 90), col, seed, { lw: 6, texo: { density: .35 } }); draw(c, PG([[-120, 0], [-210, -70], [-200, 70]]), col, seed + 6, { lw: 5, texo: { density: .3 } }); draw(c, PG([[40, -80], [90, -170], [110, -70]]), PAL.fills[3], seed + 7, { lw: 4, tex: false }); dot(c, 80, -14, 15, PAL.ink); }
+  if (k % 5 === 4) { draw(c, EL(0, 30, 110, 90), col, seed, { lw: 6, texo: { density: .35 } }); draw(c, CI(0, -70, 84), col, seed + 8, { lw: 5, texo: { density: .3 } }); for (const sx of [-1, 1]) draw(c, PG([[sx * 30, -130], [sx * 76, -220], [sx * 90, -120]]), col, seed + 9 + sx, { lw: 5, tex: false }); for (const sx of [-1, 1]) dot(c, sx * 34, -80, 14, PAL.ink); stroke(c, [[110, 40], [200, -20]], seed + 12, { lw: 10, raw: true }); }
+  c.restore();
+}
+function device(c, lid, screenOn, k, tau, i, nameP) {
+  // the lid, hinged along the top
+  c.save(); c.translate(DX, DY); c.scale(1, Math.max(.02, lid));
+  draw(c, RR(0, -LH, DW, LH, 26), PAL.fills[1], 10, { lw: 7, texo: { density: .5 } });
+  draw(c, RR(50, -LH + 40, DW - 100, LH - 90, 14), PAL.fills[2], 11, { lw: 5, texo: { density: .2 } });
+  for (let r = 0; r < 3; r++) for (let q = 0; q < 8; q++) dot(c, 110 + q * (DW - 220) / 7, -LH + 80 + r * 56, 9, alpha(PAL.shade, .35));
+  c.restore();
+  // the body
+  draw(c, RR(DX, DY, DW, DH, 30), PAL.fills[0], 20, { lw: 7, texo: { density: .45 } });
+  draw(c, CI(DX + 125, DY + 108, 66), PAL.fills[3], 21, { lw: 6, texo: { density: .3 } });
+  draw(c, CI(DX + 125, DY + 108, 38), tint(PAL.fills[3], .5), 22, { tex: false, lw: 4 });
+  for (let d = 0; d < 3; d++) dot(c, DX + 260 + d * 52, DY + 86, 16, [PAL.blush, PAL.fills[4], PAL.fills[5]][d]);
+  const sx = DX + 90, sy = DY + 220, sw = DW - 180, sh = 350;
+  draw(c, RR(sx - 20, sy - 20, sw + 40, sh + 40, 18), PAL.fills[1], 23, { lw: 5, tex: false });
+  draw(c, RR(sx, sy, sw, sh, 12), screenOn ? PAL.fills[2] : shade(PAL.fills[2], .45), 24, { lw: 4, tex: false });
+  if (screenOn) {
+    c.save(); c.beginPath(); c.roundRect(sx, sy, sw, sh, 12); c.clip();
+    creature(c, sx + sw * .26, sy + sh * .74, .78, k, [PAL.fills[5], PAL.fills[3], PAL.fills[4], PAL.blush, PAL.fills[1]][k % 5], 30 + k * 5);
+    if (nameP > 0) writeOn(c, 'pokedex', sx + sw * .66, sy + 120, nameP, { size: 130, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+    else { textBar(c, sx + sw * .52, sy + 70, 200, alpha(PAL.ink, .6), 22); textBar(c, sx + sw * .52, sy + 120, 140, alpha(PAL.ink, .3), 16); }
+    [[.8, PAL.fills[5]], [.55, PAL.fills[3]], [.9, PAL.blush]].forEach(([v, col], b) => {
+      const by = sy + 170 + b * 56;
+      textBar(c, sx + sw * .52, by, 70, alpha(PAL.ink, .35), 12);
+      draw(c, RR(sx + sw * .62, by - 16, sw * .3, 32, 16), alpha(PAL.ink, .08), 40 + b, { tex: false, lw: 2.6 });
+      const jump = nameP > 0 ? 1 : (.7 + ((i + b * 3) % 5) * .06);
+      draw(c, RR(sx + sw * .62, by - 16, Math.max(32, sw * .3 * v * jump), 32, 16), col, 50 + b, { lw: 2.6, texo: { gap: 8 } });
+    });
+    c.restore();
+  }
+  // the d-pad and two buttons
+  for (const [ox, oy] of [[0, -46], [0, 46], [-46, 0], [46, 0]]) draw(c, RR(DX + 170 + ox - 26, DY + DH - 120 + oy - 26, 52, 52, 8), PAL.fills[1], 60 + ox + oy, { tex: false, lw: 4 });
+  draw(c, CI(DX + DW - 200, DY + DH - 120, 46), PAL.fills[4], 70, { lw: 5, texo: { density: .3 } });
+  draw(c, CI(DX + DW - 90, DY + DH - 120, 46), PAL.fills[5], 71, { lw: 5, texo: { density: .3 } });
+}
+function paperBg(c) { paper(c); for (let r = 1; r <= 4; r++) dottedArc(c, CX, CY, 420 + r * 110, alpha(PAL.ink, .18), 5 + r, 24, 2.6); }
+function sceneOpen(c, tau, i) {
+  paperBg(c);
+  const lid = sm(.2, .9, tau, easeOut);
+  device(c, lid, tau > .85, 0, tau, i, 0);
+  if (tau > .85 && tau < 1.1) ringsOut(c, CX, DY + 380, tau - .85, { every: 1 / 6, t1: .2, speed: 600, colors: [PAL.fills[4], PAL.blush], width: 6, seed: 90, max: 520, r0: 100 });
+}
+function sceneBrowse(c, tau, i) {
+  paperBg(c);
+  const k = Math.floor(tau * 12 / 3);
+  device(c, 1, true, k, tau, i, 0);
+  if (pulse(i, 3, 1)) speedLines(c, CX + 200, DY + 380, 0, 100 + i, 4, .35);
+}
+function sceneEntry(c, tau, i) {
+  paperBg(c);
+  device(c, 1, true, 3, tau, i, sm(.2, 1.1, tau, t => t));
+  if (tau > 1.1) for (let d = 0; d < 3; d++) sparkle(c, 200 + d * 520, 120 + (d % 2) * 80, 30 + (pulse(i + d, 7, 3) ? 10 : 0), [PAL.fills[4], PAL.blush, PAL.fills[3]][d], d);
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_PD, poster: 4.6,
+  beats: [
+    { name: 'open', dur: 1.5, fn: sceneOpen },
+    { name: 'browse', dur: 1.5, fn: sceneBrowse },
+    { name: 'entry', dur: 2.0, fn: sceneEntry },
+  ],
+});
+</script>

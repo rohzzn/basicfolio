@@ -1,0 +1,103 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>beam</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Beam, screen recording for Windows.
+// Look: chalk on blueprint navy, one red. Anchor: the record dot. Signature: a camera aperture closes and opens.
+// t     dur   scene      what changes                                                         kit
+// 0.0   1.8   screen     a monitor; a region is drawn, the rest dims, REC blinks, time runs      monitor, strokeOn
+// 1.8   0.6   aperture   six blades close on the screen and open on the recording               aperture (local)
+// 2.4   2.1   strip      the film strip runs in and settles: one letter a frame, "beam"          RR, hand
+
+const PAL_BEAM = makePalette({
+  paper: '#0f1a2e', paperBand: null, ink: '#dfe8f5', night: '#08101f', chalk: '#dfe8f5', chalkDim: '#6f82a3', guide: 'rgba(110,231,242,.4)',
+  fills: ['#1b2a45', '#24385c', '#2f4a78', '#f2c14e'], shade: '#9fb3d6', light: '#dfe8f5', blush: '#ff4d5e',
+  accents: ['#ff4d5e', '#6ee7f2', '#f2c14e', '#9b8cff'], inks: ['#dfe8f5', '#ff4d5e'], finish: 'pencil',
+}, 'blueprintNight');
+
+function gridPaper(c) {
+  paper(c);
+  c.save(); c.strokeStyle = alpha(PAL.chalkDim, .22); c.lineWidth = 1.6;
+  for (let x = 0; x <= W; x += 60) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 60) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.restore();
+}
+function screenStuff(c, [x, y, w, h], seed, k = 0) {
+  c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip();
+  win(c, x + w * .06, y + h * .1, w * .5, h * .78, seed + 1, { bar: h * .09, shadow: false, body: PAL.fills[1], barFill: PAL.fills[2], dots: [PAL.blush, PAL.fills[3], PAL.accents[1]] });
+  squig(c, x + w * .1, y + h * .34, w * .4, 4, { seed: seed + 2, lineH: h * .1, amp: h * .025, width: Math.max(2, h * .008), color: PAL.chalkDim });
+  const bx = x + w * .64, bw = w * .3, by = y + h * .82;
+  for (let b = 0; b < 4; b++) { const bh = h * (.2 + ((b * .31 + k * .17) % 1) * .4); draw(c, RR(bx + b * bw / 4, by - bh, bw / 4 - 10, bh, 4), [PAL.accents[1], PAL.fills[3], PAL.accents[3], PAL.blush][b], seed + 10 + b, { lw: Math.max(2.4, h * .008), tex: false }); }
+  c.restore();
+}
+
+function sceneScreen(c, tau, i) {
+  gridPaper(c);
+  const sb = monitor(c, CX - 460, 110, 920, 580, 20, { body: PAL.fills[0], screen: PAL.fills[2], stand: PAL.fills[1] });
+  screenStuff(c, sb, 30);
+  const [x, y, w, h] = sb, sel = [x + 26, y + 36, w * .62, h * .8], p = sm(.15, .75, tau, easeIO);
+  if (p >= 1) { c.save(); c.fillStyle = alpha(PAL.night, .6); c.beginPath(); c.rect(x, y, w, h); c.rect(sel[0] + sel[2], sel[1], -sel[2], sel[3]); c.fill('evenodd'); c.restore(); }
+  c.save(); c.setLineDash([]); strokeOn(c, rrPts(...sel, 6, 18), p, 40, { lw: 7, color: PAL.blush, close: true, raw: true }); c.restore();
+  if (p >= 1) for (const [hx, hy] of [[sel[0], sel[1]], [sel[0] + sel[2], sel[1]], [sel[0], sel[1] + sel[3]], [sel[0] + sel[2], sel[1] + sel[3]]]) draw(c, RR(hx - 13, hy - 13, 26, 26, 4), PAL.light, 41, { tex: false, lw: 4, lc: PAL.blush });
+  // dimension lines, the way a drawing is measured
+  if (p >= 1) { stroke(c, [[sel[0], y + h + 150], [sel[0] + sel[2], y + h + 150]], 42, { lw: 3, color: PAL.accents[1] }); for (const ex of [sel[0], sel[0] + sel[2]]) stroke(c, [[ex, y + h + 130], [ex, y + h + 170]], 43 + ex, { lw: 3, color: PAL.accents[1] }); textBar(c, sel[0] + sel[2] / 2 - 50, y + h + 120, 100, PAL.accents[1], 12); }
+  if (tau > .8) {
+    const rx = CX + 330, ry = 870;
+    draw(c, RR(rx - 90, ry - 44, 260, 88, 44), PAL.fills[0], 50, { tex: false, lc: PAL.blush, lw: 4 });
+    if (flicker(i, 3)) dot(c, rx - 40, ry, 22, PAL.blush);
+    const secs = Math.floor((tau - .8) * 12);
+    for (let d = 0; d < 4; d++) textBar(c, rx + 10 + d * 34, ry, 22, alpha(PAL.light, d < 2 ? .5 : .9), 26 - (d === 3 ? (secs % 2) * 8 : 0));
+  }
+}
+
+function aperture(c, r, rot, col) {
+  resetT(c); const pts = [];
+  for (let k = 0; k < 6; k++) { const a = rot + k / 6 * TAU; pts.push([CX + Math.cos(a) * r, CY + Math.sin(a) * r]); }
+  c.fillStyle = col; c.beginPath(); c.rect(-10, -10, W + 20, H + 20); c.moveTo(...pts[0]); for (let k = 5; k >= 0; k--) c.lineTo(...pts[k]); c.closePath(); c.fill('evenodd');
+  for (let k = 0; k < 6; k++) { const a = pts[k], b = pts[(k + 1) % 6], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1; stroke(c, [a, [a[0] - dx / L * 1600, a[1] - dy / L * 1600]], 60 + k, { lw: 5, color: PAL.chalkDim, raw: true }); }
+  if (r > 4) stroke(c, pts, 70, { lw: 6, color: PAL.blush, raw: true, close: true });
+}
+function sceneAperture(c, tau, i) {
+  const closing = tau < .3, r = closing ? lerp(1000, 0, sm(0, .3, tau, easeIn)) : lerp(0, 1000, sm(.3, .6, tau, easeOut));
+  if (closing) sceneScreen(c, 1.8, i); else sceneStrip(c, 0, i);
+  aperture(c, r, tau * 2.4, shade(PAL.fills[0], .2));
+}
+
+const LETTERS = ['b', 'e', 'a', 'm'];
+function sceneStrip(c, tau, i) {
+  gridPaper(c);
+  const fw = 290, gap = 30, pitch = fw + gap, settle = sm(0, 1.1, tau, easeOut);
+  const off = lerp(1300, 0, settle) + (tau > 1.3 && pulse(i, 5, 1) ? 8 : 0);
+  const y = CY - 190, fh = 380, x0 = CX - 2 * pitch + gap / 2 + off;
+  c.save(); c.translate(CX, CY); c.rotate(-.04); c.translate(-CX, -CY);
+  const body = RR(-200, y, W + 1800, fh, 0); c.fillStyle = PAL.night; c.fill(body.path);
+  stroke(c, [[-200, y], [W + 1600, y]], 80, { lw: 5 }); stroke(c, [[-200, y + fh], [W + 1600, y + fh]], 81, { lw: 5 });
+  for (let hx = -200 + (off % 50); hx < W + 200; hx += 50) for (const hy of [y + 14, y + fh - 38]) { c.fillStyle = PAL.paper; c.beginPath(); c.roundRect(hx, hy, 26, 24, 5); c.fill(); }
+  for (let k = -3; k < 8; k++) {
+    const fx = x0 + k * pitch, isL = k >= 0 && k < 4;
+    if (fx > W + 50 || fx + fw < -50) continue;
+    draw(c, RR(fx, y + 60, fw, fh - 120, 6), isL ? PAL.fills[2] : PAL.fills[1], 90 + k, { tex: false, lw: 4 });
+    if (isL) hand(c, LETTERS[k], fx + fw / 2, y + fh / 2 + 70, { size: 230, ink: PAL.light, ink2: PAL.blush, weight: 'bold' });
+    else screenStuff(c, [fx + 8, y + 68, fw - 16, fh - 136], 30, k);
+  }
+  c.restore();
+  draw(c, CI(150, 140, 56), PAL.fills[0], 95, { tex: false, lc: PAL.blush, lw: 5 });
+  dot(c, 150, 140, 30, flicker(i, 3) ? PAL.blush : shade(PAL.blush, .5));
+  if (settle > .98) { const pr = sm(1.1, 2.1, tau); stroke(c, [[CX - 400, H - 110], [CX + 400, H - 110]], 96, { lw: 10, color: alpha(PAL.light, .2) }); if (pr > 0) stroke(c, [[CX - 400, H - 110], [CX - 400 + 800 * pr, H - 110]], 97, { lw: 10, color: PAL.blush }); }
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_BEAM, poster: 1.4,
+  beats: [
+    { name: 'screen', dur: 1.8, fn: sceneScreen },
+    { name: 'aperture', dur: .6, fn: sceneAperture },
+    { name: 'strip', dur: 2.1, fn: sceneStrip },
+  ],
+});
+</script>

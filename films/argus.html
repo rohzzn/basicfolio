@@ -1,0 +1,116 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>argus</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Argus, a Discord bot that writes everything down.
+// Look: ink on sepia. Anchor: the eye. Signature: the camera dives into the pupil and comes out inside the record.
+// t     dur   scene    what changes                                                     kit
+// 0.0   1.5   eye      an eye fills the frame, opens, glances, blinks                    eye (local puppet)
+// 1.5   0.75  dive     push through the pupil until it is all ink                        cam zoom easeIn
+// 2.25  1.75  record   a circle opens out of the dark onto the ledger, rows land          iris, RR, squig
+// 4.0   1.25  name     the newest row is "argus", written in, the eye in the header winks writeOn
+
+const PAL_ARGUS = makePalette({
+  paper: '#efe4d2', paperBand: null, ink: '#2a1d14', night: '#1d1612', chalk: '#f1e6d4', chalkDim: '#9c8f80', guide: 'rgba(91,124,138,.5)',
+  fills: ['#c9a27a', '#8f6b4a', '#e8d2b0', '#5b7c8a'], shade: '#3b2a1c', light: '#fbf3e4', blush: '#b5523b',
+  accents: ['#b5523b', '#5b7c8a', '#d9a441', '#6b8f5a'], inks: ['#2a1d14', '#b5523b', '#5b7c8a'], finish: 'ink',
+}, 'paperInk');
+
+function eye(c, cx, cy, w, h, open, look, seed, o = {}) {
+  const hh = h * Math.max(.05, open);
+  const up = curvePts([cx - w, cy], [cx, cy - hh * 2], [cx + w, cy], 40), lo = curvePts([cx + w, cy], [cx, cy + hh * 2], [cx - w, cy], 40);
+  const pts = up.concat(lo.slice(1, -1)), sh = { path: polyPath(pts), pts, box: [cx - w, cy - h * 1.2, 2 * w, h * 2.4] };
+  draw(c, sh, PAL.light, seed, { texo: { density: .4 }, lw: o.lw });
+  c.save(); c.clip(sh.path);
+  const ir = h * .82, ix = cx + look * w * .36;
+  draw(c, CI(ix, cy, ir), PAL.accents[1], seed + 5, { lw: o.lw, texo: { color: PAL.ink, density: .7 } });
+  for (let k = 0; k < 18; k++) { const a = k / 18 * TAU; stroke(c, [[ix + Math.cos(a) * ir * .5, cy + Math.sin(a) * ir * .5], [ix + Math.cos(a) * ir * .92, cy + Math.sin(a) * ir * .92]], seed + 30 + k, { lw: (o.lw || LK.line) * .45, color: alpha(PAL.light, .55), raw: true }); }
+  dot(c, ix, cy, ir * .44, PAL.ink); dot(c, ix - ir * .26, cy - ir * .26, ir * .13, PAL.light);
+  if (!o.noLid) { c.fillStyle = alpha(PAL.shade, .18); c.beginPath(); c.moveTo(cx - w, cy); c.quadraticCurveTo(cx, cy - hh * 2, cx + w, cy); c.lineTo(cx + w, cy - h); c.lineTo(cx - w, cy - h); c.fill(); }
+  c.restore();
+  stroke(c, up, seed + 9, { lw: (o.lw || LK.line) * 1.8, raw: true });
+  stroke(c, lo, seed + 10, { lw: (o.lw || LK.line) * .9, raw: true });
+  if (open > .3) for (let k = 1; k < 9; k++) { const [px, py] = up[Math.round(k / 9 * 40)], nx = (px - cx) / w, L = h * .34; stroke(c, [[px, py - 4], [px + nx * L * .8, py - L]], seed + 20 + k, { lw: (o.lw || LK.line) * .9, raw: true }); }
+  return [ix, cy, ir * .44];
+}
+
+const LOOK = t => [0, 0, -1, -1, -1, .9, .9, .9, 0][Math.min(8, Math.floor(t * 6))] * .9;
+function eyeFrame(c, tau, i, zoom = 1, focus) {
+  paper(c);
+  const ex = CX, ey = CY + 20;
+  if (focus) cam(c, focus[0], focus[1], zoom);
+  // brow and cheek, hatched, so the eye sits in a face rather than on a page
+  const lift = pulse(i, 17, 2) ? 18 : 0;
+  const browTop = curvePts([ex - 600, ey - 250 - lift], [ex - 60, ey - 470 - lift], [ex + 560, ey - 330 - lift], 30), browBot = curvePts([ex + 520, ey - 300 - lift], [ex - 60, ey - 400 - lift], [ex - 600, ey - 220 - lift], 30);
+  draw(c, PG(browTop.concat(browBot)), PAL.fills[1], 6, { texo: { angle: .35, density: 1.3 } });
+  draw(c, EL(ex - 660, ey + 120, 90, 60, .3), alpha(PAL.blush, .35), 8, { line: false, tex: false });
+  draw(c, EL(ex + 660, ey + 120, 90, 60, -.3), alpha(PAL.blush, .35), 9, { line: false, tex: false });
+  stroke(c, curvePts([ex - 440, ey + 250], [ex, ey + 340], [ex + 440, ey + 250], 30), 7, { lw: 4, raw: true, alpha: .6 });
+  stroke(c, curvePts([ex - 380, ey + 290], [ex, ey + 360], [ex + 380, ey + 290], 30), 17, { lw: 3, raw: true, alpha: .35 });
+  const blink = tau > .95 && tau < .95 + 2 / 12;
+  const open = sm(.05, .45, tau, easeOut) * (blink ? .06 : 1);
+  return eye(c, ex, ey, 560, 170, open, LOOK(Math.min(tau, 1.4)), 20);
+}
+function sceneEye(c, tau, i) { eyeFrame(c, tau, i); }
+function sceneDive(c, tau, i) {
+  const p = sm(0, .75, tau, easeIn), [px, py] = eyeFrame(LA.getContext('2d'), 1.4, i);
+  eyeFrame(c, 1.4, i, lerp(1, 14, p), [lerp(CX, px, sm(0, .3, tau)), py]);
+  if (p > .9) { resetT(c); c.fillStyle = PAL.ink; c.fillRect(0, 0, W, H); }
+}
+
+const TAGS = () => [PAL.accents[1], PAL.blush, PAL.accents[2], PAL.accents[3], PAL.fills[0], PAL.fills[1]];
+function ledger(c, n, fresh, i, withName = 0) {
+  paper(c, shade(PAL.paper, .06), null);
+  const x = CX - 470, w = 940, rowH = 92;
+  c.fillStyle = alpha(PAL.shade, .18); c.beginPath(); c.roundRect(x + 20, 64, w, H, 20); c.fill();
+  draw(c, RR(x, 44, w, H + 100, 20), PAL.light, 30, { texo: { density: .3 } });
+  eye(c, x + 100, 124, 58, 22, pulse(i, 13, 1) ? .08 : 1, 0, 31, { lw: 3, noLid: true });
+  textBar(c, x + 190, 124, 230, alpha(PAL.ink, .55), 18);
+  stroke(c, [[x + 30, 190], [x + w - 30, 190]], 32, { lw: 4 });
+  const rows = n + (withName > 0 ? 1 : 0), scroll = Math.max(0, rows - 8) * rowH;
+  c.save(); c.beginPath(); c.rect(x, 200, w, H); c.clip();
+  for (let k = 0; k < rows; k++) {
+    const yy = 250 + k * rowH - scroll; if (yy < 170) continue;
+    const isName = withName > 0 && k === rows - 1;
+    textBar(c, x + 50, yy, 70, alpha(PAL.ink, .3), 10);
+    draw(c, RR(x + 150, yy - 24, 130, 48, 24), isName ? PAL.ink : TAGS()[(k * 5 + 2) % 6], 40 + k, { tex: false, lw: 3.4 });
+    if (isName) { dot(c, x + 215, yy, 10, PAL.light); writeOn(c, 'argus', x + 310, yy + 44, withName, { size: 150, align: 'left', ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush }); }
+    else squig(c, x + 310, yy + 10, (w - 370) * (.55 + ((k * 29) % 10) / 22), 1, { seed: 50 + k, width: 4, amp: 10 });
+    if (k === fresh) crayonShape(c, rrPts(x + 30, yy - 40, w - 60, 80, 30), PAL.blush, 5, 60 + k);
+  }
+  c.restore();
+}
+function sceneRecord(c, tau, i) {
+  const n = Math.min(9, 1 + Math.floor(tau * 6));
+  const p = sm(0, .5, tau, easeOut);
+  if (p >= 1) return ledger(c, n, n - 1, i);
+  resetT(c); c.fillStyle = PAL.ink; c.fillRect(0, 0, W, H);
+  ledger(LB.getContext('2d'), n, n - 1, i);
+  const R = lerp(20, Math.hypot(W, H) / 2, p);
+  iris(c, CX, CY, R, cc => blit(cc, LB));
+  stroke(c, ellPts(CX, CY, R, R, 0, 90), 70, { raw: true, close: true, lw: 8, color: PAL.accents[1] });
+}
+function sceneName(c, tau, i) {
+  const push = sm(.45, 1.25, tau, easeIO), L = LC.getContext('2d');
+  ledger(L, 9, -1, i, sm(.05, .75, tau, t => t));
+  paper(c, shade(PAL.paper, .06), null);
+  const z = lerp(1, 1.22, push), fy = lerp(CY, 720, push);
+  c.save(); c.translate(CX, CY); c.scale(z, z); c.translate(-CX, -fy); c.drawImage(LC, 0, 0, W, H); c.restore();
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_ARGUS, poster: .7,
+  beats: [
+    { name: 'eye', dur: 1.5, fn: sceneEye },
+    { name: 'dive', dur: .75, fn: sceneDive },
+    { name: 'record', dur: 1.75, fn: sceneRecord },
+    { name: 'name', dur: 1.25, fn: sceneName },
+  ],
+});
+</script>

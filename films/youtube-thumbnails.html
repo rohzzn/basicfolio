@@ -1,0 +1,97 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>youtube-thumbnails</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: YouTube Thumbnail Downloader, grab the thumbnail from any video URL.
+// Look: riso, three inks. Anchor: the play triangle. Signature: a full-bleed montage - a new printed thumbnail
+// every three frames - then one of them drops out of the player as a physical print.
+// t     dur   scene     what changes                                                   kit
+// 0.0   1.5   feed      six thumbnails on a wall, the pointer landing on one              RR cards
+// 1.5   1.4   montage   full-bleed: a new printed frame every three drawn frames           montage
+// 2.9   2.0   save      the print drops into the tray and the title is written             writeOn
+
+const PAL_YT = makePalette({
+  paper: '#f3efe6', paperBand: null, ink: '#231f3a', night: '#1c1930', chalk: '#fffdf6', chalkDim: '#8a83ad', guide: 'rgba(35,31,58,.3)',
+  fills: ['#ff2e4c', '#2b6cff', '#ffd23f', '#00b894', '#ff8fab', '#6c5ce7'], shade: '#231f3a', light: '#fffdf6', blush: '#ff2e4c',
+  accents: ['#ff2e4c', '#2b6cff', '#ffd23f', '#00b894'], inks: ['#2b6cff', '#ff2e4c', '#ffd23f'], finish: 'riso',
+}, 'risoPop');
+
+function playBadge(c, x, y, r, seed) { draw(c, RR(x - r * 1.3, y - r * .9, r * 2.6, r * 1.8, r * .5), PAL.blush, seed, { lw: 5, texo: { density: .4 } }); draw(c, PG([[x - r * .3, y - r * .45], [x + r * .55, y], [x - r * .3, y + r * .45]]), PAL.light, seed + 1, { tex: false, lw: 4 }); }
+// a thumbnail: a printed landscape in two or three inks, readable at 120 px
+function thumb(c, x, y, w, h, k, seed) {
+  const cols = [[PAL.fills[1], PAL.fills[2]], [PAL.fills[0], PAL.fills[2]], [PAL.fills[3], PAL.fills[1]], [PAL.fills[5], PAL.fills[4]], [PAL.fills[2], PAL.fills[0]], [PAL.fills[1], PAL.fills[4]]][k % 6];
+  const sky = rectPath(x, y, w, h); c.fillStyle = cols[0]; c.fill(sky); tex(c, sky, [x, y, w, h], { color: PAL.shade, density: .3, seed });
+  if (k % 3 === 0) { const sun = CI(x + w * .74, y + h * .3, h * .22); c.fillStyle = cols[1]; c.fill(sun.path); tex(c, sun.path, sun.box, { color: PAL.light, density: .3, seed: seed + 1 });
+    const hill = PG([[x, y + h], [x + w * .3, y + h * .55], [x + w * .6, y + h * .8], [x + w, y + h * .5], [x + w, y + h]]); c.fillStyle = cols[1]; c.fill(hill.path); }
+  if (k % 3 === 1) { for (let b = 0; b < 5; b++) { const bh = h * (.25 + ((b * 37) % 10) / 14); draw(c, RR(x + w * .1 + b * w * .17, y + h - bh, w * .12, bh, 4), cols[1], seed + 2 + b, { lw: 3, texo: { density: .35 } }); } }
+  if (k % 3 === 2) { const pts = []; for (let t = 0; t <= 12; t++) pts.push([x + w * t / 12, y + h * (.7 - .35 * Math.sin(t / 12 * 4 + k))]); stroke(c, pts, seed + 3, { raw: true, lw: 9, color: cols[1] }); }
+  stroke(c, rrPts(x, y, w, h, 4), seed + 9, { raw: true, close: true, lw: 5 });
+}
+function sceneFeed(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 15 });
+  const cw = 400, ch = 240, gx = 40, gy = 70, x0 = CX - (3 * cw + 2 * gx) / 2, y0 = 190;
+  for (let k = 0; k < 6; k++) {
+    const x = x0 + (k % 3) * (cw + gx), y = y0 + Math.floor(k / 3) * (ch + gy + 40);
+    const on = k === 4 && tau > .9, pop = easeBack(sm(k * .07, k * .07 + .3, tau, t => t)); if (pop <= .02) continue;
+    c.save(); c.translate(x + cw / 2, y + ch / 2); c.scale(pop * (on ? 1.06 : 1), pop * (on ? 1.06 : 1)); c.translate(-x - cw / 2, -y - ch / 2);
+    thumb(c, x, y, cw, ch, k, 20 + k * 7);
+    playBadge(c, x + cw / 2, y + ch / 2, 46, 40 + k);
+    textBar(c, x, y + ch + 34, cw * .8, alpha(PAL.ink, .45), 18); textBar(c, x, y + ch + 66, cw * .45, alpha(PAL.ink, .25), 14);
+    c.restore();
+    if (on) crayonShape(c, rrPts(x - 14, y - 14, cw + 28, ch + 28, 8), PAL.fills[1], 8, 60 + i);
+  }
+  const t = sm(.2, .9, tau, easeIO);
+  cursor(c, lerp(300, x0 + cw + gx + cw * .6, t), lerp(880, y0 + ch * .7, t), 120, PAL.light, 70, { lc: PAL.ink, lw: 5, tex: false });
+}
+function player(c, x, y, w, h, k, tau, seed, titleP) {
+  c.fillStyle = alpha(PAL.shade, .18); c.beginPath(); c.roundRect(x + 16, y + 20, w, h + 150, 14); c.fill();
+  draw(c, RR(x, y, w, h + 150, 14), PAL.light, seed, { tex: false, lw: 6 });
+  thumb(c, x + 20, y + 20, w - 40, h - 40, k, seed + 10);
+  playBadge(c, x + w / 2, y + h / 2, 70, seed + 20);
+  const barY = y + h + 10;
+  stroke(c, [[x + 30, barY], [x + w - 30, barY]], seed + 30, { lw: 8, color: alpha(PAL.ink, .15) });
+  stroke(c, [[x + 30, barY], [x + 30 + (w - 60) * (.2 + (tau % 1) * .5), barY]], seed + 31, { lw: 8, color: PAL.blush });
+  if (titleP > 0) writeOn(c, 'thumbnails', x + w / 2, y + h + 110, titleP, { size: 130, ink: PAL.ink, ink2: PAL.fills[1], pen: PAL.fills[1] });
+  else { textBar(c, x + 40, y + h + 70, w * .55, alpha(PAL.ink, .5), 22); textBar(c, x + 40, y + h + 110, w * .3, alpha(PAL.ink, .25), 16); }
+}
+function sceneMontage(c, tau, i) {
+  const k = Math.floor(tau * 12 / 3);
+  resetT(c); thumb(c, -10, -10, W + 20, H + 20, k + 1, 100 + k);
+  playBadge(c, CX, CY, 120, 110);
+  // the url bar, always there, like a browser chrome over the print
+  draw(c, RR(120, 70, W - 240, 92, 46), PAL.light, 120, { tex: false, lw: 5 });
+  dot(c, 190, 116, 16, PAL.fills[3]); textBar(c, 230, 116, (W - 500) * .6, alpha(PAL.ink, .4), 16);
+  draw(c, RR(W - 330, 88, 180, 56, 28), PAL.blush, 121, { tex: false, lw: 4 }); textBar(c, W - 300, 116, 120, alpha(PAL.light, .9), 14);
+  for (let d = 0; d < 4; d++) dot(c, CX - 60 + d * 40, H - 80, 14, d === k % 4 ? PAL.light : alpha(PAL.light, .35));
+}
+function sceneSave(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 15 });
+  player(c, CX - 470, 90, 940, 560, 5, tau, 130, sm(.55, 1.4, tau, t => t));
+  // the print itself, dropping out of the player into the tray
+  const p = sm(0, .5, tau, easeIO);
+  if (p > 0) { const x = lerp(CX - 300, W - 420, p), y = lerp(320, 830, p), s = lerp(1, .62, p), rot = lerp(0, .3, p);
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+    c.fillStyle = alpha(PAL.shade, .2); c.fillRect(-290 + 16, -170 + 20, 580, 360);
+    draw(c, RR(-290, -170, 580, 360, 6), PAL.light, 140, { tex: false, lw: 5 });
+    thumb(c, -266, -146, 532, 266, 5, 141);
+    c.restore(); }
+  const tray = PG([[W - 620, 900], [W - 180, 900], [W - 220, 1040], [W - 580, 1040]]);
+  draw(c, tray, PAL.fills[5], 150, { lw: 6, texo: { density: .35 } });
+  if (p >= 1) { const g = sm(.55, .85, tau, easeOut); stroke(c, [[W - 400, 700], [W - 400, 700 + 120 * g]], 151, { lw: 10, color: PAL.fills[3] }); if (g > .7) stroke(c, [[W - 450, 780], [W - 400, 830], [W - 350, 780]], 152, { lw: 10, color: PAL.fills[3], raw: true }); }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_YT, poster: 4.8, crf: 30,
+  beats: [
+    { name: 'feed', dur: 1.5, fn: sceneFeed },
+    { name: 'montage', dur: 1.4, fn: sceneMontage },
+    { name: 'save', dur: 2.0, fn: sceneSave },
+  ],
+});
+</script>

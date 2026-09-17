@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>world-clock</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: World Clock, a Stream Deck plugin that shows live city clocks.
+// Look: screen print, pale teal sky. Anchor: the clock. Signature: a time-lapse, day to night in four hard cuts.
+// t     dur   scene      what changes                                                          kit
+// 0.0   1.5   deck       the six-key deck on a desk, six cities ticking, one key pressed         deskTop, clockFace
+// 1.5   2.0   lapse      a skyline under a sky clock; sky steps noon, gold, dusk, night           skyline, sun arc
+// 3.5   1.5   neon       night; a rooftop sign flickers on and reads "world clock"               writeOn, flicker
+
+const PAL_WC = makePalette({
+  paper: '#dcebe6', paperBand: null, ink: '#1d2433', night: '#141b2d', chalk: '#f8f5ea', chalkDim: '#7d8aa3', guide: 'rgba(29,36,51,.3)',
+  fills: ['#e8b04b', '#3c6e71', '#284b63', '#f07f4f', '#d9d9c6', '#9fc2b6'], shade: '#1d2433', light: '#f8f5ea', blush: '#f07f4f',
+  accents: ['#ff5d73', '#e8b04b', '#9fc2b6', '#f07f4f'], inks: ['#284b63', '#1d2433', '#e8b04b'], finish: 'screen',
+}, 'screenSea');
+const SKIES = () => [PAL.paper, '#f3dfb4', '#e9a88f', PAL.night];
+
+const OFFS = [9.2, 2.6, 5.8, 11.4, 7.1, 3.9];
+function sceneDeck(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .12 });
+  deskTop(c, 780, 5, { fill: PAL.fills[3] });
+  const w = 900, h = 600, x = CX - w / 2, y = 200;
+  c.fillStyle = alpha(PAL.shade, .25); c.beginPath(); c.ellipse(CX, y + h + 10, w * .52, 40, 0, 0, TAU); c.fill();
+  draw(c, RR(x, y, w, h, 80), PAL.ink, 10, { tex: false });
+  const kw = 230, gap = 42, x0 = CX - (3 * kw + 2 * gap) / 2, y0 = y + (h - (2 * kw + gap)) / 2;
+  for (let k = 0; k < 6; k++) {
+    const kx = x0 + (k % 3) * (kw + gap), ky = y0 + Math.floor(k / 3) * (kw + gap), press = k === 4 && tau > .8 && tau < .8 + 2 / 12;
+    c.save(); if (press) { c.translate(kx + kw / 2, ky + kw / 2); c.scale(.9, .9); c.translate(-kx - kw / 2, -ky - kw / 2); }
+    const day = [0, 2, 3].includes(k);
+    draw(c, RR(kx, ky, kw, kw, 32), day ? PAL.fills[5] : PAL.fills[2], 20 + k, { lc: tint(PAL.ink, .3), lw: 4, texo: { density: .3, color: PAL.ink } });
+    clockFace(c, kx + kw / 2, ky + kw * .45, kw * .32, OFFS[k] + tau * .8, 30 + k, { fill: day ? PAL.light : PAL.chalkDim, tex: false });
+    textBar(c, kx + kw * .3, ky + kw * .88, kw * .4, alpha(PAL.light, .85), 12);
+    c.restore();
+  }
+  if (tau > .8) { const kx = x0 + (kw + gap) + kw / 2, ky = y0 + kw + gap + kw / 2; ringsOut(c, kx, ky, tau - .8, { every: 1 / 6, t1: .3, speed: 650, colors: [PAL.accents[0], PAL.fills[0]], width: 7, seed: 40 }); }
+}
+
+function skyline(c, base, seed, lit, i) {
+  const r = rng(seed); let x = -20, k = 0;
+  while (x < W + 20) {
+    const bw = 110 + r() * 130, bh = 150 + r() * 330, by = base - bh, col = [PAL.fills[1], PAL.fills[2], PAL.fills[5]][k % 3];
+    const b = RR(x, by, bw, bh + 40, 0); c.fillStyle = lit ? shade(col, .55) : col; c.fill(b.path); tex(c, b.path, b.box, { color: shade(col, .45), density: .35, seed: seed + k });
+    const rr = rng(seed + 100 + k);
+    for (let wy = by + 30; wy < base - 30; wy += 46) for (let wx = x + 20; wx < x + bw - 28; wx += 38) {
+      const on = rr() < lit;
+      c.fillStyle = on ? (pulse(i + ((wx + wy) | 0) % 13, 11, 9) ? PAL.fills[0] : tint(PAL.fills[0], .4)) : alpha(PAL.shade, .35); c.fillRect(wx, wy, 18, 24);
+    }
+    x += bw + 8; k++;
+  }
+}
+function sceneLapse(c, tau, i) {
+  const step = Math.min(3, Math.floor(tau / .5)), sky = SKIES()[step];
+  paper(c, sky, null);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: step === 3 ? PAL.chalkDim : shade(sky, .2), density: .12 });
+  const a = lerp(-2.9, -.2, tau / 2), sx = CX + Math.cos(a) * 660, sy = 930 + Math.sin(a) * 760;
+  if (step < 3) { const sun = CI(sx, sy, 100); c.fillStyle = step ? PAL.blush : PAL.fills[0]; c.fill(sun.path); tex(c, sun.path, sun.box, { color: PAL.light, density: .3 }); }
+  else { const m = CI(CX + 450, 190, 80); c.fillStyle = PAL.light; c.fill(m.path); tex(c, m.path, m.box, { color: PAL.chalkDim, density: .3 }); }
+  skyline(c, 930, 60, [0, .05, .3, .6][step], i);
+  const g = rectPath(-20, 926, W + 40, 200); c.fillStyle = PAL.ink; c.fill(g);
+  clockFace(c, CX, 380, 220, 12 + tau * 3.2, 80, { fill: step === 3 ? PAL.chalkDim : PAL.light, tex: false });
+  for (let k = 0; k < 4; k++) dot(c, CX - 60 + k * 40, 660, 12, k <= step ? PAL.accents[0] : alpha(step === 3 ? PAL.light : PAL.ink, .3));
+}
+
+function sceneNeon(c, tau, i) {
+  paper(c, PAL.night, null);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, 600], 260, PAL.light, .7, 90, 4);
+  const m = CI(W - 220, 170, 80); c.fillStyle = PAL.light; c.fill(m.path); c.fillStyle = PAL.night; c.beginPath(); c.arc(W - 190, 150, 72, 0, TAU); c.fill();
+  skyline(c, 1000, 61, .55, i);
+  // the sign on the roof: a frame on legs
+  const sx = CX - 520, sy = 180, sw = 1040, sh = 330;
+  for (const lx of [sx + 160, sx + sw - 160]) stroke(c, [[lx, sy + sh], [lx, 660]], 91 + lx, { lw: 10, color: PAL.fills[2] });
+  stroke(c, [[sx + 160, 560], [sx + sw - 160, 560]], 93, { lw: 8, color: PAL.fills[2] });
+  draw(c, RR(sx, sy, sw, sh, 30), shade(PAL.night, .3), 94, { tex: false, lc: PAL.fills[2], lw: 8 });
+  for (let b = 0; b < 16; b++) dot(c, sx + 40 + b * (sw - 80) / 15, sy + 26, 7, pulse(i + b, 4, 2) ? PAL.fills[0] : alpha(PAL.fills[0], .3));
+  const on = tau > .35 ? (tau < .75 ? flicker(i, 2) : true) : (tau > .15 && pulse(i, 3, 1));
+  const col = on ? PAL.accents[0] : alpha(PAL.accents[0], .18);
+  if (on) { c.save(); c.globalAlpha = .22; hand(c, 'world clock', CX + 4, sy + sh * .68 + 4, { size: 190, ink: PAL.accents[0], ink2: null, weight: 'bold' }); c.restore(); }
+  writeOn(c, 'world clock', CX, sy + sh * .66, sm(.0, .35, tau, t => t), { size: 180, ink: col, ink2: on ? PAL.light : null, pen: null });
+  clockFace(c, sx + sw - 20, sy + sh, 60, 21 + tau, 95, { fill: PAL.light, tex: false });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_WC, poster: .5,
+  beats: [
+    { name: 'deck', dur: 1.5, fn: sceneDeck },
+    { name: 'lapse', dur: 2.0, fn: sceneLapse },
+    { name: 'neon', dur: 1.5, fn: sceneNeon },
+  ],
+});
+</script>

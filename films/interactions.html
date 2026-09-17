@@ -1,0 +1,113 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>interactions</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Interactions, seven UI experiments in seven days.
+// Look: graphite on cream, one ink. Anchor: the sampler grid. Signature: a specimen sheet - one cell per day,
+// each running its own little interaction, and a sticky note at the end names the set.
+// t     dur   scene  what changes                                                      kit
+// 0.0   2.7   cells  seven cells appear one every four frames, each animating itself      grid, easeOut
+// 2.7   1.9   note   a sticky note lands on the sheet: "interactions"                      stickyNote, writeOn
+
+const PAL_IX = makePalette({
+  paper: '#f4f2ea', paperBand: null, ink: '#262421', night: '#2a2724', chalk: '#ffffff', chalkDim: '#a09c92', guide: 'rgba(38,36,33,.3)',
+  fills: ['#e9e5d8', '#d6d2c4', '#ffffff', '#e8d9c0'], shade: '#6b665c', light: '#ffffff', blush: '#c2604a',
+  accents: ['#c2604a', '#6b8f71', '#3f6ea8', '#c9a24a'], inks: ['#262421', '#c2604a'], finish: 'pencil',
+}, 'pencilMinimal');
+const CW = 420, CH = 300, GX = 40, GY = 40, X0 = CX - (3 * CW + 2 * GX) / 2, Y0 = 130;
+function cellBox(k) { return [X0 + (k % 3) * (CW + GX), Y0 + Math.floor(k / 3) * (CH + GY), CW, CH]; }
+function demo(c, k, [x, y, w, h], t, i) {
+  const cx = x + w / 2, cy = y + h / 2;
+  if (k === 0) { // a toggle switching
+    const on = (Math.floor(t * 1.6) % 2) === 1, tw = 240, th = 110;
+    draw(c, RR(cx - tw / 2, cy - th / 2, tw, th, th / 2), on ? PAL.accents[1] : PAL.fills[1], 10, { lw: 4, texo: { density: .2 } });
+    const kx = lerp(cx - tw / 2 + th / 2, cx + tw / 2 - th / 2, on ? 1 : 0);
+    draw(c, CI(kx, cy, th / 2 - 10), PAL.light, 11, { tex: false, lw: 4 });
+  }
+  if (k === 1) { // a slider being dragged
+    const u = (Math.sin(t * 2.2) + 1) / 2, sw = 280;
+    stroke(c, [[cx - sw / 2, cy], [cx + sw / 2, cy]], 20, { lw: 10, color: PAL.fills[1] });
+    stroke(c, [[cx - sw / 2, cy], [cx - sw / 2 + sw * u, cy]], 21, { lw: 10, color: PAL.accents[2] });
+    draw(c, CI(cx - sw / 2 + sw * u, cy, 34), PAL.light, 22, { tex: false, lw: 4 });
+    textBar(c, cx - 30, cy - 80, 60, alpha(PAL.ink, .3), 12);
+  }
+  if (k === 2) { // a button with a ripple
+    const period = 1.1, ph = (t % period) / period;
+    draw(c, RR(cx - 150, cy - 56, 300, 112, 20), ph < .12 ? shade(PAL.accents[0], .15) : PAL.accents[0], 30, { lw: 4, texo: { density: .2 } });
+    textBar(c, cx - 70, cy, 140, alpha(PAL.light, .9), 16);
+    if (ph < .6) { c.save(); c.beginPath(); c.roundRect(cx - 150, cy - 56, 300, 112, 20); c.clip(); stroke(c, ellPts(cx, cy, 30 + ph * 300, 30 + ph * 300, 0, 40), 31, { raw: true, close: true, lw: 6, color: alpha(PAL.light, .7 - ph) }); c.restore(); }
+  }
+  if (k === 3) { // a stepper counting
+    const n = 1 + Math.floor(t * 2) % 5;
+    for (const s of [-1, 1]) draw(c, RR(cx + s * 140 - 44, cy - 44, 88, 88, 16), PAL.fills[1], 40 + s, { lw: 4, tex: false });
+    stroke(c, [[cx - 160, cy], [cx - 120, cy]], 42, { lw: 7, raw: true }); stroke(c, [[cx + 120, cy], [cx + 160, cy]], 43, { lw: 7, raw: true }); stroke(c, [[cx + 140, cy - 20], [cx + 140, cy + 20]], 44, { lw: 7, raw: true });
+    for (let d = 0; d < 5; d++) dot(c, cx - 40 + d * 20, cy, d < n ? 9 : 5, d < n ? PAL.ink : alpha(PAL.ink, .3));
+  }
+  if (k === 4) { // a checkbox ticking
+    const period = 1.4, ph = (t % period) / period, p = clamp(ph * 3, 0, 1);
+    draw(c, RR(cx - 60, cy - 60, 120, 120, 18), ph > .2 ? PAL.accents[1] : PAL.light, 50, { lw: 5, tex: false });
+    if (ph > .2) checkMark(c, cx, cy, 34, clamp((ph - .2) * 6, 0, 1), 51, { color: PAL.light, lw: 10 });
+  }
+  if (k === 5) { // a dial turning
+    const a = -2.2 + ((Math.sin(t * 1.4) + 1) / 2) * 4.4;
+    for (let d = 0; d < 9; d++) { const da = -2.2 + d * 4.4 / 8; stroke(c, [[cx + Math.cos(da) * 104, cy + Math.sin(da) * 104], [cx + Math.cos(da) * 126, cy + Math.sin(da) * 126]], 60 + d, { lw: 4, raw: true, color: alpha(PAL.ink, .4) }); }
+    draw(c, CI(cx, cy, 92), PAL.fills[1], 70, { lw: 5, texo: { density: .2 } });
+    stroke(c, [[cx, cy], [cx + Math.cos(a) * 74, cy + Math.sin(a) * 74]], 71, { lw: 9, raw: true, color: PAL.accents[0] });
+    dot(c, cx, cy, 12, PAL.ink);
+  }
+  if (k === 6) { // cards being swiped away
+    const period = 1.6, ph = (t % period) / period;
+    for (let d = 2; d >= 0; d--) { const off = d === 0 ? ph : 0, x2 = cx + off * 420, rot = off * .4;
+      c.save(); c.translate(x2, cy - d * 10); c.rotate(rot); c.globalAlpha = d === 0 ? 1 - off * .8 : 1;
+      draw(c, RR(-130, -90, 260, 180, 16), [PAL.light, PAL.fills[0], PAL.fills[1]][d], 80 + d, { lw: 4, tex: false });
+      if (d === 0) squig(c, -100, -30, 200, 2, { seed: 90, lineH: 40, width: 3.4 });
+      c.restore(); }
+  }
+}
+function sheet(c, n, tau, i) {
+  paper(c);
+  squig(c, X0, 74, 420, 1, { seed: 1, width: 3.4, color: alpha(PAL.ink, .5) });
+  stroke(c, [[X0, 96], [X0 + 3 * CW + 2 * GX, 96]], 2, { lw: 3, color: alpha(PAL.ink, .3) });
+  for (let k = 0; k < 7; k++) {
+    const box = cellBox(k), p = easeBack(sm(k * 4 / 12, k * 4 / 12 + .3, tau, t => t));
+    c.save(); c.setLineDash([14, 12]); stroke(c, rrPts(...box, 12), 10 + k, { raw: true, close: true, lw: 3, color: alpha(PAL.ink, .3) }); c.restore();
+    if (p <= .02) continue;
+    c.save(); c.beginPath(); c.roundRect(...box, 12); c.clip();
+    c.translate(box[0] + box[2] / 2, box[1] + box[3] / 2); c.scale(p, p); c.translate(-box[0] - box[2] / 2, -box[1] - box[3] / 2);
+    demo(c, k, box, Math.max(0, tau - k * 4 / 12), i);
+    c.restore();
+    textBar(c, box[0] + 16, box[1] + box[3] - 22, 90, alpha(PAL.ink, .3), 10);
+  }
+  thread(c, 90, 5, PAL.accents[0], 2);
+}
+function sceneCells(c, tau, i) { sheet(c, 7, tau, i); }
+function sceneNote(c, tau, i) {
+  sheet(c, 7, 2.7 + tau, i);
+  const p = easeBack(sm(0, .35, tau, t => t));
+  if (p > .02) {
+    const s = 560, nx = CX - s / 2 + 120, ny = CY - s / 2 + 90;
+    c.save(); c.translate(nx + s / 2, ny + s / 2); c.rotate(-.04); c.scale(p, p); c.translate(-nx - s / 2, -ny - s / 2);
+    c.fillStyle = alpha(PAL.shade, .2); c.fillRect(nx + 16, ny + 20, s, s * .72);
+    c.fillStyle = PAL.fills[3]; c.fillRect(nx, ny, s, s * .72);
+    tex(c, rectPath(nx, ny, s, s * .72), [nx, ny, s, s * .72], { color: PAL.shade, density: .2, seed: 100 });
+    stroke(c, rrPts(nx, ny, s, s * .72, 2), 101, { raw: true, close: true, lw: 4 });
+    writeOn(c, 'interactions', nx + s / 2, ny + s * .38, sm(.25, 1.1, tau, t => t), { size: 118, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+    squig(c, nx + 60, ny + s * .56, s - 120, 1, { seed: 102, width: 3.4, color: alpha(PAL.ink, .5) });
+    c.restore();
+  }
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_IX, poster: 4.3,
+  beats: [
+    { name: 'cells', dur: 2.7, fn: sceneCells },
+    { name: 'note', dur: 1.9, fn: sceneNote },
+  ],
+});
+</script>

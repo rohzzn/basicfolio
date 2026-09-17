@@ -1,0 +1,96 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>automobile-analytics</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Automobile Analytics, automotive sales data analysis.
+// Look: graphite on graph paper. Anchor: the trend line. Signature: the line is drawn by a little car that
+// drives along it, and the axis label at the end is the name.
+// t     dur   scene  what changes                                                      kit
+// 0.0   2.4   drive  axes, then the car driving the trend line into existence             strokeOn, car
+// 2.4   1.2   bars   quarterly bars grow under the line, one every two frames              RR
+// 3.6   1.7   title  the chart title is written: "automobile analytics"                     writeOn
+
+const PAL_AA = makePalette({
+  paper: '#f6f5ef', paperBand: null, ink: '#23241f', night: '#26261f', chalk: '#ffffff', chalkDim: '#9d9d95', guide: 'rgba(60,90,128,.35)',
+  fills: ['#dfe3d2', '#c9cdbb', '#ffffff', '#e8ddc8'], shade: '#63645c', light: '#ffffff', blush: '#b4552f',
+  accents: ['#b4552f', '#4f6b8a', '#7f8f5a', '#c99a3a'], inks: ['#23241f', '#b4552f'], finish: 'pencil',
+}, 'pencilMinimal');
+const AX = 190, AY = 880, AW = 1060, AH = 640;
+const PTS = [];
+for (let k = 0; k <= 10; k++) { const u = k / 10; PTS.push([AX + u * AW, AY - AH * (.18 + u * .6 + Math.sin(u * 7) * .1)]); }
+function graphPaper(c) {
+  paper(c);
+  c.save(); c.strokeStyle = alpha(PAL.accents[1], .16); c.lineWidth = 1.4;
+  for (let x = 0; x <= W; x += 40) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 40) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.strokeStyle = alpha(PAL.accents[1], .3); c.lineWidth = 2;
+  for (let x = 0; x <= W; x += 200) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 200) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.restore();
+}
+function axes(c, p) {
+  strokeOn(c, [[AX, AY - AH], [AX, AY], [AX + AW, AY]], p, 10, { lw: 7 });
+  if (p < 1) return;
+  for (let k = 0; k <= 4; k++) { const y = AY - k * AH / 4; stroke(c, [[AX - 18, y], [AX, y]], 11 + k, { lw: 4, raw: true }); textBar(c, AX - 110, y, 70, alpha(PAL.ink, .3), 12); }
+  for (let k = 0; k <= 4; k++) { const x = AX + k * AW / 4; stroke(c, [[x, AY], [x, AY + 18]], 20 + k, { lw: 4, raw: true }); textBar(c, x - 40, AY + 54, 80, alpha(PAL.ink, .3), 12); }
+}
+function littleCar(c, x, y, rot, seed) {
+  c.save(); c.translate(x, y - 26); c.rotate(rot); c.scale(.7, .7);
+  draw(c, PG([[-80, 20], [-66, -10], [-30, -14], [-8, -48], [44, -48], [66, -12], [86, -8], [88, 20]]), PAL.blush, seed, { lw: 5, texo: { density: .25 } });
+  draw(c, PG([[-6, -16], [-2, -42], [40, -42], [58, -16]]), PAL.fills[2], seed + 1, { lw: 4, tex: false });
+  for (const wx of [-42, 50]) draw(c, CI(wx, 22, 24), PAL.ink, seed + 10 + wx, { tex: false, lw: 4 });
+  c.restore();
+}
+function sceneDrive(c, tau, i) {
+  graphPaper(c);
+  const ap = sm(0, .5, tau, easeOut);
+  axes(c, ap);
+  const p = sm(.5, 2.2, tau, t => t);
+  strokeOn(c, PTS, p, 30, { lw: 8, color: PAL.accents[1], step: 20 });
+  if (p > 0) {
+    const idx = clamp(p * (PTS.length - 1), 0, PTS.length - 1), k = Math.floor(idx), f = idx - k;
+    const a = PTS[k], b = PTS[Math.min(PTS.length - 1, k + 1)];
+    const x = lerp(a[0], b[0], f), y = lerp(a[1], b[1], f), rot = Math.atan2(b[1] - a[1], b[0] - a[0]);
+    littleCar(c, x, y, rot, 40);
+    if (p < 1) speedLines(c, x - 70, y - 20, Math.PI, 50 + i, 4, .4, PAL.shade);
+    for (let d = 0; d <= k; d++) dot(c, PTS[d][0], PTS[d][1], 9, PAL.accents[1]);
+  }
+}
+function bars(c, n) {
+  for (let k = 0; k < 8; k++) { const bw = AW / 10, x = AX + 30 + k * (AW - 60) / 8, p = clamp(n - k, 0, 1), h = (.2 + ((k * 31) % 10) / 16) * AH * .55 * p;
+    if (h < 3) continue; draw(c, RR(x, AY - h, bw, h, 5), k % 2 ? PAL.fills[0] : PAL.fills[1], 60 + k, { lw: 3.4, texo: { density: .25 } }); }
+}
+function sceneBars(c, tau, i) {
+  graphPaper(c); axes(c, 1);
+  bars(c, tau * 6);
+  stroke(c, PTS, 30, { lw: 8, color: PAL.accents[1], step: 20 });
+  PTS.forEach(([x, y]) => dot(c, x, y, 9, PAL.accents[1]));
+  littleCar(c, PTS[PTS.length - 1][0], PTS[PTS.length - 1][1], Math.atan2(PTS[10][1] - PTS[9][1], PTS[10][0] - PTS[9][0]), 40);
+}
+function sceneTitle(c, tau, i) {
+  graphPaper(c); axes(c, 1);
+  bars(c, 9);
+  stroke(c, PTS, 30, { lw: 8, color: PAL.accents[1], step: 20 });
+  PTS.forEach(([x, y]) => dot(c, x, y, 9, PAL.accents[1]));
+  littleCar(c, PTS[10][0], PTS[10][1], Math.atan2(PTS[10][1] - PTS[9][1], PTS[10][0] - PTS[9][0]), 40);
+  const p = sm(.1, 1.2, tau, t => t);
+  writeOn(c, 'automobile', AX + 20, 150, p, { size: 130, align: 'left', ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+  if (p >= 1) writeOn(c, 'analytics', AX + 30, 270, sm(1.1, 1.6, tau, t => t), { size: 108, align: 'left', ink: PAL.accents[1], ink2: null, pen: null });
+  stroke(c, [[AX + 20, 300], [AX + 660, 300]], 80, { lw: 4, color: alpha(PAL.ink, .3) });
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_AA, poster: 1.8,
+  beats: [
+    { name: 'drive', dur: 2.4, fn: sceneDrive },
+    { name: 'bars', dur: 1.2, fn: sceneBars },
+    { name: 'title', dur: 1.7, fn: sceneTitle },
+  ],
+});
+</script>

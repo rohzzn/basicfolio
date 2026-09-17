@@ -1,0 +1,91 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>quire</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Quire, a private in-browser PDF editor.
+// Look: graphite on cream, almost no colour. Anchor: the page. Signature: the tools are used in order on one
+// page - highlighter, then redaction, then the signature, which is the name.
+// t     dur   scene    what changes                                                    kit
+// 0.0   1.5   page     a PDF page under a thin toolbar; the highlighter sweeps a line     sheet, squig
+// 1.5   1.3   redact   two blocks are painted out; a padlock closes in the corner          padlock
+// 2.8   2.2   sign     the pen signs "quire" on the line, and the page is done             writeOn
+
+const PAL_Q = makePalette({
+  paper: '#f4f1ea', paperBand: null, ink: '#23211c', night: '#2a2823', chalk: '#ffffff', chalkDim: '#9c988c', guide: 'rgba(35,33,28,.3)',
+  fills: ['#e7e2d4', '#cfd6cb', '#f6e7a8', '#d9c9b6'], shade: '#5d5a51', light: '#ffffff', blush: '#b5654a',
+  accents: ['#b5654a', '#7b8b6f', '#d8b04a', '#6b7b8c'], inks: ['#23211c', '#b5654a'], finish: 'pencil',
+}, 'pencilMinimal');
+const PX = CX - 420, PY = 130, PW = 840, PH = 860;
+
+function toolbar(c, active, seed) {
+  draw(c, RR(PX - 40, PY - 96, PW + 80, 78, 18), PAL.light, seed, { tex: false, lw: 3.4 });
+  const tools = [0, 1, 2, 3, 4];
+  tools.forEach(k => {
+    const x = PX + 10 + k * 86, on = k === active;
+    if (on) draw(c, RR(x - 30, PY - 86, 60, 58, 12), PAL.fills[2], seed + 10 + k, { tex: false, lw: 3 });
+    if (k === 0) { stroke(c, [[x - 14, PY - 40], [x + 14, PY - 74]], seed + 20, { lw: 6, raw: true }); }
+    if (k === 1) { draw(c, RR(x - 16, PY - 72, 32, 34, 4), PAL.accents[2], seed + 21, { tex: false, lw: 3 }); stroke(c, [[x - 16, PY - 36], [x + 16, PY - 36]], seed + 22, { lw: 5, raw: true, color: PAL.accents[2] }); }
+    if (k === 2) draw(c, RR(x - 18, PY - 70, 36, 30, 3), PAL.ink, seed + 23, { tex: false, line: false });
+    if (k === 3) { stroke(c, [[x - 16, PY - 44], [x + 6, PY - 76]], seed + 24, { lw: 6, raw: true }); dot(c, x - 18, PY - 40, 6, PAL.ink); }
+    if (k === 4) padlock(c, x, PY - 58, 46, 0, PAL.fills[1], seed + 25);
+  });
+  textBar(c, PX + PW - 120, PY - 56, 100, alpha(PAL.ink, .3), 12);
+}
+function pdfPage(c, tau, i, hi, redact, seed) {
+  c.fillStyle = alpha(PAL.shade, .14); c.beginPath(); c.roundRect(PX + 16, PY + 18, PW, PH, 6); c.fill();
+  draw(c, RR(PX, PY, PW, PH, 6), PAL.light, seed, { tex: false, lw: 4 });
+  textBar(c, PX + 70, PY + 90, 420, alpha(PAL.ink, .7), 30);
+  squig(c, PX + 70, PY + 170, PW - 140, 4, { seed: seed + 1, lineH: 52, width: 4 });
+  // the highlighted line, painted left to right
+  if (hi > 0) { c.save(); c.globalAlpha = .85; c.fillStyle = PAL.fills[2]; c.fillRect(PX + 70, PY + 356, (PW - 180) * hi, 46); c.restore(); }
+  squig(c, PX + 70, PY + 386, PW - 180, 1, { seed: seed + 2, width: 4.4 });
+  squig(c, PX + 70, PY + 450, PW - 140, 3, { seed: seed + 3, lineH: 52, width: 4 });
+  const blocks = [[PX + 70, PY + 610, 320, 44], [PX + 430, PY + 610, 260, 44]];
+  squig(c, PX + 70, PY + 640, PW - 140, 1, { seed: seed + 4, width: 4 });
+  blocks.forEach(([bx, by, bw, bh], k) => { const p = clamp(redact - k, 0, 1); if (p <= 0) return; c.fillStyle = PAL.ink; c.fillRect(bx, by, bw * p, bh); });
+  squig(c, PX + 70, PY + 700, PW - 260, 2, { seed: seed + 5, lineH: 52, width: 4 });
+  stroke(c, [[PX + 90, PY + 810], [PX + 520, PY + 810]], seed + 6, { lw: 3, color: alpha(PAL.ink, .5) });
+  textBar(c, PX + 90, PY + 845, 150, alpha(PAL.ink, .25), 12);
+}
+function scenePage(c, tau, i) {
+  paper(c);
+  toolbar(c, 1, 10);
+  pdfPage(c, tau, i, sm(.35, 1.2, tau, easeIO), 0, 20);
+  const hx = PX + 70 + (PW - 180) * sm(.35, 1.2, tau, easeIO);
+  if (tau > .3 && tau < 1.3) { c.save(); c.translate(hx, PY + 300); c.rotate(.35); draw(c, RR(-26, 0, 52, 150, 10), PAL.accents[2], 30, { lw: 4 }); draw(c, PG([[-26, 150], [26, 150], [14, 200], [-14, 200]]), PAL.fills[2], 31, { lw: 4 }); c.restore(); }
+}
+function sceneRedact(c, tau, i) {
+  paper(c);
+  toolbar(c, 2, 10);
+  const r = q12(tau) * 2.4;
+  pdfPage(c, tau, i, 1, r, 20);
+  if (r < 2) { const k = Math.min(1, Math.floor(r)), p = clamp(r - k, 0, 1), bx = [PX + 70, PX + 430][k], bw = [320, 260][k]; c.save(); c.translate(bx + bw * p, PY + 690); c.rotate(-.2); draw(c, RR(-34, 0, 68, 160, 12), PAL.ink, 40, { tex: false, lw: 4 }); draw(c, RR(-22, -30, 44, 34, 8), PAL.fills[1], 41, { tex: false, lw: 3 }); c.restore(); }
+  const lock = sm(.7, 1.1, tau, easeOut);
+  if (lock > 0) { c.save(); c.translate(W - 210, 230); c.scale(easeBack(lock), easeBack(lock)); padlock(c, 0, 0, 170, 1 - lock, PAL.fills[1], 50); c.restore(); }
+}
+function sceneSign(c, tau, i) {
+  paper(c);
+  toolbar(c, 3, 10);
+  pdfPage(c, tau, i, 1, 2, 20);
+  padlock(c, W - 210, 230, 170, 0, PAL.fills[1], 50);
+  const p = sm(.15, 1.3, tau, t => t);
+  const [px, py] = writeOn(c, 'quire', PX + 300, PY + 800, p, { size: 190, ink: PAL.ink, ink2: PAL.blush, pen: null, rot: -.04 });
+  if (p < 1) { c.save(); c.translate(px, py); c.rotate(.6); stroke(c, [[0, 0], [30, 150]], 60, { lw: 7, raw: true }); draw(c, RR(10, 150, 44, 170, 12), PAL.fills[3], 61, { lw: 4 }); c.restore(); }
+  if (p >= 1 && tau > 1.5) { const g = sm(1.5, 1.8, tau, easeOut); draw(c, CI(W - 230, H - 230, 74 * g), shade(PAL.accents[1], .1), 70, { lw: 5 }); if (g > .5) checkMark(c, W - 230, H - 230, 36, (g - .5) * 2, 71, { color: PAL.light, lw: 10 }); }
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_Q, poster: 4.9,
+  beats: [
+    { name: 'page', dur: 1.5, fn: scenePage },
+    { name: 'redact', dur: 1.3, fn: sceneRedact },
+    { name: 'sign', dur: 2.2, fn: sceneSign },
+  ],
+});
+</script>

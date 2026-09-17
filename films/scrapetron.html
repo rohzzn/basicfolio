@@ -1,0 +1,90 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>scrapetron</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Scrapetron, Python scraping with a simple config.
+// Look: ink at night, deep green. Anchor: the robot spider. Signature: the camera falls with the spider down
+// its own thread, past the pages caught in the web, and the name is written in silk.
+// t     cam y    what happens
+// 0.0   -560     a moon, the web, the spider steps off the top thread
+// 0.6   ->       the camera drops with it, pages lighting as it passes
+// 2.4   520      it lands on the table and the rows fill in
+// 3.6   520      it drops a last thread and writes "scrapetron" in silk
+
+const PAL_SPI = makePalette({
+  paper: '#16241f', paperBand: null, ink: '#e9f1e4', night: '#0c1411', chalk: '#e9f1e4', chalkDim: '#6f8a7e', guide: 'rgba(242,204,143,.35)',
+  fills: ['#2f4a3f', '#3d6152', '#c7a35a', '#e07a5f', '#1f3730'], shade: '#0c1411', light: '#e9f1e4', blush: '#e07a5f',
+  accents: ['#f2cc8f', '#81b29a', '#e07a5f', '#9ad1d4'], inks: ['#e9f1e4', '#f2cc8f'], finish: 'ink',
+}, 'paperInk');
+
+function spider(c, x, y, s, walk, rot, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  for (const side of [-1, 1]) for (let k = 0; k < 4; k++) {
+    const ph = Math.sin(walk * TAU + k * 1.7 + (side > 0 ? Math.PI : 0)) * 16, a0 = -56 + k * 32;
+    stroke(c, [[side * 28, a0 * .5], [side * (86 + k * 5), a0 - 34 + ph], [side * (146 + k * 7), a0 + 54 + ph * .6]], seed + k * 3 + side, { lw: 7, raw: true });
+  }
+  draw(c, EL(0, 44, 74, 88), PAL.fills[0], seed + 20, { texo: { color: PAL.chalkDim, density: .8 } });
+  c.save(); c.clip(ellPath(0, 44, 74, 88)); c.strokeStyle = PAL.fills[2]; c.lineWidth = 9; c.globalAlpha = .8;
+  for (let b = 0; b < 3; b++) { c.beginPath(); c.moveTo(-74, 30 + b * 32); c.quadraticCurveTo(0, 48 + b * 32, 74, 30 + b * 32); c.stroke(); }
+  c.restore();
+  draw(c, RR(-56, -76, 112, 86, 26), PAL.fills[1], seed + 30, { texo: { density: .5 } });
+  for (const ex of [-24, 24]) { dot(c, ex, -34, 17, PAL.shade); dot(c, ex, -34, 10, PAL.accents[0]); dot(c, ex - 3, -37, 4, PAL.light); }
+  stroke(c, [[0, -76], [0, -110]], seed + 40, { lw: 6, raw: true }); dot(c, 0, -116, 10, PAL.blush);
+  c.restore();
+}
+const PAGES = [[-360, -240], [330, -40], [-260, 180], [300, 320]];
+function webAndPages(c, tau, i, spiderY) {
+  // a web strung across the world, with pages caught in it
+  for (let k = 0; k < 9; k++) { const a = -1.9 + k * .42; stroke(c, [[0, -900], [Math.cos(a) * 1400, -900 + Math.sin(a) * 1900]], 10 + k, { lw: 3, color: alpha(PAL.chalkDim, .55) }); }
+  for (let r = 1; r <= 7; r++) { const pts = []; for (let k = 0; k <= 9; k++) { const a = -1.9 + k * .42, rr = r * 230 * (1 + .05 * Math.sin(k * 3 + r)); pts.push([Math.cos(a) * rr, -900 + Math.sin(a) * rr]); } stroke(c, pts, 30 + r, { lw: 2.6, step: 60, color: alpha(PAL.chalkDim, .5) }); }
+  PAGES.forEach(([px, py], k) => {
+    const lit = spiderY > py - 160;
+    c.save(); c.translate(px, py); c.rotate((k - 1.5) * .14);
+    sheet(c, -70, -92, 140, 184, 40 + k, { lines: 4, fill: lit ? tint(PAL.fills[2], .35) : PAL.fills[4], squig: { lineH: 34, amp: 6, width: 3, color: lit ? PAL.shade : PAL.chalkDim } });
+    c.restore();
+    if (lit) ringsOut(c, px, py, (spiderY - (py - 160)) / 700, { every: 1 / 6, t1: .25, speed: 500, colors: [PAL.accents[0], PAL.accents[1]], width: 4, seed: 50 + k, max: 300 });
+  });
+}
+const KEYS = [[0, -480], [.6, -480], [2.4, 520], [9, 520]];
+function camY(t) { for (let k = 1; k < KEYS.length; k++) { const [t0, y0] = KEYS[k - 1], [t1, y1] = KEYS[k]; if (t <= t1) return lerp(y0, y1, sm(t0, t1, t, easeIO)); } return 520; }
+function table(c, tau, i) {
+  const y = 700, x = -620, w = 1240;
+  draw(c, RR(x, y, w, 620, 16), PAL.fills[4], 60, { lw: 6, texo: { density: .4, color: PAL.chalkDim } });
+  const hb = rectPath(x, y, w, 90); c.save(); c.clip(roundRectPath(x, y, w, 620, 16)); c.fillStyle = PAL.fills[0]; c.fill(hb); tex(c, hb, [x, y, w, 90], { seed: 61, color: PAL.chalkDim }); c.restore();
+  [0, 1, 2].forEach(k => textBar(c, x + 60 + k * 380, y + 46, 150 - k * 20, alpha(PAL.light, .7), 16));
+  const n = clamp(Math.floor((tau - 2.3) * 8), 0, 5);
+  for (let r = 0; r < 5; r++) { const ry = y + 90 + r * 104; stroke(c, [[x, ry], [x + w, ry]], 70 + r, { lw: 2.6, alpha: .45 }); if (r < n) { textBar(c, x + 60, ry + 52, 220 - (r * 37) % 90, alpha(PAL.light, .55), 14); textBar(c, x + 440, ry + 52, 260 - (r * 53) % 120, alpha(PAL.accents[0], .8), 14); draw(c, RR(x + 820, ry + 32, 160, 40, 20), [PAL.accents[1], PAL.accents[0], PAL.blush][r % 3], 80 + r, { tex: false, lw: 3 }); } }
+}
+function scene(c, tau, i) {
+  const cy = camY(tau);
+  resetT(c); c.fillStyle = PAL.paper; c.fillRect(0, 0, W, H);
+  cam(c, 0, cy, 1);
+  grain(c, rectPath(-W, cy - H, W * 2, H * 2), [-W, cy - H, W * 2, H * 2], 700, PAL.light, .35, 3, 3);
+  const moon = CI(-520, -1240, 150); c.fillStyle = PAL.light; c.fill(moon.path); tex(c, moon.path, moon.box, { color: PAL.chalkDim, density: .3 });
+  const drop = tau < .6 ? lerp(-960, -880, sm(0, .6, tau, easeIn)) : Math.min(560, lerp(-880, 620, sm(.6, 2.4, tau, easeIO)));
+  webAndPages(c, tau, i, drop);
+  table(c, tau, i);
+  const landed = tau > 2.35;
+  stroke(c, [[0, -1180], [0, Math.min(drop - 120, 560)]], 90, { lw: 4, color: alpha(PAL.light, .8) });
+  // the spider climbs its thread back up and pays out silk into the lettering
+  const climb = sm(3.4, 3.8, tau, easeIO), sy = landed ? lerp(560, 130, climb) : drop;
+  if (tau > 3.5) {
+    const p = sm(3.55, 4.6, tau, t => t);
+    const [px, py] = writeOn(c, 'scrapetron', 0, 520, p, { size: 175, ink: PAL.light, ink2: PAL.accents[0], pen: null });
+    stroke(c, [[0, sy + 130], [px, py]], 91, { lw: 4, color: alpha(PAL.light, .85), raw: true });
+    if (p < 1) dot(c, px, py, 9, PAL.accents[0]);
+  }
+  spider(c, 0, sy, landed ? .85 : 1, tau * 2.4, 0, 50);
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_SPI, poster: 1.6,
+  beats: [{ name: 'fall', dur: 5.0, fn: scene }],
+});
+</script>

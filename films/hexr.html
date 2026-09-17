@@ -1,0 +1,108 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hexr</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Hexr, pick colours from any webpage.
+// Look: riso, the full four-ink set. Anchor: the dropper. Signature: the picked colour floods the whole frame
+// out of the dropper's tip, and that flood is the cut.
+// t     dur   scene   what changes                                                      kit
+// 0.0   1.9   pick    a colourful page; the loupe crawls to a shape and the tube fills     hexLattice loupe, dropper
+// 1.9   0.6   flood   the picked colour floods out of the tip and takes the frame          circle wipe
+// 2.5   2.1   chips   swatches drop onto the flood; the last one is labelled "hexr"        RR, writeOn
+
+const PAL_HEX = makePalette({
+  paper: '#f5f0e8', paperBand: null, ink: '#2a2340', night: '#241c3f', chalk: '#fffdf4', chalkDim: '#8f86b8', guide: 'rgba(42,35,64,.3)',
+  fills: ['#ff48b0', '#0078bf', '#ffe800', '#00a95c', '#ff6c2f', '#765ba7'], shade: '#2a2340', light: '#fffdf4', blush: '#ff48b0',
+  accents: ['#ff48b0', '#0078bf', '#ffe800', '#00a95c'], inks: ['#0078bf', '#ff48b0', '#ffe800'], finish: 'riso',
+}, 'risoPop');
+const PICK = () => PAL.fills[4];
+
+function poster(c, seed) {
+  // the page being picked from: flat riso shapes, nothing fussy
+  const sky = rectPath(120, 150, W - 240, 520); c.fillStyle = PAL.fills[1]; c.fill(sky); tex(c, sky, [120, 150, W - 240, 520], { density: .3, color: PAL.shade, seed });
+  const sun = CI(420, 380, 160); c.fillStyle = PICK(); c.fill(sun.path); tex(c, sun.path, sun.box, { density: .35, color: PAL.fills[0], seed: seed + 1 });
+  stroke(c, ellPts(420, 380, 160, 160, 0, 60), seed + 2, { raw: true, close: true, lw: 6 });
+  const hill = PG([[120, 670], [430, 430], [700, 620], [980, 400], [1320, 670]]); c.fillStyle = PAL.fills[3]; c.fill(hill.path); tex(c, hill.path, hill.box, { density: .35, color: PAL.shade, seed: seed + 3 });
+  stroke(c, hill.pts.slice(0, 5), seed + 4, { lw: 6, raw: true });
+  stroke(c, [[120, 670], [W - 120, 670]], seed + 5, { lw: 6 });
+  const band = rectPath(120, 670, W - 240, 120); c.fillStyle = PAL.fills[2]; c.fill(band); tex(c, band, [120, 670, W - 240, 120], { density: .4, color: PAL.fills[4], seed: seed + 6 });
+  squig(c, 180, 880, 700, 3, { seed: seed + 7, lineH: 60, width: 5, amp: 12 });
+  draw(c, RR(1020, 810, 240, 150, 16), PAL.fills[5], seed + 8, { lw: 5, texo: { density: .35 } });
+  stroke(c, rrPts(120, 150, W - 240, H - 300, 8), seed + 9, { raw: true, close: true, lw: 6 });
+}
+function loupe(c, x, y, R, col, seed) {
+  c.save(); c.beginPath(); c.arc(x, y, R, 0, TAU); c.clip();
+  c.fillStyle = tint(col, .1); c.fillRect(x - R, y - R, 2 * R, 2 * R);
+  hexCells([x - R, y - R, 2 * R, 2 * R], 26, (hx, hy) => { const d = Math.hypot(hx - x, hy - y) / R; c.fillStyle = mix(col, d > .6 ? PAL.light : shade(col, .2), (rng(seed + (hx | 0) + (hy | 0))() * .5 + d * .3)); c.fill(hexPath(hx, hy, 25)); c.strokeStyle = alpha(PAL.shade, .25); c.lineWidth = 1.6; c.stroke(hexPath(hx, hy, 25)); });
+  c.restore();
+  stroke(c, ellPts(x, y, R, R, 0, 80), seed, { raw: true, close: true, lw: 12, color: PAL.ink });
+  stroke(c, ellPts(x, y, R - 10, R - 10, 0, 80), seed + 1, { raw: true, close: true, lw: 3, color: alpha(PAL.light, .7) });
+  const hp = hexPath(x, y, 26); c.strokeStyle = PAL.light; c.lineWidth = 6; c.stroke(hp);
+}
+function dropper(c, x, y, fill, seed) {
+  c.save(); c.translate(x, y); c.rotate(.5);
+  draw(c, PG([[-26, 0], [26, 0], [10, 150], [-10, 150]]), PAL.light, seed, { lw: 5 });
+  if (fill > 0) { c.save(); c.beginPath(); c.moveTo(-24, 2); c.lineTo(24, 2); c.lineTo(9, 148); c.lineTo(-9, 148); c.closePath(); c.clip(); c.fillStyle = PICK(); c.fillRect(-26, 148 - 146 * fill, 52, 146 * fill); c.restore(); }
+  draw(c, RR(-40, -150, 80, 154, 30), PAL.fills[5], seed + 1, { lw: 5, texo: { density: .3 } });
+  draw(c, RR(-30, -40, 60, 46, 10), shade(PAL.fills[5], .25), seed + 2, { tex: false, lw: 4 });
+  c.restore();
+}
+const TIP = [742, 560];
+function scenePick(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 16 });
+  poster(c, 10);
+  const t = sm(.15, 1.0, tau, easeIO), lx = lerp(1180, TIP[0], t), ly = lerp(880, TIP[1], t);
+  loupe(c, lx, ly, 180, t > .9 ? PICK() : PAL.fills[1], 30);
+  const squeeze = tau > 1.05 && tau < 1.25;
+  c.save(); if (squeeze) { c.translate(lx, ly); c.scale(1.03, .97); c.translate(-lx, -ly); }
+  dropper(c, lx + 30, ly - 330, sm(1.1, 1.7, tau, easeOut), 40);
+  c.restore();
+  if (tau > 1.1) ringsOut(c, lx, ly, tau - 1.1, { every: 1 / 5, t1: .4, speed: 520, colors: [PICK(), PAL.ink], width: 6, seed: 50, max: 420, r0: 180 });
+}
+function sceneFlood(c, tau, i) {
+  scenePick(c, 1.9, i);
+  const R = lerp(0, Math.hypot(W, H), sm(0, .55, tau, easeIn));
+  resetT(c);
+  // the dot screen only needs to cover the frame, not the whole circle: at full flood that
+  // bounding box is four times the frame and costs a quarter of a million dots a frame.
+  const p = circPath(TIP[0], TIP[1], R); c.fillStyle = PICK(); c.fill(p); tex(c, p, [0, 0, W, H], { density: .3, color: PAL.fills[0], seed: 60 });
+  stroke(c, ellPts(TIP[0], TIP[1], R, R, 0, 120), 61, { raw: true, close: true, lw: 10, color: PAL.light });
+  if (R > 200) for (let k = 0; k < 10; k++) { const a = k / 10 * TAU + tau, d = R + 60 + (k % 3) * 40; dot(c, TIP[0] + Math.cos(a) * d, TIP[1] + Math.sin(a) * d, 16, PICK()); }
+}
+function sceneChips(c, tau, i) {
+  paper(c, PICK(), null); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .3, cell: 14 });
+  const cols = [PAL.fills[1], PAL.fills[3], PAL.fills[2], PAL.fills[5], PAL.fills[0]];
+  cols.forEach((col, k) => {
+    const t0 = k * .16, p = sm(t0, t0 + .45, tau, easeOut); if (p <= 0) return;
+    const x = 210 + k * 250, y = lerp(-400, k === 4 ? CY + 60 : CY - 40 + (k % 2) * 70, p), rot = lerp(.5, (k - 2) * .04, p);
+    c.save(); c.translate(x, y); c.rotate(rot);
+    c.fillStyle = alpha(PAL.shade, .25); c.beginPath(); c.roundRect(-92 + 12, -180 + 16, 184, 360, 12); c.fill();
+    draw(c, RR(-92, -180, 184, 360, 12), PAL.light, 20 + k, { tex: false, lw: 5 });
+    draw(c, RR(-74, -162, 148, 230, 8), col, 30 + k, { lw: 4, texo: { density: .4 } });
+    squig(c, -64, 130, 128, 1, { seed: 40 + k, width: 3.4, color: alpha(PAL.ink, .6) });
+    c.restore();
+  });
+  const p = sm(.9, 1.7, tau, t => t);
+  if (p > 0) {
+    const bx = CX, by = H - 190;
+    draw(c, RR(bx - 430, by - 120, 860, 220, 24), PAL.light, 50, { tex: false, lw: 7 });
+    draw(c, RR(bx - 400, by - 92, 150, 164, 12), PICK(), 51, { lw: 5, texo: { density: .4 } });
+    writeOn(c, 'hexr', bx + 80, by + 50, p, { size: 210, ink: PAL.ink, ink2: PAL.fills[1], pen: PAL.fills[1] });
+  }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_HEX, poster: 1.6, crf: 27,
+  beats: [
+    { name: 'pick', dur: 1.9, fn: scenePick },
+    { name: 'flood', dur: .6, fn: sceneFlood },
+    { name: 'chips', dur: 2.1, fn: sceneChips },
+  ],
+});
+</script>

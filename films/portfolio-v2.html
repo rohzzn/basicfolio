@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>portfolio-v2</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Peak Design (v2), the most polished of the old portfolios.
+// Look: flat screen print, alpine. Anchor: the summit flag. Signature: the camera tilts up the mountain in one
+// move, from the trail at the bottom to the flag at the top, where the name is stitched on the pennant.
+// t     cam (y, zoom)   what happens
+// 0.0   700, 1.05       the trail head, a walker setting off, the peak far above
+// 1.0   -> -900, .9     one long tilt up the face, cairns passing
+// 3.2   -900            the flag plants itself at the summit
+// 3.7   -900            "peak design" is stitched across the pennant
+
+const PAL_V2 = makePalette({
+  paper: '#dfeaf2', paperBand: null, ink: '#1e2a38', night: '#16202c', chalk: '#ffffff', chalkDim: '#7f93a8', guide: 'rgba(30,42,56,.3)',
+  fills: ['#4a6b8a', '#8aa8c0', '#e8eef2', '#d96c4f', '#b8cbd8', '#2f4256'], shade: '#1e2a38', light: '#ffffff', blush: '#d96c4f',
+  accents: ['#d96c4f', '#4a6b8a', '#f0c060', '#8aa8c0'], inks: ['#4a6b8a', '#1e2a38', '#d96c4f'], finish: 'screen',
+}, 'screenSea');
+const KEYS = [[0, 700, 1.05], [1.0, 700, 1.05], [3.2, -900, .9], [9, -900, .9]];
+function camAt(t) { for (let k = 1; k < KEYS.length; k++) { const [t0, y0, z0] = KEYS[k - 1], [t1, y1, z1] = KEYS[k]; if (t <= t1) { const u = sm(t0, t1, t, easeIO); return [lerp(y0, y1, u), lerp(z0, z1, u)]; } } return [-900, .9]; }
+// the mountain: one silhouette from the summit down past the frame
+const FACE_L = [[-1100, 1600], [-700, 900], [-420, 300], [-260, -300], [-90, -820], [0, -1020]];
+const FACE_R = [[0, -1020], [120, -800], [320, -240], [520, 340], [820, 980], [1200, 1600]];
+function mountain(c, vis) {
+  const pts = FACE_L.concat(FACE_R.slice(1));
+  const body = polyPath(pts.concat([[1200, 1700], [-1100, 1700]]));
+  c.fillStyle = PAL.fills[0]; c.fill(body);
+  tex(c, body, vis, { color: PAL.fills[5], density: .3, seed: 5, cell: 16 });
+  stroke(c, pts, 6, { lw: 7, step: 60 });
+  // the snow cap, a lighter shape near the top
+  const cap = polyPath([[-90, -820], [0, -1020], [120, -800], [60, -760], [-10, -820], [-60, -740]]);
+  c.fillStyle = PAL.fills[2]; c.fill(cap); tex(c, cap, [-140, -1040, 320, 320], { color: PAL.fills[4], density: .25, seed: 7 });
+  // ridges, drawn as thin lines down the face
+  for (let k = 0; k < 6; k++) { const pts2 = []; for (let t = 0; t <= 1; t += .1) { const y = lerp(-900, 1500, t); pts2.push([lerp(-40, -520 - k * 120, t) + Math.sin(t * 6 + k) * 60, y]); } stroke(c, pts2, 10 + k, { lw: 4, alpha: .4, step: 120 }); }
+  for (let k = 0; k < 5; k++) { const pts3 = []; for (let t = 0; t <= 1; t += .1) { const y = lerp(-880, 1500, t); pts3.push([lerp(60, 620 + k * 110, t) - Math.sin(t * 5 + k) * 50, y]); } stroke(c, pts3, 20 + k, { lw: 4, alpha: .4, step: 120 }); }
+}
+function cairn(c, x, y, k) { for (let s = 0; s < 4; s++) { const w = 74 - s * 14; draw(c, EL(x + (s % 2 ? 8 : -6), y - s * 34, w, 20), PAL.fills[4], 30 + k * 7 + s, { lw: 4, texo: { density: .3 } }); } }
+function walker(c, x, y, tau) {
+  const [dy] = hop(tau * 2, 1, 26);
+  c.save(); c.translate(x, y + dy);
+  draw(c, CI(0, -66, 34), PAL.blush, 40, { lw: 5, tex: false });
+  draw(c, RR(-26, -32, 52, 76, 18), PAL.fills[5], 41, { lw: 5, tex: false });
+  for (const s of [-1, 1]) stroke(c, [[s * 14, 40], [s * 26 + Math.sin(tau * 8 + s) * 16, 96]], 42 + s, { lw: 8, raw: true });
+  stroke(c, [[30, -20], [46, 90]], 44, { lw: 5, raw: true });
+  c.restore();
+}
+function scene(c, tau, i) {
+  const [cy, z] = camAt(tau);
+  resetT(c); c.fillStyle = PAL.paper; c.fillRect(0, 0, W, H);
+  cam(c, 0, cy, z);
+  const vis = [-W / 2 / z, cy - H / 2 / z, W / z, H / z];
+  // sky: a sun and two cloud bands that sit still in the world
+  const sun = CI(520, -1250, 120); c.fillStyle = PAL.fills[2]; c.fill(sun.path); tex(c, sun.path, sun.box, { color: PAL.accents[2], density: .3, seed: 2 });
+  for (let k = 0; k < 4; k++) { const y = -1400 + k * 520; for (let b = 0; b < 3; b++) { const p = EL(-700 + k * 420 + (b - 1) * 90, y + (b === 1 ? -24 : 0), 96 - Math.abs(b - 1) * 24, 46 - Math.abs(b - 1) * 12); c.fillStyle = alpha(PAL.light, .85); c.fill(p.path); } }
+  mountain(c, vis);
+  cairn(c, -330, 640, 0); cairn(c, 260, 120, 1); cairn(c, -180, -420, 2);
+  const u = sm(.2, 3.0, tau, easeIO);
+  const wx = lerp(-540, -70, u), wy = lerp(1080, -760, u);
+  walker(c, wx, wy, tau);
+  // the flag at the summit
+  const plant = sm(3.15, 3.5, tau, easeOut);
+  if (plant > 0) {
+    const fx = 30, fy = -1020;
+    stroke(c, [[fx, fy], [fx, fy - 420 * plant]], 60, { lw: 12, raw: true });
+    if (plant >= 1) {
+      const pw = 760, ph = 260, px = fx + 10, py = fy - 400;
+      const wave = Math.sin(tau * 5) * 14;
+      const pts = [[px, py], [px + pw, py + 30 + wave], [px + pw - 60, py + ph / 2 + wave], [px + pw, py + ph + wave], [px, py + ph]];
+      draw(c, PG(pts), PAL.fills[3], 61, { lw: 6, texo: { density: .3 } });
+      writeOn(c, 'peak design', px + pw / 2 - 40, py + ph * .66, sm(3.65, 4.5, tau, t => t), { size: 130, ink: PAL.light, ink2: PAL.ink, pen: PAL.ink });
+    }
+  }
+  if (tau > 3.9) for (let k = 0; k < 5; k++) sparkle(c, -420 + k * 240, -1180 + (k % 2) * 140, 28 + (pulse(i + k, 7, 3) ? 10 : 0), PAL.light, k);
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_V2, poster: 4.7, crf: 27,
+  beats: [{ name: 'tilt', dur: 4.9, fn: scene }],
+});
+</script>

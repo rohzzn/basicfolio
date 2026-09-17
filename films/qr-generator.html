@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>qr-generator</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: QR Generator, a client-side QR code generator.
+// Look: graphite and one red on cream. Anchor: the code. Signature: the code builds itself module by module,
+// two per frame, then a phone's scan line sweeps it and the label prints underneath.
+// t     dur   scene  what changes                                                      kit
+// 0.0   2.2   build  the three eyes land first, then the modules fill in, row by row      grid build
+// 2.2   1.3   scan   a phone slides in and its scan line crosses the code                  clip band
+// 3.5   1.6   label  the code is printed on a card and labelled "qr generator"             writeOn
+
+const PAL_QR = makePalette({
+  paper: '#f2efe6', paperBand: null, ink: '#1d1d1b', night: '#242422', chalk: '#ffffff', chalkDim: '#9b9b95', guide: 'rgba(29,29,27,.3)',
+  fills: ['#e5e2d6', '#c9c6b8', '#1d1d1b', '#d94f3d'], shade: '#5a5a55', light: '#ffffff', blush: '#d94f3d',
+  accents: ['#d94f3d', '#7a7a72', '#1d1d1b', '#b8b5a6'], inks: ['#1d1d1b', '#d94f3d'], finish: 'pencil',
+}, 'pencilMinimal');
+const N = 21, CELL = 34, QX = CX - N * CELL / 2, QY = CY - N * CELL / 2 - 30;
+// a fixed pattern: finder eyes, timing lines and seeded data
+const GRID = (() => {
+  const g = Array.from({ length: N }, () => Array(N).fill(0)), r = rng(7);
+  const eye = (ox, oy) => { for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) { const edge = x === 0 || y === 0 || x === 6 || y === 6, mid = x >= 2 && x <= 4 && y >= 2 && y <= 4; g[oy + y][ox + x] = (edge || mid) ? 2 : 0; } };
+  eye(0, 0); eye(N - 7, 0); eye(0, N - 7);
+  for (let k = 8; k < N - 8; k++) { g[6][k] = k % 2 ? 0 : 2; g[k][6] = k % 2 ? 0 : 2; }
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (!g[y][x] && !(x < 8 && y < 8) && !(x > N - 9 && y < 8) && !(x < 8 && y > N - 9)) g[y][x] = r() < .48 ? 1 : 0;
+  return g;
+})();
+function qr(c, n, o = {}) {
+  // n = how many modules are placed; eyes first, then data in reading order
+  const s = o.s ?? 1, x0 = o.x ?? QX, y0 = o.y ?? QY, cell = CELL * s;
+  draw(c, RR(x0 - 24 * s, y0 - 24 * s, N * cell + 48 * s, N * cell + 48 * s, 10 * s), PAL.light, 10, { tex: false, lw: 4 * s });
+  let placed = 0;
+  for (let pass = 2; pass >= 1; pass--) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    if (GRID[y][x] !== pass) continue;
+    placed++; if (placed > n) continue;
+    const pop = clamp(n - placed + 1, 0, 1), sz = cell * lerp(.6, 1, pop);
+    c.fillStyle = pass === 2 ? PAL.ink : PAL.fills[2];
+    c.fillRect(x0 + x * cell + (cell - sz) / 2, y0 + y * cell + (cell - sz) / 2, sz, sz);
+  }
+  return placed;
+}
+const TOTAL = GRID.flat().filter(v => v > 0).length;
+function sceneBuild(c, tau, i) {
+  paper(c);
+  for (let r = 1; r <= 4; r++) dottedArc(c, CX, CY - 30, 380 + r * 90, alpha(PAL.ink, .2), 20 + r, 22, 2.6);
+  const n = Math.floor(sm(0, 1.9, tau, easeIO) * TOTAL);
+  qr(c, n);
+  const done = n >= TOTAL;
+  if (!done) { const rowY = QY + (Math.min(N - 1, Math.floor(n / (TOTAL / N))) + .5) * CELL; stroke(c, [[QX - 40, rowY], [QX + N * CELL + 40, rowY]], 30, { lw: 4, color: alpha(PAL.blush, .5) }); }
+  textBar(c, CX - 160, QY + N * CELL + 90, 320, alpha(PAL.ink, .3), 14);
+  if (done) checkMark(c, CX + 520, QY + 40, 34, sm(1.9, 2.15, tau), 40, { color: PAL.blush, lw: 8 });
+}
+function phoneBody(c, x, y, w, h, seed) {
+  draw(c, RR(x, y, w, h, w * .12), PAL.ink, seed, { tex: false });
+  draw(c, RR(x + 16, y + 16, w - 32, h - 32, w * .09), PAL.fills[0], seed + 1, { tex: false, line: false });
+  c.fillStyle = PAL.light; c.beginPath(); c.roundRect(x + w / 2 - w * .12, y + 26, w * .24, 14, 7); c.fill();
+  return [x + 16, y + 16, w - 32, h - 32];
+}
+function sceneScan(c, tau, i) {
+  paper(c);
+  qr(c, TOTAL);
+  const p = sm(0, .45, tau, easeOut), px = lerp(W + 200, CX + 40, p);
+  const box = phoneBody(c, px, 150, 640, 820, 50);
+  c.save(); c.beginPath(); c.roundRect(...box, 40); c.clip();
+  c.fillStyle = PAL.night; c.fillRect(...box);
+  const s = .62, qx = box[0] + 60, qy = box[1] + 130;
+  c.save(); c.globalAlpha = .9; qr(c, TOTAL, { s, x: qx, y: qy }); c.restore();
+  // the scan line
+  const u = clamp((tau - .5) / .7, 0, 1), ly = qy + u * N * CELL * s;
+  if (tau > .5) { c.fillStyle = alpha(PAL.blush, .25); c.fillRect(box[0], qy, box[2], ly - qy); stroke(c, [[box[0] + 20, ly], [box[0] + box[2] - 20, ly]], 60, { lw: 8, color: PAL.blush, raw: true }); }
+  for (const [cx2, cy2] of [[qx - 20, qy - 20], [qx + N * CELL * s + 20, qy - 20], [qx - 20, qy + N * CELL * s + 20], [qx + N * CELL * s + 20, qy + N * CELL * s + 20]]) { const dx = cx2 < qx + 100 ? 1 : -1, dy = cy2 < qy + 100 ? 1 : -1; stroke(c, [[cx2, cy2 + dy * 50], [cx2, cy2], [cx2 + dx * 50, cy2]], 61 + cx2, { lw: 7, color: PAL.light, raw: true }); }
+  if (u >= 1) { textBar(c, box[0] + 80, qy + N * CELL * s + 110, box[2] - 160, alpha(PAL.light, .7), 20); textBar(c, box[0] + 80, qy + N * CELL * s + 160, (box[2] - 160) * .6, alpha(PAL.light, .35), 16); }
+  c.restore();
+}
+function sceneLabel(c, tau, i) {
+  paper(c);
+  const p = sm(0, .4, tau, easeOut);
+  const cw = 900, ch = 860, cx = CX - cw / 2, cy = lerp(H, 110, p);
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(cx + 16, cy + 20, cw, ch, 14); c.fill();
+  draw(c, RR(cx, cy, cw, ch, 14), PAL.light, 70, { tex: false, lw: 5 });
+  qr(c, TOTAL, { s: .82, x: cx + 100, y: cy + 80 });
+  stroke(c, [[cx + 60, cy + ch - 230], [cx + cw - 60, cy + ch - 230]], 71, { lw: 3, color: alpha(PAL.ink, .3) });
+  writeOn(c, 'qr generator', cx + cw / 2, cy + ch - 120, sm(.35, 1.2, tau, t => t), { size: 140, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+  if (tau > 1.1) for (let k = 0; k < 3; k++) dot(c, cx + cw / 2 - 40 + k * 40, cy + ch - 60, 8, k ? alpha(PAL.ink, .3) : PAL.blush);
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_QR, poster: 2.1,
+  beats: [
+    { name: 'build', dur: 2.2, fn: sceneBuild },
+    { name: 'scan', dur: 1.3, fn: sceneScan },
+    { name: 'label', dur: 1.6, fn: sceneLabel },
+  ],
+});
+</script>

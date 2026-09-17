@@ -1,0 +1,107 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>greed-island-dex</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Greed Island Dex, a card catalogue for the Greed Island game.
+// Look: riso, gold and ink on cream. Anchor: the empty slot. Signature: cards drop into the binder's slots,
+// then the whole catalogue spins out as a ring of badges before collapsing onto the cover.
+// t     dur   scene    what changes                                                   kit
+// 0.0   1.7   binder   nine slots; cards drop in one every three frames                  RR, easeOut
+// 1.7   1.4   ring     the collection flies out into a ring and turns                     polar layout
+// 3.1   1.9   cover    it collapses onto the binder cover: "greed island"                  writeOn
+
+const PAL_GI = makePalette({
+  paper: '#f4ecd8', paperBand: null, ink: '#2c2416', night: '#241d12', chalk: '#fdf8ec', chalkDim: '#a3947a', guide: 'rgba(44,36,22,.3)',
+  fills: ['#c9a227', '#7a1f2b', '#2f5d50', '#3c4f76', '#d9752f', '#8c6b3f'], shade: '#2c2416', light: '#fdf8ec', blush: '#7a1f2b',
+  accents: ['#c9a227', '#7a1f2b', '#2f5d50', '#d9752f'], inks: ['#c9a227', '#7a1f2b', '#2c2416'], finish: 'riso',
+}, 'risoPop');
+const CW = 250, CH = 350;
+function cardFace(c, x, y, rot, s, k, seed, back) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  c.fillStyle = alpha(PAL.shade, .25); c.beginPath(); c.roundRect(-CW / 2 + 12, -CH / 2 + 16, CW, CH, 16); c.fill();
+  if (back) { draw(c, RR(-CW / 2, -CH / 2, CW, CH, 16), PAL.fills[1], seed, { lw: 6, texo: { density: .45 } }); draw(c, PG(starPts(0, 0, 70, 6, .45)), PAL.fills[0], seed + 1, { lw: 4, texo: { density: .4 } }); c.restore(); return; }
+  draw(c, RR(-CW / 2, -CH / 2, CW, CH, 16), PAL.light, seed, { lw: 6, tex: false });
+  const col = [PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[0], PAL.fills[1], PAL.fills[5]][k % 6];
+  const art = RR(-CW / 2 + 20, -CH / 2 + 20, CW - 40, CH * .52, 8);
+  c.fillStyle = col; c.fill(art.path); tex(c, art.path, art.box, { color: PAL.shade, density: .35, seed: seed + 2 });
+  // a token per card: a ring, a key, a coin, a blade, a flame
+  c.save(); c.clip(art.path);
+  if (k % 5 === 0) { stroke(c, ellPts(0, -CH * .1, 54, 54, 0, 40), seed + 3, { raw: true, close: true, lw: 12, color: PAL.fills[0] }); }
+  if (k % 5 === 1) { stroke(c, [[-20, -CH * .02], [-20, -CH * .22]], seed + 4, { lw: 12, color: PAL.light, raw: true }); draw(c, CI(-20, -CH * .26, 26), PAL.light, seed + 5, { tex: false, lw: 4 }); stroke(c, [[-20, -CH * .08], [16, -CH * .08]], seed + 6, { lw: 10, color: PAL.light, raw: true }); }
+  if (k % 5 === 2) { draw(c, CI(0, -CH * .12, 48), PAL.fills[0], seed + 7, { lw: 5, texo: { density: .4 } }); }
+  if (k % 5 === 3) { draw(c, PG([[-10, -CH * .3], [14, -CH * .3], [22, -CH * .04], [0, CH * .04], [-22, -CH * .04]]), PAL.light, seed + 8, { lw: 5, tex: false }); }
+  if (k % 5 === 4) { draw(c, PG([[0, -CH * .32], [30, -CH * .12], [0, CH * .04], [-30, -CH * .12]]), PAL.fills[4], seed + 9, { lw: 5, texo: { density: .4 } }); }
+  c.restore();
+  textBar(c, -CW / 2 + 26, CH * .16, CW - 90, alpha(PAL.ink, .6), 16);
+  squig(c, -CW / 2 + 26, CH * .3, CW - 52, 2, { seed: seed + 10, lineH: 34, width: 3, color: alpha(PAL.ink, .5) });
+  draw(c, CI(CW / 2 - 44, CH / 2 - 42, 24), PAL.fills[0], seed + 11, { tex: false, lw: 3.4 });
+  c.restore();
+}
+function binder(c, n, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .12, cell: 15 });
+  const bw = 1180, bh = 900, bx = CX - bw / 2, by = CY - bh / 2 + 20;
+  draw(c, RR(bx, by, bw, bh, 20), PAL.fills[5], 10, { lw: 7, texo: { density: .4 } });
+  draw(c, RR(bx + 30, by + 30, bw - 60, bh - 60, 12), tint(PAL.fills[5], .55), 11, { lw: 5, texo: { density: .25 } });
+  for (let r = 0; r < 3; r++) draw(c, CI(bx + 16, by + 220 + r * 230, 26), PAL.fills[0], 12 + r, { tex: false, lw: 4 });
+  const gx = 3, gy = 3, ox = CX - (gx * CW + (gx - 1) * 40) / 2, oy = by + 90;
+  for (let k = 0; k < 9; k++) {
+    const x = ox + (k % gx) * (CW + 40) + CW / 2, y = oy + Math.floor(k / gx) * (CH * .8 + 20) + CH / 2;
+    c.save(); c.setLineDash([16, 14]); stroke(c, rrPts(x - CW / 2, y - CH / 2, CW, CH, 16), 20 + k, { raw: true, close: true, lw: 4, color: alpha(PAL.ink, .35) }); c.restore();
+    if (k < n) cardFace(c, x, y, ((k * 37) % 5 - 2) * .012, .96, k, 30 + k * 7, false);
+  }
+  return [ox, oy];
+}
+function sceneBinder(c, tau, i) {
+  const n = Math.min(9, Math.floor(tau * 12 / 3) + 1);
+  binder(c, n - 1, tau, i);
+  // the card in the air, on its way into the next slot
+  if (n <= 9) { const f = (tau * 12 / 3) % 1, k = n - 1;
+    const ox = CX - (3 * CW + 2 * 40) / 2, oy = CY - 450 + 20 + 90;
+    const tx = ox + (k % 3) * (CW + 40) + CW / 2, ty = oy + Math.floor(k / 3) * (CH * .8 + 20) + CH / 2;
+    const x = lerp(W + 200, tx, easeOut(f)), y = lerp(200, ty, easeOut(f));
+    if (f < .98) cardFace(c, x, y, lerp(.5, 0, f), lerp(1.2, .96, f), k, 30 + k * 7, f < .45);
+    if (f > .9) ringsOut(c, tx, ty, (f - .9) * .25, { every: 1 / 12, t1: .1, speed: 700, colors: [PAL.fills[0]], width: 5, seed: 60 + k, max: 300 });
+  }
+}
+function sceneRing(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .12, cell: 15 });
+  const p = sm(0, .55, tau, easeOut), spin = q12(tau) * .7;
+  for (let r = 1; r <= 3; r++) dashedRing(c, CX, CY, 180 + r * 130, alpha(PAL.ink, .3), 70 + r, [24, 18], 4);
+  for (let k = 0; k < 9; k++) {
+    const a = spin + k / 9 * TAU, R = lerp(60, 430, p);
+    const x = CX + Math.cos(a) * R * 1.35, y = CY + Math.sin(a) * R * .8;
+    cardFace(c, x, y, Math.cos(a) * .12, lerp(.5, .72, p), k, 30 + k * 7, false);
+  }
+  dot(c, CX, CY, 20, PAL.fills[0]);
+  if (tau > .8) for (let k = 0; k < 4; k++) sparkle(c, CX - 500 + k * 340, CY - 380 + (k % 2) * 760, 30, PAL.fills[0], k + i * .2);
+}
+function sceneCover(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .12, cell: 15 });
+  const p = sm(0, .45, tau, easeIn);
+  // the ring collapsing inward onto the cover
+  for (let k = 0; k < 9; k++) { const a = k / 9 * TAU + .7, R = lerp(430, 0, p); if (p < 1) cardFace(c, CX + Math.cos(a) * R * 1.35, CY + Math.sin(a) * R * .8, Math.cos(a) * .12, lerp(.72, .2, p), k, 30 + k * 7, p > .6); }
+  if (p >= 1) {
+    const bw = 900, bh = 1000, bx = CX - bw / 2, by = CY - bh / 2 + 20;
+    draw(c, RR(bx, by, bw, bh, 22), PAL.fills[1], 90, { lw: 8, texo: { density: .5 } });
+    draw(c, RR(bx + 40, by + 40, bw - 80, bh - 80, 14), null, 91, { lw: 5, lc: PAL.fills[0] });
+    draw(c, PG(starPts(CX, by + 300, 150, 6, .45)), PAL.fills[0], 92, { lw: 6, texo: { density: .4 } });
+    writeOn(c, 'greed island', CX, by + 620, sm(.5, 1.4, tau, t => t), { size: 165, ink: PAL.fills[0], ink2: PAL.light, pen: PAL.light });
+    if (tau > 1.4) writeOn(c, 'dex', CX, by + 790, sm(1.4, 1.75, tau, t => t), { size: 120, ink: PAL.light, ink2: null, pen: null });
+  }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_GI, poster: 4.9, crf: 28,
+  beats: [
+    { name: 'binder', dur: 1.7, fn: sceneBinder },
+    { name: 'ring', dur: 1.4, fn: sceneRing },
+    { name: 'cover', dur: 1.9, fn: sceneCover },
+  ],
+});
+</script>

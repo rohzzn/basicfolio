@@ -1,0 +1,87 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>contests</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Contests, a contest and hackathon calendar.
+// Look: riso, three inks on cream. Anchor: the trophy. Signature: the calendar tears its own pages off, four a
+// second, and the last one leaves a trophy behind with the name on its plaque.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.0   month   a month grid with events pinned on it; a countdown ring closes      dashedRing
+// 1.0   1.5   tear    pages rip away one every three frames, dates flying past             montage-style cuts
+// 2.5   2.0   cup     the trophy rises, confetti, the plaque is engraved "contests"        writeOn
+
+const PAL_CT = makePalette({
+  paper: '#f2ece0', paperBand: null, ink: '#25305c', night: '#1d2445', chalk: '#fffdf4', chalkDim: '#8791b8', guide: 'rgba(37,48,92,.35)',
+  fills: ['#ff4d6d', '#2a9d8f', '#ffd166', '#4361ee', '#f77f00'], shade: '#25305c', light: '#fffdf4', blush: '#ff4d6d',
+  accents: ['#ff4d6d', '#2a9d8f', '#ffd166', '#4361ee'], inks: ['#4361ee', '#ff4d6d', '#ffd166'], finish: 'riso',
+}, 'risoPop');
+
+function monthPage(c, k, tau, i, tear) {
+  const x = CX - 470, y = 120, w = 940, h = 840;
+  c.save();
+  if (tear > 0) { c.translate(x + w / 2, y); c.rotate(tear * .5); c.translate(-(x + w / 2), -y + tear * 300); c.globalAlpha = 1 - tear * .3; }
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(x + 18, y + 20, w, h, 20); c.fill();
+  draw(c, RR(x, y, w, h, 20), PAL.light, 10 + k, { lw: 6, tex: false });
+  const band = rectPath(x, y, w, 130);
+  c.save(); c.clip(roundRectPath(x, y, w, h, 20)); c.fillStyle = [PAL.fills[3], PAL.fills[0], PAL.fills[1], PAL.fills[4]][k % 4]; c.fill(band); tex(c, band, [x, y, w, 130], { density: .4, seed: 20 + k }); c.restore();
+  textBar(c, x + 60, y + 66, 300, alpha(PAL.light, .9), 30);
+  for (let d = 0; d < 35; d++) {
+    const cw = (w - 80) / 7, ch = (h - 190) / 5, cx = x + 40 + (d % 7) * cw, cy = y + 160 + Math.floor(d / 7) * ch;
+    textBar(c, cx + 14, cy + 30, 30, alpha(PAL.ink, .3), 11);
+    const ev = (d * 7 + k * 3) % 11;
+    if (ev < 3) draw(c, RR(cx + 10, cy + 52, cw - 24, 30, 15), [PAL.fills[0], PAL.fills[1], PAL.fills[2]][ev], 30 + d + k, { tex: false, lw: 3 });
+    if (ev === 4) draw(c, RR(cx + 10, cy + 52, (cw - 24) * .6, 30, 15), PAL.fills[3], 40 + d + k, { tex: false, lw: 3 });
+  }
+  c.restore();
+  return [x, y, w, h];
+}
+function ring(c, x, y, R, p, seed) { for (let k = 0; k < 2; k++) dashedRing(c, x, y, R - k * 10, alpha(PAL.ink, .3), seed + k, [20, 16], 3); strokeOn(c, arcPts(x, y, R, R, -Math.PI / 2, -Math.PI / 2 + TAU, 60), p, seed + 5, { raw: true, lw: 14, color: PAL.fills[0] }); }
+function sceneMonth(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 15 });
+  monthPage(c, 0, tau, i, 0);
+  ring(c, W - 190, 210, 120, sm(0, .9, tau, easeOut) * .78, 60);
+}
+function sceneTear(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 15 });
+  const step = tau * 12 / 3, k = Math.floor(step), f = step - k;
+  monthPage(c, k + 1, tau, i, 0);
+  if (f < .7) monthPage(c, k, tau, i, f / .7);
+  ring(c, W - 190, 210, 120, .78 + step * .04, 60);
+  for (let s = 0; s < 6; s++) { const r = rng(70 + k * 7 + s), x = r() * W, y = ((tau * 800 + r() * 1000) % 1200) - 60; c.save(); c.translate(x, y); c.rotate(r() * TAU); draw(c, RR(-30, -22, 60, 44, 6), PAL.light, 80 + s, { tex: false, lw: 3 }); c.restore(); }
+}
+function trophy(c, x, y, s, seed) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  draw(c, PG([[-150, -260], [150, -260], [110, -40], [-110, -40]]), PAL.fills[2], seed, { lw: 7, texo: { density: .4 } });
+  for (const sx of [-1, 1]) stroke(c, arcPts(sx * 150, -200, 90, 70, sx > 0 ? -1.2 : Math.PI + 1.2, sx > 0 ? 1.2 : Math.PI - 1.2, 20), seed + 1 + sx, { raw: true, lw: 16, color: PAL.fills[2] });
+  draw(c, RR(-40, -50, 80, 80, 6), PAL.fills[2], seed + 3, { lw: 6, tex: false });
+  draw(c, RR(-170, 30, 340, 70, 10), PAL.fills[4], seed + 4, { lw: 6, texo: { density: .35 } });
+  draw(c, RR(-230, 100, 460, 110, 12), PAL.ink, seed + 5, { tex: false });
+  c.restore();
+}
+function sceneCup(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 15 });
+  for (let r = 1; r <= 4; r++) if (tau > .2) dashedRing(c, CX, CY - 40, 200 + r * 110, alpha(PAL.ink, .22), 90 + r, [22, 18], 3);
+  const rise = easeBack(sm(0, .5, tau, t => t));
+  c.save(); c.translate(CX, lerp(H + 300, CY + 120, rise)); c.scale(1.05, 1.05);
+  trophy(c, 0, 0, 1, 100);
+  writeOn(c, 'contests', 0, 190, sm(.55, 1.4, tau, t => t), { size: 130, ink: PAL.fills[2], ink2: PAL.fills[0], pen: PAL.fills[0] });
+  c.restore();
+  if (tau > .45) { const r = rng(120); for (let k = 0; k < 26; k++) { const a = r() * TAU, d = (tau - .45) * (500 + r() * 900), x = CX + Math.cos(a) * d, y = CY - 120 + Math.sin(a) * d * .6 + (tau - .45) * (tau - .45) * 900; c.save(); c.translate(x, y); c.rotate(a + tau * 5); c.fillStyle = [PAL.fills[0], PAL.fills[1], PAL.fills[2], PAL.fills[3]][k % 4]; c.fillRect(-16, -8, 32, 16); c.restore(); } }
+  if (tau > .7) for (let k = 0; k < 3; k++) sparkle(c, CX - 300 + k * 300, CY - 260 - (k % 2) * 90, 34 + (pulse(i + k * 2, 7, 3) ? 12 : 0), PAL.fills[2], k + i * .2);
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_CT, poster: 4.4, crf: 27,
+  beats: [
+    { name: 'month', dur: 1.0, fn: sceneMonth },
+    { name: 'tear', dur: 1.5, fn: sceneTear },
+    { name: 'cup', dur: 2.0, fn: sceneCup },
+  ],
+});
+</script>

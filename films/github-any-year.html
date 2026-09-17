@@ -1,0 +1,92 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>github-any-year</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: GitHub Repo Any Year Any Day, backdating commits from a script.
+// Look: graphite on cream, the four familiar greens. Anchor: the contribution grid. Signature: the grid fills
+// backwards, right to left, while the year on the calendar counts down.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.8   grid   an empty year of squares; the calendar showing this year              grid
+// 1.8   1.6   back   squares fill from the right end backwards; the year ticks down          reverse fill
+// 3.4   1.8   name   the filled year, and the name written under it                          writeOn
+
+const PAL_GH = makePalette({
+  paper: '#f6f4ee', paperBand: null, ink: '#24292e', night: '#22262b', chalk: '#ffffff', chalkDim: '#a0a4a8', guide: 'rgba(36,41,46,.3)',
+  fills: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'], shade: '#6a6f75', light: '#ffffff', blush: '#d1495b',
+  accents: ['#216e39', '#d1495b', '#3f6ea8', '#c9a24a'], inks: ['#24292e', '#216e39'], finish: 'pencil',
+}, 'pencilMinimal');
+const COLS = 40, ROWS = 7, CELL = 26, GAP = 7, GW = COLS * (CELL + GAP), GX = CX - GW / 2, GY = 330;
+const LEVEL = (() => { const r = rng(9), g = []; for (let x = 0; x < COLS; x++) { g[x] = []; for (let y = 0; y < ROWS; y++) { const v = r(); g[x][y] = v < .42 ? 0 : v < .62 ? 1 : v < .8 ? 2 : v < .93 ? 3 : 4; } } return g; })();
+function grid(c, filledFrom, i) {
+  for (let x = 0; x < COLS; x++) for (let y = 0; y < ROWS; y++) {
+    const on = x >= filledFrom, lv = on ? LEVEL[x][y] : 0;
+    const px = GX + x * (CELL + GAP), py = GY + y * (CELL + GAP);
+    c.fillStyle = PAL.fills[lv]; c.beginPath(); c.roundRect(px, py, CELL, CELL, 5); c.fill();
+    if (lv === 0) { c.strokeStyle = alpha(PAL.ink, .12); c.lineWidth = 1.6; c.stroke(); }
+  }
+  // the month scale above and the day labels beside
+  for (let m = 0; m < 9; m++) textBar(c, GX + m * GW / 9, GY - 34, 54, alpha(PAL.ink, .3), 12);
+  for (let d = 0; d < 3; d++) textBar(c, GX - 74, GY + 20 + d * 66, 50, alpha(PAL.ink, .3), 11);
+  // the legend
+  for (let k = 0; k < 5; k++) { c.fillStyle = PAL.fills[k]; c.beginPath(); c.roundRect(GX + GW - 190 + k * 36, GY + ROWS * (CELL + GAP) + 40, 24, 24, 5); c.fill(); }
+  textBar(c, GX + GW - 300, GY + ROWS * (CELL + GAP) + 52, 90, alpha(PAL.ink, .3), 11);
+}
+function calendar(c, year, tearing, seed) {
+  const x = 150, y = 700, w = 300, h = 300;
+  c.save(); c.translate(x + w / 2, y + h / 2); c.rotate(-.03); c.translate(-x - w / 2, -y - h / 2);
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(x + 14, y + 18, w, h, 12); c.fill();
+  draw(c, RR(x, y, w, h, 12), PAL.light, seed, { tex: false, lw: 5 });
+  const band = rectPath(x, y, w, 74);
+  c.save(); c.clip(roundRectPath(x, y, w, h, 12)); c.fillStyle = PAL.blush; c.fill(band); c.restore();
+  stroke(c, [[x, y + 74], [x + w, y + 74]], seed + 1, { lw: 4 });
+  for (const rx of [x + w * .3, x + w * .7]) draw(c, RR(rx - 10, y - 26, 20, 52, 10), PAL.fills[3], seed + 2 + rx, { tex: false, lw: 3 });
+  c.font = `bold 110px ${KIT_HAND}`; c.fillStyle = PAL.ink; c.textAlign = 'center'; c.fillText(String(year), x + w / 2, y + 220);
+  c.restore();
+  if (tearing) { const r = rng(seed + 50); for (let k = 0; k < 5; k++) { const px = x + r() * w, py = y - 40 - r() * 260; c.save(); c.translate(px, py); c.rotate(r() * TAU); draw(c, RR(-40, -30, 80, 60, 6), PAL.light, seed + 60 + k, { tex: false, lw: 3 }); c.restore(); } }
+}
+function pageBg(c) {
+  paper(c);
+  draw(c, CI(GX - 190, GY + 60, 76), PAL.fills[0], 5, { lw: 4, tex: false });
+  bust(c, GX - 190, GY + 46, 56, PAL.fills[3], PAL.fills[1], 6, {});
+  textBar(c, GX - 130, GY + 170, 200, alpha(PAL.ink, .5), 18);
+}
+function sceneGrid(c, tau, i) {
+  pageBg(c);
+  grid(c, COLS, i);
+  calendar(c, 2026, false, 20);
+  if (tau > 1.0) { const p = sm(1.0, 1.7, tau); stroke(c, [[GX + GW + 30, GY + 100], [GX + GW + 30 + 120 * p, GY + 100]], 30, { lw: 5, dash: [14, 12], color: PAL.blush }); }
+}
+function sceneBack(c, tau, i) {
+  pageBg(c);
+  const from = Math.round(lerp(COLS, 0, sm(0, 1.5, tau, easeIO)));
+  grid(c, from, i);
+  calendar(c, 2026 - Math.floor(sm(0, 1.5, tau, easeIO) * 6), true, 20);
+  // the cursor that is doing the backdating, sitting on the boundary
+  const bx = GX + from * (CELL + GAP);
+  if (from > 0) { stroke(c, [[bx - 4, GY - 20], [bx - 4, GY + ROWS * (CELL + GAP) + 10]], 40, { lw: 5, color: PAL.blush }); cursor(c, bx - 30, GY + ROWS * (CELL + GAP) + 40, 110, PAL.light, 41, { lc: PAL.ink, lw: 5, tex: false }); }
+}
+function sceneName(c, tau, i) {
+  pageBg(c);
+  grid(c, 0, i);
+  calendar(c, 2020, false, 20);
+  const p = sm(.1, 1.1, tau, t => t);
+  writeOn(c, 'any year', CX + 120, 760, p, { size: 175, ink: PAL.ink, ink2: PAL.accents[0], pen: PAL.accents[0] });
+  if (p >= 1) writeOn(c, 'any day', CX + 120, 890, sm(1.05, 1.6, tau, t => t), { size: 120, ink: PAL.accents[0], ink2: null, pen: null });
+  if (tau > 1.2) for (let k = 0; k < 4; k++) sparkle(c, GX + 120 + k * 320, GY - 120, 26 + (pulse(i + k, 7, 3) ? 10 : 0), PAL.fills[2], k);
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_GH, poster: 3.2,
+  beats: [
+    { name: 'grid', dur: 1.8, fn: sceneGrid },
+    { name: 'back', dur: 1.6, fn: sceneBack },
+    { name: 'name', dur: 1.8, fn: sceneName },
+  ],
+});
+</script>

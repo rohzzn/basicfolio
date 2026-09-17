@@ -1,0 +1,87 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>git-time-machine</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Git Time Machine, visual git history in the terminal.
+// Look: a phosphor terminal, green on black. Anchor: the HEAD ring. Signature: rewind, the picture flickering
+// between the frame and its scan-line twin while HEAD walks backwards.
+// t     dur   scene    what changes                                                     kit
+// 0.0   1.6   log      the graph draws itself down the terminal, newest first             strokeOn, squig
+// 1.6   1.8   rewind   HEAD steps back every 3 frames, the image flickers, rows go pale   flicker, pulse
+// 3.4   1.6   prompt   the name is typed at the prompt, one character every two frames    monospace hand
+
+const PAL_GIT = makePalette({
+  paper: '#0c1611', paperBand: null, ink: '#7ee2a8', night: '#050b08', chalk: '#b8f5c8', chalkDim: '#3f6b52', guide: 'rgba(126,226,168,.3)',
+  fills: ['#12251b', '#16301f', '#7ee2a8', '#f2d06b'], shade: '#0a1410', light: '#d8ffe6', blush: '#ff7b72',
+  accents: ['#7ee2a8', '#f2d06b', '#ff7b72', '#79c0ff'], inks: ['#7ee2a8', '#f2d06b'], finish: 'pencil',
+}, 'blueprintNight');
+const MONO = '"Consolas", "Courier New", monospace';
+
+function frameDressing(c, i, scan) {
+  paper(c);
+  // phosphor scan lines; in the rewind beat they shift by one line, which is what makes the flicker read
+  c.save(); c.fillStyle = alpha(PAL.chalk, .05);
+  for (let y = (scan ? 3 : 0); y < H; y += 6) c.fillRect(0, y, W, 3);
+  c.restore();
+  c.save(); c.strokeStyle = alpha(PAL.ink, .5); c.lineWidth = 5; c.strokeRect(40, 40, W - 80, H - 80); c.restore();
+  textBar(c, 90, 96, 220, alpha(PAL.ink, .5), 14); dot(c, W - 110, 96, 12, PAL.fills[3]);
+}
+const ROWS = [[0, 0], [1, 0], [2, 1], [3, 1], [4, 1], [5, 0], [6, 0], [7, 0]];
+function graph(c, tau, i, head, pale) {
+  const gx = 230, bx = 380, row = k => 220 + k * 96;
+  strokeOn(c, [[gx, row(0)], [gx, row(7)]], sm(0, .6, tau), 10, { lw: 6, color: alpha(PAL.ink, .8), step: 20 });
+  if (tau > .3) strokeOn(c, [[gx, row(5)], [bx, row(4)], [bx, row(2)], [gx, row(1)]], sm(.3, .7, tau), 11, { lw: 6, color: PAL.accents[3], step: 16 });
+  ROWS.forEach(([k, br]) => {
+    const p = sm(k * .06, k * .06 + .14, tau); if (p <= 0) return;
+    const cxk = br ? bx : gx, future = head >= 0 && k < head;
+    c.save(); c.globalAlpha = future ? .25 : 1;
+    dot(c, cxk, row(k), 17 * p, br ? PAL.accents[3] : PAL.fills[2]);
+    c.strokeStyle = PAL.paper; c.lineWidth = 5; c.beginPath(); c.arc(cxk, row(k), 17 * p, 0, TAU); c.stroke();
+    c.font = `26px ${MONO}`; c.fillStyle = alpha(PAL.fills[3], .85); c.fillText(['a91f3e2', 'c4d0b71', '8e2fa05', '1b7c9d4', 'f0a3e88', '55db214', '9c7e130', '3f6a0b9'][k], 470, row(k) + 9);
+    squig(c, 660, row(k) + 8, 260 + ((k * 53) % 200), 1, { seed: 30 + k, color: k === head ? PAL.light : alpha(PAL.ink, pale && future ? .3 : .6), width: 3.6, amp: 9 });
+    c.restore();
+  });
+  if (head >= 0) { const hy = row(head), hx = ROWS[head][1] ? bx : gx; crayon(c, ellPts(hx, hy, 36, 36, 0, 30), PAL.fills[3], 6, 40 + head, true); stroke(c, [[100, hy], [hx - 54, hy]], 41, { lw: 6, color: PAL.fills[3] }); stroke(c, [[100, hy], [140, hy - 26]], 42, { lw: 6, color: PAL.fills[3], raw: true }); stroke(c, [[100, hy], [140, hy + 26]], 43, { lw: 6, color: PAL.fills[3], raw: true }); }
+}
+function sceneLog(c, tau, i) { frameDressing(c, i, false); graph(c, tau, i, -1, false); }
+function sceneRewind(c, tau, i) {
+  const head = Math.min(7, Math.floor(tau * 12 / 3));
+  frameDressing(c, i, flicker(i, 2));
+  c.save(); if (flicker(i, 2)) c.translate(4, 0);
+  graph(c, 1.6, i, head, true);
+  c.restore();
+  // the rewind tell: two chevrons and a watch running backwards
+  const cx = W - 220, cy = H - 190;
+  for (const dx of [-46, 0]) { c.fillStyle = pulse(i, 4, 2) ? PAL.fills[3] : alpha(PAL.fills[3], .35); c.beginPath(); c.moveTo(cx + dx + 40, cy - 40); c.lineTo(cx + dx + 40, cy + 40); c.lineTo(cx + dx - 14, cy); c.closePath(); c.fill(); }
+  clockFace(c, 230, H - 190, 100, 9 - tau * 4.5, 60, { fill: PAL.fills[0], tex: false, pin: PAL.blush });
+  for (let k = 1; k <= 2; k++) stroke(c, arcPts(230, H - 190, 100 + k * 34, 100 + k * 34, -2.4 + tau * 3, -1.2 + tau * 3, 14), 62 + k, { raw: true, lw: 4, color: alpha(PAL.ink, .5) });
+}
+function scenePrompt(c, tau, i) {
+  frameDressing(c, i, false);
+  c.save(); c.globalAlpha = .25; graph(c, 1.6, i, 7, true); c.restore();
+  const y = CY + 120, x = 200;
+  c.font = `70px ${MONO}`; c.fillStyle = PAL.fills[2]; c.fillText('$', x, y);
+  const text = 'git time machine', n = clamp(Math.floor(tau * 12 / 2), 0, text.length), shown = text.slice(0, n);
+  c.fillStyle = PAL.light; c.font = `70px ${MONO}`;
+  c.fillText(shown, x + 66, y);
+  const w = c.measureText(shown).width;
+  if (flicker(i, 3) || n < text.length) { c.fillStyle = PAL.fills[3]; c.fillRect(x + 76 + w, y - 52, 34, 66); }
+  if (n >= text.length && tau > 1.1) { c.font = `40px ${MONO}`; c.fillStyle = alpha(PAL.ink, .7); }
+  stroke(c, [[x, y + 70], [x + 940, y + 70]], 80, { lw: 3, color: alpha(PAL.ink, .25) });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_GIT, poster: 2.6,
+  beats: [
+    { name: 'log', dur: 1.6, fn: sceneLog },
+    { name: 'rewind', dur: 1.8, fn: sceneRewind },
+    { name: 'prompt', dur: 1.6, fn: scenePrompt },
+  ],
+});
+</script>

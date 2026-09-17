@@ -1,0 +1,93 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>margin</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Margin, a minimal EPUB reader.
+// Look: ink by lamplight, warm on dark. Anchor: the open book. Signature: pages turn as hard cuts, one every
+// three frames, and the book closes at the end so its cover can carry the name.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   read    the open book under a lamp; a note is written in the margin         sheet, squig
+// 1.6   1.4   turn    pages turn, four of them, the light flickering on the paper          hard cuts
+// 3.0   1.9   close   the book closes; the cover reads "margin"                            writeOn
+
+const PAL_MG = makePalette({
+  paper: '#241d18', paperBand: null, ink: '#f3e7d3', night: '#181310', chalk: '#f3e7d3', chalkDim: '#a08f78', guide: 'rgba(243,231,211,.25)',
+  fills: ['#f3e7d3', '#d8c4a0', '#8a6a48', '#3c2f26', '#c2703c'], shade: '#6b5740', light: '#fffaf0', blush: '#c2703c',
+  accents: ['#c2703c', '#d8b25a', '#8a9a6a', '#a8674f'], inks: ['#f3e7d3', '#c2703c'], finish: 'ink',
+}, 'paperInk');
+
+function lamp(c, i) {
+  paper(c);
+  const gx = 1150, gy = 120;
+  for (let r = 7; r >= 1; r--) { c.fillStyle = alpha(PAL.fills[4], .05 + (pulse(i, 9, 4) ? .005 : 0)); c.beginPath(); c.arc(gx, gy, r * 130, 0, TAU); c.fill(); }
+  draw(c, PG([[gx - 150, gy], [gx + 150, gy], [gx + 90, gy - 150], [gx - 90, gy - 150]]), PAL.fills[2], 5, { lw: 5 });
+  stroke(c, [[gx, gy - 150], [gx, -40]], 6, { lw: 6 });
+  dot(c, gx, gy + 10, 34, PAL.fills[1]);
+}
+function openBook(c, tau, i, pageK, noteP) {
+  const bx = CX - 40, by = CY + 120, w = 1160, h = 660;
+  c.save(); c.translate(bx, by); c.rotate(-.02);
+  draw(c, PG([[-w / 2 - 30, -h / 2 - 20], [w / 2 + 30, -h / 2 - 20], [w / 2 + 50, h / 2 + 20], [-w / 2 - 50, h / 2 + 20]]), PAL.fills[2], 10, { lw: 6, texo: { density: .5 } });
+  for (const s of [-1, 1]) {
+    const px = s * 20;
+    draw(c, PG([[px + s * 10, -h / 2], [px + s * (w / 2 - 10), -h / 2 + 16 * s * 0 - 10], [px + s * (w / 2 - 20), h / 2 - 10], [px + s * 6, h / 2]]), PAL.fills[0], 20 + s, { lw: 5, texo: { color: PAL.shade, density: .12 } });
+    const x0 = s < 0 ? -w / 2 + 70 : 80, colW = w / 2 - 140;
+    if (s < 0) { textBar(c, x0, -h / 2 + 70, 260, alpha(PAL.shade, .8), 22); squig(c, x0, -h / 2 + 150, colW, 8, { seed: 30 + pageK, lineH: 60, width: 4, color: PAL.shade }); }
+    else { squig(c, x0, -h / 2 + 70, colW, 9, { seed: 40 + pageK, lineH: 60, width: 4, color: PAL.shade }); }
+  }
+  stroke(c, [[0, -h / 2], [0, h / 2]], 50, { lw: 5, color: alpha(PAL.shade, .6) });
+  if (noteP > 0) { c.save(); c.rotate(.04); writeOn(c, 'yes', -w / 2 + 130, h / 2 - 90, noteP, { size: 90, align: 'left', ink: PAL.blush, ink2: null, pen: PAL.blush }); c.restore(); }
+  c.restore();
+  return [bx, by, w, h];
+}
+function sceneRead(c, tau, i) {
+  lamp(c, i);
+  openBook(c, tau, i, 0, sm(.7, 1.3, tau, t => t));
+  dot(c, 250, H - 120, 16, alpha(PAL.fills[1], .6));
+}
+function sceneTurn(c, tau, i) {
+  lamp(c, i);
+  const k = Math.floor(tau * 12 / 4);
+  const [bx, by, w, h] = openBook(c, tau, i, k + 1, 0);
+  // the leaf in the air, caught mid-turn on the frame the page changes
+  const f = (tau * 12 / 4) % 1;
+  if (f < .55) { c.save(); c.translate(bx, by); c.rotate(-.02); const bend = Math.sin(f / .55 * Math.PI) * .9; c.save(); c.transform(Math.cos(bend), 0, 0, 1, 0, 0);
+    draw(c, PG([[10, -h / 2], [w / 2 - 20, -h / 2 + 10], [w / 2 - 30, h / 2 - 10], [6, h / 2]]), PAL.light, 60 + k, { lw: 5, texo: { color: PAL.shade, density: .1 } });
+    c.restore(); c.restore(); }
+  for (let k2 = 0; k2 < 4; k2++) dot(c, 250, H - 120 - k2 * 40, 10, alpha(PAL.fills[1], k2 <= k ? .8 : .25));
+}
+function sceneClose(c, tau, i) {
+  lamp(c, i);
+  const p = sm(0, .55, tau, easeIO), w = 1160, h = 660, bx = CX - 40, by = CY + 120;
+  c.save(); c.translate(bx, by); c.rotate(-.02);
+  draw(c, PG([[-w / 2 - 30, -h / 2 - 20], [w / 2 + 30, -h / 2 - 20], [w / 2 + 50, h / 2 + 20], [-w / 2 - 50, h / 2 + 20]]), PAL.fills[2], 10, { lw: 6, texo: { density: .5 } });
+  if (p < 1) { c.save(); c.transform(1 - p, 0, 0, 1, 0, 0); draw(c, PG([[-w / 2 + 10, -h / 2], [-10, -h / 2 + 4], [-16, h / 2 - 4], [-w / 2 + 6, h / 2]]), PAL.fills[0], 20, { lw: 5, tex: false }); c.restore(); }
+  c.save(); c.transform(p, 0, 0, 1, 0, 0);
+  draw(c, PG([[10, -h / 2], [w / 2 - 20, -h / 2 + 10], [w / 2 - 30, h / 2 - 10], [6, h / 2]]), PAL.light, 30, { lw: 5, texo: { color: PAL.shade, density: .1 } });
+  c.restore();
+  // the cover, once it is shut
+  if (p >= 1) {
+    const cw = w * .52, ch = h + 30;
+    draw(c, RR(-cw / 2 + 20, -ch / 2, cw, ch, 10), PAL.fills[2], 70, { lw: 7, texo: { density: .5 } });
+    stroke(c, [[-cw / 2 + 60, -ch / 2 + 40], [-cw / 2 + 60, ch / 2 - 40]], 71, { lw: 4, color: alpha(PAL.fills[1], .6) });
+    writeOn(c, 'margin', 20, 30, sm(.6, 1.5, tau, t => t), { size: 175, ink: PAL.light, ink2: PAL.blush, pen: PAL.blush });
+    for (let r = 1; r <= 2; r++) if (tau > 1.2) dottedArc(c, 20, 0, 300 + r * 70, alpha(PAL.fills[1], .3), 80 + r, 22, 3);
+  }
+  c.restore();
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_MG, poster: 4.5,
+  beats: [
+    { name: 'read', dur: 1.6, fn: sceneRead },
+    { name: 'turn', dur: 1.4, fn: sceneTurn },
+    { name: 'close', dur: 1.9, fn: sceneClose },
+  ],
+});
+</script>

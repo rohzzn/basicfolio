@@ -1,0 +1,92 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>mcu-timeline</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Marvel Cinematic Universe Timeline, the films in story order.
+// Look: newsprint comic, halftone on off-white. Anchor: the timeline rule. Signature: shuffled cards snap onto
+// the line in order, each with a comic "thwack", and the title lands in a starburst.
+// t     dur   scene    what changes                                                    kit
+// 0.0   1.6   jumble   eight cards lie scattered and out of order, the line drawn under   dotScreen cards
+// 1.6   1.8   snap     they fly onto the line one every four frames, in order              easeOut, impact rings
+// 3.4   1.7   burst    a starburst lands with "mcu timeline" in it                          starPts, writeOn
+
+const PAL_MCU = makePalette({
+  paper: '#f4f1e4', paperBand: null, ink: '#1b1b2f', night: '#141426', chalk: '#ffffff', chalkDim: '#8a8aa5', guide: 'rgba(27,27,47,.3)',
+  fills: ['#e63946', '#1d4e89', '#f4a300', '#3a86ff', '#8d99ae', '#ffd6a5'], shade: '#1b1b2f', light: '#ffffff', blush: '#e63946',
+  accents: ['#e63946', '#f4a300', '#3a86ff', '#1d4e89'], inks: ['#1d4e89', '#e63946', '#f4a300'], finish: 'screen',
+}, 'screenSea');
+const ORDER = [2, 5, 0, 7, 3, 1, 6, 4];   // where each card starts before it snaps
+const SLOT_Y = 620;
+
+function comicCard(c, x, y, rot, k, s, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  c.fillStyle = alpha(PAL.shade, .18); c.beginPath(); c.roundRect(-96 + 10, -130 + 14, 192, 260, 8); c.fill();
+  draw(c, RR(-96, -130, 192, 260, 8), PAL.light, seed, { tex: false, lw: 5 });
+  const col = [PAL.fills[0], PAL.fills[1], PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.blush, PAL.fills[1], PAL.fills[2]][k];
+  const p = RR(-78, -112, 156, 170, 4); c.fillStyle = col; c.fill(p.path); tex(c, p.path, p.box, { color: PAL.shade, density: .35, seed: seed + 1 });
+  // a silhouette-ish figure on every card, different by index
+  c.save(); c.clip(p.path);
+  if (k % 4 === 0) { draw(c, CI(0, 10, 48), PAL.light, seed + 2, { tex: false, lw: 4 }); draw(c, PG(starPts(0, 10, 34, 6, .5)), col, seed + 3, { tex: false, lw: 3 }); }
+  if (k % 4 === 1) { draw(c, PG([[-40, 58], [0, -60], [40, 58]]), PAL.light, seed + 4, { tex: false, lw: 4 }); }
+  if (k % 4 === 2) { for (let b = 0; b < 3; b++) draw(c, CI(-36 + b * 36, 10 + (b % 2) * 26, 26), PAL.light, seed + 5 + b, { tex: false, lw: 3 }); }
+  if (k % 4 === 3) { draw(c, RR(-46, -30, 92, 92, 10), PAL.light, seed + 8, { tex: false, lw: 4 }); stroke(c, [[-46, 16], [46, 16]], seed + 9, { lw: 5, raw: true }); }
+  c.restore();
+  textBar(c, -60, 84, 120, alpha(PAL.ink, .5), 14); textBar(c, -40, 108, 80, alpha(PAL.ink, .25), 10);
+  c.restore();
+}
+function rule(c, drawn, seed) {
+  strokeOn(c, [[110, SLOT_Y + 200], [W - 110, SLOT_Y + 200]], drawn, seed, { lw: 8, raw: true });
+  for (let k = 0; k < 8; k++) { const x = 190 + k * (W - 380) / 7; if (drawn * (W - 220) + 110 < x) continue; stroke(c, [[x, SLOT_Y + 180], [x, SLOT_Y + 230]], seed + 10 + k, { lw: 5, raw: true }); textBar(c, x - 26, SLOT_Y + 268, 52, alpha(PAL.ink, .35), 12); }
+}
+const START = [[300, 300, -.3], [700, 250, .25], [1120, 330, -.15], [260, 880, .2], [640, 900, -.25], [1060, 860, .3], [900, 520, .1], [420, 560, -.2]];
+function sceneJumble(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[4], density: .12, cell: 16 });
+  rule(c, sm(.2, 1.1, tau), 20);
+  START.forEach(([x, y, rot], k) => { const pop = easeBack(sm(k * .06, k * .06 + .3, tau, t => t)); if (pop > .02) comicCard(c, x, y, rot, k, pop, 40 + k * 5); });
+}
+function slotX(k) { return 190 + k * (W - 380) / 7; }
+function sceneSnap(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[4], density: .12, cell: 16 });
+  rule(c, 1, 20);
+  ORDER.forEach((k, slot) => {
+    const t0 = slot * 4 / 12, p = sm(t0, t0 + .3, tau, easeOut);
+    const [sx, sy, srot] = START[k];
+    const x = lerp(sx, slotX(slot), p), y = lerp(sy, SLOT_Y - 60, p), rot = lerp(srot, 0, p), s = lerp(1, .78, p);
+    comicCard(c, x, y, rot, k, s, 40 + k * 5);
+    if (p >= 1 && tau - (t0 + .3) < .25) ringsOut(c, slotX(slot), SLOT_Y + 100, tau - t0 - .3, { every: 1 / 12, t1: .12, speed: 900, colors: [PAL.fills[2], PAL.blush], width: 6, seed: 60 + slot, max: 300 });
+    if (p > 0 && p < 1) speedLines(c, x, y, Math.atan2(SLOT_Y - 60 - sy, slotX(slot) - sx) + Math.PI, 70 + slot + i, 5, .4);
+  });
+}
+function sceneBurst(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[4], density: .12, cell: 16 });
+  rule(c, 1, 20);
+  ORDER.forEach((k, slot) => comicCard(c, slotX(slot), SLOT_Y - 60, 0, k, .78, 40 + k * 5));
+  const pop = easeBack(sm(0, .35, tau, t => t));
+  if (pop > .02) {
+    c.save(); c.translate(CX, 380); c.scale(pop, pop); c.rotate(-.03);
+    const spikes = []; for (let k = 0; k < 40; k++) { const a = k / 40 * TAU, rr = (k % 2 ? 320 : 470) * (1 + .06 * Math.sin(k * 3)); spikes.push([Math.cos(a) * rr * 1.5, Math.sin(a) * rr * .72]); }
+    draw(c, PG(spikes), PAL.fills[2], 80, { lw: 7, texo: { density: .3, color: PAL.blush } });
+    const inner = []; for (let k = 0; k < 40; k++) { const a = k / 40 * TAU, rr = (k % 2 ? 250 : 380) * (1 + .05 * Math.cos(k * 3)); inner.push([Math.cos(a) * rr * 1.5, Math.sin(a) * rr * .72]); }
+    draw(c, PG(inner), PAL.light, 81, { lw: 5, tex: false });
+    writeOn(c, 'mcu', 0, -20, sm(.25, .8, tau, t => t), { size: 190, ink: PAL.fills[1], ink2: PAL.blush, pen: null });
+    writeOn(c, 'timeline', 0, 130, sm(.6, 1.2, tau, t => t), { size: 150, ink: PAL.ink, ink2: PAL.fills[2], pen: null });
+    c.restore();
+  }
+  if (tau > .5) for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + .3; sparkle(c, CX + Math.cos(a) * 760, 380 + Math.sin(a) * 380, 34 + (pulse(i + k, 7, 3) ? 12 : 0), [PAL.fills[2], PAL.blush, PAL.fills[3]][k % 3], a); }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_MCU, poster: 4.6, crf: 27,
+  beats: [
+    { name: 'jumble', dur: 1.6, fn: sceneJumble },
+    { name: 'snap', dur: 1.8, fn: sceneSnap },
+    { name: 'burst', dur: 1.7, fn: sceneBurst },
+  ],
+});
+</script>

@@ -1,0 +1,110 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>anomaly-detection</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Anomaly Detection in Wireless Networks, an ML model for intrusions.
+// Look: flat screen print on a dark console. Anchor: the outlier. Signature: a radar sweep - the beam goes
+// round twice, and the second time it comes back the one bad dot is ringed and tagged.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.8   field   nodes appear on a polar grid, the beam starting its first turn       dottedArc, sweep
+// 1.8   1.4   sweep   the beam finds the outlier; everything else dims                      clip wedge
+// 3.2   1.8   tag     a tag is drawn to the outlier and labelled "anomalies"                writeOn
+
+const PAL_AN = makePalette({
+  paper: '#101a26', paperBand: null, ink: '#dbe9f4', night: '#0a1118', chalk: '#dbe9f4', chalkDim: '#5f7d99', guide: 'rgba(219,233,244,.25)',
+  fills: ['#16283a', '#1f3b52', '#27d6a0', '#f4d35e', '#ef476f', '#118ab2'], shade: '#0a1118', light: '#f2f9ff', blush: '#ef476f',
+  accents: ['#27d6a0', '#ef476f', '#f4d35e', '#118ab2'], inks: ['#27d6a0', '#ef476f'], finish: 'screen',
+}, 'screenSea');
+const RC = [CX - 120, CY + 30], RR_ = 430;
+const NODES = (() => { const r = rng(5), out = []; for (let k = 0; k < 44; k++) { const a = r() * TAU, d = Math.sqrt(r()) * RR_ * .92; out.push([RC[0] + Math.cos(a) * d * 1.25, RC[1] + Math.sin(a) * d, r()]); } return out; })();
+const BAD = [RC[0] + 300, RC[1] - 250];
+
+function console_(c, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .14, cell: 16 });
+  // the panel to the right: three readouts
+  const x = W - 420, y = 150;
+  draw(c, RR(x, y, 340, 780, 20), PAL.fills[0], 10, { lw: 5, texo: { density: .2 } });
+  textBar(c, x + 40, y + 50, 180, alpha(PAL.light, .7), 18);
+  for (let k = 0; k < 3; k++) { const ry = y + 130 + k * 120; textBar(c, x + 40, ry, 110, alpha(PAL.light, .35), 14);
+    draw(c, RR(x + 40, ry + 30, 260, 26, 13), alpha(PAL.light, .12), 20 + k, { tex: false, lw: 2.4 });
+    draw(c, RR(x + 40, ry + 30, 260 * [.72, .45, .88][k], 26, 13), [PAL.fills[2], PAL.fills[5], PAL.fills[3]][k], 30 + k, { tex: false, line: false }); }
+  const sp = []; for (let k = 0; k <= 16; k++) sp.push([x + 40 + k * 16, y + 560 - Math.sin(k * .8 + i * .2) * 40]);
+  stroke(c, sp, 40, { raw: true, lw: 4, color: PAL.fills[2] });
+  for (let k = 0; k < 4; k++) { dot(c, x + 60, y + 640 + k * 40, 8, k === 1 ? PAL.blush : PAL.fills[2]); textBar(c, x + 84, y + 640 + k * 40, 150 - k * 20, alpha(PAL.light, .3), 11); }
+  // the polar grid
+  for (let r = 1; r <= 4; r++) { const rr = r * RR_ / 4; c.save(); c.setLineDash([]); stroke(c, ellPts(RC[0], RC[1], rr * 1.25, rr, 0, 80), 50 + r, { raw: true, close: true, lw: 3, color: alpha(PAL.chalkDim, .45) }); c.restore(); }
+  for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; stroke(c, [[RC[0], RC[1]], [RC[0] + Math.cos(a) * RR_ * 1.25, RC[1] + Math.sin(a) * RR_]], 60 + k, { lw: 2.6, color: alpha(PAL.chalkDim, .35), raw: true }); }
+}
+function nodes(c, upto, dim, i) {
+  NODES.forEach(([x, y, v], k) => {
+    if (k > upto) return;
+    const col = dim ? alpha(PAL.fills[2], .3) : PAL.fills[2];
+    dot(c, x, y, v > .8 ? 11 : 8, col);
+    if (!dim && pulse(i + k * 3, 14, 3)) stroke(c, ellPts(x, y, 18, 18, 0, 20), 70 + k, { raw: true, close: true, lw: 2.6, color: alpha(PAL.fills[2], .6) });
+  });
+}
+function beam(c, a, seed) {
+  const span = .5;
+  c.save(); c.beginPath(); c.moveTo(RC[0], RC[1]);
+  for (let t = -span; t <= span; t += .05) c.lineTo(RC[0] + Math.cos(a + t) * RR_ * 1.3, RC[1] + Math.sin(a + t) * RR_ * 1.05);
+  c.closePath();
+  c.fillStyle = alpha(PAL.fills[2], .12); c.fill();
+  c.restore();
+  stroke(c, [[RC[0], RC[1]], [RC[0] + Math.cos(a) * RR_ * 1.3, RC[1] + Math.sin(a) * RR_ * 1.05]], seed, { lw: 6, color: PAL.fills[2], raw: true });
+}
+function sceneField(c, tau, i) {
+  console_(c, i);
+  nodes(c, Math.floor(sm(0, 1.4, tau, easeOut) * NODES.length), false, i);
+  beam(c, -Math.PI / 2 + tau * 3.4, 80);
+  dot(c, RC[0], RC[1], 14, PAL.light);
+}
+function sceneSweep(c, tau, i) {
+  console_(c, i);
+  const a = -Math.PI / 2 + 6.1 + tau * 3.4, found = tau > .62;
+  nodes(c, NODES.length, found, i);
+  beam(c, a, 80);
+  dot(c, RC[0], RC[1], 14, PAL.light);
+  dot(c, BAD[0], BAD[1], found ? 16 : 10, found ? PAL.blush : PAL.fills[2]);
+  if (found) {
+    const d = tau - .62;
+    for (let k = 0; k < 2; k++) dashedRing(c, BAD[0], BAD[1], 50 + k * 34, PAL.blush, 90 + k, [16, 12], 5);
+    ringsOut(c, BAD[0], BAD[1], d, { every: 1 / 5, t1: .4, speed: 420, colors: [PAL.blush], width: 5, seed: 92, max: 320, r0: 40 });
+    crossMark(c, BAD[0], BAD[1], 14, 93, { lw: 5, color: PAL.light });
+  }
+}
+function sceneTag(c, tau, i) {
+  console_(c, i);
+  nodes(c, NODES.length, true, i);
+  beam(c, -Math.PI / 2 + 11.5, 80);
+  dot(c, RC[0], RC[1], 14, PAL.light);
+  dot(c, BAD[0], BAD[1], 16, PAL.blush);
+  for (let k = 0; k < 2; k++) dashedRing(c, BAD[0], BAD[1], 50 + k * 34, PAL.blush, 90 + k, [16, 12], 5);
+  // a leader line out to a tag card
+  const p = sm(0, .4, tau, easeOut), tx = BAD[0] + 150, ty = BAD[1] - 210;
+  strokeOn(c, [[BAD[0] + 40, BAD[1] - 40], [tx, ty + 60]], p, 100, { lw: 5, color: PAL.blush, raw: true });
+  if (p >= 1) {
+    const tw = 620, th = 210;
+    c.fillStyle = alpha(PAL.shade, .4); c.beginPath(); c.roundRect(tx - tw / 2 + 12, ty - th / 2 + 16, tw, th, 16); c.fill();
+    draw(c, RR(tx - tw / 2, ty - th / 2, tw, th, 16), PAL.fills[1], 101, { lw: 6, texo: { density: .25 } });
+    writeOn(c, 'anomalies', tx, ty + 34, sm(.35, 1.2, tau, t => t), { size: 140, ink: PAL.light, ink2: PAL.blush, pen: PAL.blush });
+    crossMark(c, tx - tw / 2 + 50, ty - th / 2 + 46, 16, 102, { lw: 5, color: PAL.blush });
+  }
+  if (tau > 1.2) writeOn(c, 'detected', 250, H - 110, sm(1.2, 1.7, tau, t => t), { size: 100, ink: PAL.fills[2], ink2: null, pen: null });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_AN, poster: 3.0,
+  beats: [
+    { name: 'field', dur: 1.8, fn: sceneField },
+    { name: 'sweep', dur: 1.4, fn: sceneSweep },
+    { name: 'tag', dur: 1.8, fn: sceneTag },
+  ],
+});
+</script>

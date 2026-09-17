@@ -1,0 +1,97 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>portfolio-v1</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Anime Theme (v1), the first portfolio.
+// Look: riso, sakura pink and one red on cream. Anchor: the falling petals. Signature: the impact frame - the
+// whole screen goes to speed lines for two frames, the way a 2000s anime title card lands.
+// t     dur   scene    what changes                                                   kit
+// 0.0   1.5   branch   a big sun, a branch across the top, petals starting to fall       petals
+// 1.5   0.6   impact   radial speed lines, two flash frames, the petals freeze            speedLines, flash
+// 2.1   2.3   title    the title card: "anime theme" brushed across the sun               writeOn
+
+const PAL_V1 = makePalette({
+  paper: '#fdeee6', paperBand: null, ink: '#2b1b2e', night: '#231426', chalk: '#fff8f4', chalkDim: '#a98c9c', guide: 'rgba(43,27,46,.3)',
+  fills: ['#ff8fb1', '#ff4d6d', '#ffd6e0', '#8a5a7a', '#ffe9a8', '#c9184a'], shade: '#2b1b2e', light: '#fff8f4', blush: '#ff4d6d',
+  accents: ['#ff4d6d', '#ff8fb1', '#ffd6e0', '#c9184a'], inks: ['#ff4d6d', '#ff8fb1', '#2b1b2e'], finish: 'riso',
+}, 'risoPop');
+
+function petal(c, x, y, rot, s, col, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  draw(c, PG([[0, -22], [18, -4], [10, 20], [-10, 20], [-18, -4]]), col, seed, { lw: 3.4, tex: false });
+  c.restore();
+}
+function petals(c, tau, i, frozen) {
+  const r = rng(11);
+  for (let k = 0; k < 34; k++) {
+    const x0 = r() * (W + 400) - 200, sp = 150 + r() * 220, sway = 60 + r() * 120, ph = r() * TAU;
+    const t = frozen ? frozen : tau;
+    const y = ((t * sp + r() * 1400) % 1500) - 200;
+    const x = x0 + Math.sin(t * 1.6 + ph) * sway;
+    petal(c, x, y, ph + t * 2.2, .8 + r() * .8, [PAL.fills[0], PAL.fills[2], PAL.light][k % 3], 20 + k);
+  }
+}
+function branch(c, seed) {
+  const pts = [[-40, 120], [300, 60], [700, 160], [1080, 70], [1480, 140]];
+  stroke(c, pts, seed, { lw: 26, color: PAL.fills[3] });
+  for (let k = 0; k < 10; k++) { const t = k / 9, [bx, by] = bez(pts[0], pts[1], pts[3], pts[4], t), up = k % 2 ? -1 : 1;
+    stroke(c, [[bx, by], [bx + up * 40, by + 80 + (k % 3) * 30]], seed + 10 + k, { lw: 10, color: PAL.fills[3], raw: true });
+    for (let b = 0; b < 4; b++) petal(c, bx + up * 40 + (b - 1.5) * 30, by + 110 + (k % 3) * 30 + (b % 2) * 20, b * 1.4, 1.5, [PAL.fills[0], PAL.fills[2]][b % 2], seed + 40 + k * 4 + b); }
+}
+function sceneBranch(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .16, cell: 15 });
+  const sun = CI(CX + 120, 620, 380); c.fillStyle = PAL.fills[1]; c.fill(sun.path); tex(c, sun.path, sun.box, { color: PAL.fills[5], density: .35, seed: 5 });
+  stroke(c, ellPts(CX + 120, 620, 380, 380, 0, 90), 6, { raw: true, close: true, lw: 8, color: PAL.fills[5] });
+  // rooftops in silhouette, so the sun has something to set behind
+  const roofs = PG([[-20, 1080], [-20, 880], [180, 880], [260, 790], [340, 880], [620, 880], [700, 800], [780, 880], [1100, 880], [1180, 810], [1260, 880], [1460, 880], [1460, 1080]]);
+  c.fillStyle = PAL.fills[3]; c.fill(roofs.path); tex(c, roofs.path, roofs.box, { color: PAL.shade, density: .3, seed: 7 });
+  branch(c, 60);
+  petals(c, tau, i, 0);
+  if (tau > 1.1) for (let k = 0; k < 6; k++) if (pulse(i + k, 4, 2)) sparkle(c, 200 + k * 220, 300 + (k % 3) * 90, 26, PAL.light, k + i * .3);
+}
+function sceneImpact(c, tau, i) {
+  if (tau < 2 / 12) { flash(c, PAL.light); return; }
+  paper(c, PAL.fills[1], null);
+  const r = rng(30);
+  c.save(); c.translate(CX, CY);
+  for (let k = 0; k < 90; k++) { const a = r() * TAU, w = .01 + r() * .05, r0 = 120 + r() * 200, r1 = 1600;
+    c.fillStyle = k % 3 ? PAL.light : PAL.fills[2]; c.beginPath();
+    c.moveTo(Math.cos(a - w) * r0, Math.sin(a - w) * r0); c.lineTo(Math.cos(a) * r1, Math.sin(a) * r1); c.lineTo(Math.cos(a + w) * r0, Math.sin(a + w) * r0); c.fill(); }
+  c.restore();
+  draw(c, CI(CX, CY, 200), PAL.fills[5], 31, { lw: 8, texo: { density: .4 } });
+  petals(c, 1.5, i, 1.5);
+}
+function sceneTitle(c, tau, i) {
+  paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .16, cell: 15 });
+  const sun = CI(CX, CY - 40, 420); c.fillStyle = PAL.fills[1]; c.fill(sun.path); tex(c, sun.path, sun.box, { color: PAL.fills[5], density: .35, seed: 5 });
+  stroke(c, ellPts(CX, CY - 40, 420, 420, 0, 90), 6, { raw: true, close: true, lw: 8, color: PAL.fills[5] });
+  branch(c, 60);
+  petals(c, 1.5 + tau, i, 0);
+  // the brushed title card, a dark band with the name
+  const p = sm(.05, .5, tau, easeOut);
+  if (p > 0) {
+    const bh = 250, by = CY - 40;
+    c.save(); c.translate(CX, by); c.rotate(-.02); c.scale(p, 1);
+    draw(c, PG([[-700, -bh / 2], [700, -bh / 2 + 16], [700, bh / 2], [-700, bh / 2 - 12]]), PAL.shade, 40, { lw: 6, texo: { density: .3, color: PAL.fills[3] } });
+    c.restore();
+    if (p >= 1) { writeOn(c, 'anime theme', CX, by + 52, sm(.5, 1.4, tau, t => t), { size: 200, ink: PAL.light, ink2: PAL.fills[0], pen: null, rot: -.02 });
+      if (tau > 1.5) { stroke(c, [[CX - 620, by + 110], [CX + 620, by + 110]], 41, { lw: 6, color: PAL.fills[0] }); } }
+  }
+  if (tau > .7) for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; if (pulse(i + k, 5, 2)) stroke(c, [[CX + Math.cos(a) * 520, CY - 40 + Math.sin(a) * 520], [CX + Math.cos(a) * 700, CY - 40 + Math.sin(a) * 700]], 50 + k, { lw: 10, color: PAL.fills[0], raw: true }); }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_V1, poster: 4.2, crf: 28,
+  beats: [
+    { name: 'branch', dur: 1.5, fn: sceneBranch },
+    { name: 'impact', dur: .6, fn: sceneImpact },
+    { name: 'title', dur: 2.3, fn: sceneTitle },
+  ],
+});
+</script>

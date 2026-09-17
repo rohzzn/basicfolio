@@ -1,0 +1,92 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>tanoshi</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Tanoshi, an easy-on-the-eyes VS Code theme.
+// Look: soft dark, dusty purple. Anchor: the editor caret. Signature: code types itself as coloured bars, then
+// the theme's swatches fan out like paint chips; it ends on a moon, because that is what the theme is for.
+// t     dur   scene    what changes                                                    kit
+// 0.0   2.0   editor   lines type in, the caret blinks, the gutter fills                 RR bars, flicker
+// 2.0   1.3   chips    the palette fans out of the editor, chip by chip                   rotate fan
+// 3.3   1.7   moon     a crescent, a closed eye, and the name written softly               writeOn, sparkle
+
+const PAL_TAN = makePalette({
+  paper: '#262335', paperBand: null, ink: '#e6e1f5', night: '#1b1928', chalk: '#e6e1f5', chalkDim: '#8a84a8', guide: 'rgba(230,225,245,.25)',
+  fills: ['#302c45', '#3b3654', '#f2a6c4', '#9ad0ec', '#f7d794', '#a8e6cf'], shade: '#1b1928', light: '#e6e1f5', blush: '#f2a6c4',
+  accents: ['#f2a6c4', '#9ad0ec', '#f7d794', '#a8e6cf'], inks: ['#9ad0ec', '#f2a6c4'], finish: 'screen',
+}, 'blueprintNight');
+const CODE = [
+  [[70, 3], [150, 4], [90, 2]], [[110, 5], [220, 3], [60, 4]], [[50, 2], [180, 5], [130, 4], [70, 3]],
+  [[140, 4], [90, 2], [170, 5]], [[60, 3], [210, 4]], [[120, 5], [80, 3], [190, 2], [60, 4]], [[90, 4], [150, 3]],
+];
+function editor(c, tau, i, seed, typed) {
+  const x = 90, y = 90, w = W - 180, h = H - 180;
+  draw(c, RR(x, y, w, h, 26), PAL.fills[0], seed, { tex: false, lc: PAL.fills[1], lw: 5 });
+  const tabH = 76, b = rectPath(x, y, w, tabH);
+  c.save(); c.clip(roundRectPath(x, y, w, h, 26)); c.fillStyle = PAL.night; c.fill(b); c.restore();
+  draw(c, RR(x + 20, y + 10, 300, tabH - 10, 10), PAL.fills[0], seed + 1, { tex: false, line: false });
+  dot(c, x + 56, y + 42, 12, PAL.fills[4]); textBar(c, x + 84, y + 42, 190, alpha(PAL.light, .55), 14);
+  stroke(c, [[x, y + tabH], [x + w, y + tabH]], seed + 2, { lw: 3, color: alpha(PAL.light, .15) });
+  const gx = x + 40, lx = x + 130, top = y + tabH + 60, lh = 96;
+  CODE.forEach((line, k) => {
+    const p = clamp(typed - k, 0, 1); if (p <= 0) return;
+    textBar(c, gx, top + k * lh, 26, alpha(PAL.light, .2), 12);
+    let cx = lx + (k % 3 === 2 ? 60 : k === 4 ? 60 : 0);
+    let budget = line.reduce((a, [w]) => a + w + 22, 0) * p;
+    for (const [bw, ci] of line) { const draww = Math.min(bw, budget); if (draww <= 2) break; textBar(c, cx, top + k * lh, draww, PAL.fills[ci], 22); cx += bw + 22; budget -= bw + 22; }
+    if (p < 1 && (flicker(i, 3))) { c.fillStyle = PAL.fills[3]; c.fillRect(cx - 14, top + k * lh - 26, 10, 52); }
+  });
+  if (typed >= CODE.length && flicker(i, 3)) { c.fillStyle = PAL.fills[3]; c.fillRect(lx, top + CODE.length * lh - 26, 10, 52); }
+  return [x, y, w, h];
+}
+function sceneEditor(c, tau, i) {
+  paper(c);
+  editor(c, tau, i, 10, tau * 4);
+}
+function chip(c, x, y, rot, col, s, seed, label) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  c.fillStyle = alpha(PAL.shade, .4); c.beginPath(); c.roundRect(-96 + 12, -230 + 14, 192, 460, 14); c.fill();
+  draw(c, RR(-96, -230, 192, 460, 14), PAL.light, seed, { tex: false, lw: 4 });
+  draw(c, RR(-78, -212, 156, 300, 8), col, seed + 1, { lw: 3, texo: { density: .35, color: PAL.shade } });
+  if (label) writeOn(c, label, 0, 170, 1, { size: 70, ink: PAL.shade, ink2: null, pen: null });
+  else squig(c, -66, 150, 132, 1, { seed: seed + 2, width: 3, color: alpha(PAL.shade, .6) });
+  c.restore();
+}
+function sceneChips(c, tau, i) {
+  paper(c);
+  c.save(); c.globalAlpha = .45; editor(c, 2, i, 10, 99); c.restore();
+  const cols = [PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[5], PAL.blush];
+  cols.forEach((col, k) => {
+    const p = easeBack(sm(k * .13, k * .13 + .45, tau, t => t)); if (p <= .02) return;
+    const spread = lerp(0, (k - 2) * .34, p);
+    chip(c, CX + Math.sin(spread) * 620, CY + 120 - Math.cos(spread) * 240, spread, col, lerp(.5, 1, p), 20 + k * 5);
+  });
+  dot(c, CX, CY + 400, 26, PAL.light);
+}
+function sceneMoon(c, tau, i) {
+  paper(c, PAL.night, null);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 420, PAL.light, .5, 30, 3.4);
+  const mx = CX, my = 380, R = 210;
+  draw(c, CI(mx, my, R), PAL.fills[4], 40, { lw: 6, texo: { color: PAL.blush, density: .25 } });
+  c.fillStyle = PAL.night; c.beginPath(); c.arc(mx + R * .42, my - R * .3, R * .92, 0, TAU); c.fill();
+  stroke(c, curvePts([mx - 80, my + 40], [mx - 30, my + 90], [mx + 20, my + 40], 16), 41, { lw: 8, raw: true, color: PAL.shade });
+  for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + .3, d = 360 + (k % 2) * 90; sparkle(c, mx + Math.cos(a) * d * 1.5, my + Math.sin(a) * d * .7, 22 + (pulse(i + k * 3, 9, 4) ? 10 : 0), [PAL.fills[3], PAL.fills[5], PAL.fills[2]][k % 3], a); }
+  for (let r = 1; r <= 3; r++) dottedArc(c, mx, my, R + r * 80, alpha(PAL.light, .3), 50 + r, 22, 3);
+  writeOn(c, 'tanoshi', CX, CY + 380, sm(.25, 1.1, tau, t => t), { size: 210, ink: PAL.light, ink2: PAL.blush, pen: PAL.blush });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_TAN, poster: 4.5,
+  beats: [
+    { name: 'editor', dur: 2.0, fn: sceneEditor },
+    { name: 'chips', dur: 1.3, fn: sceneChips },
+    { name: 'moon', dur: 1.7, fn: sceneMoon },
+  ],
+});
+</script>

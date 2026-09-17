@@ -1,0 +1,110 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>block-steam-invites</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Block-Steam-Invites, a script that blocks unwanted invites.
+// Look: ink at night, one cold blue. Anchor: the shield dome. Signature: envelopes arrive and bounce off the
+// dome, and the last one comes back stamped - the stamp is the name.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   swarm   envelopes streaming in out of the dark towards the dome             bez paths
+// 1.6   1.4   bounce  the dome flashes at each hit; the envelopes ricochet away             ringsOut
+// 3.0   1.9   stamp   one lands face up and a rubber stamp comes down on it                 writeOn
+
+const PAL_BS = makePalette({
+  paper: '#151d2b', paperBand: null, ink: '#e6eefc', night: '#0d1420', chalk: '#e6eefc', chalkDim: '#7286a8', guide: 'rgba(230,238,252,.25)',
+  fills: ['#1d2a40', '#27384f', '#3d6fa8', '#e6eefc', '#c9573f'], shade: '#0d1420', light: '#f2f6ff', blush: '#c9573f',
+  accents: ['#5fb0e8', '#c9573f', '#e8c75a', '#7ad0a8'], inks: ['#e6eefc', '#5fb0e8'], finish: 'ink',
+}, 'blueprintNight');
+const DOME = [CX, 1030], DR = 430;
+
+function envelope(c, x, y, rot, s, seed, flap) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  draw(c, RR(-120, -80, 240, 160, 10), PAL.fills[3], seed, { lw: 5, tex: false });
+  stroke(c, [[-120, -80], [0, 10], [120, -80]], seed + 1, { lw: 5, raw: true, color: PAL.shade });
+  if (flap) { draw(c, PG([[-120, -80], [0, 10], [120, -80]]), PAL.fills[4], seed + 2, { lw: 4, tex: false }); }
+  c.restore();
+}
+function dome(c, hit, i) {
+  const pts = arcPts(DOME[0], DOME[1], DR, DR, Math.PI, TAU, 60);
+  c.save(); c.globalAlpha = hit ? .3 : .16; c.fillStyle = PAL.accents[0]; c.fill(polyPath(pts)); c.restore();
+  stroke(c, pts, 10, { raw: true, lw: hit ? 12 : 8, color: hit ? PAL.light : PAL.accents[0] });
+  for (let k = 1; k <= 3; k++) stroke(c, arcPts(DOME[0], DOME[1], DR - k * 70, DR - k * 70, Math.PI, TAU, 40), 11 + k, { raw: true, lw: 3, color: alpha(PAL.accents[0], .35) });
+  // the thing being protected: a small machine under the dome
+  draw(c, RR(DOME[0] - 150, DOME[1] - 230, 300, 230, 20), PAL.fills[1], 20, { lw: 6, texo: { density: .4, color: PAL.chalkDim } });
+  for (let r = 0; r < 3; r++) { textBar(c, DOME[0] - 110, DOME[1] - 190 + r * 46, 150 - r * 30, alpha(PAL.chalk, .5), 14); dot(c, DOME[0] + 100, DOME[1] - 190 + r * 46, 10, pulse(i + r * 3, 7, 4) ? PAL.accents[3] : alpha(PAL.chalk, .3)); }
+}
+const PATHS = [
+  [[-200, 120], [300, 40], [CX - 200, 380], [DOME[0] - 210, DOME[1] - DR + 120]],
+  [[W + 200, 60], [1100, 20], [CX + 260, 300], [DOME[0] + 190, DOME[1] - DR + 150]],
+  [[-160, 620], [200, 420], [CX - 340, 520], [DOME[0] - 330, DOME[1] - DR + 300]],
+  [[W + 160, 520], [1180, 380], [CX + 380, 460], [DOME[0] + 320, DOME[1] - DR + 280]],
+];
+function sceneSwarm(c, tau, i) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 320, PAL.light, .4, 3, 3);
+  dome(c, false, i);
+  PATHS.forEach((path, k) => {
+    const t0 = k * .22, p = sm(t0, t0 + 1.1, tau, easeIn); if (p <= 0) return;
+    const [x, y] = bez(path[0], path[1], path[2], path[3], p);
+    envelope(c, x, y, (k % 2 ? .3 : -.3) + p * .6, lerp(.6, 1, p), 30 + k * 5, false);
+    speedLines(c, x, y, Math.atan2(path[3][1] - path[0][1], path[3][0] - path[0][0]) + Math.PI, 40 + k + i, 5, .45, PAL.chalkDim);
+  });
+}
+function sceneBounce(c, tau, i) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 320, PAL.light, .4, 3, 3);
+  const hits = PATHS.map((_, k) => k * .18);
+  const anyHit = hits.some(t => tau >= t && tau < t + 2 / 12);
+  dome(c, anyHit, i);
+  PATHS.forEach((path, k) => {
+    const t0 = hits[k], d = tau - t0; if (d < 0) { const [x, y] = path[3]; envelope(c, x, y, 0, 1, 30 + k * 5, false); return; }
+    // ricochet: back out the way it came, tumbling
+    const [hx, hy] = path[3], vx = (hx - DOME[0]) / DR, vy = (hy - DOME[1]) / DR;
+    const x = hx + vx * d * 900, y = hy + vy * d * 900 - 200 * d + 600 * d * d;
+    envelope(c, x, y, d * 6 * (k % 2 ? 1 : -1), 1, 30 + k * 5, true);
+    ringsOut(c, hx, hy, d, { every: 1 / 12, t1: .12, speed: 800, colors: [PAL.light, PAL.accents[0]], width: 6, seed: 50 + k, max: 320 });
+  });
+}
+function sceneStamp(c, tau, i) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 320, PAL.light, .4, 3, 3);
+  dome(c, false, i);
+  // one envelope, face up, centre frame
+  const lay = sm(0, .35, tau, easeOut);
+  const x = lerp(W + 200, CX, lay), y = lerp(200, 430, lay);
+  c.save(); c.translate(x, y); c.scale(1.9, 1.9); c.rotate(lerp(.5, -.03, lay));
+  envelope(c, 0, 0, 0, 1, 60, false);
+  c.restore();
+  const drop = sm(.45, .68, tau, easeIn), lift = sm(.72, .95, tau, easeOut);
+  const sz = lerp(3.2, 1, drop) * (1 + lift * 1.6);
+  if (drop > 0 && lift < 1) {
+    // the stamp block coming down
+    c.save(); c.translate(CX + 60, 400 - lift * 420); c.scale(sz * .6, sz * .6);
+    draw(c, RR(-230, -120, 460, 240, 16), PAL.fills[1], 70, { lw: 6, texo: { density: .4, color: PAL.chalkDim } });
+    draw(c, RR(-130, -230, 260, 120, 20), PAL.fills[0], 71, { lw: 6, tex: false });
+    c.restore();
+  }
+  if (drop >= 1) {
+    c.save(); c.translate(CX + 40, 430); c.rotate(-.12);
+    for (let k = 0; k < 2; k++) stroke(c, rrPts(-380 - k * 14, -130 - k * 14, 760 + k * 28, 260 + k * 28, 18), 80 + k, { raw: true, close: true, lw: 9, color: PAL.blush, amp: 5 });
+    writeOn(c, 'blocked', 0, 40, sm(.7, 1.4, tau, t => t), { size: 190, ink: PAL.blush, ink2: null, pen: null });
+    c.restore();
+  }
+  if (tau > 1.35) writeOn(c, 'steam invites', CX, H - 120, sm(1.35, 1.9, tau, t => t), { size: 110, ink: PAL.chalk, ink2: PAL.accents[0], pen: null });
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_BS, poster: 1.4,
+  beats: [
+    { name: 'swarm', dur: 1.6, fn: sceneSwarm },
+    { name: 'bounce', dur: 1.4, fn: sceneBounce },
+    { name: 'stamp', dur: 1.9, fn: sceneStamp },
+  ],
+});
+</script>
