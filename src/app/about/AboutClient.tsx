@@ -1,124 +1,10 @@
 "use client";
-import React, { cloneElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ActivityCalendar } from 'react-activity-calendar';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from '@/components/SiteImage';
 import Link from 'next/link';
+import InkCalendar from '@/components/InkCalendar';
 import type { CalendarActivity } from '@/lib/github-calendar';
-import { languageColor, type LanguageCalendar } from '@/lib/github-languages';
-
-const CAL_MARGIN = 3;
-const MAX_BLOCK = 28;
-
-/** Largest block size so n columns fit in targetPx (grid width = n*(bs+m)-m). */
-function blockSizeForWeeks(targetPx: number, weekColumns: number, m: number): number {
-  if (targetPx < 16 || weekColumns < 1) return 9;
-  const bs = Math.floor((targetPx - (weekColumns - 1) * m) / weekColumns);
-  return Math.max(4, Math.min(MAX_BLOCK, bs));
-}
-
-function nineMonthsOf(data: CalendarActivity[]): CalendarActivity[] {
-  const now = new Date();
-  const nineMonthsAgo = new Date(now);
-  nineMonthsAgo.setMonth(now.getMonth() - 9);
-  return data.filter((day) => new Date(day.date) >= nineMonthsAgo);
-}
-
-function ProseGitHubCalendar({
-  isDark,
-  data,
-  languages,
-}: {
-  isDark: boolean;
-  data: CalendarActivity[];
-  languages: LanguageCalendar;
-}) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const [blockSize, setBlockSize] = useState(10);
-  const blockSizeRef = useRef(blockSize);
-  const containerWidthRef = useRef(containerWidth);
-  blockSizeRef.current = blockSize;
-  containerWidthRef.current = containerWidth;
-
-  const refit = useCallback(() => {
-    const wrap = wrapRef.current;
-    const cw = containerWidthRef.current;
-    if (!wrap || cw < 24) return;
-    const svg = wrap.querySelector<SVGSVGElement>('.react-activity-calendar svg');
-    if (!svg) return;
-    const gridW = svg.viewBox?.baseVal?.width;
-    if (!gridW || gridW < 12) return;
-
-    const m = CAL_MARGIN;
-    const bs = blockSizeRef.current;
-    const n = Math.max(1, Math.round((gridW + m) / (bs + m)));
-    const next = blockSizeForWeeks(cw, n, m);
-    if (next !== bs) setBlockSize(next);
-  }, []);
-
-  useLayoutEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const syncWidth = () => {
-      const w = el.getBoundingClientRect().width;
-      containerWidthRef.current = w;
-      setContainerWidth(w);
-    };
-    syncWidth();
-    const ro = new ResizeObserver(syncWidth);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  useLayoutEffect(() => {
-    refit();
-  }, [blockSize, containerWidth, refit]);
-
-  useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-    let timeout: ReturnType<typeof setTimeout> | undefined;
-    const mo = new MutationObserver(() => {
-      if (timeout) clearTimeout(timeout);
-      timeout = setTimeout(() => refit(), 60);
-    });
-    mo.observe(wrap, { childList: true, subtree: true });
-    return () => {
-      mo.disconnect();
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [refit]);
-
-  if (data.length === 0) return null;
-
-  const scheme = isDark ? 'dark' : 'light';
-
-  return (
-    <div ref={wrapRef} className="mb-3 w-full min-w-0">
-      <div className="reveal-sweep">
-        <ActivityCalendar
-          data={nineMonthsOf(data)}
-          colorScheme={scheme}
-          theme={{
-            light: ['#e4e4e7', '#a1a1aa', '#71717a', '#52525b', '#3f3f46'],
-            dark: ['#262626', '#525252', '#737373', '#d4d4d4', '#F5F1EC'],
-          }}
-          blockSize={blockSize}
-          blockMargin={CAL_MARGIN}
-          fontSize={10}
-          hideColorLegend
-          hideMonthLabels
-          hideTotalCount
-          showWeekdayLabels={false}
-          renderBlock={(block, activity) => {
-            const fill = languageColor(languages.byDate[activity.date], activity.level, scheme);
-            return fill ? cloneElement(block, { fill }) : block;
-          }}
-        />
-      </div>
-    </div>
-  );
-}
+import type { LanguageCalendar } from '@/lib/github-languages';
 
 const PROFILE_PNG = '/images/profile/rohan.png';
 
@@ -259,7 +145,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalenda
       </div>
 
       {/* GitHub Contributions */}
-      <ProseGitHubCalendar isDark={isDark} data={calendarData} languages={languageCalendar} />
+      <InkCalendar isDark={isDark} data={calendarData} languages={languageCalendar} />
 
 
     </div>
