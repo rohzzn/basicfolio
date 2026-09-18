@@ -10,7 +10,7 @@ const DiscordArticle: React.FC = () => {
       <header className="mb-8">
         <div className="flex items-start justify-between gap-4 mb-4">
           <h1 className="text-lg font-medium dark:text-paper">How Discord Survived 2024s Biggest Launch</h1>
-          <Link href="/writing" className="text-xs text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors flex-shrink-0 mt-1">writing</Link>
+          <Link href="/writing" className="text-xs text-zinc-500 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors flex-shrink-0 mt-1">writing</Link>
         </div>
         <div className="flex items-center gap-4 text-zinc-600 dark:text-neutral-400 text-sm">
           <time dateTime="2024-03-20">March 20, 2024</time>

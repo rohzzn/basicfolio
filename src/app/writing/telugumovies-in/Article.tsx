@@ -14,7 +14,7 @@ const TeluguMoviesIn: React.FC = () => {
           </h1>
           <Link
             href="/writing"
-            className="text-xs text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors flex-shrink-0 mt-1"
+            className="text-xs text-zinc-500 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors flex-shrink-0 mt-1"
           >
             writing
           </Link>

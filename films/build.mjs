@@ -7,7 +7,8 @@
 //   out/_posters.jpg                    every poster on one sheet
 //   src/data/project-films.json         what the cards read: src, poster, duration, version
 //
-// usage: node build.mjs [slug ...] [--jobs 4] [--width 720]
+// usage: node build.mjs [slug ...] [--jobs 4] [--width 960] [--posters] [--poster-width 760]
+//        --posters re-encodes only the stills and leaves every mp4 as it is
 // Env: CHROME=/path/to/chrome, ffmpeg on PATH (source env.sh on Windows).
 import puppeteer from 'puppeteer-core';
 import {spawn} from 'node:child_process';
@@ -38,7 +39,12 @@ const flag = (name, d) => { const k = argv.indexOf(name); return k >= 0 ? argv[k
 // 960: the cards run two across in a max-w-5xl column, so a card is ~500 css px and a
 // 2x screen wants ~1000 device px of film.
 const jobs = +flag('--jobs', 4), width = +flag('--width', 960);
-const flagVals = new Set([flag('--jobs'), flag('--width')].filter(Boolean));
+// The still is what every visitor downloads whether or not they ever hover, so it is encoded for
+// the size it is actually shown at: a tile is ~460 css px at most, and 760 covers that on a 2x
+// screen for a third of what a full-width still costs.
+const posterW = +flag('--poster-width', 760), posterQ = +flag('--poster-quality', 0.8);
+const postersOnly = argv.includes('--posters');
+const flagVals = new Set([flag('--jobs'), flag('--width'), flag('--poster-width'), flag('--poster-quality')].filter(Boolean));
 const wanted = argv.filter(a => !a.startsWith('--') && !flagVals.has(a)).map(a => a.replace(/\.html$/, ''));
 const all = readdirSync(here).filter(f => f.endsWith('.html') && !f.startsWith('_')).map(f => f.replace(/\.html$/, '')).sort();
 const slugs = wanted.length ? wanted : all;
@@ -70,18 +76,27 @@ async function buildOne(slug) {
     await page.waitForFunction('window.__ready === true', {timeout: 60000});
     await page.evaluate(() => document.fonts.ready);
     const {N, poster, size, crf} = await page.evaluate(() => ({N: window.__NDRAW, poster: window.__POSTER ?? 0, size: window.__size, crf: window.__CRF ?? 25}));
-    for (let i = 0; i < N; i++) {
+    if (!postersOnly) for (let i = 0; i < N; i++) {
       try { save(path.join(frames, `${String(i).padStart(4, '0')}.png`), await page.evaluate(i => window.__frame(i), i)); }
       catch (e) { errors.push(`drawn frame ${i} (t=${(i / 12).toFixed(2)} s): ${String(e.message || e).split('\n')[0]}`); }
     }
-    const posterUrl = await page.evaluate(i => { window.__drawFrame(i); return document.getElementById('c').toDataURL('image/webp', .86); }, Math.min(poster, N - 1));
+    const posterUrl = await page.evaluate(([i, pw, pq]) => {
+      window.__drawFrame(i);
+      const src = document.getElementById('c');
+      const o = document.createElement('canvas');
+      o.width = Math.round(pw); o.height = Math.round(pw * src.height / src.width);
+      const x = o.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(src, 0, 0, o.width, o.height);
+      return o.toDataURL('image/webp', pq);
+    }, [Math.min(poster, N - 1), posterW, posterQ]);
     if (errors.length) throw new Error([...new Set(errors)].join('\n  '));
     const group = groupOf(slug), bare = bareOf(slug, group);
     const mp4 = path.join(pubDir(group), `${bare}.mp4`), webp = path.join(pubDir(group), `${bare}.webp`);
     save(webp, posterUrl);
-    await run('ffmpeg', ['-v', 'error', '-y', '-framerate', '12', '-i', path.join(frames, '%04d.png'), '-r', '24', '-c:v', 'libx264', '-preset', 'slow', '-tune', 'animation', '-crf', String(crf), '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', mp4]);
-    const rows = Math.ceil(N / 6 / 6);
-    await run('ffmpeg', ['-v', 'error', '-y', '-i', mp4, '-vf', `select=not(mod(n\\,12)),scale=240:-1,tile=6x${rows}`, '-frames:v', '1', path.join(outDir, `${slug}-contact.jpg`)]);
+    if (!postersOnly) {
+      await run('ffmpeg', ['-v', 'error', '-y', '-framerate', '12', '-i', path.join(frames, '%04d.png'), '-r', '24', '-c:v', 'libx264', '-preset', 'slow', '-tune', 'animation', '-crf', String(crf), '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', mp4]);
+      const rows = Math.ceil(N / 6 / 6);
+      await run('ffmpeg', ['-v', 'error', '-y', '-i', mp4, '-vf', `select=not(mod(n\\,12)),scale=240:-1,tile=6x${rows}`, '-frames:v', '1', path.join(outDir, `${slug}-contact.jpg`)]);
+    }
     const hash = createHash('sha1').update(readFileSync(mp4)).update(readFileSync(webp)).digest('hex').slice(0, 8);
     manifests.get(group)[bare] = {src: `/${group.dir}/films/${bare}.mp4`, poster: `/${group.dir}/films/${bare}.webp`, duration: +(N / 12).toFixed(3), width: size.w, height: size.h, v: hash};
     const kb = n => (readFileSync(n).length / 1024).toFixed(0);

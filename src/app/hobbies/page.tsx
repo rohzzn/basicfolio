@@ -32,11 +32,11 @@ function HobbyRow({ hobby, onEnter }: { hobby: (typeof hobbies)[number]; onEnter
         <span className="text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">
           {hobby.title}
         </span>
-        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-neutral-400">
+        <span className="hidden min-w-0 truncate text-sm text-zinc-500 sm:block dark:text-neutral-400">
           {hobby.description}
         </span>
       </div>
-      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-neutral-400">{hobby.description}</p>
+      <p className="mt-0.5 text-xs text-zinc-500 sm:hidden dark:text-neutral-400">{hobby.description}</p>
     </Link>
   );
 }

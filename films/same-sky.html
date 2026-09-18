@@ -1,0 +1,208 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>same-sky</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Same Sky, an app for two people in two time zones: their local time, their light and
+// whether they are awake, on your Home Screen.
+// Look: flat screen print on the app's own navy, cream and gold. Anchor: the curve of the earth.
+// Signature: the app's own landing image, drawn by hand - two houses sitting on the curve of the
+// earth with one moon over both, and the nudge you send waiting up at the moon while the other
+// one is asleep, because nothing this app sends lands in somebody's night.
+// t     dur   scene  what changes                                                     kit
+// 0.0   1.7   earth  the rim is ruled across, two houses and their trees land on it       strokeOn, easeBack
+// 0.0   1.7          the moon comes up with guides around it, one window already lit      construction
+// 1.7   1.6   nudge  a dotted path is laid from the lit window over the moon; a gold      dottedPath
+// 1.7   1.6          dot rides it, then circles, held there by their night                seedDot
+// 3.3   1.7   name   their window lights, rings at the sill, the name across the sky      writeOn, ringsOut
+
+const PAL_SS = makePalette({
+  paper: '#070b22', paperBand: null, ink: '#fdf6e3', night: '#070b22', chalk: '#fdf6e3', chalkDim: '#8f95c8', guide: 'rgba(240,181,106,.55)',
+  fills: ['#070b22', '#0b1030', '#17204d', '#2b2c63', '#5b3f74', '#a05a6b', '#d98a5e', '#f0b56a'],
+  shade: '#04061a', light: '#fdf6e3', blush: '#d98a5e',
+  accents: ['#f0b56a', '#7fb0e8', '#a889b5', '#d98a5e'], inks: ['#fdf6e3', '#f0b56a'], finish: 'screen',
+}, 'screenSea');
+const LAMP = '#f0b56a', MOONC = '#fdf6e3', DARK = '#161b45', MARIA = '#cbbd99';
+
+// the curve of the earth: one big circle whose top edge crosses the frame near the bottom
+const TOP = 905, SAG = 132, RE = (W * W / 4 + SAG * SAG) / (2 * SAG), EY = TOP + RE;
+const surf = x => [x, EY - Math.sqrt(RE * RE - (x - CX) * (x - CX))];
+const tilt = x => Math.asin((x - CX) / RE);
+const AX = 300, BX = 1140, HS = 2.7;
+const A = surf(AX), B = surf(BX);
+const MX = 726, MY = 286, MR = 134;
+// where a house's window lands in frame coordinates, so the path can start and end on it
+function winAt(x) { const [hx, hy] = surf(x), r = tilt(x), wx = -15 * HS, wy = -29 * HS; return [hx + wx * Math.cos(r) - wy * Math.sin(r), hy + wx * Math.sin(r) + wy * Math.cos(r)]; }
+const WA = winAt(AX), WB = winAt(BX);
+const LEG_A = curvePts([WA[0], WA[1] - 10], [WA[0] - 30, MY + MR * 1.6], [MX - MR * 1.16, MY], 44);
+const LEG_B = curvePts([MX + MR * 1.16, MY], [WB[0] + 30, MY + MR * 1.6], [WB[0], WB[1] - 10], 44);
+const STARS = (() => { const r = rng(21), out = []; for (let k = 0; k < 80; k++) { const x = r() * W, y = r() * (TOP - 30), v = r(), big = r() < .16; if (Math.hypot(x - MX, y - MY) < MR * 1.9) continue; out.push([x, y, v, big]); } return out; })();
+const LEN_A = len(LEG_A), LEN_B = len(LEG_B);
+
+function len(pts) { let s = 0; for (let k = 1; k < pts.length; k++) s += Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]); return s; }
+function walk(pts, p) {
+  const total = len(pts) * clamp(p, 0, 1); let run = 0;
+  for (let k = 1; k < pts.length; k++) {
+    const d = Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]);
+    if (run + d >= total) { const t = d ? (total - run) / d : 0; return [lerp(pts[k - 1][0], pts[k][0], t), lerp(pts[k - 1][1], pts[k][1], t)]; }
+    run += d;
+  }
+  return pts[pts.length - 1];
+}
+// dots laid along the path up to p, at a fixed spacing rather than a fixed count
+function dottedPath(c, pts, total, p, col, size = 5, step = 30) {
+  if (p <= 0) return;
+  const reach = total * clamp(p, 0, 1);
+  for (let d = step * .5; d <= reach; d += step) { const [x, y] = walk(pts, d / total); dot(c, x, y, size, col); }
+}
+
+function sky(c) {
+  night(c, PAL.night, 11);
+  // four flat bands down to the horizon: the app's own night
+  [PAL.fills[0], PAL.fills[1], PAL.fills[2], PAL.fills[3]].forEach((col, k) => {
+    const y0 = k * (TOP + SAG) / 4, pts = [];
+    for (let x = -40; x <= W + 40; x += 80) pts.push([x, y0 + Math.sin((x + k * 130) / 250) * 10]);
+    c.fillStyle = col; c.fill(polyPath(pts.concat([[W + 40, TOP + SAG + 20], [-40, TOP + SAG + 20]])));
+  });
+}
+function starfield(c, i, al) {
+  STARS.forEach(([x, y, v, big], k) => {
+    const tw = al * (.3 + v * .7) * (big && pulse(i + k * 3, 9, 3) ? 1 : .76);
+    if (big) { const s = 8 + v * 9; c.save(); c.strokeStyle = alpha(PAL.light, tw * .85); c.lineWidth = 2.4; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(x - s, y); c.lineTo(x + s, y); c.moveTo(x, y - s); c.lineTo(x, y + s); c.stroke(); c.restore(); }
+    else dot(c, x, y, 1.6 + v * 2.3, alpha(PAL.light, tw));
+  });
+}
+// tonight's moon at its phase, with a rim that boils
+function moon(c, x, y, r, lit, i, seed) {
+  for (let k = 3; k >= 1; k--) { c.fillStyle = alpha(MOONC, .022); c.beginPath(); c.arc(x, y, r + k * 22, 0, TAU); c.fill(); }
+  c.fillStyle = DARK; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+  c.save(); c.beginPath(); c.arc(x, y, r - 1, 0, TAU); c.clip();
+  // the lit face is a disc of its own, pushed off centre by how much of the moon is lit, so the
+  // dark limb stays on show and it is a gibbous rather than a full
+  c.fillStyle = MOONC; c.beginPath(); c.arc(x + r * (1 - lit) * 2, y, r, 0, TAU); c.fill();
+  dot(c, x + r * .3, y - r * .26, r * .17, alpha(MARIA, .5));
+  dot(c, x + r * .08, y + r * .32, r * .12, alpha(MARIA, .45));
+  dot(c, x + r * .54, y + r * .12, r * .08, alpha(MARIA, .4));
+  c.restore();
+  c.save(); c.strokeStyle = alpha(MARIA, .9); c.lineWidth = 3; c.lineJoin = 'round';
+  wob(c, ellPts(x, y, r, r, 0, 72), 1.4, seed + Math.floor(i / 3), true); c.restore();
+}
+// the app's own house: origin at the middle of the doorstep, 100 units tall at s = 1
+const HB = [[-38, 0], [38, 0], [38, -50], [-38, -50]], HR = [[-47, -47], [0, -90], [47, -47]], HC = [[17, -60], [29, -60], [29, -86], [17, -86]];
+function house(c, x, y, s, r, lit, seed) {
+  c.save(); c.translate(x, y); c.rotate(r); c.scale(s, s);
+  if (lit > 0) {  // the lamp spilling out of the window
+    const gx = -15, gy = -29, gr = 78;
+    const g = c.createRadialGradient(gx, gy, 2, gx, gy, gr);
+    g.addColorStop(0, alpha(LAMP, .38 * lit)); g.addColorStop(1, alpha(LAMP, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(gx, gy, gr, 0, TAU); c.fill();
+  }
+  draw(c, PG(HC), PAL.fills[2], seed + 4, { lw: 2.2 / s, tex: false });
+  draw(c, PG(HB), PAL.fills[3], seed, { lw: 2.6 / s, texo: { density: .3, cell: 7, color: PAL.fills[1] } });
+  draw(c, PG(HR), PAL.fills[2], seed + 1, { lw: 2.6 / s, texo: { density: .35, cell: 7, color: PAL.shade } });
+  c.fillStyle = lit > 0 ? mix(PAL.shade, LAMP, lit) : PAL.shade;
+  c.beginPath(); c.rect(-26, -38, 22, 18); c.fill();
+  c.strokeStyle = lit > 0 ? alpha(PAL.fills[5], .9) : alpha(PAL.chalkDim, .7); c.lineWidth = 1.6 / s;
+  c.beginPath(); c.moveTo(-15, -38); c.lineTo(-15, -20); c.moveTo(-26, -29); c.lineTo(-4, -29); c.stroke();
+  c.fillStyle = PAL.fills[1]; c.beginPath(); c.rect(8, -30, 16, 30); c.fill();
+  c.restore();
+}
+function tree(c, x, y, s, r, seed) {
+  c.save(); c.translate(x, y); c.rotate(r); c.scale(s, s);
+  c.fillStyle = PAL.fills[1]; c.fillRect(-2.5, -26, 5, 26);
+  draw(c, EL(0, -44, 17, 22), PAL.fills[2], seed, { lw: 2.2 / s, texo: { density: .4, cell: 6, color: PAL.shade } });
+  c.restore();
+}
+function earth(c, p) {
+  const rim = []; for (let k = 0; k <= 96; k++) rim.push(surf(k / 96 * W));
+  const ground = polyPath(rim.concat([[W + 20, H + 20], [-20, H + 20]]));
+  c.fillStyle = PAL.fills[0]; c.fill(ground);
+  tex(c, ground, [0, TOP - 30, W, H - TOP + 40], { color: PAL.fills[2], density: .3, cell: 9, seed: 16 });
+  if (p >= 1) stroke(c, rim, 18, { raw: true, lw: 3, color: alpha(PAL.chalkDim, .6) });
+  else strokeOn(c, rim, p, 18, { raw: true, lw: 3, color: alpha(PAL.chalkDim, .6) });
+}
+function homes(c, litB) {
+  tree(c, ...surf(AX - 138), HS * .85, tilt(AX - 138), 25);
+  house(c, A[0], A[1], HS, tilt(AX), 1, 20);
+  tree(c, ...surf(BX + 138), HS * .85, tilt(BX + 138), 35);
+  house(c, B[0], B[1], HS, tilt(BX), litB, 30);
+}
+function seedDot(c, x, y, r) {
+  c.fillStyle = alpha(LAMP, .22); c.beginPath(); c.arc(x, y, r * 2.7, 0, TAU); c.fill();
+  dot(c, x, y, r, LAMP); dot(c, x - r * .3, y - r * .3, r * .38, MOONC);
+}
+function ringsOff(c, x, y, tau, seed) {
+  for (let b = Math.floor(tau / .7); b >= Math.max(0, Math.floor(tau / .7) - 3); b--) {
+    const age = tau - b * .7, rr = MR * 1.16 + age * 92, a = .45 * (1 - age / 2.6);
+    if (a > 0) dottedArc(c, x, y, rr, alpha(MOONC, a), seed + b, 13, 2.2);
+  }
+}
+
+function sceneEarth(c, tau, i) {
+  sky(c);
+  starfield(c, i, 1);
+  const m = sm(-.35, .5, tau, easeOut);
+  moon(c, MX, lerp(MY + 130, MY, m), MR, .78, i, 60);
+  const ga = sm(0, .55, tau) * (1 - .85 * sm(.9, 1.6, tau));
+  if (ga > 0) construction(c, MX, MY, MR * 1.3, 70, PAL.guide, ga);
+  earth(c, sm(-.3, .72, tau, easeOut));
+  // the two houses landing on the curve, theirs a beat behind yours
+  const a = easeBack(sm(.1, .6, tau, t => t)), b = easeBack(sm(.34, .86, tau, t => t));
+  if (a > .02) { c.save(); c.translate(A[0], A[1]); c.rotate(tilt(AX)); c.scale(a, a); c.rotate(-tilt(AX)); c.translate(-A[0], -A[1]);
+    tree(c, ...surf(AX - 138), HS * .85, tilt(AX - 138), 25); house(c, A[0], A[1], HS, tilt(AX), 1, 20); c.restore(); }
+  if (b > .02) { c.save(); c.translate(B[0], B[1]); c.rotate(tilt(BX)); c.scale(b, b); c.rotate(-tilt(BX)); c.translate(-B[0], -B[1]);
+    tree(c, ...surf(BX + 138), HS * .85, tilt(BX + 138), 35); house(c, B[0], B[1], HS, tilt(BX), 0, 30); c.restore(); }
+}
+function sceneNudge(c, tau, i) {
+  sky(c);
+  starfield(c, i, .95);
+  ringsOff(c, MX, MY, tau, 50);
+  moon(c, MX, MY, MR, .78, i, 60);
+  earth(c, 1);
+  homes(c, 0);
+  dottedPath(c, LEG_A, LEN_A, sm(-.1, .72, tau, easeOut), alpha(LAMP, .85));
+  dottedPath(c, LEG_B, LEN_B, sm(.2, 1.0, tau, easeOut), alpha(LAMP, .34));
+  // the nudge riding the path, then holding at the moon because it is their night
+  const ride = sm(.22, .95, tau, easeIO);
+  if (ride > 0) {
+    let p;
+    if (ride < 1) { p = walk(LEG_A, ride);
+      for (let k = 4; k >= 1; k--) { const q = walk(LEG_A, Math.max(0, ride - k * .04)); c.save(); c.globalAlpha = .15 * (5 - k); dot(c, q[0], q[1], 5.4 - k * .65, LAMP); c.restore(); } }
+    else { const ang = Math.PI - (tau - .95) * 2.3; p = [MX + Math.cos(ang) * MR * 1.32, MY + Math.sin(ang) * MR * 1.32]; }
+    seedDot(c, p[0], p[1], 10);
+  }
+  if (tau > 1.0) writeOn(c, 'quiet hours', MX, MY + MR + 116, sm(1.0, 1.45, tau, t => t), { size: 88, ink: alpha(PAL.light, .8), ink2: null, pen: null });
+}
+function sceneName(c, tau, i) {
+  sky(c);
+  starfield(c, i, .95);
+  ringsOff(c, MX, MY, tau + 1.6, 50);
+  moon(c, MX, MY, MR, .78, i, 60);
+  earth(c, 1);
+  homes(c, sm(.08, .42, tau, easeOut));   // their morning: the window comes on
+  dottedPath(c, LEG_A, LEN_A, 1, alpha(LAMP, .34));
+  dottedPath(c, LEG_B, LEN_B, 1, alpha(LAMP, .75));
+  if (tau < .45) { const p = walk(LEG_B, sm(-.1, .32, tau, easeIO)); seedDot(c, p[0], p[1], 10); }
+  if (tau > .25 && tau < 1.1) ringsOut(c, WB[0], WB[1], tau - .25, { every: 1 / 4, t1: .5, speed: 190, colors: [LAMP], width: 3.4, seed: 80, max: 130, r0: 14 });
+  writeOn(c, 'same sky', CX, 716, sm(.38, 1.25, tau, t => t), { size: 140, ink: PAL.light, ink2: LAMP, pen: LAMP });
+  // a shooting star across the far side, once
+  const s = tau - 1.1;
+  if (s > 0 && s < .4) { const q = s / .4, dir = Math.PI * .82, x = 1120 + Math.cos(dir) * q * 280, y = 116 + Math.sin(dir) * q * 280;
+    speedLines(c, x, y, dir, 90, 3, .6 * (1 - q), MOONC); dot(c, x, y, 3.2, MOONC); }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_SS, poster: 4.7, crf: 26,
+  beats: [
+    { name: 'earth', dur: 1.7, fn: sceneEarth },
+    { name: 'nudge', dur: 1.6, fn: sceneNudge },
+    { name: 'name', dur: 1.7, fn: sceneName },
+  ],
+});
+</script>

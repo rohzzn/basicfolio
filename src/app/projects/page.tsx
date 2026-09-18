@@ -17,6 +17,8 @@ const categories: { id: CategoryFilter; label: string }[] = [
 
 function sortByLatest(list: Project[]): Project[] {
   return [...list].sort((a, b) => {
+    // A pinned project holds the front of its category whatever the year says.
+    if (Boolean(a.pinned) !== Boolean(b.pinned)) return a.pinned ? -1 : 1;
     const yearDiff = (b.year ?? 0) - (a.year ?? 0);
     if (yearDiff !== 0) return yearDiff;
     return a.title.localeCompare(b.title);
@@ -36,7 +38,7 @@ function inBands(list: Project[]): { wide: boolean; items: Project[] }[] {
   return bands;
 }
 
-function ProjectTile({ project }: { project: Project }) {
+function ProjectTile({ project, eager }: { project: Project; eager?: boolean }) {
   const [hovered, setHovered] = useState(false);
   return (
     <Link
@@ -48,7 +50,7 @@ function ProjectTile({ project }: { project: Project }) {
       className="group relative block overflow-hidden rounded-lg bg-[#f0ebe0] ring-1 ring-zinc-900/[.07] transition duration-200 hover:ring-zinc-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 dark:bg-neutral-900 dark:ring-white/10 dark:hover:ring-white/25"
     >
       <div className="relative aspect-[4/3]">
-        <FilmCard film={films[project.slug as keyof typeof films]} hovered={hovered} />
+        <FilmCard film={films[project.slug as keyof typeof films]} hovered={hovered} eager={eager} />
       </div>
       {/* Every film signs itself with the name at the end, so the label steps out of the way as
           soon as one starts playing and the tile is nothing but film. */}
@@ -105,7 +107,7 @@ export default function ProjectsPage() {
 
       {/* One across on phones, where a third of 343 px would be a thumbnail again. */}
       <div className="space-y-3 sm:space-y-4">
-        {bands.map((band) => (
+        {bands.map((band, bandIndex) => (
           <div
             key={band.items[0].slug}
             className={`grid gap-3 sm:gap-4 ${
@@ -113,7 +115,7 @@ export default function ProjectsPage() {
             }`}
           >
             {band.items.map((project) => (
-              <ProjectTile key={project.slug} project={project} />
+              <ProjectTile key={project.slug} project={project} eager={bandIndex === 0} />
             ))}
           </div>
         ))}

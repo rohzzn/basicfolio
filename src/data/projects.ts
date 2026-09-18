@@ -15,6 +15,8 @@ export interface Project {
   // Detail page fields
   slug: string;
   year?: number;
+  /** Held at the front of its category, ahead of the newest-first sort. */
+  pinned?: boolean;
   longDescription?: string;
   install?: string;
   packageType?: 'npm' | 'pypi' | 'chrome' | 'vscode' | 'figma' | 'appstore' | 'discord';
@@ -23,6 +25,19 @@ export interface Project {
 }
 
 export const projects: Project[] = [
+  {
+    slug: 'same-sky',
+    year: 2026,
+    pinned: true,
+    title: 'Same Sky',
+    description: 'Their time, their light, on your Home Screen',
+    tech: ['Swift', 'SwiftUI', 'WidgetKit', 'CloudKit', 'iOS 26'],
+    category: 'application',
+    links: [{ label: 'Live', url: 'https://www.sameskyapp.com' }],
+    image: '/projects/films/same-sky.webp',
+    longDescription:
+      "Two people, two time zones, and the same sum done a hundred times. Nine and a half hours, forward or back, and does that mean they are asleep, about to be, or already three hours into their day. Same Sky answers it before you have finished asking.\n\nOpen it and you are looking at both of your skies at once, meeting at a horizon in the middle. Their half is the light where they are and yours is the light where you are, and the colours are not decoration: they come from the real position of the sun at each of your coordinates, worked out on the phone from published astronomy with no network involved. Their half is genuinely dawn while yours is genuinely dusk. The moon between the two halves is tonight's moon at its real phase, which is the same one you are both under.\n\nBoth clocks, that moon and the hours you overlap sit on the Home Screen. On the Lock Screen their time sits beside the date with a ring showing how far through their day they are, and it works in StandBy and offline too. Days is a journal the two of you keep together, one photo a day each, no streak to break. There is a call window showing how much of today's overlap is left, countdowns to the next time you are together, and one tap to point at the moon and say you are thinking of them. Nothing the app sends lands while the person receiving it is asleep: it waits for their morning.\n\nThere is no server, which is architecture rather than a slogan. Your pair, your countdowns and your journal live on the phone, the astronomy is computed there, and pairing creates a shared record zone inside your own iCloud that nobody else can read. Sign in with Apple is the only sign in offered and it is optional. No analytics package, no attribution SDK, no ad network.\n\nComing soon on the App Store. iPhone, iOS 26 or later, free, all of it.",
+  },
   {
     slug: 'cursors',
     year: 2026,

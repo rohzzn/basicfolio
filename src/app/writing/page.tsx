@@ -89,15 +89,15 @@ const WritingPage = () => {
       {selectedCategory === 'tweets' ? (
         <div className="max-w-2xl">
           {tweetsLoading && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-neutral-400 py-2">Loading tweets…</p>
+            <p className="text-sm text-zinc-500 dark:text-neutral-400 py-2">Loading tweets…</p>
           )}
 
           {!tweetsLoading && tweetsError && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-neutral-400 py-2">Tweets unavailable right now.</p>
+            <p className="text-sm text-zinc-500 dark:text-neutral-400 py-2">Tweets unavailable right now.</p>
           )}
 
           {!tweetsLoading && !tweetsError && tweets.length === 0 && (
-            <p className="text-sm text-zinc-400 dark:text-neutral-400 py-2">No tweets yet.</p>
+            <p className="text-sm text-zinc-500 dark:text-neutral-400 py-2">No tweets yet.</p>
           )}
 
           {tweets.map((tweet) => (
@@ -169,7 +169,7 @@ const WritingPage = () => {
                     href={tweet.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-zinc-400 dark:text-neutral-400 hover:text-zinc-600 dark:hover:text-neutral-400 transition-colors flex-shrink-0"
+                    className="text-xs text-zinc-500 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-400 transition-colors flex-shrink-0"
                   >
                     {tweet.displayDate}
                   </a>
@@ -196,7 +196,7 @@ const WritingPage = () => {
                 <span className="text-sm font-medium text-zinc-700 dark:text-neutral-300 group-hover:text-zinc-900 dark:group-hover:text-paper transition-colors">
                   {item.title}
                 </span>
-                <span className="text-xs text-zinc-400 dark:text-neutral-400 group-hover:text-zinc-600 dark:group-hover:text-neutral-400 transition-colors flex-shrink-0 ml-4">
+                <span className="text-xs text-zinc-500 dark:text-neutral-400 group-hover:text-zinc-700 dark:group-hover:text-neutral-400 transition-colors flex-shrink-0 ml-4">
                   {item.displayDate}
                 </span>
               </Link>

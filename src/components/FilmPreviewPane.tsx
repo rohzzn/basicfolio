@@ -10,12 +10,14 @@ type Layer = { key: string; film: Film };
 // row: then that row's film fades up and plays, and the pane fades away again when the cursor
 // leaves the list. Running down the list cross-fades, and the film being replaced is held until
 // the new one's still has actually decoded, so there is never a blank frame in between.
+//
+// Each layer is a still with its film laid over it, and the film element carries the same still
+// as its poster, so a layer looks right from the instant it mounts and there is no event to miss.
 export default function FilmPreviewPane({ film }: { film: Film | undefined }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [top, setTop] = useState<Layer | null>(null);
   const [under, setUnder] = useState<Layer | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [rolling, setRolling] = useState(false);
   const [open, setOpen] = useState(false);
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
   const hasCursor = useMedia('(hover: hover)');
@@ -37,7 +39,6 @@ export default function FilmPreviewPane({ film }: { film: Film | undefined }) {
     if (top && loaded) setUnder(top);
     setTop({ key: film.src, film });
     setLoaded(false);
-    setRolling(false);
   }, [film, hasCursor, top, loaded]);
 
   useEffect(() => {
@@ -46,14 +47,13 @@ export default function FilmPreviewPane({ film }: { film: Film | undefined }) {
     return () => window.clearTimeout(id);
   }, [loaded, under]);
 
-  // A video element that has only just been created is still starting its own load, and that
-  // load aborts a play() made in the same breath, so the start is also hung off canplay. Only
-  // ever from a standstill: canplay fires again after the rewind's seek, and rewinding a running
-  // film on every one of those would peg it to the first frame.
+  // A play() can be aborted by the element's own load, so it is also hung off canplay.
   const start = useCallback(() => {
     const v = videoRef.current;
     if (!v || !open || reduced || !v.paused) return;
-    v.currentTime = 0;
+    // Seeking an element that has not loaded yet aborts the play() right behind it, so only a
+    // film with something to rewind gets rewound.
+    if (v.readyState >= 2 && v.currentTime > 0.05) v.currentTime = 0;
     v.play().catch(() => {
       // Autoplay can be refused (low power mode, data saver). The still stays up.
     });
@@ -62,12 +62,8 @@ export default function FilmPreviewPane({ film }: { film: Film | undefined }) {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    if (open && !reduced) {
-      start();
-    } else {
-      v.pause();
-      setRolling(false);
-    }
+    if (open && !reduced) start();
+    else v.pause();
   }, [open, reduced, top, start]);
 
   // A cached still can finish loading before React has hung onLoad on it.
@@ -99,7 +95,12 @@ export default function FilmPreviewPane({ film }: { film: Film | undefined }) {
           />
         ) : null}
         {top ? (
-          <React.Fragment key={top.key}>
+          <div
+            key={top.key}
+            className={`absolute inset-0 transition-opacity duration-200 ease-out ${
+              loaded ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element -- as above */}
             <img
               ref={poster}
@@ -109,13 +110,12 @@ export default function FilmPreviewPane({ film }: { film: Film | undefined }) {
               height={top.film.height}
               decoding="async"
               onLoad={() => setLoaded(true)}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ease-out dark:brightness-[.92] ${
-                loaded ? 'opacity-100' : 'opacity-0'
-              }`}
+              className="absolute inset-0 h-full w-full object-cover dark:brightness-[.92]"
             />
             <video
               ref={videoRef}
               src={`${top.film.src}?v=${top.film.v}`}
+              poster={`${top.film.poster}?v=${top.film.v}`}
               width={top.film.width}
               height={top.film.height}
               muted
@@ -126,17 +126,9 @@ export default function FilmPreviewPane({ film }: { film: Film | undefined }) {
               disableRemotePlayback
               tabIndex={-1}
               onCanPlay={start}
-              onPlaying={() => setRolling(true)}
-              // timeupdate keeps running while the film does, so the still cannot be left
-              // stranded on top of a film that is already playing underneath it.
-              onTimeUpdate={() => {
-                if (!rolling) setRolling(true);
-              }}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ease-out dark:brightness-[.92] ${
-                rolling ? 'opacity-100' : 'opacity-0'
-              }`}
+              className="absolute inset-0 h-full w-full object-cover dark:brightness-[.92]"
             />
-          </React.Fragment>
+          </div>
         ) : null}
       </div>
     </div>
