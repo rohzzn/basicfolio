@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import FilmCard from "@/components/FilmCard";
+import FilmPreviewPane from "@/components/FilmPreviewPane";
 import films from "@/data/hobby-films.json";
 
 const hobbies = [
@@ -20,41 +20,66 @@ const hobbies = [
   { slug: "uses", title: "Setup", description: "Desk, PC & gear" },
 ];
 
-function HobbyCard({ hobby }: { hobby: (typeof hobbies)[number] }) {
-  const [hovered, setHovered] = useState(false);
+function HobbyRow({ hobby, onEnter }: { hobby: (typeof hobbies)[number]; onEnter: () => void }) {
   return (
     <Link
       href={`/hobbies/${hobby.slug}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-      className="group block overflow-hidden rounded-lg border border-zinc-200 transition-colors hover:border-zinc-300 dark:border-neutral-800 dark:hover:border-neutral-700"
+      onMouseEnter={onEnter}
+      onFocus={onEnter}
+      className="group block border-b border-zinc-100 py-3 last:border-0 dark:border-neutral-800/60 sm:py-2.5"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#f0ebe0] dark:bg-neutral-900">
-        <FilmCard film={films[hobby.slug as keyof typeof films]} hovered={hovered} />
-      </div>
-      <div className="border-t border-zinc-100 p-3 dark:border-neutral-800/60">
-        <span className="block truncate text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">
+      <div className="flex items-baseline justify-between gap-4">
+        <span className="text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">
           {hobby.title}
         </span>
-        <p className="mt-0.5 truncate text-xs text-zinc-400 dark:text-neutral-400">{hobby.description}</p>
+        <span className="hidden min-w-0 truncate text-sm text-zinc-400 sm:block dark:text-neutral-400">
+          {hobby.description}
+        </span>
       </div>
+      <p className="mt-0.5 text-xs text-zinc-400 sm:hidden dark:text-neutral-400">{hobby.description}</p>
     </Link>
   );
 }
 
 export default function HobbiesPage() {
+  // The row the cursor was last on, and whether it is still on the list. Keeping the two apart
+  // means leaving the list holds the last film as a still instead of snapping back to the top.
+  const [active, setActive] = useState<string | null>(null);
+  const [over, setOver] = useState(false);
+  const shown = hobbies.find((hobby) => hobby.slug === active) ?? hobbies[0];
+
   return (
     <div className="max-w-5xl">
       <header className="mb-8">
         <h2 className="text-lg font-medium dark:text-paper">Hobbies</h2>
       </header>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        {hobbies.map((hobby) => (
-          <HobbyCard key={hobby.slug} hobby={hobby} />
-        ))}
+      <div className="flex items-start gap-10">
+        <div
+          className="min-w-0 flex-1"
+          onMouseLeave={() => setOver(false)}
+          onBlur={() => setOver(false)}
+        >
+          {hobbies.map((hobby) => (
+            <HobbyRow
+              key={hobby.slug}
+              hobby={hobby}
+              onEnter={() => {
+                setActive(hobby.slug);
+                setOver(true);
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="hidden w-[340px] shrink-0 lg:block">
+          <FilmPreviewPane
+            film={films[shown.slug as keyof typeof films]}
+            caption={shown.title}
+            note={shown.description}
+            playing={over}
+          />
+        </div>
       </div>
     </div>
   );

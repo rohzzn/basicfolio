@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useMedia } from '@/lib/use-media';
 
 export type Film = {
   src: string;
@@ -12,18 +13,6 @@ export type Film = {
 };
 
 export type FilmManifest = Record<string, Film>;
-
-function useMedia(query: string): boolean {
-  const [matches, setMatches] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const sync = () => setMatches(mq.matches);
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, [query]);
-  return matches;
-}
 
 // Every card on /projects, /hobbies and /writing is a short hand-drawn film: drawn frame by
 // frame on a canvas by the files in /films and rendered to a looping mp4. The card shows a
@@ -56,19 +45,30 @@ export default function FilmCard({ film, hovered }: { film: Film | undefined; ho
     if (shouldPlay) setArmed(true);
   }, [shouldPlay]);
 
+  // A video element that has only just been created is still starting its own load, and that
+  // load aborts a play() made in the same breath. So the start is also hung off canplay.
+  const start = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || !shouldPlay) return;
+    // Only from a standstill: canplay fires again after the rewind's seek, and rewinding a
+    // running film on every one of those would peg it to the first frame.
+    if (!v.paused) return;
+    v.currentTime = 0;
+    v.play().catch(() => {
+      // Autoplay can be refused (low power mode, data saver). The still stays up.
+    });
+  }, [shouldPlay]);
+
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
     if (shouldPlay) {
-      v.currentTime = 0;
-      v.play().catch(() => {
-        // Autoplay can be refused (low power mode, data saver). The still stays up.
-      });
+      start();
     } else {
       v.pause();
       setPlaying(false);
     }
-  }, [shouldPlay, armed]);
+  }, [shouldPlay, armed, start]);
 
   if (!film) return null;
   const q = `?v=${film.v}`;
@@ -89,6 +89,7 @@ export default function FilmCard({ film, hovered }: { film: Film | undefined; ho
           disableRemotePlayback
           aria-hidden
           tabIndex={-1}
+          onCanPlay={start}
           onPlaying={() => setPlaying(true)}
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[.92]"
         />
