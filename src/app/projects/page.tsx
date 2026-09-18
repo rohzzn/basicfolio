@@ -23,7 +23,20 @@ function sortByLatest(list: Project[]): Project[] {
   });
 }
 
-function ProjectCard({ project }: { project: Project }) {
+// The films are hung as a contact sheet with a rhythm to it: two large, then three smaller, and
+// round again. Fixed bands rather than a masonry, so every film keeps the 4:3 it was drawn in.
+function inBands(list: Project[]): { wide: boolean; items: Project[] }[] {
+  const bands: { wide: boolean; items: Project[] }[] = [];
+  let wide = true;
+  for (let i = 0; i < list.length; wide = !wide) {
+    const n = wide ? 2 : 3;
+    bands.push({ wide, items: list.slice(i, i + n) });
+    i += n;
+  }
+  return bands;
+}
+
+function ProjectTile({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false);
   return (
     <Link
@@ -32,23 +45,26 @@ function ProjectCard({ project }: { project: Project }) {
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
-      className="group block overflow-hidden rounded-lg border border-zinc-200 transition-colors hover:border-zinc-300 dark:border-neutral-800 dark:hover:border-neutral-700"
+      className="group relative block overflow-hidden rounded-lg bg-[#f0ebe0] ring-1 ring-zinc-900/[.07] transition duration-200 hover:ring-zinc-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 dark:bg-neutral-900 dark:ring-white/10 dark:hover:ring-white/25"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#f0ebe0] dark:bg-neutral-900">
+      <div className="relative aspect-[4/3]">
         <FilmCard film={films[project.slug as keyof typeof films]} hovered={hovered} />
       </div>
-      <div className="border-t border-zinc-100 p-3 dark:border-neutral-800/60">
-        <div className="flex items-baseline justify-between gap-2">
-          <span className="truncate text-sm font-medium text-zinc-700 transition-colors group-hover:text-zinc-900 dark:text-neutral-300 dark:group-hover:text-paper">
-            {project.title}
+      {/* Every film signs itself with the name at the end, so the label steps out of the way as
+          soon as one starts playing and the tile is nothing but film. */}
+      <div
+        className={`pointer-events-none absolute bottom-2.5 left-2.5 flex max-w-[calc(100%-1.25rem)] items-baseline gap-2 rounded-md bg-white/85 px-2 py-1 shadow-sm backdrop-blur-[2px] transition-opacity duration-200 ease-out dark:bg-neutral-900/85 ${
+          hovered ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <span className="truncate text-xs font-medium text-zinc-800 dark:text-neutral-200">
+          {project.title}
+        </span>
+        {project.year ? (
+          <span className="shrink-0 text-[10px] tabular-nums text-zinc-500 dark:text-neutral-500">
+            {project.year}
           </span>
-          {project.year ? (
-            <span className="shrink-0 text-[10px] tabular-nums text-zinc-400 dark:text-neutral-500">
-              {project.year}
-            </span>
-          ) : null}
-        </div>
-        <p className="mt-0.5 truncate text-xs text-zinc-400 dark:text-neutral-400">{project.description}</p>
+        ) : null}
       </div>
     </Link>
   );
@@ -57,12 +73,10 @@ function ProjectCard({ project }: { project: Project }) {
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState<CategoryFilter>(categories[0].id);
 
-  const filtered = useMemo(() => {
+  const bands = useMemo(() => {
     const list =
-      activeTab === "all"
-        ? projects
-        : projects.filter((p) => p.category === activeTab);
-    return sortByLatest(list);
+      activeTab === "all" ? projects : projects.filter((p) => p.category === activeTab);
+    return inBands(sortByLatest(list));
   }, [activeTab]);
 
   return (
@@ -89,15 +103,23 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      {/* Two across, so each film is about 500 px wide and actually readable. One across on phones,
-          where half of 343 px would leave them a thumbnail again. */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        {filtered.map((project) => (
-          <ProjectCard key={project.slug} project={project} />
+      {/* One across on phones, where a third of 343 px would be a thumbnail again. */}
+      <div className="space-y-3 sm:space-y-4">
+        {bands.map((band) => (
+          <div
+            key={band.items[0].slug}
+            className={`grid gap-3 sm:gap-4 ${
+              band.wide ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+            }`}
+          >
+            {band.items.map((project) => (
+              <ProjectTile key={project.slug} project={project} />
+            ))}
+          </div>
         ))}
       </div>
 
-      {filtered.length === 0 ? (
+      {bands.length === 0 ? (
         <p className="py-6 text-sm text-zinc-500 dark:text-neutral-400">No projects in this category.</p>
       ) : null}
     </div>

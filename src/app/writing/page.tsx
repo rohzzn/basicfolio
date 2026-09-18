@@ -18,18 +18,15 @@ const WritingPage = () => {
   const [tweets, setTweets] = useState<TweetItem[]>([]);
   const [tweetsLoading, setTweetsLoading] = useState(false);
   const [tweetsError, setTweetsError] = useState(false);
-  // The row the cursor was last on, and whether it is still on the list. Keeping the two apart
-  // means leaving the list holds the last film as a still instead of snapping back to the top.
+  // The row the cursor is on, and nothing when it is not on one: the pane beside the list is
+  // empty until something is being hovered.
   const [active, setActive] = useState<string | null>(null);
-  const [over, setOver] = useState(false);
 
   const filtered = useMemo(() => {
     return posts.filter((post) =>
       selectedCategory === 'all' ? true : post.category === selectedCategory
     );
   }, [selectedCategory]);
-
-  const shown = filtered.find((post) => post.slug === active) ?? filtered[0];
 
   const loadTweets = async () => {
     setTweetsLoading(true);
@@ -59,10 +56,9 @@ const WritingPage = () => {
     return () => window.clearInterval(interval);
   }, [selectedCategory]);
 
-  // Switching tab changes the list under the cursor, so the pane starts again from the top.
+  // Switching tab pulls the list out from under the cursor, so the pane empties with it.
   useEffect(() => {
     setActive(null);
-    setOver(false);
   }, [selectedCategory]);
 
   return (
@@ -186,21 +182,15 @@ const WritingPage = () => {
         <div className="flex items-start gap-10">
           <div
             className="min-w-0 flex-1"
-            onMouseLeave={() => setOver(false)}
-            onBlur={() => setOver(false)}
+            onMouseLeave={() => setActive(null)}
+            onBlur={() => setActive(null)}
           >
             {filtered.map((item) => (
               <Link
                 key={item.slug}
                 href={`/writing/${item.slug}`}
-                onMouseEnter={() => {
-                  setActive(item.slug);
-                  setOver(true);
-                }}
-                onFocus={() => {
-                  setActive(item.slug);
-                  setOver(true);
-                }}
+                onMouseEnter={() => setActive(item.slug)}
+                onFocus={() => setActive(item.slug)}
                 className="group flex items-center justify-between py-2.5 border-b border-zinc-100 dark:border-neutral-800/60 last:border-0"
               >
                 <span className="text-sm font-medium text-zinc-700 dark:text-neutral-300 group-hover:text-zinc-900 dark:group-hover:text-paper transition-colors">
@@ -214,14 +204,7 @@ const WritingPage = () => {
           </div>
 
           <div className="hidden w-[340px] shrink-0 lg:block">
-            {shown ? (
-              <FilmPreviewPane
-                film={films[shown.slug as keyof typeof films]}
-                caption={shown.title}
-                note={shown.displayDate}
-                playing={over}
-              />
-            ) : null}
+            <FilmPreviewPane film={active ? films[active as keyof typeof films] : undefined} />
           </div>
         </div>
       )}

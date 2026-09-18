@@ -42,11 +42,9 @@ function HobbyRow({ hobby, onEnter }: { hobby: (typeof hobbies)[number]; onEnter
 }
 
 export default function HobbiesPage() {
-  // The row the cursor was last on, and whether it is still on the list. Keeping the two apart
-  // means leaving the list holds the last film as a still instead of snapping back to the top.
+  // The row the cursor is on, and nothing when it is not on one: the pane beside the list is
+  // empty until something is being hovered.
   const [active, setActive] = useState<string | null>(null);
-  const [over, setOver] = useState(false);
-  const shown = hobbies.find((hobby) => hobby.slug === active) ?? hobbies[0];
 
   return (
     <div className="max-w-5xl">
@@ -57,28 +55,16 @@ export default function HobbiesPage() {
       <div className="flex items-start gap-10">
         <div
           className="min-w-0 flex-1"
-          onMouseLeave={() => setOver(false)}
-          onBlur={() => setOver(false)}
+          onMouseLeave={() => setActive(null)}
+          onBlur={() => setActive(null)}
         >
           {hobbies.map((hobby) => (
-            <HobbyRow
-              key={hobby.slug}
-              hobby={hobby}
-              onEnter={() => {
-                setActive(hobby.slug);
-                setOver(true);
-              }}
-            />
+            <HobbyRow key={hobby.slug} hobby={hobby} onEnter={() => setActive(hobby.slug)} />
           ))}
         </div>
 
         <div className="hidden w-[340px] shrink-0 lg:block">
-          <FilmPreviewPane
-            film={films[shown.slug as keyof typeof films]}
-            caption={shown.title}
-            note={shown.description}
-            playing={over}
-          />
+          <FilmPreviewPane film={active ? films[active as keyof typeof films] : undefined} />
         </div>
       </div>
     </div>
