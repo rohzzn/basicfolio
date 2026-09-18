@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import { BuildConfigurator, CostComparison, ServiceList, StorageLayout, ComposePreview, TrafficFlow } from './ServerComponents';
 
@@ -16,6 +17,8 @@ const LinuxHomeServer: React.FC = () => {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="linux-home-server" />
 
       <div className="text-sm max-w-3xl">
 

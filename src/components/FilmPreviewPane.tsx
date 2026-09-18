@@ -127,6 +127,11 @@ export default function FilmPreviewPane({ film }: { film: Film | undefined }) {
               tabIndex={-1}
               onCanPlay={start}
               onPlaying={() => setRolling(true)}
+              // timeupdate keeps running while the film does, so the still cannot be left
+              // stranded on top of a film that is already playing underneath it.
+              onTimeUpdate={() => {
+                if (!rolling) setRolling(true);
+              }}
               className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ease-out dark:brightness-[.92] ${
                 rolling ? 'opacity-100' : 'opacity-0'
               }`}

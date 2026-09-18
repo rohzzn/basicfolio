@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import NetworkWaterfall from './NetworkWaterfall';
 
@@ -16,6 +17,8 @@ export default function WhatThisSiteLoads() {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="what-this-site-loads" />
 
       <div className="text-sm max-w-3xl">
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import DesignShowcase from './DesignShowcase';
 
@@ -16,6 +17,8 @@ const BeginnersGuideDesign: React.FC = () => {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="beginners-guide-design" />
 
       <div className="text-sm max-w-3xl">
 

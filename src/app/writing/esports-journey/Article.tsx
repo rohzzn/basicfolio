@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import TournamentTimeline from './TournamentTimeline';
 
@@ -16,6 +17,8 @@ const EsportsJourney: React.FC = () => {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="esports-journey" />
 
       <div className="text-sm max-w-3xl">
         <TournamentTimeline />

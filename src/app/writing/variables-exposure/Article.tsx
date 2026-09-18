@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import EnvVarDemo from './EnvVarDemo';
 
@@ -16,6 +17,8 @@ const VariablesExposure: React.FC = () => {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="variables-exposure" />
 
       <div className="text-sm max-w-3xl">
         <p className="text-zinc-600 dark:text-neutral-400 mb-6 text-sm">

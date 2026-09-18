@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import MoveTimeline from './MoveTimeline';
 
@@ -16,6 +17,8 @@ export default function MovingToCincinnati() {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="moving-to-cincinnati" />
 
       <div className="text-sm max-w-3xl">
 

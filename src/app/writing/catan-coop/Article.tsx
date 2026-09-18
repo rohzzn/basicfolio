@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import HexBoard from './HexBoard';
 import DiceRoller from './DiceRoller';
@@ -22,6 +23,8 @@ export default function CatanCoop() {
           </a>
         </div>
       </header>
+
+      <PostFilm slug="catan-coop" />
 
       <div className="text-sm max-w-3xl">
 

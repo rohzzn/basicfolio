@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import AdmiredSoftware from './AdmiredSoftware';
 
@@ -16,6 +17,8 @@ export default function SoftwareIAdmire() {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="software-i-admire" />
 
       <div className="text-sm max-w-3xl">
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import PasswordFixDemo from './PasswordFixDemo';
 import TwoFactorMatrix from './TwoFactorMatrix';
@@ -18,6 +19,8 @@ const AppleBestAIFeature: React.FC = () => {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="apple-best-ai-feature" />
 
       <div className="text-sm max-w-3xl">
 

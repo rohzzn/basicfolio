@@ -2,57 +2,45 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useMedia } from '@/lib/use-media';
+import films from '@/data/writing-films.json';
 
-export type Film = {
-  src: string;
-  poster: string;
-  duration: number;
-  width: number;
-  height: number;
-  v: string;
-};
-
-export type FilmManifest = Record<string, Film>;
-
-// Every card on /projects, /hobbies and /writing is a short hand-drawn film: drawn frame by
-// frame on a canvas by the files in /films and rendered to a looping mp4. The card shows a
-// still until it is hovered (or focused), then plays from the top; leaving puts the still
-// back. Touch screens have no hover, so there a film plays while its card is on screen.
-export default function FilmCard({ film, hovered }: { film: Film | undefined; hovered: boolean }) {
+// The opening plate of a post: the same hand-drawn short that plays beside its row on /writing,
+// here at the top of the piece under the date. It runs while it is on screen and stops once it
+// is not, so nothing is moving above you while you read.
+export default function PostFilm({ slug }: { slug: string }) {
+  const film = films[slug as keyof typeof films];
   const boxRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [onScreen, setOnScreen] = useState(false);
   const [armed, setArmed] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const touch = useMedia('(hover: none)');
+  const [rolling, setRolling] = useState(false);
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
+  const shouldPlay = onScreen && !reduced;
 
   useEffect(() => {
     const el = boxRef.current;
-    if (!el || !touch) return;
-    const obs = new IntersectionObserver((entries) => setOnScreen(Boolean(entries[0]?.isIntersecting)), {
-      threshold: 0.6,
-    });
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => setOnScreen(Boolean(entries[0]?.isIntersecting)),
+      { threshold: 0.35 }
+    );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [touch]);
+  }, []);
 
-  const shouldPlay = touch ? onScreen && !reduced : hovered;
-
-  // The video element is only created once a card is first asked to play, so a page of
-  // stills costs nothing but the stills.
+  // The video element is only created once the plate has been scrolled to, so a post opened and
+  // read from the middle costs one still.
   useEffect(() => {
     if (shouldPlay) setArmed(true);
   }, [shouldPlay]);
 
   // A video element that has only just been created is still starting its own load, and that
-  // load aborts a play() made in the same breath. So the start is also hung off canplay.
+  // load aborts a play() made in the same breath, so the start is also hung off canplay. Only
+  // ever from a standstill: canplay fires again after the rewind's seek, and rewinding a running
+  // film on every one of those would peg it to the first frame.
   const start = useCallback(() => {
     const v = videoRef.current;
-    if (!v || !shouldPlay) return;
-    // Only from a standstill: canplay fires again after the rewind's seek, and rewinding a
-    // running film on every one of those would peg it to the first frame.
-    if (!v.paused) return;
+    if (!v || !shouldPlay || !v.paused) return;
     v.currentTime = 0;
     v.play().catch(() => {
       // Autoplay can be refused (low power mode, data saver). The still stays up.
@@ -66,7 +54,7 @@ export default function FilmCard({ film, hovered }: { film: Film | undefined; ho
       start();
     } else {
       v.pause();
-      setPlaying(false);
+      setRolling(false);
     }
   }, [shouldPlay, armed, start]);
 
@@ -74,7 +62,11 @@ export default function FilmCard({ film, hovered }: { film: Film | undefined; ho
   const q = `?v=${film.v}`;
 
   return (
-    <div ref={boxRef} className="absolute inset-0">
+    <div
+      ref={boxRef}
+      aria-hidden
+      className="relative mb-8 aspect-[4/3] w-full overflow-hidden rounded-lg bg-[#f0ebe0] ring-1 ring-zinc-900/[.07] dark:bg-neutral-900 dark:ring-white/10"
+    >
       {armed ? (
         <video
           ref={videoRef}
@@ -87,14 +79,13 @@ export default function FilmCard({ film, hovered }: { film: Film | undefined; ho
           preload="auto"
           disablePictureInPicture
           disableRemotePlayback
-          aria-hidden
           tabIndex={-1}
           onCanPlay={start}
-          onPlaying={() => setPlaying(true)}
+          onPlaying={() => setRolling(true)}
           // timeupdate keeps running while the film does, so the still cannot be left
           // stranded on top of a film that is already playing underneath it.
           onTimeUpdate={() => {
-            if (!playing) setPlaying(true);
+            if (!rolling) setRolling(true);
           }}
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[.92]"
         />
@@ -105,10 +96,9 @@ export default function FilmCard({ film, hovered }: { film: Film | undefined; ho
         alt=""
         width={film.width}
         height={film.height}
-        loading="lazy"
         decoding="async"
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 dark:brightness-[.92] ${
-          playing && shouldPlay ? 'opacity-0' : 'opacity-100'
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ease-out dark:brightness-[.92] ${
+          rolling && shouldPlay ? 'opacity-0' : 'opacity-100'
         }`}
       />
     </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import WorkTimeline from './WorkTimeline';
 
@@ -16,6 +17,8 @@ const IxigoExperience: React.FC = () => {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="ixigo-experience" />
 
       {/* Rest of the content remains the same */}
       <div className="text-sm max-w-3xl">

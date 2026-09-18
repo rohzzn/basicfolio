@@ -1,5 +1,6 @@
 import React from 'react';
 import PostReads from '@/components/PostReads';
+import PostFilm from '@/components/PostFilm';
 import Link from 'next/link';
 import ProjectStats from './ProjectStats';
 
@@ -16,6 +17,8 @@ export default function FortyProjects() {
           <PostReads />
         </div>
       </header>
+
+      <PostFilm slug="forty-projects" />
 
       <div className="text-sm max-w-3xl">
 
