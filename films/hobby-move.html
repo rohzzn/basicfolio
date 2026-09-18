@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-move</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Move, the workouts logged in Hevy.
+// Look: ink on chalk-dust paper. Anchor: the barbell. Signature: the lift itself - the bar goes up on twos,
+// the plates ring, and the week's volume stacks up behind it.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.9   lift   a bar is pressed up, held, and dropped; chalk dust and rings        barbell, ringsOut
+// 1.9   1.4   log    the set list fills in, one row a rep, volume climbing                RR rows
+// 3.3   1.8   plate  the name is painted on the plate face                                writeOn
+
+const PAL_MV = makePalette({
+  paper: '#efe9dd', paperBand: null, ink: '#23211e', night: '#1c1a17', chalk: '#fbf8f0', chalkDim: '#928a7c', guide: 'rgba(35,33,30,.3)',
+  fills: ['#c25b3a', '#5f6b6d', '#d9c9a8', '#8a9a5b', '#3d4447'], shade: '#4a453d', light: '#fbf8f0', blush: '#c25b3a',
+  accents: ['#c25b3a', '#5f6b6d', '#d9a441', '#8a9a5b'], inks: ['#23211e', '#c25b3a', '#5f6b6d'], finish: 'ink',
+}, 'paperInk');
+
+function plate(c, x, y, r, col, seed) {
+  draw(c, CI(x, y, r), col, seed, { lw: 6, texo: { density: .5 } });
+  draw(c, CI(x, y, r * .3), PAL.fills[4], seed + 1, { tex: false, lw: 4 });
+  for (let k = 0; k < 6; k++) { const a = k / 6 * TAU; stroke(c, [[x + Math.cos(a) * r * .42, y + Math.sin(a) * r * .42], [x + Math.cos(a) * r * .78, y + Math.sin(a) * r * .78]], seed + 10 + k, { lw: 4, alpha: .5, raw: true }); }
+}
+function barbell(c, cy, tilt, seed, nameP) {
+  c.save(); c.translate(CX, cy); c.rotate(tilt);
+  stroke(c, [[-640, 0], [640, 0]], seed, { lw: 22, color: PAL.fills[1] });
+  for (const s of [-1, 1]) { stroke(c, [[s * 300, -30], [s * 300, 30]], seed + 1 + s, { lw: 14, color: PAL.fills[4], raw: true });
+    plate(c, s * 400, 0, 150, PAL.fills[0], seed + 20 + s);
+    plate(c, s * 500, 0, 110, PAL.fills[4], seed + 40 + s);
+    if (nameP > 0 && s < 0) { c.save(); c.translate(-400, 0); writeOn(c, 'move', 0, 22, nameP, { size: 90, ink: PAL.light, ink2: PAL.fills[4], pen: PAL.light }); c.restore(); }
+  }
+  c.restore();
+}
+function lifter(c, cy, seed) {
+  // the hands and forearms on the bar, nothing more: the bar is the subject
+  for (const s of [-1, 1]) {
+    stroke(c, [[CX + s * 190, cy + 40], [CX + s * 200, cy + 250]], seed + s, { lw: 34, color: PAL.fills[2] });
+    draw(c, RR(CX + s * 190 - 40, cy - 30, 80, 70, 24), PAL.fills[2], seed + 10 + s, { lw: 5, texo: { density: .4 } });
+  }
+}
+function chalkDust(c, cy, t, seed) {
+  const r = rng(seed);
+  for (let k = 0; k < 30; k++) { const a = r() * TAU, d = t * (200 + r() * 500); c.fillStyle = alpha(PAL.light, .8 - t); c.beginPath(); c.arc(CX + Math.cos(a) * d * 1.4, cy + Math.sin(a) * d * .6 - t * 120, 3 + r() * 9, 0, TAU); c.fill(); }
+}
+function sceneLift(c, tau, i) {
+  paper(c);
+  groundA(c, CX, CY + 430, 1500, 5, { fill: PAL.fills[2] });
+  guides(c, CX, CY, 340, 9, .5);
+  // press: down, up, hold, drop
+  const up = tau < .35 ? 0 : tau < .95 ? sm(.35, .95, tau, easeOut) : tau < 1.45 ? 1 : 1 - sm(1.45, 1.7, tau, easeIn);
+  const cy = lerp(CY + 150, CY - 170, up), tilt = Math.sin(tau * 9) * .012 * (1 - up);
+  lifter(c, cy, 30);
+  barbell(c, cy, tilt, 40, 0);
+  if (tau > 1.66) { ringsOut(c, CX - 400, CY + 150, tau - 1.66, { every: 1 / 12, t1: .12, speed: 900, colors: [PAL.fills[0], PAL.ink], width: 7, seed: 60, max: 420 }); chalkDust(c, CY + 150, (tau - 1.66) * 2.6, 61); }
+  if (up > .95 && tau < 1.45) for (let k = 0; k < 3; k++) if (pulse(i + k, 4, 2)) speedLines(c, CX + (k - 1) * 400, cy - 190, Math.PI / 2, 70 + k + i, 4, .4);
+  const reps = Math.min(5, Math.floor(tau * 3) + 1);
+  for (let k = 0; k < 5; k++) dot(c, 120 + k * 46, 120, 16, k < reps ? PAL.fills[0] : alpha(PAL.ink, .2));
+}
+const SETS = [['bench', .8], ['squat', 1], ['row', .62], ['press', .74], ['curl', .5]];
+function sceneLog(c, tau, i) {
+  paper(c);
+  const x = CX - 520, y = 120, w = 1040;
+  c.fillStyle = alpha(PAL.shade, .15); c.beginPath(); c.roundRect(x + 18, y + 20, w, 840, 24); c.fill();
+  draw(c, RR(x, y, w, 840, 24), PAL.light, 10, { texo: { density: .25 } });
+  textBar(c, x + 50, y + 70, 280, alpha(PAL.ink, .65), 24);
+  dot(c, x + w - 70, y + 70, 14, PAL.fills[3]);
+  stroke(c, [[x + 30, y + 130], [x + w - 30, y + 130]], 11, { lw: 4 });
+  SETS.forEach(([, v], k) => {
+    const p = sm(k * .16, k * .16 + .4, tau, easeOut); if (p <= 0) return;
+    const ry = y + 200 + k * 128;
+    draw(c, RR(x + 50, ry - 40, 80, 80, 18), [PAL.fills[0], PAL.fills[1], PAL.fills[3], PAL.fills[0], PAL.fills[1]][k], 20 + k, { lw: 4, texo: { density: .4 } });
+    textBar(c, x + 170, ry - 14, 200, alpha(PAL.ink, .55), 18);
+    for (let s = 0; s < 4; s++) { const on = p > (s + 1) / 5; draw(c, RR(x + 170 + s * 70, ry + 22, 52, 26, 13), on ? PAL.fills[4] : alpha(PAL.ink, .12), 40 + k * 5 + s, { tex: false, lw: 2.6 }); }
+    draw(c, RR(x + 520, ry - 18, (w - 620) * v * p, 44, 22), PAL.fills[0], 60 + k, { lw: 3.4, texo: { density: .4 } });
+  });
+  const bar = sm(.2, 1.3, tau, easeOut);
+  stroke(c, [[x + 50, y + 790], [x + 50 + (w - 100) * bar, y + 790]], 80, { lw: 14, color: PAL.fills[3] });
+}
+function scenePlate(c, tau, i) {
+  paper(c);
+  groundA(c, CX, CY + 430, 1500, 5, { fill: PAL.fills[2] });
+  for (let r = 1; r <= 3; r++) dashedRing(c, CX, CY - 30, 300 + r * 90, alpha(PAL.ink, .25), 90 + r, [22, 18], 4);
+  // one plate, face on, big enough to carry the name
+  const s = easeBack(sm(0, .35, tau, t => t));
+  c.save(); c.translate(CX, CY - 30); c.scale(s, s);
+  plate(c, 0, 0, 340, PAL.fills[0], 100);
+  writeOn(c, 'move', 0, 40, sm(.3, 1.1, tau, t => t), { size: 190, ink: PAL.light, ink2: PAL.fills[4], pen: PAL.light });
+  c.restore();
+  if (tau > 1.1) chalkDust(c, CY + 300, (tau - 1.1) * 1.4, 110);
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_MV, poster: 4.6,
+  beats: [
+    { name: 'lift', dur: 1.9, fn: sceneLift },
+    { name: 'log', dur: 1.4, fn: sceneLog },
+    { name: 'plate', dur: 1.8, fn: scenePlate },
+  ],
+});
+</script>

@@ -1,15 +1,17 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import films from '@/data/project-films.json';
 
-type Film = { src: string; poster: string; duration: number; width: number; height: number; v: string };
+export type Film = {
+  src: string;
+  poster: string;
+  duration: number;
+  width: number;
+  height: number;
+  v: string;
+};
 
-const FILMS: Record<string, Film> = films;
-
-export function hasFilm(slug: string): boolean {
-  return slug in FILMS;
-}
+export type FilmManifest = Record<string, Film>;
 
 function useMedia(query: string): boolean {
   const [matches, setMatches] = useState(false);
@@ -23,12 +25,11 @@ function useMedia(query: string): boolean {
   return matches;
 }
 
-// Every card is a short hand-drawn film: drawn frame by frame on a canvas by the
-// files in /films and rendered to a looping mp4. The card shows a still until it
-// is hovered (or focused), then plays from the top; leaving puts the still back.
-// Touch screens have no hover, so there the film plays while the card is on screen.
-export default function ProjectFilm({ slug, hovered }: { slug: string; hovered: boolean }) {
-  const film = FILMS[slug];
+// Every card on /projects, /hobbies and /writing is a short hand-drawn film: drawn frame by
+// frame on a canvas by the files in /films and rendered to a looping mp4. The card shows a
+// still until it is hovered (or focused), then plays from the top; leaving puts the still
+// back. Touch screens have no hover, so there a film plays while its card is on screen.
+export default function FilmCard({ film, hovered }: { film: Film | undefined; hovered: boolean }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [onScreen, setOnScreen] = useState(false);
@@ -49,8 +50,8 @@ export default function ProjectFilm({ slug, hovered }: { slug: string; hovered: 
 
   const shouldPlay = touch ? onScreen && !reduced : hovered;
 
-  // The video element is only created once a card is first asked to play, so a
-  // page of stills costs nothing but the stills.
+  // The video element is only created once a card is first asked to play, so a page of
+  // stills costs nothing but the stills.
   useEffect(() => {
     if (shouldPlay) setArmed(true);
   }, [shouldPlay]);

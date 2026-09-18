@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-nobody-said-he-was-wrong</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Nobody Said He Was Wrong.
+// Look: ink on newsprint. Anchor: the claim. Signature: the room agrees - every head nods on the same beat,
+// and the one hand that goes up comes back down before anyone sees it.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.7   claim  a speaker at a lectern; the claim goes up on the board behind        bubble, lectern
+// 1.7   1.5   nods   the room nods in unison; one hand rises, hesitates, drops            bust rows, pulse
+// 3.2   2.0   wall   the claim alone on the wall, and the title written under it           writeOn
+
+const PAL_NB = makePalette({
+  paper: '#e9e6de', paperBand: null, ink: '#20201e', night: '#1a1a18', chalk: '#f7f6f1', chalkDim: '#8c8a83', guide: 'rgba(32,32,30,.3)',
+  fills: ['#cfcbc0', '#9b968a', '#c24a33', '#5f6b7a', '#e4e0d6'], shade: '#4a4840', light: '#f7f6f1', blush: '#c24a33',
+  accents: ['#c24a33', '#5f6b7a', '#c9a24a', '#6b7f5a'], inks: ['#20201e', '#c24a33'], finish: 'ink',
+}, 'paperInk');
+
+function head(c, x, y, s, nod, col, seed) {
+  c.save(); c.translate(x, y + (nod ? s * .16 : 0));
+  draw(c, CI(0, 0, s * .5), col, seed, { lw: 4, texo: { density: .35 } });
+  draw(c, EL(0, s * .95, s * .78, s * .5), PAL.fills[1], seed + 1, { lw: 4, texo: { density: .3 } });
+  c.restore();
+}
+function claimBoard(c, x, y, w, h, seed, nameP) {
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(x + 14, y + 18, w, h, 10); c.fill();
+  draw(c, RR(x, y, w, h, 10), PAL.light, seed, { lw: 6, texo: { density: .18 } });
+  if (nameP > 0) return;
+  squig(c, x + 50, y + 90, w - 100, 1, { seed: seed + 1, width: 8, amp: 16, color: PAL.ink });
+  squig(c, x + 50, y + 170, w - 220, 1, { seed: seed + 2, width: 8, amp: 16, color: PAL.ink });
+  // the one number the whole claim rests on, circled
+  draw(c, CI(x + w - 150, y + 250, 60), PAL.blush, seed + 3, { lw: 5, texo: { density: .4 } });
+  squig(c, x + 50, y + 250, w - 300, 1, { seed: seed + 4, width: 7, amp: 14, color: alpha(PAL.ink, .7) });
+}
+function lectern(c, x, y, seed) {
+  draw(c, PG([[x - 120, y], [x + 120, y], [x + 90, y + 260], [x - 90, y + 260]]), PAL.fills[1], seed, { lw: 6, texo: { density: .4 } });
+  draw(c, PG([[x - 150, y - 40], [x + 150, y - 40], [x + 140, y + 10], [x - 140, y + 10]]), PAL.fills[0], seed + 1, { lw: 5, texo: { density: .3 } });
+  head(c, x, y - 190, 150, false, PAL.fills[3], seed + 2);
+  stroke(c, [[x + 60, y - 120], [x + 150, y - 200]], seed + 3, { lw: 14, color: PAL.fills[1] });
+}
+function sceneClaim(c, tau, i) {
+  paper(c);
+  const wall = rectPath(0, 0, W, 760); c.fillStyle = PAL.fills[4]; c.fill(wall); tex(c, wall, [0, 0, W, 760], { color: PAL.fills[0], density: .2, seed: 4 });
+  stroke(c, [[-10, 760], [W + 10, 760]], 5, { lw: 6 });
+  const p = sm(.15, .8, tau, easeOut);
+  c.save(); c.translate(0, lerp(-80, 0, p)); c.globalAlpha = Math.min(1, p * 1.6);
+  claimBoard(c, CX - 380, 150, 760, 380, 20, 0);
+  c.restore();
+  lectern(c, CX - 470, 880, 40);
+  if (tau > .9) { const b = sm(.9, 1.3, tau, easeOut); c.save(); c.globalAlpha = b; bubble(c, CX + 120, 700, 480, 150, PAL.light, 60, { lines: true, lw: 5 }); c.restore(); }
+}
+const ROWS = [[5, 300], [6, 500], [7, 700]];
+function sceneNods(c, tau, i) {
+  paper(c);
+  const wall = rectPath(0, 0, W, 760); c.fillStyle = PAL.fills[4]; c.fill(wall); tex(c, wall, [0, 0, W, 760], { color: PAL.fills[0], density: .2, seed: 4 });
+  c.save(); c.globalAlpha = .5; claimBoard(c, CX - 380, 80, 760, 380, 20, 0); c.restore();
+  // the room, seen from behind: every head nods together on the twos
+  const nod = pulse(i, 6, 3);
+  ROWS.forEach(([n, y], r) => {
+    for (let k = 0; k < n; k++) {
+      const x = CX - (n - 1) * 210 / 2 + k * 210 + (r % 2 ? 60 : 0);
+      head(c, x, y + r * 60, 100 + r * 26, nod, [PAL.fills[1], PAL.fills[3], PAL.fills[0]][(k + r) % 3], 70 + r * 10 + k);
+    }
+  });
+  // one hand goes up, waits, and comes back down
+  const up = tau > .5 && tau < 1.15;
+  const h = up ? sm(.5, .7, tau, easeOut) - sm(.95, 1.15, tau, easeIn) : 0;
+  if (h > 0) { const x = CX + 330, y = 700 + 2 * 60;
+    stroke(c, [[x, y - 40], [x + 20, y - 40 - 230 * h]], 100, { lw: 22, color: PAL.fills[1] });
+    draw(c, CI(x + 20, y - 60 - 230 * h, 34), PAL.fills[1], 101, { lw: 5, texo: { density: .3 } }); }
+}
+function sceneWall(c, tau, i) {
+  paper(c);
+  const wall = rectPath(0, 0, W, H); c.fillStyle = PAL.fills[4]; c.fill(wall); tex(c, wall, [0, 0, W, H], { color: PAL.fills[0], density: .2, seed: 4 });
+  for (let r = 1; r <= 3; r++) dashedRing(c, CX, 330, 300 + r * 90, alpha(PAL.ink, .16), 110 + r, [22, 18], 3);
+  claimBoard(c, CX - 380, 140, 760, 380, 20, 0);
+  const p = sm(.2, 1.1, tau, t => t);
+  writeOn(c, 'nobody said', CX, 720, p, { size: 150, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+  if (p >= 1) writeOn(c, 'he was wrong', CX, 870, sm(1.05, 1.7, tau, t => t), { size: 150, ink: PAL.blush, ink2: null, pen: PAL.blush });
+  // the room is still there, just small and quiet at the bottom
+  for (let k = 0; k < 7; k++) head(c, 120 + k * 200, H - 40, 70, pulse(i + k, 9, 4), PAL.fills[1], 130 + k);
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_NB, poster: 4.9,
+  beats: [
+    { name: 'claim', dur: 1.7, fn: sceneClaim },
+    { name: 'nods', dur: 1.5, fn: sceneNods },
+    { name: 'wall', dur: 2.0, fn: sceneWall },
+  ],
+});
+</script>

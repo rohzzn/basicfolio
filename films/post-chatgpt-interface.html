@@ -1,0 +1,99 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-chatgpt-interface</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Building My Own ChatGPT UI.
+// Look: graphite on cream, one green. Anchor: the thread. Signature: the interface is drawn as a wireframe
+// first and only then filled in, because that is the order it was actually built in.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.7   wire   the layout is drawn as boxes and labels, hand-ruled                 dashed boxes
+// 1.7   1.5   fill   the wireframe fills in: sidebar, thread, a reply streaming in        RR, squig
+// 3.2   1.9   mine   the window title is written: "my own ui"                              writeOn
+
+const PAL_CG = makePalette({
+  paper: '#f4f3ee', paperBand: null, ink: '#25272a', night: '#202225', chalk: '#ffffff', chalkDim: '#9a9c9e', guide: 'rgba(37,39,42,.3)',
+  fills: ['#ffffff', '#e6e7e3', '#10a37f', '#d9dbd6', '#3d4145'], shade: '#25272a', light: '#ffffff', blush: '#d97757',
+  accents: ['#10a37f', '#d97757', '#5a7d9a', '#c9a24a'], inks: ['#25272a', '#10a37f'], finish: 'pencil',
+}, 'pencilMinimal');
+const WX2 = 130, WY2 = 140, WW2 = W - 260, WH2 = H - 280, SIDE = 300;
+
+function frame(c, wire, title) {
+  paper(c);
+  c.save(); c.strokeStyle = alpha(PAL.ink, .07); c.lineWidth = 1.6;
+  for (let x = 0; x <= W; x += 50) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 50) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.restore();
+  if (!wire) { c.fillStyle = alpha(PAL.shade, .12); c.beginPath(); c.roundRect(WX2 + 14, WY2 + 18, WW2, WH2, 20); c.fill(); }
+  draw(c, RR(WX2, WY2, WW2, WH2, 20), wire ? null : PAL.fills[0], 10, { lw: 5 });
+  // the title bar
+  stroke(c, [[WX2, WY2 + 76], [WX2 + WW2, WY2 + 76]], 11, { lw: 4 });
+  for (let k = 0; k < 3; k++) draw(c, CI(WX2 + 40 + k * 34, WY2 + 38, 12), wire ? null : [PAL.blush, PAL.fills[3], PAL.accents[0]][k], 12 + k, { tex: false, lw: 3 });
+  if (title > 0) writeOn(c, 'my own ui', WX2 + WW2 / 2, WY2 + 54, title, { size: 62, ink: PAL.ink, ink2: PAL.fills[2], pen: PAL.fills[2] });
+  else textBar(c, WX2 + WW2 / 2 - 90, WY2 + 38, 180, alpha(PAL.ink, .25), 14);
+  stroke(c, [[WX2 + SIDE, WY2 + 76], [WX2 + SIDE, WY2 + WH2]], 20, { lw: 4 });
+}
+function label(c, x, y, w) { c.save(); c.setLineDash([12, 10]); stroke(c, rrPts(x, y, w, 40, 8), 30 + x + y, { raw: true, close: true, lw: 2.6, color: alpha(PAL.ink, .4) }); c.restore(); }
+function sceneWire(c, tau, i) {
+  frame(c, true, 0);
+  const p = sm(0, 1.4, tau, t => t);
+  // the sidebar rows, then the thread, then the composer: drawn as empty boxes with labels
+  const items = [];
+  for (let k = 0; k < 6; k++) items.push([WX2 + 30, WY2 + 120 + k * 70, SIDE - 60, 46]);
+  items.push([WX2 + SIDE + 60, WY2 + 130, 420, 120]);
+  items.push([WX2 + SIDE + WW2 - SIDE - 500, WY2 + 290, 420, 160]);
+  items.push([WX2 + SIDE + 60, WY2 + 490, 620, 200]);
+  items.push([WX2 + SIDE + 60, WY2 + WH2 - 140, WW2 - SIDE - 120, 100]);
+  items.forEach(([x, y, w, h], k) => {
+    const q = clamp(p * items.length - k, 0, 1); if (q <= 0) return;
+    c.save(); c.setLineDash([14, 12]);
+    stroke(c, rrPts(x, y, w * q, h, 10), 40 + k, { raw: true, close: true, lw: 3, color: alpha(PAL.ink, .55) });
+    c.restore();
+    if (q >= 1) { stroke(c, [[x + 10, y + 10], [x + w - 10, y + h - 10]], 60 + k, { lw: 2, color: alpha(PAL.ink, .16) }); stroke(c, [[x + w - 10, y + 10], [x + 10, y + h - 10]], 70 + k, { lw: 2, color: alpha(PAL.ink, .16) }); }
+  });
+}
+function chat(c, streamed) {
+  // sidebar
+  for (let k = 0; k < 6; k++) { const y = WY2 + 120 + k * 70; draw(c, RR(WX2 + 30, y, SIDE - 60, 46, 10), k === 1 ? PAL.fills[1] : null, 80 + k, { tex: false, lw: 3, line: k !== 1 }); textBar(c, WX2 + 50, y + 23, SIDE - 120 - (k * 23) % 60, alpha(PAL.ink, k === 1 ? .6 : .3), 12); }
+  draw(c, RR(WX2 + 30, WY2 + WH2 - 90, SIDE - 60, 54, 12), null, 90, { lw: 3 });
+  textBar(c, WX2 + 60, WY2 + WH2 - 63, 150, alpha(PAL.ink, .35), 12);
+  // the thread: a question, then an answer streaming in
+  const q = RR(WX2 + SIDE + WW2 - SIDE - 560, WY2 + 130, 480, 120, 20);
+  draw(c, q, PAL.fills[1], 100, { tex: false, lw: 4 });
+  squig(c, WX2 + SIDE + WW2 - SIDE - 530, WY2 + 180, 400, 2, { seed: 101, lineH: 44, width: 4 });
+  const a = RR(WX2 + SIDE + 60, WY2 + 300, 640, 260, 20);
+  draw(c, a, PAL.fills[0], 110, { tex: false, lw: 4, lc: PAL.fills[2] });
+  draw(c, CI(WX2 + SIDE + 30, WY2 + 330, 26), PAL.fills[2], 111, { tex: false, lw: 3 });
+  const lines = Math.floor(streamed * 4);
+  for (let k = 0; k < Math.min(4, lines); k++) squig(c, WX2 + SIDE + 90, WY2 + 360 + k * 56, 560 - (k === 3 ? 260 : 0), 1, { seed: 120 + k, width: 4.4 });
+  if (streamed < 1 && lines < 4) { c.fillStyle = PAL.fills[2]; c.fillRect(WX2 + SIDE + 90 + (streamed * 4 % 1) * 480, WY2 + 342 + lines * 56, 12, 32); }
+  // composer
+  draw(c, RR(WX2 + SIDE + 60, WY2 + WH2 - 140, WW2 - SIDE - 120, 100, 28), null, 130, { lw: 4 });
+  textBar(c, WX2 + SIDE + 100, WY2 + WH2 - 90, 300, alpha(PAL.ink, .25), 14);
+  draw(c, CI(WX2 + WW2 - 110, WY2 + WH2 - 90, 32), PAL.fills[2], 131, { tex: false, lw: 3 });
+}
+function sceneFill(c, tau, i) {
+  frame(c, false, 0);
+  chat(c, sm(.35, 1.4, tau, t => t));
+}
+function sceneMine(c, tau, i) {
+  frame(c, false, sm(.15, 1.0, tau, t => t));
+  chat(c, 1);
+  if (tau > 1.0) { const g = sm(1.0, 1.3, tau, easeOut); checkMark(c, WX2 + WW2 - 90, WY2 + 330, 26, g, 140, { color: PAL.fills[2], lw: 8 }); }
+  if (tau > 1.2) for (let r = 1; r <= 2; r++) dottedArc(c, WX2 + WW2 / 2, WY2 + 54, 260 + r * 90, alpha(PAL.ink, .2), 150 + r, 20, 2.4);
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_CG, poster: 4.7,
+  beats: [
+    { name: 'wire', dur: 1.7, fn: sceneWire },
+    { name: 'fill', dur: 1.5, fn: sceneFill },
+    { name: 'mine', dur: 1.9, fn: sceneMine },
+  ],
+});
+</script>

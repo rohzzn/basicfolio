@@ -1,0 +1,104 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-catan-coop</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Building Multiplayer Catan From Scratch - hex geometry, server-authoritative state, sockets.
+// Look: chalk on a blueprint navy. Anchor: the hex. Signature: this is the working drawing, not the game -
+// the hex is set out with construction lines and the sockets are wired between the players.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.7   geom   one hex drawn from its centre with radii, then tiled out            hexPath, construction
+// 1.6   1.6   wire   four clients and one server, packets running both ways               nodes, dots
+// 3.2   1.9   title  the drawing is titled in the corner block                            writeOn
+
+const PAL_CC = makePalette({
+  paper: '#0f1b2e', paperBand: null, ink: '#dfe9f7', night: '#0a1424', chalk: '#dfe9f7', chalkDim: '#6f86a8', guide: 'rgba(120,200,255,.45)',
+  fills: ['#16263f', '#1d3350', '#5ad1a0', '#f2c14e', '#ff8a6b'], shade: '#9fb6d6', light: '#eef5ff', blush: '#ff8a6b',
+  accents: ['#5ad1a0', '#f2c14e', '#ff8a6b', '#7fc4ff'], inks: ['#dfe9f7', '#5ad1a0'], finish: 'pencil',
+}, 'blueprintNight');
+const HS = 150;
+
+function sheet3(c) {
+  paper(c);
+  c.save(); c.strokeStyle = alpha(PAL.chalk, .07); c.lineWidth = 1.6;
+  for (let x = 0; x <= W; x += 50) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 50) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.restore();
+  stroke(c, rrPts(60, 60, W - 120, H - 120, 4), 5, { raw: true, close: true, lw: 4, color: alpha(PAL.chalk, .5) });
+}
+function hexOutline(c, x, y, s, p, seed, col) {
+  const pts = []; for (let k = 0; k < 6; k++) { const a = Math.PI / 3 * k + Math.PI / 6; pts.push([x + Math.cos(a) * s, y + Math.sin(a) * s]); }
+  strokeOn(c, pts.concat([pts[0]]), p, seed, { raw: true, lw: 5, color: col || PAL.chalk });
+  return pts;
+}
+function sceneGeom(c, tau, i) {
+  sheet3(c);
+  const cx = CX - 180, cy = CY;
+  // the set-out: centre, radii, then the hex itself
+  const r1 = sm(0, .4, tau, easeOut);
+  if (r1 > 0) { dot(c, cx, cy, 9, PAL.accents[0]); stroke(c, ellPts(cx, cy, HS * r1, HS * r1, 0, 60), 10, { raw: true, close: true, lw: 3, color: alpha(PAL.guide, .8), dash: [14, 12] }); }
+  for (let k = 0; k < 6; k++) { const a = Math.PI / 3 * k + Math.PI / 6, p = sm(.15 + k * .05, .45 + k * .05, tau, easeOut); if (p <= 0) continue;
+    stroke(c, [[cx, cy], [cx + Math.cos(a) * HS * p, cy + Math.sin(a) * HS * p]], 20 + k, { lw: 3, color: alpha(PAL.guide, .9), raw: true });
+    if (p >= 1) dot(c, cx + Math.cos(a) * HS, cy + Math.sin(a) * HS, 7, PAL.accents[1]); }
+  hexOutline(c, cx, cy, HS, sm(.5, .95, tau, t => t), 30);
+  // the tiling, drawn out to the right as the neighbours
+  if (tau > .95) {
+    const g = sm(.95, 1.6, tau, easeOut);
+    hexCells([cx + 120, cy - 260, 520, 520], HS, (hx, hy) => { const d = Math.hypot(hx - cx, hy - cy); if (d < HS * 1.2 || d > 520 * g) return; c.strokeStyle = alpha(PAL.chalk, .5); c.lineWidth = 3; c.stroke(hexPath(hx, hy, HS - 4)); });
+  }
+  // the dimension of a side, called out
+  if (tau > 1.2) { const a0 = Math.PI / 6, p0 = [cx + Math.cos(a0) * HS, cy + Math.sin(a0) * HS], a1 = Math.PI / 3 + Math.PI / 6, p1 = [cx + Math.cos(a1) * HS, cy + Math.sin(a1) * HS];
+    stroke(c, [p0, p1], 40, { raw: true, lw: 3, color: PAL.accents[1] });
+    textBar(c, (p0[0] + p1[0]) / 2 - 30, (p0[1] + p1[1]) / 2 - 30, 60, PAL.accents[1], 12); }
+}
+const CLIENTS = [[240, 260], [W - 240, 260], [240, H - 240], [W - 240, H - 240]];
+function sceneWire(c, tau, i) {
+  sheet3(c);
+  // the board, small, in the middle: the state everyone is arguing about
+  hexCells([CX - 220, CY - 200, 440, 400], 90, (hx, hy) => { if (Math.hypot(hx - CX, hy - CY) > 230) return; c.strokeStyle = alpha(PAL.chalk, .45); c.lineWidth = 3; c.stroke(hexPath(hx, hy, 86)); });
+  draw(c, RR(CX - 150, CY - 70, 300, 140, 16), null, 50, { lw: 5 });
+  textBar(c, CX - 90, CY - 20, 180, alpha(PAL.chalk, .7), 16);
+  textBar(c, CX - 60, CY + 20, 120, alpha(PAL.chalk, .35), 14);
+  CLIENTS.forEach(([x, y], k) => {
+    const p = sm(k * .12, k * .12 + .3, tau, easeOut); if (p <= 0) return;
+    c.save(); c.globalAlpha = p;
+    draw(c, RR(x - 130, y - 90, 260, 180, 14), null, 60 + k, { lw: 5 });
+    textBar(c, x - 90, y - 40, 180, alpha(PAL.chalk, .6), 14);
+    for (let d = 0; d < 2; d++) textBar(c, x - 90, y + 4 + d * 30, 140 - d * 40, alpha(PAL.chalk, .3), 12);
+    dot(c, x + 96, y - 60, 10, [PAL.accents[0], PAL.accents[1], PAL.accents[2], PAL.accents[3]][k]);
+    c.restore();
+    stroke(c, [[x, y], [CX, CY]], 70 + k, { lw: 3, color: alpha(PAL.chalk, .35), dash: [12, 10] });
+    // packets, going both ways, so the server-authoritative bit reads
+    const u = ((q12(tau) * .9 + k * .2) % 1), v = ((q12(tau) * .9 + k * .2 + .5) % 1);
+    dot(c, lerp(x, CX, u), lerp(y, CY, u), 9, [PAL.accents[0], PAL.accents[1], PAL.accents[2], PAL.accents[3]][k]);
+    dot(c, lerp(CX, x, v), lerp(CY, y, v), 7, alpha(PAL.chalk, .8));
+  });
+}
+function sceneTitle(c, tau, i) {
+  sheet3(c);
+  c.save(); c.globalAlpha = .5;
+  hexCells([CX - 320, CY - 300, 640, 600], 110, (hx, hy) => { if (Math.hypot(hx - CX, hy - CY + 60) > 340) return; c.strokeStyle = alpha(PAL.chalk, .5); c.lineWidth = 3; c.stroke(hexPath(hx, hy, 106)); });
+  c.restore();
+  // the title block in the corner, the way a drawing is signed
+  const bw = 820, bh = 230, bx = W - 100 - bw, by = H - 100 - bh;
+  draw(c, RR(bx, by, bw, bh, 6), null, 80, { lw: 5 });
+  stroke(c, [[bx, by + 90], [bx + bw, by + 90]], 81, { lw: 4 });
+  stroke(c, [[bx + bw * .62, by + 90], [bx + bw * .62, by + bh]], 82, { lw: 4 });
+  writeOn(c, 'catan, from scratch', bx + 30, by + 66, sm(.1, 1.0, tau, t => t), { size: 84, align: 'left', ink: PAL.chalk, ink2: PAL.accents[0], pen: PAL.accents[0] });
+  if (tau > 1.0) { textBar(c, bx + 30, by + 140, 240, alpha(PAL.chalk, .45), 14); textBar(c, bx + 30, by + 180, 180, alpha(PAL.chalk, .3), 12); dot(c, bx + bw * .8, by + 155, 26, PAL.accents[1]); }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_CC, poster: 2.4,
+  beats: [
+    { name: 'geom', dur: 1.7, fn: sceneGeom },
+    { name: 'wire', dur: 1.6, fn: sceneWire },
+    { name: 'title', dur: 1.9, fn: sceneTitle },
+  ],
+});
+</script>

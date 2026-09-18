@@ -1,0 +1,126 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-moving-to-cincinnati</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: From Hyderabad to Cincinnati - degree, applications, visa, and a city 14,000km away.
+// Look: flat screen print, a printed map. Anchor: the dotted route. Signature: the route draws itself across
+// the map with the plane on its head, and the pin that lands at the far end carries the name.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.6   pack   a suitcase closing, stamps landing on it                            RR, stamps
+// 1.6   1.8   fly    the route draws across the map, the plane riding its head            strokeOn, plane
+// 3.4   1.8   pin    the pin drops on the far end and is labelled                          writeOn
+
+const PAL_MC = makePalette({
+  paper: '#f2ece0', paperBand: null, ink: '#23303a', night: '#1a242c', chalk: '#fffdf6', chalkDim: '#8a9aa6', guide: 'rgba(35,48,58,.3)',
+  fills: ['#d9c9a8', '#8fb3c9', '#e07a5f', '#3d5a6c', '#b8c9a8', '#f4efe2'], shade: '#23303a', light: '#fffdf6', blush: '#e07a5f',
+  accents: ['#e07a5f', '#3d5a6c', '#c9a24a', '#6b8f7a'], inks: ['#3d5a6c', '#e07a5f', '#c9a24a'], finish: 'screen',
+}, 'screenSea');
+const FROM = [340, 640], TO = [1120, 330];
+
+function suitcase(c, cx, cy, s, lid, seed) {
+  c.save(); c.translate(cx, cy); c.scale(s, s);
+  draw(c, RR(-260, -60, 520, 300, 26), PAL.fills[2], seed, { lw: 6, texo: { density: .35 } });
+  c.save(); c.translate(0, -60); c.rotate(-lid * .9);
+  draw(c, RR(-260, -190, 520, 190, 26), shade(PAL.fills[2], .12), seed + 1, { lw: 6, texo: { density: .35 } });
+  c.restore();
+  draw(c, RR(-70, -92, 140, 40, 20), PAL.fills[3], seed + 2, { lw: 5, tex: false });
+  for (const sx of [-1, 1]) stroke(c, [[sx * 150, -60], [sx * 150, 240]], seed + 3 + sx, { lw: 10, color: shade(PAL.fills[2], .3) });
+  c.restore();
+}
+function stamp(c, x, y, rot, s, col, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  for (let k = 0; k < 2; k++) stroke(c, rrPts(-110 - k * 10, -70 - k * 10, 220 + k * 20, 140 + k * 20, 12), seed + k, { raw: true, close: true, lw: 7, color: col, amp: 4 });
+  squig(c, -78, -16, 156, 1, { seed: seed + 5, width: 6, amp: 9, color: col });
+  squig(c, -60, 26, 120, 1, { seed: seed + 6, width: 5, amp: 7, color: col });
+  c.restore();
+}
+function mapBg(c, seed) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .14, cell: 16 });
+  // two landmasses, printed flat, and a sea between them
+  const sea = rectPath(0, 0, W, H); c.fillStyle = tint(PAL.fills[1], .5); c.fill(sea);
+  const land1 = PG([[-20, 380], [260, 300], [520, 420], [600, 700], [420, 980], [120, 1020], [-20, 800]]);
+  const land2 = PG([[860, 120], [1200, 60], [1460, 260], [1420, 620], [1140, 720], [900, 520]]);
+  [land1, land2].forEach((l, k) => { c.fillStyle = PAL.fills[4]; c.fill(l.path); tex(c, l.path, l.box, { color: PAL.fills[0], density: .3, seed: seed + k }); stroke(c, l.pts, seed + 10 + k, { raw: true, close: true, lw: 5 }); });
+  // grid lines, the way a printed map has them
+  c.save(); c.strokeStyle = alpha(PAL.ink, .12); c.lineWidth = 2;
+  for (let x = 0; x <= W; x += 180) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 180) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.restore();
+}
+function plane(c, x, y, rot, s, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  draw(c, PG([[-60, 0], [30, -18], [70, 0], [30, 18]]), PAL.light, seed, { lw: 4 });
+  draw(c, PG([[-10, -12], [20, -70], [40, -66], [26, -10]]), PAL.light, seed + 1, { lw: 4, tex: false });
+  draw(c, PG([[-10, 12], [20, 70], [40, 66], [26, 10]]), PAL.light, seed + 2, { lw: 4, tex: false });
+  c.restore();
+}
+function route(c, p) {
+  const pts = [];
+  for (let k = 0; k <= 40; k++) { const t = k / 40; pts.push(bez(FROM, [FROM[0] + 200, FROM[1] - 320], [TO[0] - 260, TO[1] - 300], TO, t)); }
+  const n = Math.max(2, Math.round(pts.length * clamp(p, 0, 1)));
+  const shown = pts.slice(0, n);
+  c.save(); c.setLineDash([18, 16]);
+  stroke(c, shown, 40, { raw: true, lw: 7, color: PAL.blush });
+  c.restore();
+  return shown;
+}
+function scenePack(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .14, cell: 16 });
+  const lid = 1 - sm(.35, .9, tau, easeIO);
+  suitcase(c, CX, CY + 40, 1.1, lid, 10);
+  // stamps landing on it, one every four frames
+  [[CX - 260, CY - 120, -.3, PAL.accents[1]], [CX + 220, CY - 60, .22, PAL.blush], [CX + 40, CY + 200, -.12, PAL.accents[2]]].forEach(([x, y, rot, col], k) => {
+    const t0 = .45 + k * 4 / 12, p = easeBack(sm(t0, t0 + .25, tau, t => t)); if (p <= .02) return;
+    stamp(c, x, y, rot, p, col, 30 + k * 7);
+  });
+  if (tau > 1.2) for (let k = 0; k < 3; k++) sparkle(c, 220 + k * 460, 160, 24, PAL.accents[2], k);
+}
+function sceneFly(c, tau, i) {
+  mapBg(c, 5);
+  const p = sm(.1, 1.5, tau, easeIO);
+  const shown = route(c, p);
+  // the two ends
+  dot(c, FROM[0], FROM[1], 18, PAL.ink); stroke(c, ellPts(FROM[0], FROM[1], 34, 34, 0, 24), 50, { raw: true, close: true, lw: 5, color: PAL.ink });
+  if (p > .02 && p < 1) { const a = shown[shown.length - 1], b = shown[Math.max(0, shown.length - 3)];
+    plane(c, a[0], a[1], Math.atan2(a[1] - b[1], a[0] - b[0]), 1.1, 60);
+    speedLines(c, a[0], a[1], Math.atan2(a[1] - b[1], a[0] - b[0]) + Math.PI, 70 + i, 5, .4, PAL.light); }
+  // the distance, called out along the way
+  if (p > .5) { const mid = shown[Math.floor(shown.length * .5)];
+    draw(c, RR(mid[0] - 150, mid[1] - 150, 300, 80, 40), PAL.light, 80, { lw: 4, tex: false });
+    textBar(c, mid[0] - 110, mid[1] - 110, 220, alpha(PAL.ink, .6), 18); }
+}
+function pin(c, x, y, s, seed) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  draw(c, PG([[0, 0], [-46, -70], [-46, -130], [46, -130], [46, -70]]), PAL.blush, seed, { lw: 5, texo: { density: .35 } });
+  draw(c, CI(0, -130, 46), PAL.blush, seed + 1, { lw: 5, texo: { density: .35 } });
+  draw(c, CI(0, -130, 20), PAL.light, seed + 2, { tex: false, lw: 4 });
+  c.restore();
+}
+function scenePin(c, tau, i) {
+  mapBg(c, 5);
+  route(c, 1);
+  dot(c, FROM[0], FROM[1], 18, PAL.ink);
+  const drop = sm(0, .35, tau, easeIn);
+  pin(c, TO[0], TO[1] - lerp(500, 0, drop), lerp(1.3, 1, drop), 90);
+  if (drop >= 1) { ringsOut(c, TO[0], TO[1], tau - .35, { every: 1 / 6, t1: .25, speed: 500, colors: [PAL.blush, PAL.accents[1]], width: 6, seed: 95, max: 400 });
+    writeOn(c, 'cincinnati', TO[0] - 40, TO[1] + 200, sm(.45, 1.3, tau, t => t), { size: 130, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+    if (tau > 1.3) writeOn(c, '14,000 km', FROM[0] + 60, FROM[1] + 160, sm(1.3, 1.7, tau, t => t), { size: 84, ink: PAL.accents[1], ink2: null, pen: null }); }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_MC, poster: 4.9, crf: 27,
+  beats: [
+    { name: 'pack', dur: 1.6, fn: scenePack },
+    { name: 'fly', dur: 1.8, fn: sceneFly },
+    { name: 'pin', dur: 1.8, fn: scenePin },
+  ],
+});
+</script>

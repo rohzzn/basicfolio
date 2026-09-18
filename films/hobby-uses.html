@@ -1,0 +1,109 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-uses</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Setup, the desk, the PC and the gear.
+// Look: ink on kraft, technical. Anchor: the desk mat. Signature: knolling - everything laid out flat and
+// square to the grid, one piece at a time, each with its own tag; the last tag is the name.
+// t     dur   scene  what changes                                                      kit
+// 0.0   2.0   lay    each piece slides into its square on the mat, labelled as it lands   RR, leaders
+// 1.8   1.3   spec   measure lines and callouts drawn over the whole layout               dimension lines
+// 3.1   1.9   tag    a paper tag settles on the mat and is written: "setup"                writeOn
+
+const PAL_US = makePalette({
+  paper: '#e8dcc8', paperBand: null, ink: '#2b2318', night: '#221c14', chalk: '#fbf6ea', chalkDim: '#a1907a', guide: 'rgba(43,35,24,.35)',
+  fills: ['#3b3a38', '#6f6a62', '#c9a227', '#8c5a3c', '#5f7a6a', '#f4efe2'], shade: '#463a2a', light: '#fbf6ea', blush: '#c05a3c',
+  accents: ['#c05a3c', '#5f7a6a', '#c9a227', '#4a6b8a'], inks: ['#2b2318', '#c05a3c'], finish: 'ink',
+}, 'paperInk');
+// [x, y, w, h, kind] on the mat, all square to the grid
+const GEAR = [
+  [CX - 470, CY - 300, 620, 360, 'monitor'],
+  [CX - 470, CY + 110, 620, 190, 'keyboard'],
+  [CX + 210, CY + 110, 140, 190, 'mouse'],
+  [CX + 210, CY - 300, 260, 360, 'tower'],
+  [CX + 520, CY - 300, 160, 160, 'headphones'],
+  [CX + 520, CY - 100, 160, 400, 'lamp'],
+];
+function piece(c, [x, y, w, h, kind], seed) {
+  if (kind === 'monitor') { draw(c, RR(x, y, w, h, 14), PAL.fills[0], seed, { lw: 5, texo: { density: .35 } }); draw(c, RR(x + 20, y + 20, w - 40, h - 60, 6), PAL.fills[1], seed + 1, { lw: 4, texo: { density: .25 } }); draw(c, RR(x + w / 2 - 70, y + h - 32, 140, 22, 6), PAL.fills[0], seed + 2, { lw: 4, tex: false }); }
+  if (kind === 'keyboard') { draw(c, RR(x, y, w, h, 12), PAL.fills[1], seed, { lw: 5, texo: { density: .3 } }); for (let r = 0; r < 4; r++) for (let k = 0; k < 15; k++) { c.fillStyle = r === 3 && k === 7 ? PAL.accents[0] : alpha(PAL.light, .75); c.fillRect(x + 20 + k * 38, y + 20 + r * 40, 30, 30); } }
+  if (kind === 'mouse') { draw(c, RR(x, y, w, h, 70), PAL.fills[0], seed, { lw: 5, texo: { density: .35 } }); stroke(c, [[x + w / 2, y + 20], [x + w / 2, y + 80]], seed + 1, { lw: 4 }); dot(c, x + w / 2, y + 100, 12, PAL.accents[0]); }
+  if (kind === 'tower') { draw(c, RR(x, y, w, h, 12), PAL.fills[0], seed, { lw: 5, texo: { density: .4 } }); draw(c, RR(x + 18, y + 18, w - 36, h - 36, 8), PAL.fills[1], seed + 1, { lw: 4, texo: { density: .25 } }); for (let k = 0; k < 4; k++) dot(c, x + w / 2, y + 60 + k * 70, 16, [PAL.accents[0], PAL.accents[2], PAL.accents[1], PAL.accents[3]][k]); }
+  if (kind === 'headphones') { stroke(c, arcPts(x + w / 2, y + h * .62, w * .42, h * .42, Math.PI, TAU, 22), seed, { raw: true, lw: 16 }); for (const s of [-1, 1]) draw(c, RR(x + w / 2 + s * w * .42 - 26, y + h * .55, 52, 74, 18), PAL.fills[0], seed + 1 + s, { lw: 4, texo: { density: .3 } }); }
+  if (kind === 'lamp') { stroke(c, [[x + w / 2, y + h], [x + w / 2, y + 120]], seed, { lw: 12 }); stroke(c, [[x + w / 2, y + 120], [x + w - 20, y + 60]], seed + 1, { lw: 12 }); draw(c, PG([[x + w - 60, y + 30], [x + w, y + 30], [x + w - 10, y + 100], [x + w - 70, y + 100]]), PAL.fills[2], seed + 2, { lw: 5, texo: { density: .35 } }); draw(c, EL(x + w / 2, y + h, 60, 16), PAL.fills[0], seed + 3, { lw: 4, tex: false }); }
+}
+function mat(c) {
+  paper(c);
+  const m = RR(CX - 560, CY - 400, 1120, 800, 18);
+  c.fillStyle = PAL.fills[5]; c.fill(m.path); tex(c, m.path, m.box, { color: PAL.shade, density: .2, seed: 4 });
+  stroke(c, m.pts, 5, { raw: true, close: true, lw: 6 });
+  c.save(); c.beginPath(); c.roundRect(CX - 560, CY - 400, 1120, 800, 18); c.clip();
+  c.strokeStyle = alpha(PAL.ink, .12); c.lineWidth = 1.8;
+  for (let x = CX - 560; x <= CX + 560; x += 56) { c.beginPath(); c.moveTo(x, CY - 400); c.lineTo(x, CY + 400); c.stroke(); }
+  for (let y = CY - 400; y <= CY + 400; y += 56) { c.beginPath(); c.moveTo(CX - 560, y); c.lineTo(CX + 560, y); c.stroke(); }
+  c.restore();
+}
+function sceneLay(c, tau, i) {
+  mat(c);
+  GEAR.forEach((g, k) => {
+    // the monitor is already down when the film opens, so no frame is empty
+    const t0 = k * 4 / 12 - .35, p = sm(t0, t0 + .35, tau, easeOut); if (p <= 0) return;
+    const [x, y] = g;
+    c.save(); c.translate(lerp(-400, 0, p), 0); c.globalAlpha = Math.min(1, p * 1.5);
+    piece(c, g, 20 + k * 9);
+    c.restore();
+    if (p >= 1) { stroke(c, [[x, y - 18], [x + 70, y - 18]], 60 + k, { lw: 2.6, color: PAL.guide }); textBar(c, x, y - 40, 60, alpha(PAL.ink, .4), 11); }
+  });
+}
+function sceneSpec(c, tau, i) {
+  mat(c);
+  GEAR.forEach((g, k) => piece(c, g, 20 + k * 9));
+  // dimension lines over the layout, drawn left to right
+  const p = sm(0, .9, tau, easeOut);
+  const dimY = CY + 360;
+  strokeOn(c, [[CX - 470, dimY], [CX + 680, dimY]], p, 80, { lw: 3, color: PAL.accents[0], raw: true });
+  for (const x of [CX - 470, CX + 150, CX + 680]) if (p > (x - (CX - 470)) / 1150) stroke(c, [[x, dimY - 18], [x, dimY + 18]], 85 + x, { lw: 3, color: PAL.accents[0], raw: true });
+  const dimX = CX - 520;
+  strokeOn(c, [[dimX, CY - 300], [dimX, CY + 300]], p, 90, { lw: 3, color: PAL.accents[0], raw: true });
+  // callouts on three of the pieces
+  [[0, 'monitor'], [3, 'tower'], [4, 'headphones']].forEach(([k], n) => {
+    const g = GEAR[k], q = sm(.2 + n * .2, .5 + n * .2, tau, easeOut); if (q <= 0) return;
+    const cx = g[0] + g[2] / 2, cy = g[1] + g[3] / 2;
+    draw(c, CI(cx, cy, 26 * q), PAL.light, 100 + n, { tex: false, lw: 4, lc: PAL.accents[0] });
+    c.font = `${34 * q}px ${KIT_HAND}`; c.fillStyle = PAL.ink; c.textAlign = 'center'; c.fillText(String(n + 1), cx, cy + 12 * q);
+  });
+}
+function sceneTag(c, tau, i) {
+  mat(c);
+  GEAR.forEach((g, k) => { c.save(); c.globalAlpha = .55; piece(c, g, 20 + k * 9); c.restore(); });
+  // a paper tag on a string, settling onto the mat
+  const p = easeBack(sm(0, .4, tau, t => t));
+  if (p > .02) {
+    const tx = CX, ty = CY + 40;
+    c.save(); c.translate(tx, ty); c.rotate(lerp(-.3, -.04, p)); c.scale(p, p);
+    stroke(c, [[-320, -120], [-60, -60]], 110, { lw: 5, color: PAL.fills[3] });
+    const tw = 700, th = 300;
+    c.fillStyle = alpha(PAL.shade, .2); c.beginPath(); c.roundRect(-tw / 2 + 14, -th / 2 + 18, tw, th, 18); c.fill();
+    draw(c, PG([[-tw / 2 + 60, -th / 2], [tw / 2, -th / 2], [tw / 2, th / 2], [-tw / 2 + 60, th / 2], [-tw / 2, 0]]), PAL.light, 111, { lw: 6, texo: { density: .2 } });
+    draw(c, CI(-tw / 2 + 60, 0, 22), PAL.paper, 112, { tex: false, lw: 4 });
+    writeOn(c, 'setup', 40, 40, sm(.35, 1.2, tau, t => t), { size: 170, ink: PAL.ink, ink2: PAL.accents[0], pen: PAL.accents[0] });
+    c.restore();
+  }
+  if (tau > 1.3) for (let k = 0; k < 3; k++) sparkle(c, 260 + k * 460, 180, 26 + (pulse(i + k, 7, 3) ? 8 : 0), PAL.accents[k % 3], k);
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_US, poster: 4.7,
+  beats: [
+    { name: 'lay', dur: 2.0, fn: sceneLay },
+    { name: 'spec', dur: 1.3, fn: sceneSpec },
+    { name: 'tag', dur: 1.9, fn: sceneTag },
+  ],
+});
+</script>

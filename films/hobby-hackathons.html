@@ -1,0 +1,115 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-hackathons</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Hackathons, the events and the sprint builds.
+// Look: riso, three inks on cream. Anchor: the clock. Signature: 24 hours in four seconds - the clock races,
+// the cups stack up under it, and the lanyard badge at the end carries the name.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.8   race   the clock spins a full day; cups stack; the build list ticks over    clockFace, coin-stack
+// 1.8   1.2   ship   the last commit lands: confetti, a stamp, the screen goes green      ringsOut, flash
+// 3.0   2.0   badge  the lanyard badge swings in and is written: "hackathons"              writeOn
+
+const PAL_HK = makePalette({
+  paper: '#f3eee2', paperBand: null, ink: '#262133', night: '#1c1828', chalk: '#fffdf4', chalkDim: '#8b83a5', guide: 'rgba(38,33,51,.3)',
+  fills: ['#ff4d6d', '#2ec4b6', '#ffd23f', '#5b5bd6', '#3a3450', '#e8e2d4'], shade: '#262133', light: '#fffdf4', blush: '#ff4d6d',
+  accents: ['#ff4d6d', '#2ec4b6', '#ffd23f', '#5b5bd6'], inks: ['#2ec4b6', '#ff4d6d', '#ffd23f'], finish: 'riso',
+}, 'risoPop');
+
+function cup(c, x, y, s, col, seed) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  draw(c, PG([[-46, -50], [46, -50], [36, 40], [-36, 40]]), col, seed, { lw: 5, texo: { density: .4 } });
+  draw(c, EL(0, -50, 46, 14), PAL.light, seed + 1, { lw: 4, tex: false });
+  stroke(c, arcPts(52, -16, 30, 26, -1.2, 1.2, 14), seed + 2, { raw: true, lw: 8 });
+  c.restore();
+}
+function board(c, done, tau, i) {
+  const x = CX + 130, y = 210, w = 520;
+  draw(c, RR(x, y, w, 620, 22), PAL.light, 10, { lw: 6, tex: false });
+  textBar(c, x + 40, y + 60, 220, alpha(PAL.ink, .6), 22);
+  stroke(c, [[x + 30, y + 110], [x + w - 30, y + 110]], 11, { lw: 4 });
+  for (let k = 0; k < 6; k++) {
+    const ry = y + 170 + k * 78, on = k < done;
+    draw(c, RR(x + 40, ry - 26, 52, 52, 12), on ? PAL.fills[1] : PAL.fills[5], 20 + k, { lw: 4, texo: { density: .3 } });
+    if (on) checkMark(c, x + 66, ry, 16, 1, 30 + k, { color: PAL.light, lw: 6 });
+    textBar(c, x + 120, ry, 300 - (k * 37) % 120, alpha(PAL.ink, on ? .25 : .55), 16);
+    if (on) stroke(c, [[x + 120, ry], [x + 120 + 300 - (k * 37) % 120, ry]], 40 + k, { lw: 4, color: alpha(PAL.ink, .4) });
+  }
+}
+function sceneRace(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 15 });
+  const deskY = 840;
+  const desk = rectPath(-10, deskY, W + 20, H - deskY + 20); c.fillStyle = PAL.fills[5]; c.fill(desk); tex(c, desk, [0, deskY, W, H - deskY], { color: PAL.shade, density: .25, seed: 3 });
+  stroke(c, [[-10, deskY], [W + 10, deskY]], 4, { lw: 6 });
+  // the clock, racing a full day
+  const hours = tau * 14;
+  clockFace(c, CX - 380, 420, 250, hours, 50, { fill: PAL.light });
+  for (let k = 1; k <= 2; k++) stroke(c, arcPts(CX - 380, 420, 270 + k * 30, 270 + k * 30, -2 + tau * 6, -1 + tau * 6, 14), 60 + k, { raw: true, lw: 5, color: alpha(PAL.fills[0], .6) });
+  // cups stacking as the hours go by
+  const cups = Math.min(5, Math.floor(tau * 3));
+  for (let k = 0; k < cups; k++) cup(c, CX - 600 + (k % 3) * 120, deskY - 40 - Math.floor(k / 3) * 96, .9, [PAL.fills[0], PAL.fills[1], PAL.fills[3]][k % 3], 70 + k);
+  board(c, Math.min(5, Math.floor(tau * 3.4)), tau, i);
+}
+function sceneShip(c, tau, i) {
+  if (tau >= .35 && tau < .35 + 1 / 12) { flash(c, tint(PAL.paper, .7)); return; }
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 15 });
+  const deskY = 840;
+  const desk = rectPath(-10, deskY, W + 20, H - deskY + 20); c.fillStyle = PAL.fills[5]; c.fill(desk); tex(c, desk, [0, deskY, W, H - deskY], { color: PAL.shade, density: .25, seed: 3 });
+  clockFace(c, CX - 380, 420, 250, 25.2, 50, { fill: PAL.light });
+  for (let k = 0; k < 5; k++) cup(c, CX - 600 + (k % 3) * 120, deskY - 40 - Math.floor(k / 3) * 96, .9, [PAL.fills[0], PAL.fills[1], PAL.fills[3]][k % 3], 70 + k);
+  board(c, 6, tau, i);
+  if (tau > .35) {
+    const d = tau - .35;
+    ringsOut(c, CX + 390, 520, d, { every: 1 / 6, t1: .3, speed: 700, colors: [PAL.fills[1], PAL.fills[2]], width: 7, seed: 90, max: 700 });
+    const r = rng(95);
+    for (let k = 0; k < 26; k++) { const a = r() * TAU, dd = d * (500 + r() * 900), x = CX + 390 + Math.cos(a) * dd, y = 520 + Math.sin(a) * dd * .7 + d * d * 900;
+      c.save(); c.translate(x, y); c.rotate(a + d * 5); c.fillStyle = [PAL.fills[0], PAL.fills[1], PAL.fills[2], PAL.fills[3]][k % 4]; c.fillRect(-16, -8, 32, 16); c.restore(); }
+    const s = easeBack(sm(.15, .45, d, t => t));
+    if (s > .02) { c.save(); c.translate(CX - 380, 420); c.scale(s, s); c.rotate(-.14);
+      for (let k = 0; k < 2; k++) stroke(c, rrPts(-250 - k * 12, -80 - k * 12, 500 + k * 24, 160 + k * 24, 20), 100 + k, { raw: true, close: true, lw: 9, color: PAL.fills[0] });
+      hand(c, 'shipped', 0, 30, { size: 120, ink: PAL.fills[0], ink2: null }); c.restore(); }
+  }
+}
+function badge(c, cx, cy, rot, seed, nameP) {
+  c.save(); c.translate(cx, cy); c.rotate(rot);
+  // the lanyard
+  stroke(c, [[-120, -1000], [-30, -300], [0, -260]], seed, { lw: 22, color: PAL.fills[3] });
+  stroke(c, [[120, -1000], [30, -300], [0, -260]], seed + 1, { lw: 22, color: PAL.fills[3] });
+  draw(c, RR(-34, -282, 68, 44, 10), PAL.fills[4], seed + 2, { lw: 4, tex: false });
+  const bw = 620, bh = 480;
+  c.fillStyle = alpha(PAL.shade, .2); c.beginPath(); c.roundRect(-bw / 2 + 14, -bh / 2 + 18 - 10, bw, bh, 22); c.fill();
+  draw(c, RR(-bw / 2, -bh / 2 - 10, bw, bh, 22), PAL.light, seed + 3, { lw: 6, tex: false });
+  const band = rectPath(-bw / 2, -bh / 2 - 10, bw, 120);
+  c.save(); c.clip(roundRectPath(-bw / 2, -bh / 2 - 10, bw, bh, 22)); c.fillStyle = PAL.fills[0]; c.fill(band); tex(c, band, [-bw / 2, -bh / 2 - 10, bw, 120], { density: .4, seed: seed + 4 }); c.restore();
+  textBar(c, -bw / 2 + 50, -bh / 2 + 50, 240, alpha(PAL.light, .9), 22);
+  if (nameP > 0) writeOn(c, 'hackathons', 0, 40, nameP, { size: 120, ink: PAL.ink, ink2: PAL.fills[1], pen: PAL.fills[1] });
+  else squig(c, -200, 20, 400, 1, { seed: seed + 5, width: 5, color: alpha(PAL.ink, .4) });
+  for (let k = 0; k < 3; k++) dot(c, -160 + k * 160, bh / 2 - 90, 18, [PAL.fills[1], PAL.fills[2], PAL.fills[3]][k]);
+  c.restore();
+}
+function sceneBadge(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .14, cell: 15 });
+  for (let r = 1; r <= 3; r++) dashedRing(c, CX, CY + 60, 380 + r * 90, alpha(PAL.ink, .2), 110 + r, [24, 18], 4);
+  const swing = Math.sin(tau * 3.2) * .06 * Math.max(0, 1 - tau * .5);
+  badge(c, CX, CY + 120, swing, 120, sm(.3, 1.2, tau, t => t));
+  if (tau > 1.3) for (let k = 0; k < 4; k++) sparkle(c, 240 + k * 320, 200 + (k % 2) * 80, 28 + (pulse(i + k, 7, 3) ? 10 : 0), [PAL.fills[0], PAL.fills[1], PAL.fills[2]][k % 3], k);
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_HK, poster: 4.7, crf: 28,
+  beats: [
+    { name: 'race', dur: 1.8, fn: sceneRace },
+    { name: 'ship', dur: 1.2, fn: sceneShip },
+    { name: 'badge', dur: 2.0, fn: sceneBadge },
+  ],
+});
+</script>

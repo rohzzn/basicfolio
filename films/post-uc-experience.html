@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-uc-experience</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: First Semester at UC - arriving, a room, and learning the place.
+// Look: flat screen print, an autumn arrival. Anchor: the door. Signature: one door, opened with a new key,
+// and the room filling up behind it over the term.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.6   door   boxes at a closed door; the key turns; the door opens on an empty room key, rotate
+// 1.6   1.5   fill   the room fills: desk, lamp, books, a poster, a plant                 easeOut pops
+// 3.1   1.9   term   the window turns from summer to autumn; the name is written          colour cut, writeOn
+
+const PAL_UC = makePalette({
+  paper: '#f3ece0', paperBand: null, ink: '#2b2622', night: '#221e1a', chalk: '#fffaf0', chalkDim: '#9c9188', guide: 'rgba(43,38,34,.3)',
+  fills: ['#d46a3a', '#3f6b7a', '#e8c35a', '#8a9a6a', '#b04a3a', '#e6ddcc'], shade: '#2b2622', light: '#fffaf0', blush: '#b04a3a',
+  accents: ['#d46a3a', '#3f6b7a', '#e8c35a', '#8a9a6a'], inks: ['#3f6b7a', '#d46a3a', '#e8c35a'], finish: 'screen',
+}, 'screenSea');
+const DX = CX - 260, DY = 180, DW = 520, DH = 760;
+
+function room(c, season) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .12, cell: 16 });
+  const wall = rectPath(0, 0, W, 940); c.fillStyle = PAL.fills[5]; c.fill(wall); tex(c, wall, [0, 0, W, 940], { color: PAL.fills[3], density: .14, seed: 3 });
+  const floor = rectPath(-10, 940, W + 20, H - 920); c.fillStyle = PAL.fills[1]; c.fill(floor); tex(c, floor, [0, 940, W, 200], { color: PAL.shade, density: .3, seed: 4 });
+  stroke(c, [[-10, 940], [W + 10, 940]], 5, { lw: 6 });
+  // the window, whose light says which month it is
+  const wx = 130, wy = 240, ww = 380, wh = 420;
+  draw(c, RR(wx, wy, ww, wh, 10), season === 0 ? PAL.fills[2] : PAL.fills[0], 10, { lw: 6, texo: { density: .3 } });
+  stroke(c, [[wx + ww / 2, wy], [wx + ww / 2, wy + wh]], 11, { lw: 6 }); stroke(c, [[wx, wy + wh / 2], [wx + ww, wy + wh / 2]], 12, { lw: 6 });
+  return [wx, wy, ww, wh];
+}
+function doorPanel(c, open, seed) {
+  // the door itself, hinged on the left, seen from the front
+  c.save(); c.translate(DX, DY);
+  const w = DW * (1 - open * .82);
+  draw(c, RR(0, 0, w, DH, 8), PAL.fills[1], seed, { lw: 6, texo: { density: .3 } });
+  if (w > 140) { draw(c, RR(w * .12, DH * .1, w * .76, DH * .3, 6), shade(PAL.fills[1], .12), seed + 1, { lw: 4, texo: { density: .25 } });
+    draw(c, RR(w * .12, DH * .52, w * .76, DH * .34, 6), shade(PAL.fills[1], .12), seed + 2, { lw: 4, texo: { density: .25 } });
+    draw(c, CI(w * .84, DH * .5, 18), PAL.fills[2], seed + 3, { tex: false, lw: 4 }); }
+  c.restore();
+}
+function boxes(c, n, seed) {
+  for (let k = 0; k < n; k++) { const x = DX + DW + 120 + (k % 2) * 30, y = 940 - 90 - k * 120;
+    draw(c, RR(x, y, 220, 110, 8), PAL.fills[2], seed + k, { lw: 5, texo: { density: .3 } });
+    stroke(c, [[x, y + 40], [x + 220, y + 40]], seed + 20 + k, { lw: 4, alpha: .5 });
+    stroke(c, [[x + 110, y], [x + 110, y + 40]], seed + 30 + k, { lw: 4, alpha: .5 }); }
+}
+function sceneDoor(c, tau, i) {
+  room(c, 0);
+  boxes(c, 3, 40);
+  const turn = sm(.2, .55, tau, easeIO), open = sm(.6, 1.1, tau, easeIO);
+  doorPanel(c, open, 20);
+  if (open < .5) { // the key, turning in the lock
+    c.save(); c.translate(DX + DW * .84, DY + DH * .5); c.rotate(turn * 1.4);
+    draw(c, RR(-10, -8, 90, 16, 6), PAL.fills[2], 60, { lw: 4, tex: false });
+    draw(c, CI(-34, 0, 26), PAL.fills[2], 61, { lw: 4, tex: false }); draw(c, CI(-34, 0, 11), PAL.fills[1], 62, { tex: false, lw: 3 });
+    c.restore(); }
+  if (open > .6) for (let r = 1; r <= 2; r++) dottedArc(c, DX + 60, DY + DH * .5, 120 + r * 70, alpha(PAL.ink, .2), 70 + r, 20, 2.6);
+}
+const STUFF = [
+  (c, s) => { draw(c, RR(CX - 120, 700, 460, 30, 6), PAL.fills[1], 80, { lw: 5, texo: { density: .3 } }); for (const sx of [0, 1]) stroke(c, [[CX - 90 + sx * 400, 730], [CX - 90 + sx * 400, 940]], 81 + sx, { lw: 12 }); },
+  (c, s) => { stroke(c, [[CX + 250, 700], [CX + 250, 600]], 84, { lw: 10 }); draw(c, PG([[CX + 200, 600], [CX + 300, 600], [CX + 280, 530], [CX + 220, 530]]), PAL.fills[2], 85, { lw: 5, texo: { density: .35 } }); },
+  (c, s) => { for (let k = 0; k < 5; k++) draw(c, RR(CX - 100 + k * 46, 610, 38, 90, 4), [PAL.fills[0], PAL.fills[3], PAL.fills[4], PAL.fills[1], PAL.fills[2]][k], 90 + k, { lw: 4, texo: { density: .3 } }); },
+  (c, s) => { draw(c, RR(560, 250, 280, 360, 6), PAL.light, 95, { lw: 5, tex: false }); draw(c, RR(585, 275, 230, 230, 4), PAL.fills[0], 96, { lw: 4, texo: { density: .35 } }); squig(c, 585, 550, 230, 1, { seed: 97, width: 5, color: alpha(PAL.ink, .5) }); },
+  (c, s) => { c.save(); c.translate(CX + 430, 930); c.scale(2.2, 2.2); plant(c, 0, 0, 62, 3, 98, { stem: PAL.fills[3], leaf: PAL.fills[3], flower: PAL.fills[0], width: 2.4 }); c.restore(); draw(c, PG([[CX + 380, 930], [CX + 480, 930], [CX + 462, 1010], [CX + 398, 1010]]), PAL.fills[0], 99, { lw: 5, texo: { density: .3 } }); },
+];
+function sceneFill(c, tau, i) {
+  room(c, 0);
+  doorPanel(c, 1, 20);
+  STUFF.forEach((fn, k) => { const p = easeBack(sm(k * .22, k * .22 + .35, tau, t => t)); if (p <= .02) return; c.save(); c.globalAlpha = Math.min(1, p); fn(c, p); c.restore(); });
+}
+function sceneTerm(c, tau, i) {
+  // the same room, one cut later in the year: the window has turned
+  room(c, 1);
+  doorPanel(c, 1, 20);
+  STUFF.forEach((fn) => fn(c, 1));
+  // leaves coming past the window
+  const r = rng(120);
+  for (let k = 0; k < 14; k++) { const x = 130 + r() * 380, y = ((tau * 160 + r() * 500) % 460) + 240; c.save(); c.translate(x, y); c.rotate(tau * 2 + k); draw(c, EL(0, 0, 18, 9, .4), [PAL.fills[0], PAL.blush, PAL.fills[2]][k % 3], 130 + k, { tex: false, lw: 3 }); c.restore(); }
+  writeOn(c, 'first semester', CX + 60, 260, sm(.2, 1.1, tau, t => t), { size: 140, ink: PAL.ink, ink2: PAL.fills[0], pen: PAL.fills[0] });
+  if (tau > 1.2) writeOn(c, 'at uc', CX + 60, 390, sm(1.2, 1.6, tau, t => t), { size: 96, ink: PAL.fills[1], ink2: null, pen: null });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_UC, poster: 4.8, crf: 27,
+  beats: [
+    { name: 'door', dur: 1.6, fn: sceneDoor },
+    { name: 'fill', dur: 1.5, fn: sceneFill },
+    { name: 'term', dur: 1.9, fn: sceneTerm },
+  ],
+});
+</script>

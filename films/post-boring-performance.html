@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-boring-performance</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Boring Guide to 10x Frontend Performance.
+// Look: flat screen print, two lanes. Anchor: the finish line. Signature: a race between two identical pages -
+// the heavy one and the one with the boring fixes - run side by side in the same frame.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.8   race    both pages load in their lane; the light one paints far sooner      bars, lanes
+// 1.6   1.4   weigh   the heavy one's payload is weighed out: images, scripts, fonts       stacked blocks
+// 3.0   2.0   line    the light one crosses; the verdict is written                        writeOn
+
+const PAL_BP = makePalette({
+  paper: '#eef1ee', paperBand: null, ink: '#1f2622', night: '#171d1a', chalk: '#ffffff', chalkDim: '#8c948f', guide: 'rgba(31,38,34,.3)',
+  fills: ['#ffffff', '#cfd6d1', '#e2574c', '#2fa36b', '#f2c14e', '#5a7d9a'], shade: '#1f2622', light: '#ffffff', blush: '#e2574c',
+  accents: ['#2fa36b', '#e2574c', '#f2c14e', '#5a7d9a'], inks: ['#2fa36b', '#e2574c'], finish: 'screen',
+}, 'screenSea');
+const LANE_Y = [300, 720], TRACK_X = 220, TRACK_W = W - 460;
+
+function lane(c, y, label, seed) {
+  draw(c, RR(TRACK_X - 60, y - 140, TRACK_W + 120, 280, 20), PAL.fills[0], seed, { lw: 5, tex: false });
+  textBar(c, TRACK_X - 30, y - 100, 180, alpha(PAL.ink, .4), 16);
+  stroke(c, [[TRACK_X, y + 90], [TRACK_X + TRACK_W, y + 90]], seed + 1, { lw: 3, color: alpha(PAL.ink, .15) });
+  // the finish line at the right
+  for (let k = 0; k < 8; k++) { c.fillStyle = k % 2 ? PAL.ink : PAL.light; c.fillRect(TRACK_X + TRACK_W, y - 140 + k * 35, 26, 35); }
+}
+// a little page that paints in: header, image, text, button
+function miniPage(c, x, y, p, heavy, seed) {
+  const w = 260, h = 190;
+  draw(c, RR(x, y, w, h, 12), PAL.fills[0], seed, { lw: 4, tex: false });
+  if (p > .15) draw(c, RR(x + 14, y + 14, w - 28, 40, 6), PAL.fills[5], seed + 1, { tex: false, line: false });
+  if (p > (heavy ? .55 : .3)) draw(c, RR(x + 14, y + 66, w - 28, 66, 6), heavy ? PAL.fills[2] : PAL.fills[3], seed + 2, { tex: false, line: false });
+  if (p > (heavy ? .8 : .45)) for (let k = 0; k < 2; k++) textBar(c, x + 16, y + 150 + k * 20, (w - 60) * (k ? .6 : 1), alpha(PAL.ink, .3), 8);
+}
+function sceneRace(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  [[0, 'heavy'], [1, 'light']].forEach(([k]) => {
+    const y = LANE_Y[k], heavy = k === 0;
+    lane(c, y, '', 10 + k * 20);
+    const speed = heavy ? .38 : 1;
+    const p = clamp(tau * speed / 1.5, 0, 1);
+    const x = TRACK_X + (TRACK_W - 280) * p;
+    miniPage(c, x, y - 95, clamp(tau * speed, 0, 1), heavy, 40 + k * 9);
+    // the time ticking under each lane
+    textBar(c, TRACK_X, y + 120, 60 + p * 120, heavy ? PAL.blush : PAL.fills[3], 14);
+    if (!heavy && p >= 1) ringsOut(c, TRACK_X + TRACK_W, y, tau - 1.5, { every: 1 / 6, t1: .2, speed: 600, colors: [PAL.fills[3]], width: 6, seed: 60, max: 320 });
+  });
+}
+const PAYLOAD = [[.42, 2, 'images'], [.28, 5, 'scripts'], [.16, 4, 'fonts'], [.14, 1, 'html']];
+function sceneWeigh(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  // the heavy page, taken apart into what it actually weighs
+  miniPage(c, 200, 240, 1, true, 40);
+  stroke(c, [[480, 330], [640, 330]], 70, { lw: 4, dash: [14, 12], color: PAL.blush });
+  let x = 680;
+  PAYLOAD.forEach(([frac, col, label], k) => {
+    const p = sm(k * .15, k * .15 + .4, tau, easeOut); if (p <= 0) return;
+    const bw = 540 * frac * p;
+    draw(c, RR(x, 260, bw, 140, 10), [0, 0, PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[5]][col], 80 + k, { lw: 4, texo: { density: .3 } });
+    textBar(c, x + 10, 430, Math.max(40, bw - 20), alpha(PAL.ink, .35), 12);
+    x += bw + 10;
+  });
+  // and what is left after the boring fixes
+  const q = sm(.5, 1.2, tau, easeOut);
+  if (q > 0) { miniPage(c, 200, 700, 1, false, 90);
+    stroke(c, [[480, 790], [640, 790]], 95, { lw: 4, dash: [14, 12], color: PAL.fills[3] });
+    let x2 = 680;
+    PAYLOAD.forEach(([frac, col], k) => { const bw = 540 * frac * .34 * q; draw(c, RR(x2, 720, bw, 140, 10), [0, 0, PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[5]][col], 100 + k, { lw: 4, texo: { density: .3 } }); x2 += bw + 10; }); }
+}
+function sceneLine(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  [[0], [1]].forEach(([k]) => {
+    const y = LANE_Y[k], heavy = k === 0;
+    lane(c, y, '', 10 + k * 20);
+    const x = heavy ? TRACK_X + (TRACK_W - 280) * .42 : TRACK_X + TRACK_W - 300;
+    miniPage(c, x, y - 95, heavy ? .7 : 1, heavy, 40 + k * 9);
+    if (!heavy) { checkMark(c, TRACK_X + TRACK_W + 80, y, 40, sm(.1, .4, tau), 110, { color: PAL.fills[3], lw: 12 }); }
+    else if (tau > .5) crossMark(c, TRACK_X + TRACK_W + 80, y, 34, 111, { lw: 10, color: PAL.blush });
+  });
+  writeOn(c, 'boring wins', CX, H - 140, sm(.3, 1.2, tau, t => t), { size: 185, ink: PAL.ink, ink2: PAL.fills[3], pen: PAL.fills[3] });
+  if (tau > 1.3) for (let k = 0; k < 4; k++) sparkle(c, 260 + k * 320, 140, 26 + (pulse(i + k, 7, 3) ? 10 : 0), PAL.fills[3], k);
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_BP, poster: 4.8,
+  beats: [
+    { name: 'race', dur: 1.6, fn: sceneRace },
+    { name: 'weigh', dur: 1.4, fn: sceneWeigh },
+    { name: 'line', dur: 2.0, fn: sceneLine },
+  ],
+});
+</script>

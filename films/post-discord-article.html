@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-discord-article</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: How Discord Survived 2024's Biggest Launch.
+// Look: riso, violet on cream. Anchor: the traffic curve. Signature: the curve goes vertical, and the rack
+// answers it by growing a row of servers under the line, in time with it.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.7   spike  the traffic line climbs and then goes near vertical                  strokeOn
+// 1.7   1.5   scale  servers appear under the line, one per step, lights coming up         RR rows
+// 3.2   1.9   held   the line flattens at the top and the verdict is written                writeOn
+
+const PAL_DA = makePalette({
+  paper: '#f2eff8', paperBand: null, ink: '#2b2350', night: '#211b40', chalk: '#fffdf8', chalkDim: '#8f86bd', guide: 'rgba(43,35,80,.3)',
+  fills: ['#5b4bd8', '#18a999', '#ff9f6b', '#f2d24e', '#3d356b', '#ffffff'], shade: '#2b2350', light: '#ffffff', blush: '#ff5f8d',
+  accents: ['#5b4bd8', '#18a999', '#ff5f8d', '#f2d24e'], inks: ['#5b4bd8', '#18a999', '#ff5f8d'], finish: 'riso',
+}, 'risoPop');
+const GX2 = 180, GY2 = 180, GW2 = W - 360, GH2 = 520;
+
+function chart(c, p, seed) {
+  draw(c, RR(GX2 - 40, GY2 - 40, GW2 + 80, GH2 + 120, 20), PAL.fills[5], seed, { lw: 5, texo: { density: .18 } });
+  stroke(c, [[GX2, GY2 + GH2], [GX2 + GW2, GY2 + GH2]], seed + 1, { lw: 5 });
+  stroke(c, [[GX2, GY2], [GX2, GY2 + GH2]], seed + 2, { lw: 5 });
+  for (let k = 1; k <= 3; k++) stroke(c, [[GX2, GY2 + GH2 - k * GH2 / 4], [GX2 + GW2, GY2 + GH2 - k * GH2 / 4]], seed + 3 + k, { lw: 2.6, color: alpha(PAL.ink, .15) });
+  // the curve: flat, then the launch
+  const pts = [];
+  for (let k = 0; k <= 60; k++) { const t = k / 60, x = GX2 + GW2 * t;
+    const v = t < .45 ? .12 + t * .1 : .17 + Math.pow((t - .45) / .55, 2.6) * .8;
+    pts.push([x, GY2 + GH2 - GH2 * Math.min(v, .96)]); }
+  strokeOn(c, pts, p, seed + 10, { raw: true, lw: 9, color: PAL.fills[0] });
+  const n = Math.max(1, Math.floor(pts.length * clamp(p, 0, 1)));
+  return pts.slice(0, n);
+}
+function rack(c, n, i, seed) {
+  for (let k = 0; k < n; k++) {
+    const x = GX2 + 40 + k * ((GW2 - 80) / 9), y = GY2 + GH2 + 160;
+    draw(c, RR(x, y, (GW2 - 80) / 9 - 18, 190, 12), PAL.fills[4], seed + k, { lw: 5, texo: { density: .3 } });
+    for (let r = 0; r < 3; r++) { draw(c, RR(x + 12, y + 18 + r * 56, (GW2 - 80) / 9 - 42, 40, 6), PAL.fills[5], seed + 20 + k * 3 + r, { tex: false, lw: 3 });
+      dot(c, x + (GW2 - 80) / 9 - 44, y + 38 + r * 56, 8, pulse(i + k * 2 + r, 6 + r, 3) ? PAL.fills[1] : alpha(PAL.ink, .2)); }
+  }
+}
+function bg(c) { paper(c); tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .1, cell: 15 }); }
+function sceneSpike(c, tau, i) {
+  bg(c);
+  const shown = chart(c, sm(0, 1.5, tau, t => t), 10);
+  const head = shown[shown.length - 1];
+  dot(c, head[0], head[1], 14, PAL.blush);
+  if (tau > 1.0) { for (let r = 1; r <= 2; r++) dashedRing(c, head[0], head[1], 60 + r * 40, alpha(PAL.blush, .5), 60 + r, [14, 12], 4); }
+  rack(c, 2, i, 80);
+}
+function sceneScale(c, tau, i) {
+  bg(c);
+  chart(c, 1, 10);
+  const n = Math.min(9, 2 + Math.floor(tau * 12 / 2.4));
+  rack(c, n, i, 80);
+  // the arrow that says the rack is answering the line
+  const p = sm(.1, .8, tau, easeOut);
+  stroke(c, [[GX2 + GW2 * .8, GY2 + 120], [GX2 + GW2 * .8, GY2 + GH2 + 120]], 110, { lw: 5, dash: [16, 12], color: PAL.fills[1] });
+  if (p > .5) { const y = GY2 + GH2 + 120; stroke(c, [[GX2 + GW2 * .8 - 22, y - 30], [GX2 + GW2 * .8, y], [GX2 + GW2 * .8 + 22, y - 30]], 111, { lw: 6, color: PAL.fills[1], raw: true }); }
+  textBar(c, GX2 + GW2 * .8 + 30, GY2 + 300, 180, alpha(PAL.ink, .45), 16);
+}
+function sceneHeld(c, tau, i) {
+  bg(c);
+  chart(c, 1, 10);
+  rack(c, 9, i, 80);
+  // the line holding flat at the top, and the verdict
+  const p = sm(0, .6, tau, easeOut);
+  const y = GY2 + GH2 * .06;
+  strokeOn(c, [[GX2 + GW2 * .84, y], [GX2 + GW2, y]], p, 120, { lw: 9, color: PAL.fills[1], raw: true });
+  if (p >= 1) { checkMark(c, GX2 + GW2 - 40, y - 70, 32, sm(.6, .85, tau), 121, { color: PAL.fills[1], lw: 10 }); }
+  writeOn(c, 'it held', CX, H - 120, sm(.4, 1.2, tau, t => t), { size: 190, ink: PAL.ink, ink2: PAL.fills[1], pen: PAL.fills[1] });
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_DA, poster: 4.8, crf: 28,
+  beats: [
+    { name: 'spike', dur: 1.7, fn: sceneSpike },
+    { name: 'scale', dur: 1.5, fn: sceneScale },
+    { name: 'held', dur: 1.9, fn: sceneHeld },
+  ],
+});
+</script>

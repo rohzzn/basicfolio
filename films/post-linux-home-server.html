@@ -1,0 +1,109 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-linux-home-server</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Building a Linux Home Server - every site, container and backup on one machine in a cupboard.
+// Look: ink at night, one green LED. Anchor: the tower. Signature: the cupboard door opens on it, containers
+// stack up inside it one by one, and the label on the shelf is the name.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   open    a cupboard door swings open on a dark tower; the power light comes on  rotate, glow
+// 1.6   1.6   stack   containers stack up the tower, each one lighting as it lands        RR rows
+// 3.2   1.9   label   the shelf label under it is written: "home server"                   writeOn
+
+const PAL_HS = makePalette({
+  paper: '#1b1f1c', paperBand: null, ink: '#e6f0e4', night: '#12150f', chalk: '#e6f0e4', chalkDim: '#6e8070', guide: 'rgba(230,240,228,.25)',
+  fills: ['#24291f', '#2f3a2c', '#3fc46b', '#c9a227', '#7aa7c9', '#3a4436'], shade: '#0d100b', light: '#f2f8f0', blush: '#e0674f',
+  accents: ['#3fc46b', '#c9a227', '#7aa7c9', '#e0674f'], inks: ['#e6f0e4', '#3fc46b'], finish: 'ink',
+}, 'blueprintNight');
+const TX = CX - 190, TY = 180, TW = 380, TH = 700;
+
+function tower(c, lit, i, seed) {
+  draw(c, RR(TX, TY, TW, TH, 22), PAL.fills[0], seed, { lw: 6, texo: { density: .4, color: PAL.chalkDim } });
+  // vents down one side
+  for (let k = 0; k < 14; k++) stroke(c, [[TX + 24, TY + 60 + k * 44], [TX + 90, TY + 60 + k * 44]], seed + 10 + k, { lw: 5, alpha: .45 });
+  // the power light, and the drive lights that blink when it is working
+  dot(c, TX + TW - 60, TY + 60, 18, lit ? PAL.fills[2] : shade(PAL.fills[2], .6));
+  if (lit) for (let k = 0; k < 3; k++) dot(c, TX + TW - 60, TY + 120 + k * 40, 10, pulse(i + k * 3, 5 + k, 2) ? PAL.fills[3] : alpha(PAL.chalkDim, .5));
+  for (const s of [-1, 1]) stroke(c, [[TX + TW / 2 + s * 90, TY + TH], [TX + TW / 2 + s * 100, TY + TH + 40]], seed + 40 + s, { lw: 12 });
+}
+function cupboard(c, open, i) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 350, PAL.light, .3, 3, 3);
+  // the cupboard: back panel, shelf, and a door hinged on the right
+  draw(c, RR(180, 90, W - 360, H - 180, 20), PAL.fills[1], 10, { lw: 6, texo: { density: .35, color: PAL.chalkDim } });
+  stroke(c, [[190, TY + TH + 50], [W - 190, TY + TH + 50]], 11, { lw: 10, color: PAL.fills[5] });
+  // the glow the tower throws once it is on
+  if (open > .3) for (let r = 5; r >= 1; r--) { c.fillStyle = alpha(PAL.fills[2], .03 * open); c.beginPath(); c.ellipse(CX, TY + 200, 300 + r * 120, 260 + r * 100, 0, 0, TAU); c.fill(); }
+  return open;
+}
+function door(c, open, i) {
+  // the door, swinging away to the right, drawn as a squashing panel
+  const w = (W - 360) * (1 - open) * .55;
+  if (w < 6) return;
+  c.save(); c.translate(W - 180, 0);
+  const d = RR(-w, 90, w, H - 180, 10);
+  c.fillStyle = PAL.fills[5]; c.fill(d.path); tex(c, d.path, [-w, 90, w, H - 180], { color: PAL.shade, density: .4, seed: 20 });
+  stroke(c, d.pts, 21, { raw: true, close: true, lw: 6 });
+  if (w > 120) draw(c, CI(-w + 60, CY, 22), PAL.fills[3], 22, { lw: 5, tex: false });
+  c.restore();
+}
+function sceneOpen(c, tau, i) {
+  const open = sm(.15, .9, tau, easeIO);
+  cupboard(c, open, i);
+  tower(c, tau > .8, i, 30);
+  door(c, open, i);
+  if (tau > .8) ringsOut(c, TX + TW - 60, TY + 60, tau - .8, { every: 1 / 6, t1: .25, speed: 420, colors: [PAL.fills[2]], width: 5, seed: 60, max: 260, r0: 24 });
+}
+const APPS = ['site', 'photos', 'dns', 'media', 'backup'];
+function sceneStack(c, tau, i) {
+  cupboard(c, 1, i);
+  tower(c, true, i, 30);
+  // containers stacking up beside the tower, each landing on the twos
+  APPS.forEach((name, k) => {
+    const t0 = k * 3 / 12, p = sm(t0, t0 + .3, tau, easeOut); if (p <= 0) return;
+    const bw = 420, bh = 96, x = TX + TW + 70, y = TY + TH - 120 - k * (bh + 18);
+    c.save(); c.globalAlpha = Math.min(1, p * 1.6); c.translate(lerp(500, 0, p), 0);
+    draw(c, RR(x, y, bw, bh, 14), PAL.fills[1], 70 + k, { lw: 5, texo: { density: .3, color: PAL.chalkDim } });
+    draw(c, RR(x + 20, y + 22, 52, 52, 12), [PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[2], PAL.fills[3]][k], 80 + k, { lw: 4, texo: { density: .35 } });
+    textBar(c, x + 100, y + 48, 180 - k * 14, alpha(PAL.light, .6), 16);
+    dot(c, x + bw - 40, y + 48, 11, pulse(i + k * 2, 7, 4) ? PAL.fills[2] : alpha(PAL.chalkDim, .6));
+    c.restore();
+  });
+  // cables from the tower to the stack
+  for (let k = 0; k < 3; k++) stroke(c, curvePts([TX + TW, TY + 200 + k * 60], [TX + TW + 60, TY + 400 + k * 40], [TX + TW + 70, TY + TH - 200 - k * 100], 16), 90 + k, { raw: true, lw: 5, color: alpha(PAL.chalkDim, .7) });
+}
+function sceneLabel(c, tau, i) {
+  cupboard(c, 1, i);
+  tower(c, true, i, 30);
+  APPS.forEach((name, k) => {
+    const bw = 420, bh = 96, x = TX + TW + 70, y = TY + TH - 120 - k * (bh + 18);
+    draw(c, RR(x, y, bw, bh, 14), PAL.fills[1], 70 + k, { lw: 5, texo: { density: .3, color: PAL.chalkDim } });
+    draw(c, RR(x + 20, y + 22, 52, 52, 12), [PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[2], PAL.fills[3]][k], 80 + k, { lw: 4, texo: { density: .35 } });
+    textBar(c, x + 100, y + 48, 180 - k * 14, alpha(PAL.light, .6), 16);
+    dot(c, x + bw - 40, y + 48, 11, pulse(i + k * 2, 7, 4) ? PAL.fills[2] : alpha(PAL.chalkDim, .6));
+  });
+  // a strip of tape on the shelf, written on in marker
+  const p = easeBack(sm(0, .3, tau, t => t));
+  if (p > .02) {
+    c.save(); c.translate(CX, TY + TH + 130); c.rotate(-.015); c.scale(p, p);
+    draw(c, PG([[-480, -70], [480, -62], [470, 70], [-470, 62]]), PAL.fills[3], 110, { lw: 5, texo: { density: .3 } });
+    writeOn(c, 'home server', 0, 28, sm(.25, 1.1, tau, t => t), { size: 120, ink: PAL.shade, ink2: null, pen: PAL.shade });
+    c.restore();
+  }
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_HS, poster: 4.8,
+  beats: [
+    { name: 'open', dur: 1.6, fn: sceneOpen },
+    { name: 'stack', dur: 1.6, fn: sceneStack },
+    { name: 'label', dur: 1.9, fn: sceneLabel },
+  ],
+});
+</script>

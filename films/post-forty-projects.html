@@ -1,0 +1,87 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-forty-projects</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: What I Learned Building 40 Side Projects.
+// Look: graphite on cream, one red pen. Anchor: the grid of forty. Signature: all forty land as a wall of
+// little cards, then most of them get crossed out and the few that got users stay.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.8   forty  forty cards fill the wall, four a frame                             grid fill
+// 1.8   1.5   cross  the red pen crosses out the ones nobody used                         crossMark
+// 3.3   1.9   few    the survivors gather; the count is written: "40 projects"             writeOn
+
+const PAL_FP = makePalette({
+  paper: '#f4f2ea', paperBand: null, ink: '#26241f', night: '#232119', chalk: '#ffffff', chalkDim: '#9c968a', guide: 'rgba(38,36,31,.3)',
+  fills: ['#e6e2d4', '#d3cec0', '#ffffff', '#cdd6c8'], shade: '#6a6459', light: '#ffffff', blush: '#c0392b',
+  accents: ['#c0392b', '#4a6b8a', '#6b8f5a', '#c9a24a'], inks: ['#26241f', '#c0392b'], finish: 'pencil',
+}, 'pencilMinimal');
+const COLS = 8, ROWS = 5, CWD = 150, CHT = 150, GAP = 14;
+const GX = CX - (COLS * CWD + (COLS - 1) * GAP) / 2, GY = 210;
+// which of the forty kept users: a fixed, seeded handful
+const KEPT = [3, 9, 14, 22, 27, 33, 38];
+function card(c, k, x, y, s, seed, crossed) {
+  c.save(); c.translate(x + CWD / 2, y + CHT / 2); c.scale(s, s); c.translate(-CWD / 2, -CHT / 2);
+  draw(c, RR(0, 0, CWD, CHT, 10), KEPT.includes(k) ? PAL.fills[3] : PAL.fills[2], seed, { lw: 3.4, tex: false });
+  // each card gets a different scribbled interface
+  const r = rng(seed + 5);
+  draw(c, RR(14, 14, CWD - 28, 40, 6), alpha(PAL.ink, .12), seed + 1, { tex: false, line: false });
+  for (let l = 0; l < 3; l++) textBar(c, 16, 76 + l * 22, (CWD - 40) * (.4 + r() * .6), alpha(PAL.ink, .35), 8);
+  if (crossed) crossMark(c, CWD / 2, CHT / 2, CWD * .42, seed + 9, { lw: 7, color: alpha(PAL.blush, .85) });
+  c.restore();
+}
+function wall(c) {
+  paper(c);
+  squig(c, GX, 130, 420, 1, { seed: 1, width: 4, amp: 9, color: alpha(PAL.ink, .5) });
+  thread(c, 90, 4, PAL.accents[1], 2);
+}
+function sceneForty(c, tau, i) {
+  wall(c);
+  const n = Math.min(COLS * ROWS, Math.floor(tau * 12) * 4);
+  for (let k = 0; k < n; k++) {
+    const x = GX + (k % COLS) * (CWD + GAP), y = GY + Math.floor(k / COLS) * (CHT + GAP);
+    const p = clamp((n - k) / 4, 0, 1);
+    card(c, k, x, y, lerp(.8, 1, p), 20 + k * 3, false);
+  }
+  textBar(c, GX, GY + ROWS * (CHT + GAP) + 40, 220, alpha(PAL.ink, .4), 16);
+}
+function sceneCross(c, tau, i) {
+  wall(c);
+  const done = Math.floor(tau * 12 / 1.2);
+  for (let k = 0; k < COLS * ROWS; k++) {
+    const x = GX + (k % COLS) * (CWD + GAP), y = GY + Math.floor(k / COLS) * (CHT + GAP);
+    card(c, k, x, y, 1, 20 + k * 3, !KEPT.includes(k) && k < done);
+  }
+  // the pen doing the crossing
+  if (done < COLS * ROWS) { const k = Math.min(COLS * ROWS - 1, done), x = GX + (k % COLS) * (CWD + GAP), y = GY + Math.floor(k / COLS) * (CHT + GAP);
+    c.save(); c.translate(x + CWD * .7, y + CHT * .7); c.rotate(.6); stroke(c, [[0, 0], [30, 150]], 90, { lw: 7, raw: true, color: PAL.blush }); draw(c, RR(12, 150, 44, 170, 12), PAL.blush, 91, { lw: 4, texo: { density: .3 } }); c.restore(); }
+}
+function sceneFew(c, tau, i) {
+  wall(c);
+  const p = sm(0, .6, tau, easeIO);
+  // everything that was crossed out fades and shrinks away; the survivors slide into a row
+  for (let k = 0; k < COLS * ROWS; k++) {
+    const x = GX + (k % COLS) * (CWD + GAP), y = GY + Math.floor(k / COLS) * (CHT + GAP);
+    if (KEPT.includes(k)) {
+      const idx = KEPT.indexOf(k), tx = CX - (KEPT.length * 190) / 2 + idx * 190 + 20, ty = GY + 120;
+      card(c, k, lerp(x, tx, p), lerp(y, ty, p), lerp(1, 1.24, p), 20 + k * 3, false);
+    } else { c.save(); c.globalAlpha = 1 - p; card(c, k, x, y, lerp(1, .7, p), 20 + k * 3, true); c.restore(); }
+  }
+  writeOn(c, '40 projects', CX, GY + 520, sm(.5, 1.3, tau, t => t), { size: 175, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+  if (tau > 1.35) writeOn(c, 'seven kept', CX, GY + 650, sm(1.35, 1.75, tau, t => t), { size: 100, ink: PAL.accents[2], ink2: null, pen: null });
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_FP, poster: 4.9,
+  beats: [
+    { name: 'forty', dur: 1.8, fn: sceneForty },
+    { name: 'cross', dur: 1.5, fn: sceneCross },
+    { name: 'few', dur: 1.9, fn: sceneFew },
+  ],
+});
+</script>

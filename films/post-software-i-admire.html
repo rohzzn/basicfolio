@@ -1,0 +1,89 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-software-i-admire</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Software I Admire That I Didn't Write.
+// Look: ink on kraft, a tool board. Anchor: the board. Signature: each tool is hung on its own painted
+// silhouette, the way a workshop marks where things belong.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.6   marks  painted silhouettes appear on the empty board                       shapes, dashed
+// 1.6   1.6   hang   the tools drop onto their marks, one every four frames               easeOut
+// 3.2   1.9   plate  a brass plate is screwed on and engraved                             writeOn
+
+const PAL_SA = makePalette({
+  paper: '#dfcdb0', paperBand: null, ink: '#2e2418', night: '#241c12', chalk: '#fbf4e6', chalkDim: '#a08d70', guide: 'rgba(46,36,24,.35)',
+  fills: ['#8a6a44', '#4a5a52', '#b5553a', '#c9a227', '#6b7f8a', '#f2e8d4'], shade: '#463726', light: '#fbf4e6', blush: '#b5553a',
+  accents: ['#b5553a', '#4a5a52', '#c9a227', '#6b7f8a'], inks: ['#2e2418', '#b5553a'], finish: 'ink',
+}, 'paperInk');
+const TOOLS = [[CX - 420, CY - 60, 'wrench'], [CX, CY - 120, 'hammer'], [CX + 400, CY - 60, 'plane'], [CX - 220, CY + 260, 'chisel'], [CX + 220, CY + 260, 'file']];
+
+function toolShape(c, kind, col, seed, silhouette) {
+  const paint = silhouette ? alpha(PAL.shade, .35) : col;
+  if (kind === 'wrench') { draw(c, RR(-28, -170, 56, 340, 28), paint, seed, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .35 } });
+    for (const s of [-1, 1]) draw(c, PG([[-70, s * 170], [70, s * 170], [46, s * 240], [-46, s * 240]]), paint, seed + 1 + s, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .35 } }); }
+  if (kind === 'hammer') { draw(c, RR(-22, -80, 44, 320, 16), paint, seed, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .35 } });
+    draw(c, PG([[-130, -150], [120, -150], [140, -60], [-110, -60]]), paint, seed + 1, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .35 } });
+    draw(c, PG([[-130, -150], [-190, -120], [-190, -80], [-110, -60]]), paint, seed + 2, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .3 } }); }
+  if (kind === 'plane') { draw(c, PG([[-160, -70], [160, -70], [140, 90], [-140, 90]]), paint, seed, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .35 } });
+    draw(c, PG([[-30, -70], [50, -70], [70, -190], [-10, -190]]), paint, seed + 1, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .3 } }); }
+  if (kind === 'chisel') { draw(c, RR(-26, -180, 52, 240, 12), paint, seed, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .35 } });
+    draw(c, PG([[-34, 60], [34, 60], [22, 190], [-22, 190]]), paint, seed + 1, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .3 } }); }
+  if (kind === 'file') { draw(c, PG([[-24, -190], [24, -190], [34, 120], [-34, 120]]), paint, seed, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .35 } });
+    draw(c, RR(-30, 120, 60, 110, 20), paint, seed + 1, { lw: silhouette ? 0 : 5, line: !silhouette, texo: { density: .3 } }); }
+}
+function board(c) {
+  paper(c);
+  const b = RR(110, 110, W - 220, H - 220, 14);
+  c.fillStyle = PAL.fills[0]; c.fill(b.path); tex(c, b.path, b.box, { color: PAL.shade, density: .35, seed: 4 });
+  stroke(c, b.pts, 5, { raw: true, close: true, lw: 7 });
+  // the peg holes, in a grid across the board
+  c.save(); c.globalAlpha = .35; for (let x = 170; x < W - 170; x += 70) for (let y = 170; y < H - 170; y += 70) dot(c, x, y, 6, PAL.shade); c.restore();
+}
+function sceneMarks(c, tau, i) {
+  board(c);
+  TOOLS.forEach(([x, y, kind], k) => {
+    const p = sm(k * .18, k * .18 + .35, tau, easeOut); if (p <= 0) return;
+    c.save(); c.translate(x, y); c.scale(p, p); c.globalAlpha = p * .9;
+    toolShape(c, kind, null, 20 + k * 7, true);
+    c.restore();
+  });
+}
+function sceneHang(c, tau, i) {
+  board(c);
+  TOOLS.forEach(([x, y, kind], k) => {
+    c.save(); c.translate(x, y); c.globalAlpha = .9; toolShape(c, kind, null, 20 + k * 7, true); c.restore();
+    const t0 = k * 4 / 12, p = sm(t0, t0 + .32, tau, easeOut); if (p <= 0) return;
+    c.save(); c.translate(x, lerp(y - 460, y, p)); c.rotate(lerp(.35, 0, p));
+    toolShape(c, kind, [PAL.fills[1], PAL.fills[2], PAL.fills[4], PAL.fills[3], PAL.fills[1]][k], 40 + k * 7, false);
+    c.restore();
+    if (p >= 1 && tau - (t0 + .32) < .18) ringsOut(c, x, y, tau - t0 - .32, { every: 1 / 12, t1: .1, speed: 600, colors: [PAL.fills[3]], width: 5, seed: 60 + k, max: 260 });
+  });
+}
+function scenePlate(c, tau, i) {
+  board(c);
+  TOOLS.forEach(([x, y, kind], k) => { c.save(); c.translate(x, y); toolShape(c, kind, [PAL.fills[1], PAL.fills[2], PAL.fills[4], PAL.fills[3], PAL.fills[1]][k], 40 + k * 7, false); c.restore(); });
+  const p = easeBack(sm(0, .3, tau, t => t));
+  if (p > .02) {
+    c.save(); c.translate(CX, H - 210); c.scale(p, p);
+    draw(c, RR(-520, -90, 1040, 180, 14), PAL.fills[3], 80, { lw: 6, texo: { density: .4 } });
+    for (const sx of [-1, 1]) draw(c, CI(sx * 460, 0, 16), PAL.fills[0], 81 + sx, { tex: false, lw: 4 });
+    writeOn(c, 'software i admire', 0, 30, sm(.25, 1.2, tau, t => t), { size: 130, ink: PAL.shade, ink2: null, pen: PAL.shade });
+    c.restore();
+  }
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_SA, poster: 4.8,
+  beats: [
+    { name: 'marks', dur: 1.6, fn: sceneMarks },
+    { name: 'hang', dur: 1.6, fn: sceneHang },
+    { name: 'plate', dur: 1.9, fn: scenePlate },
+  ],
+});
+</script>

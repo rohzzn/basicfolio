@@ -1,0 +1,115 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-telugumovies-in</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Why I Built telugumovies.in.
+// Look: riso, hand-painted poster colours. Anchor: the marquee. Signature: a cinema front - the poster wall
+// fills, the bulbs come on around the marquee, and the marquee spells the site.
+// t     dur   scene    what changes                                                    kit
+// 0.0   1.7   wall     painted posters go up one after another on the wall               risoPrint cards
+// 1.7   1.3   search   a search box drops in; typing narrows the wall to one row          RR, filter
+// 3.0   2.0   marquee  the bulbs light around the marquee, which reads telugumovies.in    flicker, writeOn
+
+const PAL_TM = makePalette({
+  paper: '#f5ecd8', paperBand: null, ink: '#2b1d2e', night: '#201526', chalk: '#fff9ec', chalkDim: '#a08aa0', guide: 'rgba(43,29,46,.3)',
+  fills: ['#e03b3b', '#f2a71b', '#1f9c8a', '#3b4fa8', '#e0578f', '#2b1d2e'], shade: '#2b1d2e', light: '#fff9ec', blush: '#e03b3b',
+  accents: ['#e03b3b', '#f2a71b', '#1f9c8a', '#e0578f'], inks: ['#e03b3b', '#f2a71b', '#3b4fa8'], finish: 'riso',
+}, 'risoPop');
+
+// a hand-painted poster: big face, big colour, a band of lettering at the bottom
+function moviePoster(c, x, y, w, h, k, seed) {
+  const a = [PAL.fills[0], PAL.fills[3], PAL.fills[2], PAL.fills[1], PAL.fills[4]][k % 5];
+  const b = [PAL.fills[1], PAL.fills[4], PAL.fills[1], PAL.fills[0], PAL.fills[2]][k % 5];
+  const bg = rectPath(x, y, w, h); c.fillStyle = a; c.fill(bg); tex(c, bg, [x, y, w, h], { color: PAL.shade, density: .32, seed });
+  c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip();
+  // a face, painted big, the way the hoardings do it
+  draw(c, EL(x + w * .5, y + h * .42, w * .3, h * .26), b, seed + 1, { lw: 5 });
+  draw(c, PG([[x + w * .2, y + h], [x + w * .32, y + h * .62], [x + w * .68, y + h * .62], [x + w * .8, y + h]]), b, seed + 2, { lw: 5 });
+  for (const s of [-1, 1]) dot(c, x + w * (.5 + s * .1), y + h * .4, w * .035, PAL.shade);
+  stroke(c, [[x + w * .42, y + h * .5], [x + w * .58, y + h * .5]], seed + 3, { lw: 6, color: PAL.shade, raw: true });
+  if (k % 2 === 0) for (let d = 0; d < 5; d++) { const ang = -1.4 + d * .7; stroke(c, [[x + w * .5 + Math.cos(ang) * w * .34, y + h * .42 + Math.sin(ang) * h * .3], [x + w * .5 + Math.cos(ang) * w * .48, y + h * .42 + Math.sin(ang) * h * .42]], seed + 6 + d, { lw: 7, color: PAL.light, raw: true }); }
+  c.fillStyle = alpha(PAL.shade, .8); c.fillRect(x, y + h * .82, w, h * .18);
+  squig(c, x + w * .08, y + h * .92, w * .72, 1, { seed: seed + 12, width: 6, amp: 9, color: PAL.light });
+  c.restore();
+  stroke(c, rrPts(x, y, w, h, 3), seed + 20, { raw: true, close: true, lw: 5 });
+}
+function wallBg(c) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 15 });
+  const wall = rectPath(60, 60, W - 120, H - 120); c.fillStyle = tint(PAL.fills[5], .86); c.fill(wall);
+  tex(c, wall, [60, 60, W - 120, H - 120], { color: PAL.fills[5], density: .18, seed: 4 });
+  stroke(c, rrPts(60, 60, W - 120, H - 120, 6), 5, { raw: true, close: true, lw: 6 });
+}
+const GRID = [];
+for (let r = 0; r < 2; r++) for (let k = 0; k < 4; k++) GRID.push([150 + k * 290, 140 + r * 420, 250, 380, r * 4 + k]);
+function sceneWall(c, tau, i) {
+  wallBg(c);
+  GRID.forEach(([x, y, w, h, k]) => {
+    const t0 = k * 2 / 12 - .2, p = sm(t0, t0 + .28, tau, easeOut); if (p <= 0) return;
+    c.save(); c.globalAlpha = Math.min(1, p * 1.6); c.translate(0, lerp(-60, 0, p));
+    moviePoster(c, x, y, w, h, k, 20 + k * 9);
+    c.restore();
+  });
+}
+function sceneSearch(c, tau, i) {
+  wallBg(c);
+  const q = sm(.25, .8, tau, t => t);
+  GRID.forEach(([x, y, w, h, k]) => {
+    const keep = k % 4 === 1 || k === 6;
+    const fade = keep ? 1 : 1 - q * .82;
+    c.save(); c.globalAlpha = fade;
+    moviePoster(c, x, keep ? lerp(y, 300, q) : y, w, h, k, 20 + k * 9);
+    c.restore();
+    if (keep && q > .6) crayonShape(c, rrPts(x - 12, lerp(y, 300, q) - 12, w + 24, h + 24, 8), PAL.fills[1], 7, 60 + k);
+  });
+  // the search box
+  const box = RR(CX - 420, 90, 840, 110, 55);
+  c.fillStyle = alpha(PAL.shade, .2); c.beginPath(); c.roundRect(CX - 406, 110, 840, 110, 55); c.fill();
+  draw(c, box, PAL.light, 70, { lw: 6, tex: false });
+  draw(c, CI(CX - 340, 145, 26), null, 71, { lw: 6, lc: PAL.ink });
+  stroke(c, [[CX - 322, 163], [CX - 296, 189]], 72, { lw: 7, raw: true });
+  const typed = Math.floor(q * 9);
+  for (let k = 0; k < typed; k++) textBar(c, CX - 260 + k * 52, 145, 40, alpha(PAL.ink, .7), 16);
+  if (flicker(i, 3)) { c.fillStyle = PAL.fills[0]; c.fillRect(CX - 258 + typed * 52, 118, 8, 54); }
+}
+function marquee(c, tau, i, nameP) {
+  const mx = CX, my = CY - 40, mw = 1160, mh = 430;
+  // the frame, with bulbs all round it
+  draw(c, RR(mx - mw / 2, my - mh / 2, mw, mh, 24), PAL.fills[5], 80, { lw: 7, texo: { density: .4 } });
+  draw(c, RR(mx - mw / 2 + 40, my - mh / 2 + 40, mw - 80, mh - 80, 14), PAL.light, 81, { lw: 5, texo: { density: .15 } });
+  const n = 34;
+  for (let k = 0; k < n; k++) {
+    const t = k / n, per = mw * 2 + mh * 2, d = t * per;
+    let x, y;
+    if (d < mw) { x = mx - mw / 2 + d; y = my - mh / 2; }
+    else if (d < mw + mh) { x = mx + mw / 2; y = my - mh / 2 + (d - mw); }
+    else if (d < mw * 2 + mh) { x = mx + mw / 2 - (d - mw - mh); y = my + mh / 2; }
+    else { x = mx - mw / 2; y = my + mh / 2 - (d - mw * 2 - mh); }
+    const on = pulse(i + k * 2, 6, 3);
+    dot(c, x, y, on ? 16 : 11, on ? PAL.fills[1] : alpha(PAL.fills[1], .35));
+  }
+  if (nameP > 0) { writeOn(c, 'telugumovies', mx, my - 10, nameP, { size: 150, ink: PAL.fills[0], ink2: PAL.fills[3], pen: PAL.fills[0] });
+    if (nameP >= 1) writeOn(c, '.in', mx, my + 130, 1, { size: 110, ink: PAL.fills[2], ink2: null, pen: null }); }
+}
+function sceneMarquee(c, tau, i) {
+  wallBg(c);
+  c.save(); c.globalAlpha = .4; GRID.forEach(([x, y, w, h, k]) => moviePoster(c, x, y, w, h, k, 20 + k * 9)); c.restore();
+  marquee(c, tau, i, sm(.15, 1.1, tau, t => t));
+  if (tau > 1.3) for (let k = 0; k < 4; k++) sparkle(c, 200 + k * 360, 150, 30 + (pulse(i + k, 7, 3) ? 10 : 0), [PAL.fills[1], PAL.fills[0], PAL.fills[2]][k % 3], k);
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_TM, poster: 4.7, crf: 29,
+  beats: [
+    { name: 'wall', dur: 1.7, fn: sceneWall },
+    { name: 'search', dur: 1.3, fn: sceneSearch },
+    { name: 'marquee', dur: 2.0, fn: sceneMarquee },
+  ],
+});
+</script>

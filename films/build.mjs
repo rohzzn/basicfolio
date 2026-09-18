@@ -18,9 +18,20 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
-const pub = path.join(root, 'public', 'projects', 'films');
-const manifestFile = path.join(root, 'src', 'data', 'project-films.json');
 const outDir = path.join(here, 'out');
+
+// Three sets of cards, one pipeline. A film's file name says where it belongs:
+//   hobby-<slug>.html -> /hobbies cards      post-<slug>.html -> /writing cards
+//   anything else     -> /projects cards
+const GROUPS = [
+  {prefix: 'hobby-', dir: 'hobbies', manifest: 'hobby-films.json'},
+  {prefix: 'post-', dir: 'writing', manifest: 'writing-films.json'},
+  {prefix: '', dir: 'projects', manifest: 'project-films.json'},
+];
+const groupOf = name => GROUPS.find(g => name.startsWith(g.prefix));
+const bareOf = (name, g) => name.slice(g.prefix.length);
+const pubDir = g => path.join(root, 'public', g.dir, 'films');
+const manifestPath = g => path.join(root, 'src', 'data', g.manifest);
 
 const argv = process.argv.slice(2);
 const flag = (name, d) => { const k = argv.indexOf(name); return k >= 0 ? argv[k + 1] : d; };
@@ -41,9 +52,10 @@ function findChrome() {
 const run = (cmd, args) => new Promise((res, rej) => { const p = spawn(cmd, args, {stdio: ['ignore', 'ignore', 'pipe']}); let err = ''; p.stderr.on('data', d => err += d); p.on('close', code => code ? rej(new Error(`${cmd} ${code}: ${err}`)) : res()); });
 const save = (file, dataUrl) => writeFileSync(file, Buffer.from(dataUrl.split(',')[1], 'base64'));
 
-mkdirSync(pub, {recursive: true});
 mkdirSync(outDir, {recursive: true});
-const manifest = existsSync(manifestFile) ? JSON.parse(readFileSync(manifestFile, 'utf8')) : {};
+for (const g of GROUPS) mkdirSync(pubDir(g), {recursive: true});
+// one manifest per group, kept as it was on disk so a partial build does not drop the rest
+const manifests = new Map(GROUPS.map(g => [g, existsSync(manifestPath(g)) ? JSON.parse(readFileSync(manifestPath(g), 'utf8')) : {}]));
 const browser = await puppeteer.launch({executablePath: findChrome(), headless: true});
 const failed = [];
 
@@ -64,13 +76,14 @@ async function buildOne(slug) {
     }
     const posterUrl = await page.evaluate(i => { window.__drawFrame(i); return document.getElementById('c').toDataURL('image/webp', .86); }, Math.min(poster, N - 1));
     if (errors.length) throw new Error([...new Set(errors)].join('\n  '));
-    const mp4 = path.join(pub, `${slug}.mp4`), webp = path.join(pub, `${slug}.webp`);
+    const group = groupOf(slug), bare = bareOf(slug, group);
+    const mp4 = path.join(pubDir(group), `${bare}.mp4`), webp = path.join(pubDir(group), `${bare}.webp`);
     save(webp, posterUrl);
     await run('ffmpeg', ['-v', 'error', '-y', '-framerate', '12', '-i', path.join(frames, '%04d.png'), '-r', '24', '-c:v', 'libx264', '-preset', 'slow', '-tune', 'animation', '-crf', String(crf), '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', mp4]);
     const rows = Math.ceil(N / 6 / 6);
     await run('ffmpeg', ['-v', 'error', '-y', '-i', mp4, '-vf', `select=not(mod(n\\,12)),scale=240:-1,tile=6x${rows}`, '-frames:v', '1', path.join(outDir, `${slug}-contact.jpg`)]);
     const hash = createHash('sha1').update(readFileSync(mp4)).update(readFileSync(webp)).digest('hex').slice(0, 8);
-    manifest[slug] = {src: `/projects/films/${slug}.mp4`, poster: `/projects/films/${slug}.webp`, duration: +(N / 12).toFixed(3), width: size.w, height: size.h, v: hash};
+    manifests.get(group)[bare] = {src: `/${group.dir}/films/${bare}.mp4`, poster: `/${group.dir}/films/${bare}.webp`, duration: +(N / 12).toFixed(3), width: size.w, height: size.h, v: hash};
     const kb = n => (readFileSync(n).length / 1024).toFixed(0);
     console.log(`${slug.padEnd(22)} ${String(N).padStart(3)} frames  ${(N / 12).toFixed(2)} s  mp4 ${kb(mp4)} KB  poster ${kb(webp)} KB  ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   } catch (e) {
@@ -84,19 +97,24 @@ try {
   const queue = [...slugs];
   await Promise.all(Array.from({length: Math.min(jobs, queue.length)}, async () => { while (queue.length) await buildOne(queue.shift()); }));
   // the whole grid at a glance
-  const posters = all.filter(s => manifest[s] && existsSync(path.join(pub, `${s}.webp`)));
+  const posters = all.filter(s => { const g = groupOf(s); return manifests.get(g)[bareOf(s, g)] && existsSync(path.join(pubDir(g), `${bareOf(s, g)}.webp`)); });
   const page = await browser.newPage();
   const sheet = await page.evaluate(async (items) => {
     const cw = 360, ch = 270, pad = 22, cols = 6, rows = Math.ceil(items.length / cols), cv = document.createElement('canvas');
     cv.width = cols * cw; cv.height = rows * (ch + pad); const g = cv.getContext('2d'); g.fillStyle = '#141414'; g.fillRect(0, 0, cv.width, cv.height); g.font = '13px monospace'; g.fillStyle = '#ddd';
     for (const [k, [name, url]] of items.entries()) { const img = new Image(); img.src = url; await img.decode(); const x = (k % cols) * cw, y = Math.floor(k / cols) * (ch + pad); g.drawImage(img, x, y, cw, ch); g.fillText(name, x + 4, y + ch + 15); }
     return cv.toDataURL('image/jpeg', .85);
-  }, posters.map(s => [s, 'data:image/webp;base64,' + readFileSync(path.join(pub, `${s}.webp`)).toString('base64')]));
+  }, posters.map(s => { const g = groupOf(s); return [s, 'data:image/webp;base64,' + readFileSync(path.join(pubDir(g), `${bareOf(s, g)}.webp`)).toString('base64')]; }));
   save(path.join(outDir, '_posters.jpg'), sheet);
 } finally {
   await browser.close();
 }
-const sorted = Object.fromEntries(Object.keys(manifest).filter(k => all.includes(k)).sort().map(k => [k, manifest[k]]));
-writeFileSync(manifestFile, JSON.stringify(sorted, null, 2) + '\n');
-console.log(`manifest: ${Object.keys(sorted).length} films -> ${path.relative(root, manifestFile)}`);
+for (const g of GROUPS) {
+  const m = manifests.get(g);
+  // keep only the films this group still has a source file for
+  const live = Object.keys(m).filter(k => all.includes(g.prefix + k)).sort();
+  if (live.length === 0) continue;
+  writeFileSync(manifestPath(g), JSON.stringify(Object.fromEntries(live.map(k => [k, m[k]])), null, 2) + '\n');
+  console.log(`${g.dir}: ${live.length} films -> ${path.relative(root, manifestPath(g))}`);
+}
 if (failed.length) { console.error(`failed: ${failed.join(', ')}`); process.exit(1); }

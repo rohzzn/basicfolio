@@ -1,0 +1,109 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-typing</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Typing, the speed test - 115 wpm.
+// Look: flat screen print, keycap colours. Anchor: the keyboard. Signature: the keys press in sequence like a
+// wave running across the board, and the word being typed is the name.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.8   board   a keyboard from above; keys press one after another, a wave        RR keys, press
+// 1.8   1.3   meter   the wpm dial climbs to 115 while the accuracy holds                arc gauge
+// 3.1   1.9   typed   the test line types itself out and reads "typing"                   writeOn, caret
+
+const PAL_TY = makePalette({
+  paper: '#eceef2', paperBand: null, ink: '#20242c', night: '#171a20', chalk: '#ffffff', chalkDim: '#8d94a3', guide: 'rgba(32,36,44,.3)',
+  fills: ['#f7f8fa', '#cdd3dd', '#e8794a', '#5a8dd6', '#3fb28a', '#2b303a'], shade: '#20242c', light: '#ffffff', blush: '#e8794a',
+  accents: ['#e8794a', '#5a8dd6', '#3fb28a', '#f2c14e'], inks: ['#5a8dd6', '#e8794a', '#20242c'], finish: 'screen',
+}, 'screenSea');
+const ROWS = [12, 12, 11, 10, 5];
+const KW = 96, KG = 10;
+// the key that lights on each beat, as a path across the board
+const WAVE = [[3, 4], [2, 3], [1, 5], [2, 7], [3, 6], [1, 8], [2, 2], [3, 9], [4, 2], [1, 3], [2, 6], [3, 3]];
+
+function board(c, press, i) {
+  const bw = ROWS[0] * (KW + KG) - KG + 60, bh = ROWS.length * (KW + KG) - KG + 60;
+  const bx = CX - bw / 2, by = CY - bh / 2 + 20;
+  c.fillStyle = alpha(PAL.shade, .2); c.beginPath(); c.roundRect(bx + 16, by + 20, bw, bh, 26); c.fill();
+  draw(c, RR(bx, by, bw, bh, 26), PAL.fills[5], 10, { lw: 6, texo: { density: .3, color: PAL.shade } });
+  ROWS.forEach((n, r) => {
+    const rw = r === 4 ? 5 : n, indent = [0, 0, 26, 52, 120][r];
+    for (let k = 0; k < rw; k++) {
+      const wide = r === 4 && k === 2;
+      const kw = wide ? KW * 4 + KG * 3 : KW;
+      const x = bx + 30 + indent + k * (KW + KG) + (r === 4 && k > 2 ? KW * 3 + KG * 3 : 0);
+      const y = by + 30 + r * (KW + KG);
+      const hot = press.some(([pr, pk]) => pr === r && pk === k);
+      c.save(); if (hot) { c.translate(x + kw / 2, y + KW / 2); c.scale(.94, .94); c.translate(-x - kw / 2, -y - KW / 2); }
+      draw(c, RR(x, y, kw, KW, 14), hot ? PAL.fills[2] : PAL.fills[0], 20 + r * 20 + k, { lw: 4, texo: { density: .25 } });
+      draw(c, RR(x + 8, y + 8, kw - 16, KW - 22, 10), hot ? tint(PAL.fills[2], .25) : PAL.light, 60 + r * 20 + k, { tex: false, lw: 2.6 });
+      if (!wide) textBar(c, x + kw / 2 - 16, y + KW / 2, 32, alpha(PAL.ink, hot ? .6 : .3), 12);
+      c.restore();
+    }
+  });
+  return [bx, by, bw, bh];
+}
+function sceneBoard(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  const step = Math.floor(tau * 12 / 2);
+  const press = WAVE.slice(Math.max(0, step - 1), step + 1);
+  const box = board(c, press, i);
+  // the ripple the wave leaves behind
+  press.forEach(([r, k], n) => { const x = box[0] + 30 + [0, 0, 26, 52, 120][r] + k * (KW + KG) + KW / 2, y = box[1] + 30 + r * (KW + KG) + KW / 2; if (n === press.length - 1) ringsOut(c, x, y, ((tau * 12 / 2) % 1) / 6, { every: 1 / 12, t1: .1, speed: 700, colors: [PAL.fills[2]], width: 5, seed: 90 + step, max: 260 }); });
+  for (let k = 0; k < Math.min(12, step + 1); k++) dot(c, 130 + k * 34, 110, 11, PAL.fills[3]);
+}
+function gauge(c, cx, cy, R, p, col, seed) {
+  stroke(c, arcPts(cx, cy, R, R, Math.PI * .8, Math.PI * 2.2, 40), seed, { raw: true, lw: 26, color: alpha(PAL.ink, .1) });
+  strokeOn(c, arcPts(cx, cy, R, R, Math.PI * .8, Math.PI * 2.2, 60), p, seed + 1, { raw: true, lw: 26, color: col });
+  for (let k = 0; k <= 6; k++) { const a = lerp(Math.PI * .8, Math.PI * 2.2, k / 6); stroke(c, [[cx + Math.cos(a) * (R + 22), cy + Math.sin(a) * (R + 22)], [cx + Math.cos(a) * (R + 48), cy + Math.sin(a) * (R + 48)]], seed + 10 + k, { lw: 5, raw: true }); }
+  const a = lerp(Math.PI * .8, Math.PI * 2.2, p);
+  stroke(c, [[cx, cy], [cx + Math.cos(a) * R * .8, cy + Math.sin(a) * R * .8]], seed + 20, { lw: 12, color: PAL.ink, raw: true });
+  dot(c, cx, cy, 20, PAL.ink);
+}
+function sceneMeter(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  const p = sm(0, 1.0, tau, easeOut);
+  gauge(c, CX - 240, CY, 260, p * .92, PAL.fills[2], 10);
+  // the counter beside it, counting in twelfths so it lands on 115
+  const wpm = Math.round(115 * p);
+  c.font = `bold 220px ${KIT_HAND}`; c.fillStyle = PAL.ink; c.textAlign = 'left'; c.fillText(String(wpm), CX + 120, CY + 60);
+  textBar(c, CX + 130, CY + 130, 200, alpha(PAL.ink, .4), 22);
+  // accuracy, holding steady
+  draw(c, RR(CX + 120, CY - 240, 400, 80, 40), PAL.fills[0], 30, { lw: 5, tex: false });
+  draw(c, RR(CX + 120, CY - 240, 400 * (.96 + Math.sin(tau * 6) * .01), 80, 40), PAL.fills[4], 31, { lw: 5, texo: { density: .3 } });
+  textBar(c, CX + 160, CY - 200, 150, alpha(PAL.light, .9), 20);
+  if (p >= 1) for (let k = 0; k < 4; k++) sparkle(c, CX - 240 + Math.cos(k * 1.7) * 360, CY + Math.sin(k * 1.7) * 300, 30, PAL.fills[2], k + i * .2);
+}
+function sceneTyped(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  // the test card
+  const x = CX - 560, y = CY - 260, w = 1120, h = 520;
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(x + 16, y + 20, w, h, 28); c.fill();
+  draw(c, RR(x, y, w, h, 28), PAL.light, 10, { lw: 6, tex: false });
+  for (let k = 0; k < 3; k++) squig(c, x + 70, y + 110 + k * 66, w - 140 - (k === 2 ? 320 : 0), 1, { seed: 20 + k, width: 5, amp: 11, color: alpha(PAL.ink, .22) });
+  const p = sm(.1, 1.0, tau, t => t);
+  const [px] = writeOn(c, 'typing', x + 70, y + 400, p, { size: 210, align: 'left', ink: PAL.ink, ink2: PAL.fills[2], pen: null });
+  if (flicker(i, 3) || p < 1) { c.fillStyle = PAL.fills[2]; c.fillRect(px + 14, y + 400 - 150, 16, 170); }
+  if (p >= 1) { checkMark(c, x + w - 120, y + 400 - 60, 44, sm(1.05, 1.35, tau), 40, { color: PAL.fills[4], lw: 12 });
+    for (let k = 0; k < 3; k++) dot(c, x + 80 + k * 40, y + h - 60, 12, PAL.fills[3]); }
+  // the top row of the board, just showing under the card, so the film keeps its subject
+  for (let k = 0; k < 11; k++) { const kx = CX - 11 * (KW + KG) / 2 + k * (KW + KG); draw(c, RR(kx, H - 90, KW, KW, 14), PAL.fills[0], 70 + k, { lw: 4, texo: { density: .25 } }); }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_TY, poster: 4.6, crf: 27,
+  beats: [
+    { name: 'board', dur: 1.8, fn: sceneBoard },
+    { name: 'meter', dur: 1.3, fn: sceneMeter },
+    { name: 'typed', dur: 1.9, fn: sceneTyped },
+  ],
+});
+</script>

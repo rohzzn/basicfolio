@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-discord-widgets</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: How to Build Discord Profile Widgets.
+// Look: riso, violet and teal on cream. Anchor: the profile card. Signature: the widgets snap onto the card
+// like stickers and then start showing live numbers.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   card    a profile card: avatar, banner, an empty slot dashed out            RR, bust
+// 1.6   1.5   snap    three widgets fly in and click into the slot, one every four frames  easeBack, ringsOut
+// 3.1   1.9   live    the numbers start moving and the card is labelled "widgets"          bars, writeOn
+
+const PAL_DW = makePalette({
+  paper: '#f1edf7', paperBand: null, ink: '#2b2350', night: '#211b40', chalk: '#fffdf8', chalkDim: '#8f86bd', guide: 'rgba(43,35,80,.3)',
+  fills: ['#5b4bd8', '#18a999', '#ff9f6b', '#f2d24e', '#3d356b', '#ffffff'], shade: '#2b2350', light: '#ffffff', blush: '#ff5f8d',
+  accents: ['#5b4bd8', '#18a999', '#ff9f6b', '#ff5f8d'], inks: ['#5b4bd8', '#18a999', '#ff5f8d'], finish: 'riso',
+}, 'risoPop');
+const CXX = CX - 360, CYY = 130, CW = 720, CH = 820;
+
+function profile(c, seed) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[0], density: .1, cell: 15 });
+  c.fillStyle = alpha(PAL.shade, .2); c.beginPath(); c.roundRect(CXX + 16, CYY + 20, CW, CH, 28); c.fill();
+  draw(c, RR(CXX, CYY, CW, CH, 28), PAL.fills[4], seed, { lw: 6, texo: { density: .3 } });
+  const banner = rectPath(CXX, CYY, CW, 220);
+  c.save(); c.clip(roundRectPath(CXX, CYY, CW, CH, 28)); c.fillStyle = PAL.fills[0]; c.fill(banner); tex(c, banner, [CXX, CYY, CW, 220], { density: .4, seed: seed + 1 }); c.restore();
+  draw(c, CI(CXX + 150, CYY + 240, 92), PAL.fills[4], seed + 2, { lw: 6, tex: false });
+  c.save(); c.beginPath(); c.arc(CXX + 150, CYY + 240, 84, 0, TAU); c.clip(); bust(c, CXX + 150, CYY + 250, 80, PAL.fills[2], PAL.fills[3], seed + 3, {}); c.restore();
+  dot(c, CXX + 210, CYY + 300, 22, PAL.fills[1]);
+  textBar(c, CXX + 270, CYY + 240, 220, alpha(PAL.light, .9), 26);
+  textBar(c, CXX + 270, CYY + 286, 150, alpha(PAL.light, .4), 18);
+  stroke(c, [[CXX + 40, CYY + 360], [CXX + CW - 40, CYY + 360]], seed + 6, { lw: 4, color: alpha(PAL.light, .2) });
+  return [CXX + 40, CYY + 400, CW - 80, CH - 460];
+}
+function widget(c, x, y, w, h, k, seed, live, i) {
+  draw(c, RR(x, y, w, h, 18), PAL.fills[5], seed, { lw: 5, texo: { density: .2 } });
+  draw(c, RR(x + 18, y + 18, 46, 46, 12), [PAL.fills[0], PAL.fills[1], PAL.blush][k], seed + 1, { lw: 4, texo: { density: .35 } });
+  textBar(c, x + 80, y + 42, 140, alpha(PAL.ink, .55), 16);
+  if (k === 0) { // a now-playing bar that moves
+    const p = live ? (.3 + ((i % 24) / 24) * .6) : .3;
+    draw(c, RR(x + 18, y + h - 44, w - 36, 22, 11), alpha(PAL.ink, .12), seed + 2, { tex: false, lw: 2.4 });
+    draw(c, RR(x + 18, y + h - 44, (w - 36) * p, 22, 11), PAL.fills[1], seed + 3, { tex: false, line: false });
+  }
+  if (k === 1) { // a little bar chart that jumps
+    for (let b = 0; b < 6; b++) { const v = live ? (.3 + ((i + b * 3) % 7) / 10) : .5; draw(c, RR(x + 22 + b * 40, y + h - 30 - 70 * v, 28, 70 * v, 6), PAL.fills[0], seed + 10 + b, { tex: false, lw: 2.4 }); } }
+  if (k === 2) { // a status dot and a counter
+    dot(c, x + 40, y + h - 46, 14, live && pulse(i, 6, 3) ? PAL.fills[1] : alpha(PAL.ink, .25));
+    textBar(c, x + 70, y + h - 46, 120, alpha(PAL.ink, .4), 16); }
+}
+const SLOTS = [[0, 0, 300, 200], [320, 0, 300, 200], [0, 220, 620, 200]];
+function sceneCard(c, tau, i) {
+  const [bx, by] = profile(c, 10);
+  // the empty slots, dashed, waiting
+  SLOTS.forEach(([dx, dy, w, h], k) => { const p = sm(k * .2, k * .2 + .4, tau, easeOut); if (p <= 0) return;
+    c.save(); c.setLineDash([16, 14]); c.globalAlpha = p; stroke(c, rrPts(bx + dx, by + dy, w, h, 18), 30 + k, { raw: true, close: true, lw: 4, color: alpha(PAL.light, .5) }); c.restore();
+    if (p >= 1) { dot(c, bx + dx + w / 2, by + dy + h / 2, 14, alpha(PAL.light, .4)); stroke(c, [[bx + dx + w / 2 - 22, by + dy + h / 2], [bx + dx + w / 2 + 22, by + dy + h / 2]], 40 + k, { lw: 5, color: alpha(PAL.light, .4), raw: true }); stroke(c, [[bx + dx + w / 2, by + dy + h / 2 - 22], [bx + dx + w / 2, by + dy + h / 2 + 22]], 50 + k, { lw: 5, color: alpha(PAL.light, .4), raw: true }); } });
+}
+function sceneSnap(c, tau, i) {
+  const [bx, by] = profile(c, 10);
+  SLOTS.forEach(([dx, dy, w, h], k) => {
+    const t0 = k * 4 / 12, p = easeBack(sm(t0, t0 + .35, tau, t => t));
+    if (p <= .02) { c.save(); c.setLineDash([16, 14]); stroke(c, rrPts(bx + dx, by + dy, w, h, 18), 30 + k, { raw: true, close: true, lw: 4, color: alpha(PAL.light, .5) }); c.restore(); return; }
+    const x = bx + dx, y = by + dy;
+    c.save(); c.translate(x + w / 2, y + h / 2); c.scale(p, p); c.rotate((1 - p) * .3); c.translate(-x - w / 2, -y - h / 2);
+    widget(c, x, y, w, h, k, 60 + k * 9, false, i);
+    c.restore();
+    if (p >= 1 && tau - (t0 + .35) < .2) ringsOut(c, x + w / 2, y + h / 2, tau - t0 - .35, { every: 1 / 12, t1: .12, speed: 700, colors: [PAL.fills[1], PAL.fills[0]], width: 5, seed: 80 + k, max: 320 });
+  });
+}
+function sceneLive(c, tau, i) {
+  const [bx, by] = profile(c, 10);
+  SLOTS.forEach(([dx, dy, w, h], k) => widget(c, bx + dx, by + dy, w, h, k, 60 + k * 9, true, i));
+  // the label, written beside the card on the page
+  const p = sm(.2, 1.1, tau, t => t);
+  writeOn(c, 'widgets', CXX + CW + 180, CY - 40, p, { size: 150, ink: PAL.ink, ink2: PAL.fills[0], pen: PAL.fills[0] });
+  if (p >= 1) { for (let r = 1; r <= 2; r++) dashedRing(c, CXX + CW + 180, CY - 40, 180 + r * 60, alpha(PAL.fills[1], .45), 100 + r, [20, 16], 4);
+    writeOn(c, 'v2', CXX + CW + 180, CY + 110, sm(1.1, 1.5, tau, t => t), { size: 90, ink: PAL.fills[1], ink2: null, pen: null }); }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_DW, poster: 4.8, crf: 28,
+  beats: [
+    { name: 'card', dur: 1.6, fn: sceneCard },
+    { name: 'snap', dur: 1.5, fn: sceneSnap },
+    { name: 'live', dur: 1.9, fn: sceneLive },
+  ],
+});
+</script>

@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-what-this-site-loads</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Everything This Site Loads Over the Wire.
+// Look: flat screen print, devtools dark. Anchor: the waterfall. Signature: the waterfall draws itself in real
+// time, bar after bar, and the last bar - the slow one - is the one that gets circled.
+// t     dur   scene   what changes                                                     kit
+// 0.0   2.0   fall    request bars stagger in down the panel, timings ticking up          RR bars
+// 1.8   1.2   slow    the last request arrives late and gets ringed in red                 dashedRing
+// 3.0   2.0   total   the totals line up and the panel is labelled                         writeOn
+
+const PAL_WL2 = makePalette({
+  paper: '#171a21', paperBand: null, ink: '#e6ebf5', night: '#10131a', chalk: '#e6ebf5', chalkDim: '#6d7789', guide: 'rgba(230,235,245,.25)',
+  fills: ['#1e222c', '#2a303c', '#5aa9e6', '#4ad991', '#f2c14e', '#ff6b6b'], shade: '#0c0f14', light: '#f2f6ff', blush: '#ff6b6b',
+  accents: ['#5aa9e6', '#4ad991', '#f2c14e', '#ff6b6b'], inks: ['#5aa9e6', '#ff6b6b'], finish: 'screen',
+}, 'screenSea');
+// [start, length, colour index] in panel units
+const REQS = [
+  [0, .22, 2], [.05, .18, 2], [.08, .30, 3], [.12, .16, 4], [.18, .26, 3],
+  [.22, .12, 2], [.26, .34, 4], [.30, .20, 3], [.36, .18, 2], [.40, .24, 4], [.48, .44, 5],
+];
+const PX = 150, PY = 210, PW = W - 300, PH = 700;
+
+function panel(c, i) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 300, PAL.light, .25, 3, 3);
+  draw(c, RR(PX - 40, PY - 120, PW + 80, PH + 200, 22), PAL.fills[0], 10, { lw: 5, texo: { density: .25, color: PAL.shade } });
+  // the toolbar of the panel
+  for (let k = 0; k < 4; k++) textBar(c, PX - 10 + k * 130, PY - 70, 90, alpha(PAL.light, k === 1 ? .8 : .3), 14);
+  stroke(c, [[PX - 40, PY - 30], [PX + PW + 40, PY - 30]], 11, { lw: 3, color: alpha(PAL.light, .2) });
+  // the time ruler
+  for (let k = 0; k <= 5; k++) { const x = PX + (PW - 60) * k / 5; stroke(c, [[x, PY], [x, PY + PH]], 12 + k, { lw: 2.4, color: alpha(PAL.light, .12) }); textBar(c, x - 22, PY - 4, 44, alpha(PAL.light, .3), 11); }
+}
+function bars(c, upto, tau, ring) {
+  REQS.forEach(([s, len, col], k) => {
+    if (k >= upto) return;
+    const y = PY + 36 + k * 58;
+    textBar(c, PX - 10, y, 90, alpha(PAL.light, .35), 14);
+    const x = PX + 120 + (PW - 240) * s, w = (PW - 240) * len;
+    draw(c, RR(x, y - 16, w, 32, 16), [0, 0, PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[5]][col], 30 + k, { tex: false, lw: 3 });
+    // the waiting part of every request, drawn lighter in front of the bar
+    draw(c, RR(x - 40, y - 16, 40, 32, 16), alpha(PAL.light, .12), 50 + k, { tex: false, line: false });
+    textBar(c, x + w + 20, y, 50, alpha(PAL.light, .3), 12);
+    if (ring && k === REQS.length - 1) { for (let r = 0; r < 2; r++) dashedRing(c, x + w / 2, y, 140 + r * 40, PAL.blush, 70 + r, [16, 12], 4); }
+  });
+}
+function sceneFall(c, tau, i) {
+  panel(c, i);
+  const n = Math.min(REQS.length - 1, Math.floor(tau * 12 / 2));
+  bars(c, n, tau, false);
+  // the playhead running down the panel with the requests
+  const x = PX + 120 + (PW - 240) * clamp(tau / 2.2, 0, 1);
+  stroke(c, [[x, PY], [x, PY + PH]], 80, { lw: 4, color: PAL.blush });
+  dot(c, x, PY - 10, 10, PAL.blush);
+}
+function sceneSlow(c, tau, i) {
+  panel(c, i);
+  bars(c, REQS.length, tau, tau > .45);
+  if (tau > .45) { const [s, len] = REQS[REQS.length - 1], x = PX + 120 + (PW - 240) * s, w = (PW - 240) * len, y = PY + 36 + (REQS.length - 1) * 58;
+    stroke(c, [[x + w + 60, y], [x + w + 220, y - 120]], 90, { lw: 4, color: PAL.blush });
+    draw(c, RR(x + w + 200, y - 210, 300, 96, 16), PAL.fills[1], 91, { lw: 4, texo: { density: .25, color: PAL.shade } });
+    textBar(c, x + w + 230, y - 180, 200, alpha(PAL.blush, .9), 16);
+    textBar(c, x + w + 230, y - 146, 150, alpha(PAL.light, .35), 14); }
+}
+function sceneTotal(c, tau, i) {
+  panel(c, i);
+  c.save(); c.globalAlpha = .45; bars(c, REQS.length, tau, false); c.restore();
+  // the summary line at the foot of the panel
+  const p = sm(.1, .9, tau, easeOut);
+  const y = PY + PH + 60;
+  stroke(c, [[PX - 20, y - 60], [PX + PW + 20, y - 60]], 100, { lw: 3, color: alpha(PAL.light, .2) });
+  [[PAL.fills[2], .32], [PAL.fills[3], .24], [PAL.fills[4], .18], [PAL.fills[5], .26]].forEach(([col, frac], k) => {
+    let x = PX + 20; for (let j = 0; j < k; j++) x += (PW - 40) * [.32, .24, .18, .26][j] * p;
+    draw(c, RR(x, y - 20, (PW - 40) * frac * p, 40, 20), col, 110 + k, { tex: false, lw: 3 });
+  });
+  writeOn(c, 'what it loads', CX, y + 150, sm(.35, 1.3, tau, t => t), { size: 165, ink: PAL.light, ink2: PAL.fills[2], pen: PAL.fills[2] });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_WL2, poster: 4.8,
+  beats: [
+    { name: 'fall', dur: 1.8, fn: sceneFall },
+    { name: 'slow', dur: 1.2, fn: sceneSlow },
+    { name: 'total', dur: 2.0, fn: sceneTotal },
+  ],
+});
+</script>

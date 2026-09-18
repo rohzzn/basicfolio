@@ -1,0 +1,100 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-apple-best-ai-feature</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Apple's Best AI Feature Is Not Siri - the agentic bit hiding in the Passwords app.
+// Look: flat screen print, soft system greys. Anchor: the key. Signature: the work happens by itself - the
+// form fills, the code arrives, the old password is struck out, all without a hand on screen.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   form    a sign-in sheet; the fields fill themselves, dots at a time         RR, dots
+// 1.6   1.5   swap    the weak password is struck out and a new one is written in          strike, writeOn
+// 3.1   1.9   key     the key turns; the verdict is written: "not siri"                     rotate, writeOn
+
+const PAL_AP = makePalette({
+  paper: '#eef0f4', paperBand: null, ink: '#1d2128', night: '#161920', chalk: '#ffffff', chalkDim: '#8f96a3', guide: 'rgba(29,33,40,.3)',
+  fills: ['#ffffff', '#d7dce4', '#3a7bfd', '#34c759', '#ff9f0a', '#ff3b30'], shade: '#1d2128', light: '#ffffff', blush: '#ff3b30',
+  accents: ['#3a7bfd', '#34c759', '#ff9f0a', '#ff3b30'], inks: ['#3a7bfd', '#1d2128'], finish: 'screen',
+}, 'screenSea');
+const FX = CX - 380, FY = 180, FW = 760, FH = 560;
+
+function keyShape(c, x, y, s, rot, col, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  draw(c, CI(-70, 0, 46), col, seed, { lw: 5, texo: { density: .3 } });
+  draw(c, CI(-70, 0, 20), PAL.paper, seed + 1, { tex: false, lw: 4 });
+  draw(c, RR(-34, -16, 150, 32, 8), col, seed + 2, { lw: 5, texo: { density: .3 } });
+  draw(c, RR(78, 8, 20, 40, 6), col, seed + 3, { lw: 4, tex: false });
+  draw(c, RR(40, 8, 18, 30, 6), col, seed + 4, { lw: 4, tex: false });
+  c.restore();
+}
+function sheet2(c, seed) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  c.fillStyle = alpha(PAL.shade, .14); c.beginPath(); c.roundRect(FX + 14, FY + 18, FW, FH, 28); c.fill();
+  draw(c, RR(FX, FY, FW, FH, 28), PAL.fills[0], seed, { lw: 5, tex: false });
+  draw(c, CI(FX + FW / 2, FY + 110, 54), PAL.fills[1], seed + 1, { lw: 4, tex: false });
+  keyShape(c, FX + FW / 2, FY + 110, .5, 0, PAL.fills[2], seed + 2);
+  textBar(c, FX + FW / 2 - 130, FY + 200, 260, alpha(PAL.ink, .6), 22);
+}
+function field(c, y, filled, label, seed) {
+  draw(c, RR(FX + 70, y, FW - 140, 92, 18), PAL.fills[1], seed, { tex: false, lw: 4 });
+  textBar(c, FX + 100, y + 46, 90, alpha(PAL.ink, .35), 14);
+  if (label === 'dots') { for (let k = 0; k < Math.floor(filled * 10); k++) dot(c, FX + 220 + k * 30, y + 46, 11, PAL.ink); }
+  else if (filled > 0) textBar(c, FX + 220, y + 46, (FW - 400) * filled, alpha(PAL.ink, .7), 16);
+  if (filled >= 1) checkMark(c, FX + FW - 120, y + 46, 20, 1, seed + 5, { color: PAL.fills[3], lw: 7 });
+}
+function sceneForm(c, tau, i) {
+  sheet2(c, 10);
+  field(c, FY + 260, clamp(sm(.15, .6, tau, t => t), 0, 1), 'text', 20);
+  field(c, FY + 380, clamp(sm(.55, 1.05, tau, t => t), 0, 1), 'dots', 30);
+  const go = sm(1.0, 1.3, tau, easeOut);
+  draw(c, RR(FX + 70, FY + 480, FW - 140, 88, 44), go > .5 ? PAL.fills[2] : PAL.fills[1], 40, { lw: 4, texo: { density: .3 } });
+  textBar(c, FX + FW / 2 - 70, FY + 524, 140, go > .5 ? alpha(PAL.light, .9) : alpha(PAL.ink, .3), 18);
+  // no pointer anywhere: that is the point
+  if (tau > 1.2) for (let r = 1; r <= 2; r++) dashedRing(c, FX + FW / 2, FY + 110, 90 + r * 44, alpha(PAL.fills[2], .5), 50 + r, [14, 12], 3);
+}
+function sceneSwap(c, tau, i) {
+  sheet2(c, 10);
+  textBar(c, FX + 70, FY + 250, 300, alpha(PAL.ink, .5), 18);
+  // the old one, struck through
+  const old = RR(FX + 70, FY + 290, FW - 140, 92, 18);
+  draw(c, old, PAL.fills[1], 60, { tex: false, lw: 4 });
+  for (let k = 0; k < 8; k++) dot(c, FX + 130 + k * 30, FY + 336, 11, alpha(PAL.ink, .45));
+  const s = sm(.1, .5, tau, t => t);
+  if (s > 0) stroke(c, [[FX + 100, FY + 336], [FX + 100 + (FW - 260) * s, FY + 336]], 61, { lw: 7, color: PAL.blush });
+  if (s >= 1) { draw(c, CI(FX + FW - 110, FY + 336, 26), PAL.blush, 62, { lw: 4, texo: { density: .3 } }); stroke(c, [[FX + FW - 122, FY + 336], [FX + FW - 98, FY + 336]], 63, { lw: 6, color: PAL.light, raw: true }); }
+  // the new one, written in
+  const n = sm(.55, 1.2, tau, t => t);
+  draw(c, RR(FX + 70, FY + 420, FW - 140, 92, 18), PAL.fills[0], 70, { tex: false, lw: 4, lc: PAL.fills[3] });
+  if (n > 0) writeOn(c, 'a stronger one', FX + 110, FY + 480, n, { size: 62, align: 'left', ink: PAL.ink, ink2: PAL.fills[3], pen: PAL.fills[3] });
+  if (n >= 1) checkMark(c, FX + FW - 120, FY + 466, 20, 1, 71, { color: PAL.fills[3], lw: 7 });
+  // the code that arrives on its own
+  const code = sm(.8, 1.1, tau, easeOut);
+  if (code > 0) { c.save(); c.globalAlpha = code; draw(c, RR(FX + FW - 300, FY - 90, 360, 130, 24), PAL.night, 80, { tex: false, lw: 4 });
+    for (let k = 0; k < 6; k++) textBar(c, FX + FW - 260 + k * 46, FY - 24, 30, alpha(PAL.light, .9), 18); c.restore(); }
+}
+function sceneKey(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  for (let r = 1; r <= 3; r++) dashedRing(c, CX, CY - 60, 240 + r * 90, alpha(PAL.ink, .16), 90 + r, [20, 16], 3);
+  const turn = sm(0, .5, tau, easeIO);
+  keyShape(c, CX, CY - 60, 2.4, turn * 1.2, PAL.fills[2], 100);
+  if (turn >= 1) { draw(c, CI(CX + 250, CY - 200, 54), PAL.fills[3], 110, { lw: 5, texo: { density: .3 } }); checkMark(c, CX + 250, CY - 200, 24, sm(.5, .75, tau), 111, { color: PAL.light, lw: 8 }); }
+  writeOn(c, 'not siri', CX, CY + 300, sm(.45, 1.3, tau, t => t), { size: 210, ink: PAL.ink, ink2: PAL.fills[2], pen: PAL.fills[2] });
+  if (tau > 1.3) for (let k = 0; k < 3; k++) sparkle(c, 240 + k * 400, 180, 28 + (pulse(i + k, 7, 3) ? 10 : 0), PAL.fills[2], k);
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_AP, poster: 4.8,
+  beats: [
+    { name: 'form', dur: 1.6, fn: sceneForm },
+    { name: 'swap', dur: 1.5, fn: sceneSwap },
+    { name: 'key', dur: 1.9, fn: sceneKey },
+  ],
+});
+</script>

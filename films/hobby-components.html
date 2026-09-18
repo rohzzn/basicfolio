@@ -1,0 +1,102 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-components</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Components, the interactive UI components.
+// Look: ink on cool paper, blueprint accents. Anchor: the card being built. Signature: an exploded view - the
+// parts hang apart in the air with leader lines, then drop together into one working component.
+// t     dur   scene    what changes                                                    kit
+// 0.0   1.8   explode  the parts float apart, labelled, with construction leaders        guides, offsets
+// 1.8   1.3   assemble they fall together into one card, which then reacts               easeIO, ringsOut
+// 3.1   1.9   label    the component's own label is written under it: "components"        writeOn
+
+const PAL_CP = makePalette({
+  paper: '#eceff3', paperBand: null, ink: '#1e2430', night: '#161b24', chalk: '#ffffff', chalkDim: '#8b94a4', guide: 'rgba(60,110,220,.5)',
+  fills: ['#ffffff', '#3c6edc', '#ff7a59', '#2fb98a', '#ffc94a', '#ccd4e0'], shade: '#1e2430', light: '#ffffff', blush: '#ff7a59',
+  accents: ['#3c6edc', '#ff7a59', '#ffc94a', '#2fb98a'], inks: ['#1e2430', '#3c6edc'], finish: 'ink',
+}, 'paperInk');
+const BX = CX - 330, BY = CY - 250, BW = 660, BH = 500;
+// each part: [dx, dy] where it floats when exploded
+const PARTS = [
+  { dx: -260, dy: -230 },   // the image band
+  { dx: 300, dy: -110 },    // the title lines
+  { dx: -300, dy: 120 },    // the toggle
+  { dx: 280, dy: 240 },     // the button
+];
+function part(c, k, x, y, seed, hot) {
+  if (k === 0) { draw(c, RR(x, y, BW - 80, 150, 12), PAL.fills[1], seed, { lw: 5, texo: { density: .35 } }); for (let d = 0; d < 3; d++) draw(c, CI(x + 80 + d * 90, y + 75, 34), PAL.light, seed + 1 + d, { tex: false, lw: 4 }); }
+  if (k === 1) { textBar(c, x, y, 300, alpha(PAL.ink, .7), 26); textBar(c, x, y + 46, 220, alpha(PAL.ink, .35), 18); textBar(c, x, y + 84, 260, alpha(PAL.ink, .35), 18); }
+  if (k === 2) { const on = hot; draw(c, RR(x, y, 190, 90, 45), on ? PAL.fills[3] : PAL.fills[5], seed + 6, { lw: 5, texo: { density: .3 } }); draw(c, CI(x + (on ? 142 : 48), y + 45, 32), PAL.light, seed + 7, { tex: false, lw: 4 }); }
+  if (k === 3) { draw(c, RR(x, y, 230, 86, 20), hot ? shade(PAL.fills[2], .12) : PAL.fills[2], seed + 8, { lw: 5, texo: { density: .35 } }); textBar(c, x + 60, y + 43, 110, alpha(PAL.light, .9), 18); }
+}
+function partHome(k) {
+  return [[BX + 40, BY + 40], [BX + 40, BY + 240], [BX + 40, BY + 360], [BX + BW - 270, BY + 360]][k];
+}
+function sheetBg(c) {
+  paper(c);
+  c.save(); c.strokeStyle = alpha(PAL.accents[0], .1); c.lineWidth = 1.6;
+  for (let x = 0; x <= W; x += 60) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 60) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.restore();
+}
+function shell(c, alphaLevel) {
+  c.save(); c.globalAlpha = alphaLevel;
+  draw(c, RR(BX, BY, BW, BH, 26), PAL.fills[0], 10, { lw: 6, tex: false });
+  c.restore();
+}
+function sceneExplode(c, tau, i) {
+  sheetBg(c);
+  const p = sm(.1, .9, tau, easeOut);
+  shell(c, .35 + .3 * (1 - p));
+  guides(c, CX, CY, 340, 11, .5);
+  PARTS.forEach((o, k) => {
+    const [hx, hy] = partHome(k);
+    const x = hx + o.dx * p, y = hy + o.dy * p;
+    if (p > .2) { stroke(c, [[hx + 60, hy + 30], [x + 60, y + 30]], 20 + k, { lw: 2.6, dash: [12, 10], color: PAL.accents[0] }); dot(c, hx + 60, hy + 30, 7, PAL.accents[0]); }
+    part(c, k, x, y, 30 + k * 9, false);
+    if (p >= 1) { draw(c, CI(x - 34, y - 6, 20), PAL.light, 60 + k, { tex: false, lw: 3, lc: PAL.accents[0] }); dot(c, x - 34, y - 6, 6, PAL.accents[0]); }
+  });
+}
+function sceneAssemble(c, tau, i) {
+  sheetBg(c);
+  const p = sm(0, .6, tau, easeIO);
+  shell(c, .65 + .35 * p);
+  const press = tau > .85 && tau < 1.0, toggled = tau > .7;
+  PARTS.forEach((o, k) => {
+    const [hx, hy] = partHome(k);
+    const x = hx + o.dx * (1 - p), y = hy + o.dy * (1 - p);
+    if (p < 1) stroke(c, [[hx + 60, hy + 30], [x + 60, y + 30]], 20 + k, { lw: 2.6, dash: [12, 10], color: alpha(PAL.accents[0], 1 - p) });
+    c.save(); if (k === 3 && press) { c.translate(x + 115, y + 43); c.scale(.95, .95); c.translate(-x - 115, -y - 43); }
+    part(c, k, x, y, 30 + k * 9, k === 2 ? toggled : (k === 3 && press));
+    c.restore();
+  });
+  if (press) ringsOut(c, BX + BW - 155, BY + 403, tau - .85, { every: 1 / 12, t1: .12, speed: 700, colors: [PAL.fills[2]], width: 5, seed: 80, max: 300 });
+  if (toggled && tau < .95) ringsOut(c, BX + 135, BY + 405, tau - .7, { every: 1 / 12, t1: .12, speed: 600, colors: [PAL.fills[3]], width: 5, seed: 81, max: 260 });
+}
+function sceneLabel(c, tau, i) {
+  sheetBg(c);
+  shell(c, 1);
+  PARTS.forEach((o, k) => { const [hx, hy] = partHome(k); part(c, k, hx, hy, 30 + k * 9, k === 2); });
+  // the specimen label under the card, the way a component sheet labels its examples
+  stroke(c, [[BX, BY + BH + 50], [BX + BW, BY + BH + 50]], 90, { lw: 3, color: alpha(PAL.ink, .3) });
+  writeOn(c, 'components', CX, BY + BH + 160, sm(.15, 1.1, tau, t => t), { size: 150, ink: PAL.ink, ink2: PAL.accents[0], pen: PAL.accents[0] });
+  // the measure marks either side, like a spec drawing
+  for (const s of [-1, 1]) { const x = CX + s * (BW / 2 + 60); stroke(c, [[x, BY], [x, BY + BH]], 91 + s, { lw: 2.6, color: PAL.accents[0] }); stroke(c, [[x - 14, BY], [x + 14, BY]], 93 + s, { lw: 2.6, color: PAL.accents[0], raw: true }); stroke(c, [[x - 14, BY + BH], [x + 14, BY + BH]], 95 + s, { lw: 2.6, color: PAL.accents[0], raw: true }); }
+  if (tau > 1.2) for (let k = 0; k < 3; k++) sparkle(c, 220 + k * 500, 160, 26 + (pulse(i + k, 7, 3) ? 8 : 0), PAL.accents[k % 3], k);
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_CP, poster: 4.7,
+  beats: [
+    { name: 'explode', dur: 1.8, fn: sceneExplode },
+    { name: 'assemble', dur: 1.3, fn: sceneAssemble },
+    { name: 'label', dur: 1.9, fn: sceneLabel },
+  ],
+});
+</script>

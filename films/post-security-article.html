@@ -1,0 +1,110 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-security-article</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Your 2FA Is Broken.
+// Look: ink at night, one alarm red. Anchor: the six-digit code. Signature: the code is read off the phone by
+// a hand that is not yours, and the ring around it closes anyway.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   code    a phone shows a code; the countdown ring closes; digits reroll       ring, digits
+// 1.6   1.5   relay   a second hand copies the code across to a fake sheet                  hand, arrow
+// 3.1   1.9   broken  the padlock shackle snaps; the verdict is written                     padlock, writeOn
+
+const PAL_SC = makePalette({
+  paper: '#161a22', paperBand: null, ink: '#e8edf7', night: '#0f1319', chalk: '#e8edf7', chalkDim: '#6c7789', guide: 'rgba(232,237,247,.25)',
+  fills: ['#1d2330', '#2a3242', '#4ad991', '#ffc857', '#7aa7ff'], shade: '#0b0e13', light: '#f4f8ff', blush: '#ff4d5e',
+  accents: ['#ff4d5e', '#4ad991', '#ffc857', '#7aa7ff'], inks: ['#e8edf7', '#ff4d5e'], finish: 'ink',
+}, 'blueprintNight');
+const PX2 = CX - 480, PY2 = 150, PW2 = 470, PH2 = 800;
+
+function phoneCode(c, x, y, w, h, digits, ring, seed, alarm) {
+  c.fillStyle = alpha(PAL.shade, .4); c.beginPath(); c.roundRect(x + 16, y + 20, w, h, w * .12); c.fill();
+  draw(c, RR(x, y, w, h, w * .12), PAL.fills[0], seed, { lw: 6, texo: { density: .3, color: PAL.chalkDim } });
+  draw(c, RR(x + 20, y + 20, w - 40, h - 40, w * .09), PAL.fills[1], seed + 1, { lw: 4, tex: false });
+  textBar(c, x + w / 2 - 90, y + 110, 180, alpha(PAL.light, .5), 18);
+  // the six digits, as blocks, rerolling when the ring closes
+  for (let k = 0; k < 6; k++) {
+    const dx = x + 50 + k * ((w - 100) / 6), dy = y + h * .42;
+    draw(c, RR(dx, dy - 50, (w - 130) / 6, 100, 12), PAL.fills[0], seed + 10 + k, { tex: false, lw: 3 });
+    c.font = `bold 62px ${KIT_HAND}`; c.fillStyle = alarm ? PAL.blush : PAL.light; c.textAlign = 'center';
+    c.fillText(String(digits[k]), dx + (w - 130) / 12, dy + 22);
+  }
+  // the countdown ring
+  const cx = x + w / 2, cy = y + h * .72;
+  stroke(c, ellPts(cx, cy, 70, 70, 0, 50), seed + 30, { raw: true, close: true, lw: 12, color: alpha(PAL.light, .15) });
+  strokeOn(c, arcPts(cx, cy, 70, 70, -Math.PI / 2, -Math.PI / 2 + TAU, 50), ring, seed + 31, { raw: true, lw: 12, color: ring > .8 ? PAL.blush : PAL.fills[2] });
+}
+function hand2(c, x, y, rot, s, col, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  draw(c, RR(-60, 0, 120, 260, 40), col, seed, { lw: 5, texo: { density: .3 } });
+  for (let k = 0; k < 3; k++) draw(c, RR(-52 + k * 38, -70, 32, 90, 16), col, seed + 1 + k, { lw: 4, texo: { density: .3 } });
+  draw(c, RR(44, 20, 34, 90, 16), col, seed + 5, { lw: 4, texo: { density: .3 } });
+  c.restore();
+}
+function digitsFor(step) { const r = rng(100 + step), out = []; for (let k = 0; k < 6; k++) out.push(Math.floor(r() * 10)); return out; }
+function nightBg(c, i) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 300, PAL.light, .3, 3, 3);
+}
+function sceneCode(c, tau, i) {
+  nightBg(c, i);
+  const step = Math.floor(tau / .8), ring = (tau % .8) / .8;
+  phoneCode(c, PX2, PY2, PW2, PH2, digitsFor(step), ring, 20, false);
+  hand2(c, PX2 + PW2 * .5, PY2 + PH2 - 60, .1, 1, PAL.fills[1], 60);
+  if (ring > .85) for (let r = 1; r <= 2; r++) dashedRing(c, PX2 + PW2 / 2, PY2 + PH2 * .72, 90 + r * 34, alpha(PAL.blush, .5), 70 + r, [14, 12], 4);
+}
+function sceneRelay(c, tau, i) {
+  nightBg(c, i);
+  const d = digitsFor(1);
+  phoneCode(c, PX2, PY2, PW2, PH2, d, .5, 20, false);
+  // the fake sheet on the right, being filled with the same six digits
+  const fx = CX + 120, fy = 260, fw = 700, fh = 520;
+  draw(c, RR(fx, fy, fw, fh, 22), PAL.fills[0], 80, { lw: 5, texo: { density: .25, color: PAL.chalkDim } });
+  textBar(c, fx + 40, fy + 60, 260, alpha(PAL.light, .5), 20);
+  crossMark(c, fx + fw - 60, fy + 60, 18, 81, { lw: 5, color: PAL.blush });
+  const typed = Math.floor(sm(.25, 1.1, tau, t => t) * 6);
+  for (let k = 0; k < 6; k++) {
+    const dx = fx + 60 + k * ((fw - 120) / 6);
+    draw(c, RR(dx, fy + 200, (fw - 160) / 6, 110, 12), PAL.fills[1], 90 + k, { tex: false, lw: 3 });
+    if (k < typed) { c.font = `bold 66px ${KIT_HAND}`; c.fillStyle = PAL.blush; c.textAlign = 'center'; c.fillText(String(d[k]), dx + (fw - 160) / 12, fy + 276); }
+  }
+  // the arrow carrying it across
+  const p = sm(.15, .9, tau, easeIO);
+  stroke(c, curvePts([PX2 + PW2, PY2 + PH2 * .42], [CX, PY2 + 60], [fx + 40, fy + 250], 20).slice(0, Math.max(2, Math.floor(20 * p))), 100, { raw: true, lw: 6, color: PAL.blush });
+  hand2(c, fx + 200, fy + fh - 40, -.2, 1, PAL.fills[1], 110);
+  if (typed >= 6) { const g = sm(1.15, 1.45, tau, easeOut); draw(c, RR(fx + fw / 2 - 150, fy + fh - 130, 300, 90, 45), PAL.blush, 120, { lw: 5, texo: { density: .35 } }); if (g > .4) checkMark(c, fx + fw / 2, fy + fh - 85, 26, (g - .4) * 1.7, 121, { color: PAL.light, lw: 9 }); }
+}
+function sceneBroken(c, tau, i) {
+  nightBg(c, i);
+  for (let r = 1; r <= 3; r++) dashedRing(c, CX, CY - 40, 240 + r * 90, alpha(PAL.blush, .3), 130 + r, [20, 16], 4);
+  const snap = tau > .35;
+  c.save(); c.translate(CX, CY - 60); c.scale(2.2, 2.2);
+  // the body of the lock
+  draw(c, RR(-100, -40, 200, 150, 24), PAL.fills[3], 140, { lw: 6, texo: { density: .35 } });
+  dot(c, 0, 20, 14, PAL.shade); stroke(c, [[0, 24], [0, 60]], 141, { lw: 8, color: PAL.shade, raw: true });
+  // the shackle, in one piece or in two
+  if (!snap) stroke(c, arcPts(0, -40, 66, 84, Math.PI, TAU, 24), 142, { raw: true, lw: 18, color: PAL.fills[4] });
+  else { const d = tau - .35;
+    c.save(); c.rotate(-d * .5); c.translate(-d * 40, -d * 20); stroke(c, arcPts(0, -40, 66, 84, Math.PI, Math.PI * 1.5, 14), 143, { raw: true, lw: 18, color: PAL.fills[4] }); c.restore();
+    c.save(); c.rotate(d * .5); c.translate(d * 40, -d * 20); stroke(c, arcPts(0, -40, 66, 84, Math.PI * 1.5, TAU, 14), 144, { raw: true, lw: 18, color: PAL.fills[4] }); c.restore(); }
+  c.restore();
+  if (snap) { const d = tau - .35;
+    for (let k = 0; k < 8; k++) { const a = -2.4 + k * .3; stroke(c, [[CX + Math.cos(a) * 160, CY - 200 + Math.sin(a) * 120], [CX + Math.cos(a) * (200 + d * 400), CY - 200 + Math.sin(a) * (150 + d * 300)]], 150 + k, { lw: 5, color: alpha(PAL.blush, 1 - d), raw: true }); }
+    writeOn(c, '2fa is broken', CX, CY + 340, sm(.5, 1.3, tau, t => t), { size: 175, ink: PAL.blush, ink2: PAL.light, pen: PAL.blush }); }
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_SC, poster: 4.8,
+  beats: [
+    { name: 'code', dur: 1.6, fn: sceneCode },
+    { name: 'relay', dur: 1.5, fn: sceneRelay },
+    { name: 'broken', dur: 1.9, fn: sceneBroken },
+  ],
+});
+</script>

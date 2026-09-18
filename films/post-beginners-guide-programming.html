@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-beginners-guide-programming</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Beginners Guide for Programming.
+// Look: chalk on a blackboard. Anchor: the first line. Signature: it is a lesson - the board is written on,
+// wiped, and written on again, and the last thing left on it is where to start.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.6   hello  the first line is chalked up and run; the output appears below       writeOn, terminal
+// 1.6   1.3   wipe   the duster clears it; the steps go up in its place                    wipe, list
+// 2.9   2.0   start  the last step is circled and named                                    crayon, writeOn
+
+const PAL_BG = makePalette({
+  paper: '#22302b', paperBand: null, ink: '#eef4ea', night: '#1a2420', chalk: '#eef4ea', chalkDim: '#8aa093', guide: 'rgba(238,244,234,.25)',
+  fills: ['#2b3a34', '#35463f', '#f2d06b', '#7fd6a8', '#e8916b'], shade: '#16201c', light: '#f7fbf4', blush: '#e8916b',
+  accents: ['#7fd6a8', '#f2d06b', '#e8916b', '#9fc4ff'], inks: ['#eef4ea', '#7fd6a8'], finish: 'pencil',
+}, 'blueprintNight');
+const MONO = '"Consolas", "Courier New", monospace';
+
+function board(c) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 900, PAL.light, .07, 3, 4);
+  stroke(c, rrPts(70, 70, W - 140, H - 140, 6), 5, { raw: true, close: true, lw: 8, color: PAL.fills[0] });
+  // the chalk tray at the bottom
+  draw(c, RR(70, H - 110, W - 140, 40, 8), PAL.fills[1], 6, { lw: 5, texo: { density: .3, color: PAL.chalkDim } });
+  for (let k = 0; k < 3; k++) draw(c, RR(180 + k * 120, H - 100, 80, 20, 10), [PAL.light, PAL.accents[1], PAL.accents[0]][k], 7 + k, { tex: false, lw: 3 });
+}
+function sceneHello(c, tau, i) {
+  board(c);
+  const p = sm(.1, .8, tau, t => t);
+  c.font = `64px ${MONO}`; c.fillStyle = PAL.light; c.textAlign = 'left';
+  const line = 'print("hello")', n = Math.floor(p * line.length);
+  c.fillText(line.slice(0, n), 160, 330);
+  const w = c.measureText(line.slice(0, n)).width;
+  if (flicker(i, 3) || p < 1) { c.fillStyle = PAL.accents[1]; c.fillRect(166 + w, 282, 22, 56); }
+  // the output, once it has been run
+  if (tau > 1.0) { const q = sm(1.0, 1.3, tau, easeOut);
+    stroke(c, [[160, 380], [160 + 700 * q, 380]], 20, { lw: 4, color: alpha(PAL.chalk, .4) });
+    if (q > .5) { c.font = `58px ${MONO}`; c.fillStyle = PAL.accents[0]; c.fillText('hello', 160, 470); } }
+  if (tau > 1.35) { for (let r = 1; r <= 2; r++) crayon(c, ellPts(300, 450, 200 + r * 30, 70 + r * 16, -.04, 40), PAL.accents[1], 5, 30 + r, true); }
+}
+const STEPS = ['make something small', 'make it work', 'make it work again tomorrow', 'show someone', 'start the next one'];
+function sceneWipe(c, tau, i) {
+  board(c);
+  const wipe = sm(0, .45, tau, easeIO);
+  // what was there, being cleared left to right
+  c.save(); c.beginPath(); c.rect(160 + wipe * 1200, 240, 1200, 320); c.clip();
+  c.font = `64px ${MONO}`; c.fillStyle = PAL.light; c.textAlign = 'left'; c.fillText('print("hello")', 160, 330);
+  c.font = `58px ${MONO}`; c.fillStyle = PAL.accents[0]; c.fillText('hello', 160, 470);
+  c.restore();
+  if (wipe < 1) { // the duster
+    const x = 160 + wipe * 1200;
+    draw(c, RR(x - 60, 250, 150, 90, 12), PAL.fills[2], 40, { lw: 5, texo: { density: .3, color: PAL.shade } });
+    const r = rng(41); for (let k = 0; k < 18; k++) { c.fillStyle = alpha(PAL.light, .25); c.beginPath(); c.arc(x - 40 + r() * 120, 250 + r() * 220, 4 + r() * 10, 0, TAU); c.fill(); } }
+  // the steps going up behind it
+  STEPS.forEach((s, k) => {
+    const p = sm(.35 + k * .12, .6 + k * .12, tau, t => t); if (p <= 0) return;
+    const y = 300 + k * 110;
+    dot(c, 200, y - 16, 12, PAL.accents[0]);
+    squig(c, 250, y, (520 + (k % 3) * 160) * p, 1, { seed: 50 + k, width: 6, amp: 11, color: PAL.chalk });
+  });
+}
+function sceneStart(c, tau, i) {
+  board(c);
+  STEPS.forEach((s, k) => { const y = 300 + k * 110; dot(c, 200, y - 16, 12, PAL.accents[0]); squig(c, 250, y, 520 + (k % 3) * 160, 1, { seed: 50 + k, width: 6, amp: 11, color: alpha(PAL.chalk, k === 0 ? 1 : .55) }); });
+  // the first step gets ringed, because that is the whole advice
+  const p = sm(.1, .5, tau, easeOut);
+  if (p > 0) { const pts = ellPts(560, 286, 400 * p, 80 * p, -.02, 46); strokeOn(c, pts.concat([pts[0]]), 1, 70, { raw: true, lw: 7, color: PAL.accents[1] }); }
+  writeOn(c, 'start here', CX + 180, 760, sm(.45, 1.3, tau, t => t), { size: 175, ink: PAL.light, ink2: PAL.accents[0], pen: PAL.accents[0] });
+  if (tau > 1.35) { stroke(c, curvePts([CX + 60, 700], [CX - 140, 560], [700, 340], 20), 80, { raw: true, lw: 6, color: PAL.accents[1] });
+    stroke(c, [[700, 340], [744, 320]], 81, { lw: 6, color: PAL.accents[1], raw: true }); stroke(c, [[700, 340], [726, 378]], 82, { lw: 6, color: PAL.accents[1], raw: true }); }
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_BG, poster: 4.7,
+  beats: [
+    { name: 'hello', dur: 1.6, fn: sceneHello },
+    { name: 'wipe', dur: 1.3, fn: sceneWipe },
+    { name: 'start', dur: 2.0, fn: sceneStart },
+  ],
+});
+</script>

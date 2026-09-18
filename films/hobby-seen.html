@@ -1,0 +1,99 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-seen</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Seen, images I like.
+// Look: riso, three inks on cream. Anchor: the slide mount. Signature: a light table - slides land on it one
+// by one, the loupe goes over one of them, and the name is written on its mount.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.8   table  slides drop onto the light table, scattered, each a printed image    risoPrint cards
+// 1.8   1.3   loupe  a loupe slides over one and it blows up under the glass               iris, scale
+// 3.1   1.9   mount  the chosen slide, face on; the name written on its mount              writeOn
+
+const PAL_SN = makePalette({
+  paper: '#f1ece1', paperBand: null, ink: '#2b2a33', night: '#211f2a', chalk: '#fffdf6', chalkDim: '#8d8aa0', guide: 'rgba(43,42,51,.3)',
+  fills: ['#ff5f6d', '#3aa7a0', '#ffc857', '#5d6bb0', '#e8836a', '#2b2a33'], shade: '#2b2a33', light: '#fffdf6', blush: '#ff5f6d',
+  accents: ['#ff5f6d', '#3aa7a0', '#ffc857', '#5d6bb0'], inks: ['#3aa7a0', '#ff5f6d', '#ffc857'], finish: 'riso',
+}, 'risoPop');
+
+// each slide holds a tiny printed picture: a sun over hills, a face, a window, a road, a wave
+function picture(c, x, y, w, h, k, seed) {
+  const a = [PAL.fills[1], PAL.fills[0], PAL.fills[2], PAL.fills[3], PAL.fills[4]][k % 5];
+  const b = [PAL.fills[2], PAL.fills[3], PAL.fills[1], PAL.fills[0], PAL.fills[2]][k % 5];
+  const sky = rectPath(x, y, w, h); c.fillStyle = a; c.fill(sky); tex(c, sky, [x, y, w, h], { color: PAL.shade, density: .3, seed });
+  c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip();
+  if (k % 5 === 0) { draw(c, CI(x + w * .7, y + h * .3, h * .22), b, seed + 1, { lw: 4 }); draw(c, PG([[x, y + h], [x + w * .4, y + h * .45], [x + w * .75, y + h * .8], [x + w, y + h * .5], [x + w, y + h]]), b, seed + 2, { lw: 4 }); }
+  if (k % 5 === 1) { draw(c, CI(x + w * .5, y + h * .42, h * .26), b, seed + 3, { lw: 4 }); draw(c, EL(x + w * .5, y + h * 1.05, w * .34, h * .4), b, seed + 4, { lw: 4 }); }
+  if (k % 5 === 2) { draw(c, RR(x + w * .22, y + h * .18, w * .56, h * .64, 6), b, seed + 5, { lw: 4 }); stroke(c, [[x + w * .5, y + h * .18], [x + w * .5, y + h * .82]], seed + 6, { lw: 5 }); stroke(c, [[x + w * .22, y + h * .5], [x + w * .78, y + h * .5]], seed + 7, { lw: 5 }); }
+  if (k % 5 === 3) { draw(c, PG([[x + w * .3, y + h], [x + w * .45, y + h * .3], [x + w * .55, y + h * .3], [x + w * .7, y + h]]), b, seed + 8, { lw: 4 }); for (let d = 0; d < 3; d++) stroke(c, [[x + w * .5, y + h * (.85 - d * .2)], [x + w * .5, y + h * (.78 - d * .2)]], seed + 9 + d, { lw: 6, color: PAL.light, raw: true }); }
+  if (k % 5 === 4) { const pts = []; for (let t = 0; t <= 12; t++) pts.push([x + w * t / 12, y + h * (.62 + Math.sin(t * .9 + k) * .16)]); stroke(c, pts, seed + 12, { raw: true, lw: 8, color: b }); }
+  c.restore();
+}
+function slide(c, x, y, rot, s, k, seed, nameP) {
+  const mw = 330, mh = 330, iw = 250, ih = 250;
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  c.fillStyle = alpha(PAL.shade, .25); c.beginPath(); c.roundRect(-mw / 2 + 12, -mh / 2 + 16, mw, mh, 8); c.fill();
+  draw(c, RR(-mw / 2, -mh / 2, mw, mh, 8), PAL.light, seed, { lw: 5, tex: false });
+  picture(c, -iw / 2, -ih / 2 - 16, iw, ih, k, seed + 20);
+  stroke(c, rrPts(-iw / 2, -ih / 2 - 16, iw, ih, 2), seed + 40, { raw: true, close: true, lw: 4 });
+  if (nameP > 0) writeOn(c, 'seen', 0, mh / 2 - 22, nameP, { size: 78, ink: PAL.ink, ink2: PAL.fills[0], pen: PAL.fills[0] });
+  else textBar(c, -70, mh / 2 - 36, 140, alpha(PAL.ink, .3), 12);
+  c.restore();
+}
+const SPOTS = [[330, 300, -.12], [740, 250, .08], [1120, 330, -.05], [270, 740, .1], [660, 780, -.08], [1080, 720, .13]];
+function lightTable(c) {
+  paper(c);
+  const t = RR(80, 70, W - 160, H - 140, 26);
+  c.fillStyle = PAL.light; c.fill(t.path); tex(c, t.path, t.box, { color: PAL.fills[2], density: .2, seed: 3 });
+  stroke(c, t.pts, 4, { raw: true, close: true, lw: 7 });
+  for (let k = 1; k < 4; k++) stroke(c, [[80, 70 + k * (H - 140) / 4], [W - 80, 70 + k * (H - 140) / 4]], 5 + k, { lw: 3, alpha: .18 });
+}
+function sceneTable(c, tau, i) {
+  lightTable(c);
+  SPOTS.forEach(([x, y, rot], k) => {
+    // the first two are already on the table when the film opens: no blank frame
+    const t0 = k * 3 / 12 - .3, p = sm(t0, t0 + .3, tau, easeOut); if (p <= 0) return;
+    slide(c, x, lerp(y - 400, y, p), lerp(rot * 4, rot, p), lerp(1.25, 1, p), k, 20 + k * 9, 0);
+    if (p >= 1 && tau - (t0 + .3) < .2) ringsOut(c, x, y, tau - t0 - .3, { every: 1 / 12, t1: .1, speed: 600, colors: [PAL.fills[1]], width: 5, seed: 60 + k, max: 300 });
+  });
+}
+function sceneLoupe(c, tau, i) {
+  lightTable(c);
+  SPOTS.forEach(([x, y, rot], k) => slide(c, x, y, rot, 1, k, 20 + k * 9, 0));
+  const p = sm(0, .55, tau, easeIO), lx = lerp(1180, SPOTS[4][0], p), ly = lerp(820, SPOTS[4][1], p);
+  const R = 250;
+  // the loupe: the slide under it, blown up
+  iris(c, lx, ly, R, cc => {
+    cc.save(); cc.translate(lx, ly); cc.scale(2.1, 2.1); cc.translate(-SPOTS[4][0], -SPOTS[4][1]);
+    slide(cc, SPOTS[4][0], SPOTS[4][1], SPOTS[4][2], 1, 4, 20 + 4 * 9, 0);
+    cc.restore();
+  });
+  stroke(c, ellPts(lx, ly, R, R, 0, 90), 80, { raw: true, close: true, lw: 20, color: PAL.ink });
+  stroke(c, ellPts(lx, ly, R - 14, R - 14, 0, 90), 81, { raw: true, close: true, lw: 4, color: alpha(PAL.light, .7) });
+  stroke(c, [[lx + R * .7, ly - R * .7], [lx + R * 1.5, ly - R * 1.5]], 82, { lw: 22, color: PAL.ink, raw: true });
+}
+function sceneMount(c, tau, i) {
+  lightTable(c);
+  const s = lerp(1, 2.2, sm(0, .45, tau, easeIO));
+  SPOTS.forEach(([x, y, rot], k) => { if (k !== 4) { c.save(); c.globalAlpha = .35; slide(c, x, y, rot, 1, k, 20 + k * 9, 0); c.restore(); } });
+  c.save(); c.translate(CX, CY); c.rotate(lerp(SPOTS[4][2], 0, sm(0, .45, tau, easeIO))); c.scale(s, s); c.translate(-CX, -CY);
+  slide(c, CX, CY, 0, 1, 4, 20 + 4 * 9, sm(.4, 1.2, tau, t => t));
+  c.restore();
+  if (tau > 1.2) for (let k = 0; k < 4; k++) sparkle(c, 260 + k * 320, 220 + (k % 2) * 700, 28, [PAL.fills[0], PAL.fills[1], PAL.fills[2]][k % 3], k + i * .2);
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_SN, poster: 4.6, crf: 28,
+  beats: [
+    { name: 'table', dur: 1.8, fn: sceneTable },
+    { name: 'loupe', dur: 1.3, fn: sceneLoupe },
+    { name: 'mount', dur: 1.9, fn: sceneMount },
+  ],
+});
+</script>

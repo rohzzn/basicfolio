@@ -1,0 +1,97 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-beginners-guide-design</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Beginners Guide for Design.
+// Look: flat screen print, poster shop. Anchor: the poster. Signature: the same poster, built three times -
+// grid, then type, then colour - each pass landing as a hard cut, so the principles do the talking.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.5   grid   the poster is ruled out: columns, margins, a focal box               guide lines
+// 1.5   1.4   type   type goes in at three sizes, aligned to the same column               bars
+// 2.9   2.0   color  colour lands in two flats and the poster is signed                    fills, writeOn
+
+const PAL_BD = makePalette({
+  paper: '#efeee9', paperBand: null, ink: '#1f1f1d', night: '#191917', chalk: '#ffffff', chalkDim: '#8e8e8a', guide: 'rgba(60,110,220,.55)',
+  fills: ['#ffffff', '#ff5a3c', '#2f4bd8', '#ffc93c', '#1f1f1d', '#dcdad3'], shade: '#1f1f1d', light: '#ffffff', blush: '#ff5a3c',
+  accents: ['#2f4bd8', '#ff5a3c', '#ffc93c', '#1f1f1d'], inks: ['#2f4bd8', '#ff5a3c', '#ffc93c'], finish: 'screen',
+}, 'screenSea');
+const PXX = CX - 330, PYY = 120, PWW = 660, PHH = 840;
+const COLS = 6, MARGIN = 60;
+
+function posterBase(c, seed) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .12, cell: 16 });
+  c.fillStyle = alpha(PAL.shade, .14); c.beginPath(); c.roundRect(PXX + 14, PYY + 18, PWW, PHH, 4); c.fill();
+  draw(c, RR(PXX, PYY, PWW, PHH, 4), PAL.fills[0], seed, { lw: 5, tex: false });
+}
+function gridLines(c, p) {
+  const inner = PWW - MARGIN * 2, colW = inner / COLS;
+  c.save(); c.globalAlpha = p;
+  for (let k = 0; k <= COLS; k++) { const x = PXX + MARGIN + k * colW; stroke(c, [[x, PYY + MARGIN], [x, PYY + PHH - MARGIN]], 20 + k, { lw: 2.4, color: PAL.guide }); }
+  stroke(c, rrPts(PXX + MARGIN, PYY + MARGIN, inner, PHH - MARGIN * 2, 0), 30, { raw: true, close: true, lw: 2.6, color: PAL.guide });
+  // the focal box, on the third
+  stroke(c, rrPts(PXX + MARGIN, PYY + MARGIN, colW * 4, (PHH - MARGIN * 2) * .38, 0), 31, { raw: true, close: true, lw: 3, color: PAL.accents[1] });
+  c.restore();
+  return [PXX + MARGIN, PYY + MARGIN, inner, colW];
+}
+function typeBlock(c, p, [x, y, inner, colW]) {
+  // three sizes, all hanging off the same left edge
+  const l1 = clamp(p * 3, 0, 1), l2 = clamp(p * 3 - 1, 0, 1), l3 = clamp(p * 3 - 2, 0, 1);
+  if (l1 > 0) { textBar(c, x, y + 90, colW * 4 * l1, PAL.ink, 66); textBar(c, x, y + 180, colW * 3.2 * l1, PAL.ink, 66); }
+  if (l2 > 0) textBar(c, x, y + 300, colW * 3.4 * l2, alpha(PAL.ink, .55), 26);
+  if (l3 > 0) for (let k = 0; k < 4; k++) { const q = clamp(l3 * 4 - k, 0, 1); if (q <= 0) break; squig(c, x, y + 400 + k * 44, colW * 4 * q, 1, { seed: 40 + k, width: 4, amp: 8, color: alpha(PAL.ink, .5) }); }
+}
+function colourPass(c, p, [x, y, inner, colW]) {
+  // two flats and one accent: that is the whole lesson
+  const h = (PHH - MARGIN * 2) * .38;
+  c.save(); c.beginPath(); c.rect(x, y, inner, h * clamp(p * 2, 0, 1)); c.clip();
+  const b = rectPath(x, y, colW * 4, h); c.fillStyle = PAL.fills[1]; c.fill(b); tex(c, b, [x, y, colW * 4, h], { color: PAL.shade, density: .3, seed: 60 });
+  c.restore();
+  const q = clamp(p * 2 - 1, 0, 1);
+  if (q > 0) { c.save(); c.beginPath(); c.rect(x + colW * 4, y, colW * 2, (PHH - MARGIN * 2) * q); c.clip();
+    const b2 = rectPath(x + colW * 4, y, colW * 2, PHH - MARGIN * 2); c.fillStyle = PAL.fills[2]; c.fill(b2); tex(c, b2, [x + colW * 4, y, colW * 2, PHH - MARGIN * 2], { color: PAL.shade, density: .3, seed: 61 });
+    c.restore(); }
+  if (q >= 1) draw(c, CI(x + colW * 5, y + (PHH - MARGIN * 2) * .62, 70), PAL.fills[3], 62, { lw: 5, texo: { density: .35 } });
+}
+function sceneGrid(c, tau, i) {
+  posterBase(c, 10);
+  const g = gridLines(c, sm(0, .8, tau, easeOut));
+  // the ruler along the top, so it reads as setting-out
+  const p = sm(.3, 1.1, tau, easeOut);
+  if (p > 0) { stroke(c, [[PXX, PYY - 40], [PXX + PWW * p, PYY - 40]], 70, { lw: 3, color: PAL.accents[0] });
+    for (let k = 0; k <= COLS; k++) { const x = PXX + MARGIN + k * ((PWW - MARGIN * 2) / COLS); if (x < PXX + PWW * p) stroke(c, [[x, PYY - 52], [x, PYY - 28]], 80 + k, { lw: 3, color: PAL.accents[0], raw: true }); } }
+}
+function sceneType(c, tau, i) {
+  posterBase(c, 10);
+  const g = gridLines(c, .35);
+  typeBlock(c, sm(0, 1.2, tau, t => t), g);
+  // the baseline being measured, once the type is in
+  if (tau > .9) { const x = PXX + PWW + 40; stroke(c, [[x, PYY + MARGIN + 60], [x, PYY + MARGIN + 200]], 90, { lw: 3, color: PAL.accents[0] });
+    for (const y of [PYY + MARGIN + 60, PYY + MARGIN + 200]) stroke(c, [[x - 14, y], [x + 14, y]], 91 + y, { lw: 3, color: PAL.accents[0], raw: true }); }
+}
+function sceneColor(c, tau, i) {
+  posterBase(c, 10);
+  const g = gridLines(c, .12);
+  colourPass(c, sm(0, .9, tau, easeOut), g);
+  typeBlock(c, 1, g);
+  // the signature in the corner of the poster
+  writeOn(c, 'design basics', PXX + PWW / 2, PYY + PHH - 70, sm(.5, 1.3, tau, t => t), { size: 110, ink: PAL.ink, ink2: PAL.blush, pen: PAL.blush });
+  if (tau > 1.3) { const cols = [PAL.fills[1], PAL.fills[2], PAL.fills[3], PAL.ink];
+    cols.forEach((col, k) => { const q = easeBack(sm(1.3 + k * .07, 1.55 + k * .07, tau, t => t)); if (q <= .02) return; c.save(); c.translate(PXX + PWW + 140, PYY + 200 + k * 130); c.scale(q, q); draw(c, CI(0, 0, 48), col, 110 + k, { lw: 4, texo: { density: .35 } }); c.restore(); }); }
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_BD, poster: 4.8,
+  beats: [
+    { name: 'grid', dur: 1.5, fn: sceneGrid },
+    { name: 'type', dur: 1.4, fn: sceneType },
+    { name: 'color', dur: 2.0, fn: sceneColor },
+  ],
+});
+</script>

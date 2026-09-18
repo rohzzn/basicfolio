@@ -2,7 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import ProjectFilm from "./ProjectFilm";
+import FilmCard from "@/components/FilmCard";
+import films from "@/data/project-films.json";
 import { projects, type Project } from "@/data/projects";
 
 type CategoryFilter = Project["category"] | "all";
@@ -34,7 +35,7 @@ function ProjectCard({ project }: { project: Project }) {
       className="group block overflow-hidden rounded-lg border border-zinc-200 transition-colors hover:border-zinc-300 dark:border-neutral-800 dark:hover:border-neutral-700"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-[#f0ebe0] dark:bg-neutral-900">
-        <ProjectFilm slug={project.slug} hovered={hovered} />
+        <FilmCard film={films[project.slug as keyof typeof films]} hovered={hovered} />
       </div>
       <div className="border-t border-zinc-100 p-3 dark:border-neutral-800/60">
         <div className="flex items-baseline justify-between gap-2">

@@ -1,0 +1,134 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-games</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Gaming, the CS2 stats and the saved clips.
+// Look: ink at night, screen glow. Anchor: the monitor's light. Signature: the room is lit only by the screen -
+// the glow on the desk changes colour with what is on it, and the clip reel at the end carries the name.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.7   desk   a dark room; the monitor wakes, the kill feed ticks down the side    glow, feed rows
+// 1.7   1.4   clip   the round ends; the scoreboard slides up over the screen              RR rows
+// 3.1   1.9   reel   the saved clip plays back on a strip and is labelled "gaming"         film strip, writeOn
+
+const PAL_GM = makePalette({
+  paper: '#181a22', paperBand: null, ink: '#e8ecf6', night: '#101219', chalk: '#e8ecf6', chalkDim: '#6d7689', guide: 'rgba(232,236,246,.25)',
+  fills: ['#1f2330', '#2a3040', '#ff8a3d', '#4ad1a0', '#7aa7ff', '#ff5470'], shade: '#0c0e14', light: '#f2f6ff', blush: '#ff5470',
+  accents: ['#ff8a3d', '#4ad1a0', '#7aa7ff', '#ff5470'], inks: ['#e8ecf6', '#ff8a3d'], finish: 'ink',
+}, 'blueprintNight');
+const MX = CX - 520, MY = 150, MW = 1040, MH = 620;
+
+function room(c, glow, i) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 400, PAL.light, .3, 3, 3);
+  // the glow the screen throws on the wall and the desk
+  for (let r = 6; r >= 1; r--) { c.fillStyle = alpha(glow, .045); c.beginPath(); c.ellipse(CX, MY + MH / 2, 620 + r * 130, 420 + r * 100, 0, 0, TAU); c.fill(); }
+  const deskY = 880;
+  const desk = rectPath(-10, deskY, W + 20, H - deskY + 20); c.fillStyle = PAL.fills[1]; c.fill(desk); tex(c, desk, [0, deskY, W, H - deskY], { color: PAL.shade, density: .4, seed: 5 });
+  stroke(c, [[-10, deskY], [W + 10, deskY]], 6, { lw: 6, color: alpha(glow, .8) });
+  // keyboard and mouse, catching the light
+  draw(c, RR(CX - 330, deskY + 50, 660, 130, 16), PAL.fills[0], 10, { lw: 5, texo: { density: .3 } });
+  for (let r = 0; r < 3; r++) for (let k = 0; k < 14; k++) { c.fillStyle = alpha(glow, r === 1 && (k === 3 || k === 7) ? .7 : .22); c.fillRect(CX - 300 + k * 44, deskY + 68 + r * 36, 32, 26); }
+  draw(c, RR(CX + 400, deskY + 60, 120, 180, 60), PAL.fills[0], 11, { lw: 5, texo: { density: .3 } });
+  dot(c, CX + 460, deskY + 110, 14, glow);
+  // the monitor shell
+  draw(c, RR(MX - 24, MY - 24, MW + 48, MH + 48, 22), PAL.fills[0], 12, { lw: 6, texo: { density: .3 } });
+  stroke(c, [[CX, MY + MH + 24], [CX, deskY]], 13, { lw: 26, color: PAL.fills[0] });
+  draw(c, RR(CX - 180, deskY - 26, 360, 30, 14), PAL.fills[0], 14, { lw: 5, tex: false });
+}
+function feed(c, n, i) {
+  for (let k = 0; k < n; k++) {
+    const y = MY + 40 + k * 66;
+    c.save(); c.globalAlpha = k === n - 1 ? 1 : .6;
+    draw(c, RR(MX + MW - 460, y, 420, 50, 8), alpha(PAL.shade, .75), 20 + k, { tex: false, lw: 3, lc: alpha(PAL.light, .25) });
+    textBar(c, MX + MW - 430, y + 25, 110, PAL.fills[3], 14);
+    dot(c, MX + MW - 290, y + 25, 9, PAL.fills[2]);
+    textBar(c, MX + MW - 260, y + 25, 130, PAL.blush, 14);
+    c.restore();
+  }
+}
+function screenGame(c, tau, i) {
+  const sc = RR(MX, MY, MW, MH, 10);
+  c.fillStyle = PAL.fills[1]; c.fill(sc.path);
+  c.save(); c.beginPath(); c.roundRect(MX, MY, MW, MH, 10); c.clip();
+  // a corridor in one-point perspective, because that is what a match looks like from the front
+  const vx = CX + 60, vy = MY + MH * .52;
+  c.fillStyle = shade(PAL.fills[0], .3); c.fillRect(MX, vy, MW, MY + MH - vy);
+  for (let k = -6; k <= 6; k++) stroke(c, [[vx, vy], [vx + k * 260, MY + MH + 40]], 30 + k, { lw: 3, color: alpha(PAL.chalkDim, .4), raw: true });
+  for (let k = 1; k <= 5; k++) { const y = vy + Math.pow(k / 5, 2) * (MY + MH - vy); stroke(c, [[MX, y], [MX + MW, y]], 40 + k, { lw: 3, color: alpha(PAL.chalkDim, .3) }); }
+  for (const s of [-1, 1]) { draw(c, PG([[vx + s * 150, vy - 60], [vx + s * 620, vy - 260], [vx + s * 620, MY + MH], [vx + s * 150, vy + 40]]), PAL.fills[0], 50 + s, { lw: 4, texo: { density: .35 } }); }
+  // the crosshair and a figure down the corridor
+  const fx = vx + Math.sin(tau * 1.6) * 120, fy = vy + 30;
+  draw(c, RR(fx - 26, fy - 90, 52, 90, 12), PAL.fills[2], 60, { lw: 4, texo: { density: .35 } });
+  draw(c, CI(fx, fy - 112, 24), PAL.fills[2], 61, { lw: 4, tex: false });
+  const g = 26;
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) stroke(c, [[CX + dx * g, vy + dy * g], [CX + dx * 70, vy + dy * 70]], 70 + dx * 3 + dy, { lw: 6, color: PAL.fills[3], raw: true });
+  c.restore();
+  stroke(c, sc.pts, 80, { raw: true, close: true, lw: 5, color: alpha(PAL.light, .4) });
+}
+function sceneDesk(c, tau, i) {
+  room(c, PAL.fills[4], i);
+  screenGame(c, tau, i);
+  feed(c, Math.min(4, Math.floor(tau * 3)), i);
+  // hud: health and ammo, bottom corners of the screen
+  textBar(c, MX + 60, MY + MH - 60, 160, PAL.fills[3], 26);
+  textBar(c, MX + MW - 220, MY + MH - 60, 160, PAL.fills[2], 26);
+}
+function sceneClip(c, tau, i) {
+  room(c, PAL.fills[3], i);
+  screenGame(c, 1.7, i);
+  // the scoreboard rising over the game
+  const p = sm(0, .5, tau, easeOut), y = lerp(MY + MH, MY + 70, p);
+  c.save(); c.beginPath(); c.roundRect(MX, MY, MW, MH, 10); c.clip();
+  c.fillStyle = alpha(PAL.shade, .82); c.fillRect(MX, MY, MW, MH);
+  draw(c, RR(MX + 60, y, MW - 120, 460, 16), alpha(PAL.fills[0], .95), 90, { tex: false, lw: 5 });
+  textBar(c, MX + 100, y + 50, 240, PAL.light, 24);
+  for (let k = 0; k < 5; k++) {
+    const ry = y + 120 + k * 66, me = k === 1;
+    if (me) draw(c, RR(MX + 80, ry - 26, MW - 160, 52, 8), alpha(PAL.fills[4], .3), 100 + k, { tex: false, line: false });
+    dot(c, MX + 120, ry, 12, [PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.blush, PAL.fills[2]][k]);
+    textBar(c, MX + 150, ry, 220 - (k * 31) % 80, alpha(PAL.light, me ? .9 : .5), 16);
+    for (let s = 0; s < 3; s++) textBar(c, MX + 560 + s * 130, ry, 60, alpha(PAL.light, me ? .8 : .4), 16);
+  }
+  c.restore();
+  if (p >= 1) { const g = sm(.6, .9, tau, easeOut); draw(c, RR(MX + MW - 320, MY + MH - 120, 240, 70, 35), PAL.blush, 110, { lw: 5, texo: { density: .35 } }); if (g > .3) { dot(c, MX + MW - 270, MY + MH - 85, 14, PAL.light); textBar(c, MX + MW - 240, MY + MH - 85, 120, alpha(PAL.light, .9), 16); } }
+}
+function sceneReel(c, tau, i) {
+  room(c, PAL.fills[2], i);
+  // the screen gives way to the clip strip: four frames of the same moment
+  const sc = RR(MX, MY, MW, MH, 10); c.fillStyle = PAL.fills[1]; c.fill(sc.path);
+  c.save(); c.beginPath(); c.roundRect(MX, MY, MW, MH, 10); c.clip();
+  const fw = 230, gap = 24, off = lerp(600, 0, sm(0, .6, tau, easeOut));
+  const y = MY + 120, fh = 200;
+  c.fillStyle = PAL.night; c.fillRect(MX, y - 30, MW, fh + 60);
+  for (let hx = MX - 40 + (off % 46); hx < MX + MW + 40; hx += 46) for (const hy of [y - 22, y + fh + 4]) { c.fillStyle = alpha(PAL.light, .5); c.beginPath(); c.roundRect(hx, hy, 22, 18, 4); c.fill(); }
+  for (let k = 0; k < 4; k++) {
+    const fx = MX + 70 + k * (fw + gap) + off;
+    c.save(); c.beginPath(); c.rect(fx, y, fw, fh); c.clip();
+    c.fillStyle = PAL.fills[0]; c.fillRect(fx, y, fw, fh);
+    draw(c, RR(fx + 40 + k * 18, y + 60, 44, 80, 8), PAL.fills[2], 120 + k, { lw: 3, tex: false });
+    draw(c, CI(fx + 62 + k * 18, y + 42, 20), PAL.fills[2], 130 + k, { lw: 3, tex: false });
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) stroke(c, [[fx + fw / 2 + dx * 12, y + fh / 2 + dy * 12], [fx + fw / 2 + dx * 30, y + fh / 2 + dy * 30]], 140 + k + dx + dy, { lw: 4, color: PAL.fills[3], raw: true });
+    c.restore();
+    stroke(c, rrPts(fx, y, fw, fh, 4), 150 + k, { raw: true, close: true, lw: 3, color: alpha(PAL.light, .35) });
+  }
+  writeOn(c, 'gaming', CX, MY + MH - 120, sm(.5, 1.3, tau, t => t), { size: 170, ink: PAL.light, ink2: PAL.fills[2], pen: PAL.fills[2] });
+  c.restore();
+  stroke(c, sc.pts, 80, { raw: true, close: true, lw: 5, color: alpha(PAL.light, .4) });
+  dot(c, MX + 60, MY + 60, 18, flicker(i, 3) ? PAL.blush : shade(PAL.blush, .5));
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_GM, poster: 4.7, crf: 27,
+  beats: [
+    { name: 'desk', dur: 1.7, fn: sceneDesk },
+    { name: 'clip', dur: 1.4, fn: sceneClip },
+    { name: 'reel', dur: 1.9, fn: sceneReel },
+  ],
+});
+</script>

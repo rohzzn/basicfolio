@@ -1,0 +1,122 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-art</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Designs, the UI/UX work and the Behance posts.
+// Look: flat screen print on a pale studio grey. Anchor: the artboard. Signature: a pen path - the bezier is
+// drawn handle by handle, then filled, and the artboard's own title is the name.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   board   an empty artboard, rulers, a shape dropped in and snapped to grid   guides, RR
+// 1.6   1.5   pen     a bezier path drawn point by point with handles, then filled         curvePts, handles
+// 3.1   1.9   title   the artboard label is written: "designs"                              writeOn
+
+const PAL_AR = makePalette({
+  paper: '#eeeef0', paperBand: null, ink: '#1f2024', night: '#17181c', chalk: '#ffffff', chalkDim: '#8d8f96', guide: 'rgba(90,110,255,.5)',
+  fills: ['#ffffff', '#ff6b5b', '#2f6bff', '#ffd23f', '#22c48a', '#d8dae0'], shade: '#1f2024', light: '#ffffff', blush: '#ff6b5b',
+  accents: ['#2f6bff', '#ff6b5b', '#ffd23f', '#22c48a'], inks: ['#2f6bff', '#ff6b5b', '#1f2024'], finish: 'screen',
+}, 'screenSea');
+const AX = CX - 430, AY = 190, AW = 860, AH = 640;
+
+function rulers(c) {
+  const r = RR(AX - 46, AY - 46, AW + 92, AH + 92, 0);
+  c.fillStyle = PAL.fills[5]; c.fill(r.path);
+  for (let x = AX; x < AX + AW; x += 40) stroke(c, [[x, AY - 46], [x, AY - (x % 200 === 0 ? 30 : 38)]], 10 + x, { lw: 2.6, color: alpha(PAL.ink, .4), raw: true });
+  for (let y = AY; y < AY + AH; y += 40) stroke(c, [[AX - 46, y], [AX - (y % 200 === 0 ? 30 : 38), y]], 20 + y, { lw: 2.6, color: alpha(PAL.ink, .4), raw: true });
+}
+function artboard(c, label) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .12, cell: 16 });
+  rulers(c);
+  c.fillStyle = alpha(PAL.shade, .14); c.beginPath(); c.roundRect(AX + 14, AY + 18, AW, AH, 6); c.fill();
+  draw(c, RR(AX, AY, AW, AH, 6), PAL.fills[0], 30, { lw: 5, tex: false });
+  if (label !== undefined) { if (label > 0) writeOn(c, 'designs', AX + 10, AY - 16, label, { size: 78, align: 'left', ink: PAL.accents[0], ink2: null, pen: PAL.accents[0] }); else textBar(c, AX + 10, AY - 34, 180, alpha(PAL.accents[0], .8), 16); }
+}
+function grid(c) {
+  c.save(); c.beginPath(); c.rect(AX, AY, AW, AH); c.clip();
+  c.strokeStyle = alpha(PAL.accents[0], .16); c.lineWidth = 1.6;
+  for (let x = AX; x <= AX + AW; x += 40) { c.beginPath(); c.moveTo(x, AY); c.lineTo(x, AY + AH); c.stroke(); }
+  for (let y = AY; y <= AY + AH; y += 40) { c.beginPath(); c.moveTo(AX, y); c.lineTo(AX + AW, y); c.stroke(); }
+  c.restore();
+}
+const CARD = [AX + 90, AY + 120, 320, 400];
+function sceneBoard(c, tau, i) {
+  artboard(c, 0);
+  grid(c);
+  const p = sm(.2, .8, tau, easeOut);
+  if (p > 0) {
+    const y = lerp(AY - 420, CARD[1], p), snap = p >= 1;
+    c.save(); if (!snap) c.globalAlpha = .85;
+    draw(c, RR(CARD[0], y, CARD[2], CARD[3], 18), PAL.fills[0], 40, { lw: 5, tex: false });
+    draw(c, RR(CARD[0] + 24, y + 24, CARD[2] - 48, 170, 10), PAL.fills[2], 41, { lw: 4, texo: { density: .35 } });
+    textBar(c, CARD[0] + 24, y + 240, CARD[2] - 90, alpha(PAL.ink, .55), 20);
+    textBar(c, CARD[0] + 24, y + 284, CARD[2] - 140, alpha(PAL.ink, .25), 16);
+    draw(c, RR(CARD[0] + 24, y + 320, 140, 50, 25), PAL.fills[1], 42, { lw: 4, texo: { density: .35 } });
+    c.restore();
+    if (snap) { // selection handles, the moment it lands
+      for (const [hx, hy] of [[CARD[0], CARD[1]], [CARD[0] + CARD[2], CARD[1]], [CARD[0], CARD[1] + CARD[3]], [CARD[0] + CARD[2], CARD[1] + CARD[3]]]) draw(c, RR(hx - 11, hy - 11, 22, 22, 3), PAL.light, 50, { tex: false, lw: 4, lc: PAL.accents[0] });
+      stroke(c, rrPts(CARD[0], CARD[1], CARD[2], CARD[3], 18), 51, { raw: true, close: true, lw: 3, color: PAL.accents[0] });
+      // the measure between the card and the board edge
+      stroke(c, [[CARD[0] + CARD[2], CARD[1] - 40], [AX + AW, CARD[1] - 40]], 52, { lw: 3, color: PAL.accents[1] });
+      textBar(c, (CARD[0] + CARD[2] + AX + AW) / 2 - 30, CARD[1] - 60, 60, PAL.accents[1], 12);
+    }
+  }
+  cursor(c, CARD[0] + 200, lerp(AY - 260, CARD[1] + 260, p), 110, PAL.light, 60, { lc: PAL.ink, lw: 5, tex: false });
+}
+const PATH = [[AX + 520, AY + 480], [AX + 600, AY + 200], [AX + 760, AY + 420], [AX + 700, AY + 560]];
+function scenePen(c, tau, i) {
+  artboard(c, 0);
+  grid(c);
+  draw(c, RR(CARD[0], CARD[1], CARD[2], CARD[3], 18), PAL.fills[0], 40, { lw: 5, tex: false });
+  draw(c, RR(CARD[0] + 24, CARD[1] + 24, CARD[2] - 48, 170, 10), PAL.fills[2], 41, { lw: 4, texo: { density: .35 } });
+  textBar(c, CARD[0] + 24, CARD[1] + 240, CARD[2] - 90, alpha(PAL.ink, .55), 20);
+  draw(c, RR(CARD[0] + 24, CARD[1] + 320, 140, 50, 25), PAL.fills[1], 42, { lw: 4, texo: { density: .35 } });
+  // the path being drawn, one anchor every three frames
+  const n = Math.min(PATH.length, Math.floor(tau * 12 / 3) + 1);
+  const pts = [];
+  for (let k = 0; k < n - 1; k++) pts.push(...curvePts(PATH[k], [lerp(PATH[k][0], PATH[k + 1][0], .5) + 90, lerp(PATH[k][1], PATH[k + 1][1], .5) - 70], PATH[k + 1], 14));
+  const closed = tau > 1.05;
+  if (closed) pts.push(...curvePts(PATH[3], [PATH[3][0] - 200, PATH[3][1] + 40], PATH[0], 14));
+  if (pts.length > 1) {
+    if (closed) { c.save(); c.fillStyle = alpha(PAL.fills[3], sm(1.05, 1.35, tau) * .9); c.fill(polyPath(pts)); c.restore(); }
+    stroke(c, pts, 70, { raw: true, lw: 6, color: PAL.accents[0] });
+  }
+  PATH.slice(0, n).forEach(([x, y], k) => {
+    draw(c, RR(x - 10, y - 10, 20, 20, 3), PAL.light, 80 + k, { tex: false, lw: 4, lc: PAL.accents[0] });
+    if (k === n - 1 && !closed) { const hx = x + 120, hy = y - 80; stroke(c, [[x, y], [hx, hy]], 90 + k, { lw: 3, color: PAL.accents[0], raw: true }); draw(c, CI(hx, hy, 11), PAL.accents[0], 95 + k, { tex: false, lw: 3 }); }
+  });
+  const head = PATH[Math.min(PATH.length - 1, n - 1)];
+  cursor(c, head[0] + 10, head[1] + 10, 100, PAL.light, 60, { lc: PAL.ink, lw: 5, tex: false });
+}
+function sceneTitle(c, tau, i) {
+  artboard(c, sm(.2, 1.1, tau, t => t));
+  grid(c);
+  draw(c, RR(CARD[0], CARD[1], CARD[2], CARD[3], 18), PAL.fills[0], 40, { lw: 5, tex: false });
+  draw(c, RR(CARD[0] + 24, CARD[1] + 24, CARD[2] - 48, 170, 10), PAL.fills[2], 41, { lw: 4, texo: { density: .35 } });
+  textBar(c, CARD[0] + 24, CARD[1] + 240, CARD[2] - 90, alpha(PAL.ink, .55), 20);
+  draw(c, RR(CARD[0] + 24, CARD[1] + 320, 140, 50, 25), PAL.fills[1], 42, { lw: 4, texo: { density: .35 } });
+  const pts = [];
+  for (let k = 0; k < 3; k++) pts.push(...curvePts(PATH[k], [lerp(PATH[k][0], PATH[k + 1][0], .5) + 90, lerp(PATH[k][1], PATH[k + 1][1], .5) - 70], PATH[k + 1], 14));
+  pts.push(...curvePts(PATH[3], [PATH[3][0] - 200, PATH[3][1] + 40], PATH[0], 14));
+  c.fillStyle = PAL.fills[3]; c.fill(polyPath(pts));
+  stroke(c, pts, 70, { raw: true, lw: 6, color: PAL.accents[0] });
+  // the swatch row along the bottom of the board
+  const cols = [PAL.fills[1], PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.ink];
+  cols.forEach((col, k) => { const g = easeBack(sm(.3 + k * .08, .6 + k * .08, tau, t => t)); if (g <= .02) return;
+    c.save(); c.translate(AX + 120 + k * 120, AY + AH - 80); c.scale(g, g); draw(c, CI(0, 0, 44), col, 110 + k, { lw: 4, texo: { density: .35 } }); c.restore(); });
+}
+
+portfolioFilm({
+  look: 'screen', palette: PAL_AR, poster: 4.7,
+  beats: [
+    { name: 'board', dur: 1.6, fn: sceneBoard },
+    { name: 'pen', dur: 1.5, fn: scenePen },
+    { name: 'title', dur: 1.9, fn: sceneTitle },
+  ],
+});
+</script>

@@ -1,0 +1,103 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-content</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Content, the YouTube uploads.
+// Look: ink on warm paper, one red. Anchor: the record light. Signature: a clapperboard - it snaps shut on
+// the cut, and the name is chalked on its slate.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.7   shoot  a camera on a tripod, tally light blinking, the shot framed          camera, guides
+// 1.7   1.2   cut    the clapper comes down and snaps; the frame shakes                    flash, speedLines
+// 2.9   2.0   slate  the board, face on, with "content" chalked across it                  writeOn
+
+const PAL_CT = makePalette({
+  paper: '#f2e9d8', paperBand: null, ink: '#2a211a', night: '#1e1813', chalk: '#f7f1e4', chalkDim: '#a2907c', guide: 'rgba(42,33,26,.3)',
+  fills: ['#c8402f', '#4a4038', '#d9b382', '#6b7f6a', '#8a6a4a'], shade: '#4a3a2c', light: '#f7f1e4', blush: '#c8402f',
+  accents: ['#c8402f', '#6b7f6a', '#d9a441', '#4a6b8a'], inks: ['#2a211a', '#c8402f'], finish: 'ink',
+}, 'paperInk');
+
+function camera(c, cx, cy, i, rolling) {
+  // tripod
+  for (const s of [-1, 0, 1]) stroke(c, [[cx, cy + 150], [cx + s * 180, cy + 470]], 10 + s, { lw: 14, color: PAL.fills[1] });
+  stroke(c, [[cx - 120, cy + 330], [cx + 120, cy + 330]], 13, { lw: 8, color: PAL.fills[1] });
+  draw(c, RR(cx - 250, cy - 130, 460, 280, 24), PAL.fills[1], 20, { lw: 6, texo: { density: .45 } });
+  draw(c, CI(cx + 240, cy + 10, 110), PAL.fills[1], 21, { lw: 6, texo: { density: .4 } });
+  draw(c, CI(cx + 240, cy + 10, 74), PAL.night, 22, { tex: false, lw: 5 });
+  draw(c, CI(cx + 240, cy + 10, 40), PAL.fills[3], 23, { tex: false, lw: 4 });
+  for (const sx of [-1, 1]) draw(c, CI(cx - 90 + sx * 90, cy - 190, 70), PAL.fills[1], 24 + sx, { lw: 5, texo: { density: .4 } });
+  draw(c, RR(cx - 230, cy - 100, 150, 100, 10), PAL.fills[2], 26, { lw: 5, texo: { density: .3 } });
+  // the tally light
+  const on = rolling && flicker(i, 3);
+  dot(c, cx + 150, cy - 90, 22, on ? PAL.blush : shade(PAL.blush, .55));
+  if (on) ringsOut(c, cx + 150, cy - 90, (i % 6) / 12, { every: 1, speed: 300, colors: [alpha(PAL.blush, .5)], width: 5, seed: 30, max: 160, r0: 30 });
+}
+function sceneShoot(c, tau, i) {
+  paper(c);
+  groundA(c, CX, CY + 430, 1500, 5);
+  guides(c, CX + 60, CY - 40, 340, 9, .6);
+  camera(c, CX - 60, CY - 40, i, tau > .5);
+  // the framing marks of the shot being taken
+  const p = sm(.2, .9, tau, easeOut);
+  if (p > 0) for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+    const x = CX + dx * 520 * p, y = CY - 40 + dy * 360 * p;
+    stroke(c, [[x, y + dy * -60], [x, y], [x + dx * -60, y]], 40 + dx * 3 + dy, { lw: 8, color: PAL.blush, raw: true });
+  }
+  if (tau > 1.0) { const n = Math.floor((tau - 1.0) * 12); for (let k = 0; k < Math.min(6, n); k++) dot(c, 130 + k * 44, 120, 14, PAL.fills[3]); }
+}
+function clapper(c, cx, cy, open, seed, nameP) {
+  const bw = 820, bh = 520;
+  c.save(); c.translate(cx, cy);
+  // the slate
+  draw(c, RR(-bw / 2, -bh / 2 + 110, bw, bh - 110, 12), PAL.fills[1], seed, { lw: 7, texo: { density: .4 } });
+  for (let k = 1; k <= 3; k++) stroke(c, [[-bw / 2 + 30, -bh / 2 + 110 + k * 100], [bw / 2 - 30, -bh / 2 + 110 + k * 100]], seed + k, { lw: 4, color: alpha(PAL.chalk, .45) });
+  for (let k = 1; k <= 2; k++) stroke(c, [[-bw / 2 + k * bw / 3, -bh / 2 + 120], [-bw / 2 + k * bw / 3, bh / 2 - 20]], seed + 10 + k, { lw: 4, color: alpha(PAL.chalk, .45) });
+  if (nameP > 0) writeOn(c, 'content', 0, -bh / 2 + 260, nameP, { size: 150, ink: PAL.chalk, ink2: PAL.blush, pen: PAL.chalk });
+  else { squig(c, -bw / 2 + 50, -bh / 2 + 190, 300, 1, { seed: seed + 20, width: 5, color: alpha(PAL.chalk, .7) }); squig(c, -bw / 2 + 50, -bh / 2 + 300, 420, 1, { seed: seed + 21, width: 5, color: alpha(PAL.chalk, .7) }); }
+  // the clapstick, hinged at the left
+  c.save(); c.translate(-bw / 2, -bh / 2 + 110); c.rotate(-open * .5);
+  const sw = bw, sh = 96;
+  draw(c, RR(0, -sh, sw, sh, 8), PAL.fills[2], seed + 30, { lw: 6, texo: { density: .3 } });
+  for (let k = 0; k < 7; k++) { c.save(); c.beginPath(); c.rect(0, -sh, sw, sh); c.clip(); c.fillStyle = PAL.ink; c.beginPath(); c.moveTo(k * sw / 7, 0); c.lineTo(k * sw / 7 + sw / 14, -sh); c.lineTo(k * sw / 7 + sw / 7, -sh); c.lineTo(k * sw / 7 + sw / 14, 0); c.closePath(); c.fill(); c.restore(); }
+  c.restore();
+  c.restore();
+}
+function sceneCut(c, tau, i) {
+  const snap = .42;
+  if (tau >= snap && tau < snap + 1 / 12) { flash(c, tint(PAL.paper, .6)); return; }
+  paper(c);
+  groundA(c, CX, CY + 430, 1500, 5);
+  const shake = tau > snap ? Math.sin((tau - snap) * 40) * 16 * (1 - sm(snap, snap + .35, tau)) : 0;
+  c.save(); c.translate(shake, 0);
+  camera(c, CX + 380, CY + 60, i, true);
+  clapper(c, CX - 120, CY - 40, tau < snap ? 1 - sm(0, snap, tau, easeIn) : 0, 50, 0);
+  c.restore();
+  if (tau > snap) { const d = tau - snap; speedLines(c, CX - 500, CY - 190, Math.PI, 70 + i, 8, .7 * (1 - sm(0, .4, d))); speedLines(c, CX + 260, CY - 190, 0, 71 + i, 8, .7 * (1 - sm(0, .4, d)));
+    for (let k = 0; k < 10; k++) { const a = -2.6 + k * .28, dd = d * (500 + k * 60); dot(c, CX - 120 + Math.cos(a) * dd, CY - 190 + Math.sin(a) * dd, 10 * (1 - sm(0, .5, d)), PAL.chalk); } }
+}
+function sceneSlate(c, tau, i) {
+  paper(c);
+  groundA(c, CX, CY + 460, 1500, 5);
+  for (let r = 1; r <= 3; r++) dashedRing(c, CX, CY - 20, 420 + r * 80, alpha(PAL.ink, .2), 80 + r, [22, 18], 4);
+  const s = lerp(1, 1.12, sm(0, 1.0, tau, easeIO));
+  c.save(); c.translate(CX, CY - 20); c.scale(s, s); c.translate(-CX, -(CY - 20));
+  clapper(c, CX, CY - 20, 0, 50, sm(.2, 1.1, tau, t => t));
+  c.restore();
+  dot(c, 160, 140, 24, flicker(i, 3) ? PAL.blush : shade(PAL.blush, .5));
+  if (tau > 1.2) for (let k = 0; k < 3; k++) sparkle(c, 300 + k * 420, 180, 28 + (pulse(i + k, 7, 3) ? 10 : 0), PAL.fills[3], k);
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_CT, poster: 4.6,
+  beats: [
+    { name: 'shoot', dur: 1.7, fn: sceneShoot },
+    { name: 'cut', dur: 1.2, fn: sceneCut },
+    { name: 'slate', dur: 2.0, fn: sceneSlate },
+  ],
+});
+</script>

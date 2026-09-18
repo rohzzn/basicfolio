@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-modern-tech-stacks</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Modern Tech Stacks Kill Startups.
+// Look: riso, bright boxes on cream. Anchor: the tower. Signature: the tower of frameworks is built as high
+// as it will go, wobbles on the twos, and comes down; one plain box is left standing beside it.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.7   build  boxes stack up, each with a logo-ish mark, the tower leaning more    RR, lean
+// 1.7   1.2   fall   it topples: boxes tumble out of frame, dust                          rotate, speedLines
+// 2.9   2.0   one    one box stands where the tower was, and is labelled                   writeOn
+
+const PAL_MT = makePalette({
+  paper: '#f4efe2', paperBand: null, ink: '#2a2438', night: '#201a2e', chalk: '#fffdf4', chalkDim: '#8d84a5', guide: 'rgba(42,36,56,.3)',
+  fills: ['#ff5c7a', '#38b6a8', '#ffc843', '#6b74e8', '#ff8f4a', '#9b6be8'], shade: '#2a2438', light: '#fffdf4', blush: '#ff5c7a',
+  accents: ['#ff5c7a', '#38b6a8', '#ffc843', '#6b74e8'], inks: ['#6b74e8', '#ff5c7a', '#ffc843'], finish: 'riso',
+}, 'risoPop');
+const BASE_Y = 950, BW = 420, BH = 110;
+const N = 7;
+
+function box(c, x, y, rot, k, seed, plain) {
+  c.save(); c.translate(x, y); c.rotate(rot);
+  const col = plain ? PAL.light : [PAL.fills[0], PAL.fills[1], PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[5], PAL.fills[0]][k % 7];
+  draw(c, RR(-BW / 2, -BH, BW, BH, 14), col, seed, { lw: 6, texo: { density: .4 } });
+  // a mark on every box, different each time, none of them a real logo
+  const m = k % 5;
+  c.save(); c.translate(-BW / 2 + 70, -BH / 2);
+  if (m === 0) draw(c, PG([[-26, 24], [0, -26], [26, 24]]), PAL.light, seed + 1, { lw: 4, tex: false });
+  if (m === 1) draw(c, CI(0, 0, 26), PAL.light, seed + 2, { lw: 4, tex: false });
+  if (m === 2) draw(c, RR(-24, -24, 48, 48, 10), PAL.light, seed + 3, { lw: 4, tex: false });
+  if (m === 3) { draw(c, PG([[-26, 0], [0, -26], [26, 0], [0, 26]]), PAL.light, seed + 4, { lw: 4, tex: false }); }
+  if (m === 4) { for (let d = 0; d < 3; d++) dot(c, -20 + d * 20, 0, 9, PAL.light); }
+  c.restore();
+  textBar(c, -BW / 2 + 130, -BH / 2, 180 - (k * 23) % 60, alpha(plain ? PAL.ink : PAL.light, .8), 18);
+  c.restore();
+}
+function ground(c) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[2], density: .12, cell: 15 });
+  const g = rectPath(-10, BASE_Y, W + 20, H - BASE_Y + 20); c.fillStyle = tint(PAL.fills[3], .7); c.fill(g);
+  tex(c, g, [0, BASE_Y, W, H - BASE_Y], { color: PAL.fills[3], density: .35, seed: 4 });
+  stroke(c, [[-10, BASE_Y], [W + 10, BASE_Y]], 5, { lw: 6 });
+}
+function towerLean(tau) { return Math.sin(tau * 7) * .012 * tau; }
+function sceneBuild(c, tau, i) {
+  ground(c);
+  const n = Math.min(N, Math.floor(tau * 12 / 3) + 1);
+  const lean = towerLean(tau);
+  for (let k = 0; k < n; k++) {
+    const p = k === n - 1 ? sm((n - 1) * 3 / 12, (n - 1) * 3 / 12 + .25, tau, easeOut) : 1;
+    const y = BASE_Y - k * BH, x = CX + lean * (k * 40) + (k % 2 ? 14 : -10);
+    box(c, x, lerp(y - 300, y, p), lean * (k * .1), k, 20 + k * 7, false);
+  }
+  if (n >= N) for (let k = 0; k < 3; k++) if (pulse(i + k, 5, 2)) stroke(c, arcPts(CX, BASE_Y - N * BH, 260 + k * 40, 200 + k * 30, -2.6, -.5, 12), 60 + k, { raw: true, lw: 5, color: alpha(PAL.blush, .6) });
+}
+function sceneFall(c, tau, i) {
+  ground(c);
+  const d = tau;
+  for (let k = 0; k < N; k++) {
+    const t0 = k * .04, p = clamp((d - t0) * 1.8, 0, 1);
+    const dir = k % 2 ? 1 : -1;
+    const x = CX + dir * p * p * (500 + k * 120) + (k % 2 ? 14 : -10);
+    const y = BASE_Y - k * BH + p * p * (300 + k * 60);
+    box(c, x, y, dir * p * (1 + k * .2), k, 20 + k * 7, false);
+    if (p > 0 && p < .7) speedLines(c, x, y - BH / 2, dir > 0 ? Math.PI : 0, 70 + k + i, 4, .4);
+  }
+  if (d > .35) { const r = rng(90); for (let k = 0; k < 30; k++) { const a = r() * TAU, dd = (d - .35) * (300 + r() * 500); c.fillStyle = alpha(PAL.shade, .25 * (1 - (d - .35))); c.beginPath(); c.arc(CX + Math.cos(a) * dd * 1.6, BASE_Y - 40 + Math.sin(a) * dd * .4, 10 + r() * 22, 0, TAU); c.fill(); } }
+}
+function sceneOne(c, tau, i) {
+  ground(c);
+  // the wreckage, lying where it fell
+  for (let k = 0; k < N; k++) { const dir = k % 2 ? 1 : -1; c.save(); c.globalAlpha = .5; box(c, CX + dir * (520 + k * 90), BASE_Y + 40 - (k % 3) * 18, dir * (1.2 + k * .2), k, 20 + k * 7, false); c.restore(); }
+  const p = easeBack(sm(0, .35, tau, t => t));
+  if (p > .02) { c.save(); c.translate(CX, BASE_Y); c.scale(p, p); c.translate(-CX, -BASE_Y); box(c, CX, BASE_Y, 0, 0, 100, true); c.restore(); }
+  if (p >= 1) { for (let r = 1; r <= 2; r++) dashedRing(c, CX, BASE_Y - BH / 2, 300 + r * 80, alpha(PAL.ink, .25), 110 + r, [22, 18], 4);
+    writeOn(c, 'one box', CX, BASE_Y - 320, sm(.35, 1.1, tau, t => t), { size: 175, ink: PAL.ink, ink2: PAL.fills[1], pen: PAL.fills[1] });
+    if (tau > 1.15) writeOn(c, 'ships', CX, BASE_Y - 190, sm(1.15, 1.6, tau, t => t), { size: 110, ink: PAL.fills[1], ink2: null, pen: null }); }
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_MT, poster: 4.7, crf: 28,
+  beats: [
+    { name: 'build', dur: 1.7, fn: sceneBuild },
+    { name: 'fall', dur: 1.2, fn: sceneFall },
+    { name: 'one', dur: 2.0, fn: sceneOne },
+  ],
+});
+</script>

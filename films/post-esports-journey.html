@@ -1,0 +1,96 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-esports-journey</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: My Time in Esports - from LAN cafes to online tournaments.
+// Look: ink at night, CRT glow. Anchor: the row of screens. Signature: the camera tracks along a row of
+// monitors in a dark cafe, one seat at a time, and stops at the empty one.
+// t     dur   scene  what happens
+// 0.0   3.0   row    the camera pans the row: five machines, five players, the glow moving with it
+// 3.0   1.9   seat   it stops on the last seat, empty, with the trophy beside it, and names the piece
+
+const PAL_ES = makePalette({
+  paper: '#14161f', paperBand: null, ink: '#e6e9f5', night: '#0d0f16', chalk: '#e6e9f5', chalkDim: '#6a7288', guide: 'rgba(230,233,245,.25)',
+  fills: ['#1c1f2b', '#262b3a', '#5ad1ff', '#ff5c8a', '#ffc857', '#7a6bff'], shade: '#0a0c11', light: '#f2f5ff', blush: '#ff5c8a',
+  accents: ['#5ad1ff', '#ff5c8a', '#ffc857', '#7a6bff'], inks: ['#e6e9f5', '#5ad1ff'], finish: 'ink',
+}, 'blueprintNight');
+const SEATS = 5, PITCH = 620, DESK_Y = 760;
+
+function seat(c, x, k, i, empty) {
+  const glow = [PAL.fills[2], PAL.fills[3], PAL.fills[4], PAL.fills[5], PAL.fills[2]][k];
+  // the glow this screen throws
+  if (!empty) for (let r = 5; r >= 1; r--) { c.fillStyle = alpha(glow, .035); c.beginPath(); c.ellipse(x, DESK_Y - 180, 240 + r * 90, 200 + r * 70, 0, 0, TAU); c.fill(); }
+  // desk
+  draw(c, RR(x - 260, DESK_Y, 520, 30, 6), PAL.fills[1], 10 + k, { lw: 5, texo: { density: .3, color: PAL.chalkDim } });
+  stroke(c, [[x - 200, DESK_Y + 30], [x - 200, DESK_Y + 220]], 20 + k, { lw: 10 });
+  stroke(c, [[x + 200, DESK_Y + 30], [x + 200, DESK_Y + 220]], 30 + k, { lw: 10 });
+  // monitor
+  draw(c, RR(x - 220, DESK_Y - 420, 440, 340, 16), PAL.fills[0], 40 + k, { lw: 5, texo: { density: .3, color: PAL.chalkDim } });
+  const sc = RR(x - 196, DESK_Y - 396, 392, 292, 8);
+  c.fillStyle = empty ? PAL.night : shade(glow, .55); c.fill(sc.path);
+  if (!empty) { c.save(); c.beginPath(); c.roundRect(x - 196, DESK_Y - 396, 392, 292, 8); c.clip();
+    // something happening on every screen, different per seat
+    for (let d = 0; d < 4; d++) { const yy = DESK_Y - 360 + d * 60; stroke(c, [[x - 170, yy], [x - 170 + 90 + ((i + k + d) % 5) * 40, yy]], 50 + k * 5 + d, { lw: 8, color: alpha(glow, .8) }); }
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) stroke(c, [[x + dx * 14, DESK_Y - 250 + dy * 14], [x + dx * 34, DESK_Y - 250 + dy * 34]], 70 + k + dx + dy, { lw: 4, color: PAL.light, raw: true });
+    c.restore(); }
+  stroke(c, sc.pts, 80 + k, { raw: true, close: true, lw: 4, color: alpha(PAL.light, .35) });
+  stroke(c, [[x, DESK_Y - 80], [x, DESK_Y]], 90 + k, { lw: 14, color: PAL.fills[0] });
+  // keyboard, and a player's head and shoulders in front of it
+  draw(c, RR(x - 160, DESK_Y + 44, 320, 70, 10), PAL.fills[0], 100 + k, { lw: 4, texo: { density: .25, color: PAL.chalkDim } });
+  if (!empty) { draw(c, CI(x, DESK_Y + 230, 74), PAL.fills[1], 110 + k, { lw: 5, texo: { density: .3, color: PAL.chalkDim } });
+    draw(c, EL(x, DESK_Y + 400, 160, 120), PAL.fills[1], 120 + k, { lw: 5, texo: { density: .3, color: PAL.chalkDim } });
+    // headset
+    stroke(c, arcPts(x, DESK_Y + 230, 82, 86, Math.PI, TAU, 18), 130 + k, { raw: true, lw: 10, color: PAL.fills[0] });
+    for (const s of [-1, 1]) draw(c, RR(x + s * 82 - 16, DESK_Y + 214, 32, 46, 12), PAL.fills[0], 140 + k + s, { lw: 4, tex: false }); }
+}
+function cafe(c, camx, i, emptyLast) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 350, PAL.light, .3, 3, 3);
+  cam(c, camx, CY, 1);
+  // the back wall and the ceiling strip lights
+  const wall = rectPath(camx - W, 0, W * 2, 620); c.fillStyle = PAL.fills[0]; c.fill(wall);
+  for (let k = -1; k < SEATS + 1; k++) { const x = k * PITCH; draw(c, RR(x - 120, 120, 240, 22, 11), PAL.fills[1], 150 + k, { lw: 4, tex: false }); }
+  for (let k = 0; k < SEATS; k++) seat(c, k * PITCH, k, i, emptyLast && k === SEATS - 1);
+  const floor = rectPath(camx - W, DESK_Y + 480, W * 2, 400); c.fillStyle = PAL.fills[0]; c.fill(floor);
+  stroke(c, [[camx - W, DESK_Y + 480], [camx + W, DESK_Y + 480]], 160, { lw: 5, color: alpha(PAL.light, .3) });
+}
+function sceneRow(c, tau, i) {
+  const camx = lerp(-40, (SEATS - 1) * PITCH + 40, sm(.1, 2.8, tau, easeIO));
+  cafe(c, camx, i, false);
+  // the seat counter, fixed to the frame
+  resetT(c);
+  for (let k = 0; k < SEATS; k++) dot(c, 120 + k * 40, 110, 12, k <= Math.floor(camx / PITCH) ? PAL.fills[2] : alpha(PAL.light, .25));
+}
+function trophy2(c, x, y, s, seed) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  draw(c, PG([[-110, -190], [110, -190], [80, -30], [-80, -30]]), PAL.fills[4], seed, { lw: 6, texo: { density: .4 } });
+  for (const sx of [-1, 1]) stroke(c, arcPts(sx * 110, -150, 66, 54, sx > 0 ? -1.2 : Math.PI + 1.2, sx > 0 ? 1.2 : Math.PI - 1.2, 18), seed + 1 + sx, { raw: true, lw: 13, color: PAL.fills[4] });
+  draw(c, RR(-30, -36, 60, 60, 6), PAL.fills[4], seed + 3, { lw: 5, tex: false });
+  draw(c, RR(-130, 24, 260, 56, 10), PAL.fills[1], seed + 4, { lw: 5, texo: { density: .3, color: PAL.chalkDim } });
+  c.restore();
+}
+function sceneSeat(c, tau, i) {
+  const camx = (SEATS - 1) * PITCH + 40;
+  cafe(c, camx, i, true);
+  // the trophy on the empty desk, and the name beside it
+  const p = easeBack(sm(0, .35, tau, t => t));
+  if (p > .02) { c.save(); c.translate((SEATS - 1) * PITCH + 300, DESK_Y - 30); c.scale(p * .9, p * .9); trophy2(c, 0, 0, 1, 200); c.restore(); }
+  resetT(c);
+  writeOn(c, 'esports', CX, H - 130, sm(.3, 1.2, tau, t => t), { size: 190, ink: PAL.light, ink2: PAL.fills[3], pen: PAL.fills[3] });
+  if (tau > 1.3) for (let k = 0; k < 4; k++) sparkle(c, 200 + k * 360, 150, 26 + (pulse(i + k, 7, 3) ? 10 : 0), [PAL.fills[2], PAL.fills[4], PAL.fills[3]][k % 3], k);
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_ES, poster: 4.8, crf: 27,
+  beats: [
+    { name: 'row', dur: 3.0, fn: sceneRow },
+    { name: 'seat', dur: 1.9, fn: sceneSeat },
+  ],
+});
+</script>

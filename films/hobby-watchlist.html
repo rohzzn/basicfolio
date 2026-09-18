@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-watchlist</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Watchlist, the movies, TV and anime queue.
+// Look: riso on a warm late-night cream. Anchor: the set. Signature: channel flipping - a new poster every
+// three frames behind the glass, until one is chosen and the screen keeps the name.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.5   set     a TV on a stand warms up, the picture snapping on                  RR, flicker
+// 1.5   1.6   flip    channels flip: posters, static between them                        montage cadence
+// 3.1   1.9   chosen  one poster settles, a tick lands on it, the screen reads "watchlist" writeOn
+
+const PAL_WL = makePalette({
+  paper: '#f0e8dc', paperBand: null, ink: '#241f2b', night: '#181424', chalk: '#fffcf3', chalkDim: '#8d83a0', guide: 'rgba(36,31,43,.3)',
+  fills: ['#e8506b', '#3f8fa8', '#f2b03c', '#6d5bb5', '#3c3446', '#a8d0c0'], shade: '#241f2b', light: '#fffcf3', blush: '#e8506b',
+  accents: ['#e8506b', '#3f8fa8', '#f2b03c', '#6d5bb5'], inks: ['#3f8fa8', '#e8506b', '#f2b03c'], finish: 'riso',
+}, 'risoPop');
+const SX = CX - 470, SY = 160, SW = 940, SH = 600;
+
+function poster(c, x, y, w, h, k, seed) {
+  const a = [PAL.fills[1], PAL.fills[0], PAL.fills[3], PAL.fills[2], PAL.fills[5]][k % 5];
+  const b = [PAL.fills[2], PAL.fills[5], PAL.fills[1], PAL.fills[0], PAL.fills[3]][k % 5];
+  const bg = rectPath(x, y, w, h); c.fillStyle = a; c.fill(bg); tex(c, bg, [x, y, w, h], { color: PAL.shade, density: .3, seed });
+  c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip();
+  if (k % 5 === 0) { draw(c, CI(x + w * .5, y + h * .4, h * .2), b, seed + 1, { lw: 5 }); for (let d = 0; d < 6; d++) { const ang = d / 6 * TAU; stroke(c, [[x + w * .5 + Math.cos(ang) * h * .26, y + h * .4 + Math.sin(ang) * h * .26], [x + w * .5 + Math.cos(ang) * h * .38, y + h * .4 + Math.sin(ang) * h * .38]], seed + 2 + d, { lw: 7, color: b, raw: true }); } }
+  if (k % 5 === 1) { draw(c, PG([[x + w * .2, y + h], [x + w * .5, y + h * .22], [x + w * .8, y + h]]), b, seed + 8, { lw: 5 }); draw(c, CI(x + w * .72, y + h * .26, h * .1), PAL.light, seed + 9, { lw: 4 }); }
+  if (k % 5 === 2) { for (let d = 0; d < 3; d++) draw(c, CI(x + w * (.3 + d * .2), y + h * (.42 + (d % 2) * .12), h * .13), b, seed + 12 + d, { lw: 4 }); stroke(c, [[x, y + h * .74], [x + w, y + h * .74]], seed + 16, { lw: 8, color: b }); }
+  if (k % 5 === 3) { draw(c, RR(x + w * .28, y + h * .24, w * .44, h * .5, 10), b, seed + 18, { lw: 5 }); draw(c, PG([[x + w * .44, y + h * .38], [x + w * .62, y + h * .49], [x + w * .44, y + h * .6]]), PAL.light, seed + 19, { lw: 4 }); }
+  if (k % 5 === 4) { const pts = []; for (let t = 0; t <= 10; t++) pts.push([x + w * t / 10, y + h * (.55 + Math.sin(t + k) * .18)]); stroke(c, pts, seed + 22, { raw: true, lw: 10, color: b }); draw(c, CI(x + w * .25, y + h * .28, h * .09), PAL.light, seed + 23, { lw: 4 }); }
+  c.restore();
+  // a poster always has a title bar at the bottom
+  c.fillStyle = alpha(PAL.shade, .55); c.fillRect(x, y + h - h * .16, w, h * .16);
+  textBar(c, x + w * .08, y + h - h * .08, w * .55, alpha(PAL.light, .85), h * .05);
+}
+function statics(c, x, y, w, h, seed) {
+  const r = rng(seed);
+  for (let k = 0; k < 900; k++) { c.fillStyle = r() < .5 ? alpha(PAL.light, .8) : alpha(PAL.shade, .7); c.fillRect(x + r() * w, y + r() * h, 7, 5); }
+}
+function tv(c, i, inner) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[5], density: .12, cell: 16 });
+  // stand and legs
+  for (const s of [-1, 1]) stroke(c, [[CX + s * 300, SY + SH + 60], [CX + s * 420, H - 60]], 8 + s, { lw: 20, color: PAL.fills[4] });
+  draw(c, RR(SX - 50, SY - 50, SW + 100, SH + 150, 40), PAL.fills[4], 10, { lw: 7, texo: { density: .35 } });
+  // the glass
+  draw(c, RR(SX, SY, SW, SH, 26), PAL.night, 11, { tex: false, lw: 5 });
+  c.save(); c.beginPath(); c.roundRect(SX, SY, SW, SH, 26); c.clip();
+  inner(c);
+  // scan lines, so the glass reads as glass
+  c.fillStyle = alpha(PAL.shade, .16); for (let y = SY; y < SY + SH; y += 8) c.fillRect(SX, y, SW, 3);
+  c.restore();
+  // knobs
+  for (let k = 0; k < 2; k++) draw(c, CI(SX + SW + 8, SY + 120 + k * 120, 34), PAL.fills[2], 20 + k, { lw: 5, texo: { density: .35 } });
+  dot(c, SX + 40, SY + SH + 60, 16, flicker(i, 4) ? PAL.fills[0] : shade(PAL.fills[0], .5));
+}
+function sceneSet(c, tau, i) {
+  const on = tau > .45;
+  tv(c, i, (cc) => {
+    if (!on) { cc.fillStyle = PAL.night; cc.fillRect(SX, SY, SW, SH); return; }
+    const warm = sm(.45, .75, tau, easeOut);
+    if (warm < 1) { // the picture opening from a line, the way a tube warms up
+      const h = SH * warm; cc.save(); cc.beginPath(); cc.rect(SX, SY + SH / 2 - h / 2, SW, h); cc.clip(); poster(cc, SX, SY, SW, SH, 0, 30); cc.restore();
+      cc.fillStyle = PAL.light; cc.fillRect(SX, SY + SH / 2 - 3, SW, 6);
+    } else poster(cc, SX, SY, SW, SH, 0, 30);
+  });
+  if (!on) for (let k = 0; k < 3; k++) if (pulse(i + k, 5, 2)) sparkle(c, 220 + k * 160, 140, 20, PAL.fills[2], k);
+}
+function sceneFlip(c, tau, i) {
+  const step = Math.floor(tau * 12 / 3), f = (tau * 12 / 3) % 1;
+  tv(c, i, (cc) => {
+    if (f < .22) statics(cc, SX, SY, SW, SH, 40 + step);
+    else poster(cc, SX, SY, SW, SH, step + 1, 30 + step * 9);
+  });
+  for (let k = 0; k < 6; k++) dot(c, 150 + k * 40, 110, 12, k <= step ? PAL.fills[0] : alpha(PAL.ink, .2));
+}
+function sceneChosen(c, tau, i) {
+  const p = sm(.15, 1.0, tau, t => t);
+  tv(c, i, (cc) => {
+    poster(cc, SX, SY, SW, SH, 4, 30 + 4 * 9);
+    cc.fillStyle = alpha(PAL.night, .55); cc.fillRect(SX, SY, SW, SH);
+    writeOn(cc, 'watchlist', SX + SW / 2, SY + SH * .6, p, { size: 180, ink: PAL.light, ink2: PAL.fills[0], pen: PAL.fills[0] });
+  });
+  if (p >= 1) { const g = sm(1.05, 1.35, tau, easeOut); draw(c, CI(SX + SW - 110, SY + 110, 60 * g), PAL.fills[1], 60, { lw: 5 }); if (g > .6) checkMark(c, SX + SW - 110, SY + 110, 28, (g - .6) * 2.5, 61, { color: PAL.light, lw: 9 }); }
+  if (tau > 1.3) for (let k = 0; k < 4; k++) sparkle(c, 200 + k * 360, H - 120, 26 + (pulse(i + k, 7, 3) ? 10 : 0), [PAL.fills[0], PAL.fills[2], PAL.fills[1]][k % 3], k);
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_WL, poster: 4.6, crf: 29,
+  beats: [
+    { name: 'set', dur: 1.5, fn: sceneSet },
+    { name: 'flip', dur: 1.6, fn: sceneFlip },
+    { name: 'chosen', dur: 1.9, fn: sceneChosen },
+  ],
+});
+</script>

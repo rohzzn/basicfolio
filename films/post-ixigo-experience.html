@@ -1,0 +1,117 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-ixigo-experience</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: SDE Intern at Abhibus (Ixigo) - the first real job, on a travel platform.
+// Look: riso, warm ticket colours. Anchor: the ticket. Signature: the ticket printing - it feeds out of the
+// machine line by line, and the last line printed is the name.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.6   board  a departures board flips its rows over                               flip rows
+// 1.6   1.5   bus    a bus pulls in under it, doors open                                   bus, easeOut
+// 3.1   2.0   ticket the ticket prints out of the machine, line by line                    feed, writeOn
+
+const PAL_IX = makePalette({
+  paper: '#f5ecdd', paperBand: null, ink: '#2b2418', night: '#211b12', chalk: '#fffaf0', chalkDim: '#a1917a', guide: 'rgba(43,36,24,.3)',
+  fills: ['#e8613c', '#f2b134', '#2a8c82', '#3b4a8c', '#4a4238', '#fffaf0'], shade: '#2b2418', light: '#fffaf0', blush: '#e8613c',
+  accents: ['#e8613c', '#f2b134', '#2a8c82', '#3b4a8c'], inks: ['#e8613c', '#2a8c82', '#2b2418'], finish: 'riso',
+}, 'risoPop');
+
+function boardRow(c, x, y, w, flip, seed) {
+  const h = 70;
+  // a split-flap row: the top half of the next value coming down over the old one
+  draw(c, RR(x, y, w, h, 8), PAL.fills[4], seed, { lw: 4, texo: { density: .3 } });
+  c.save(); c.beginPath(); c.rect(x, y, w, h * (flip < .5 ? 1 - flip * 2 : 0)); c.clip();
+  textBar(c, x + 24, y + h / 2, w * .5, alpha(PAL.light, .8), 20); c.restore();
+  c.save(); c.beginPath(); c.rect(x, y + h * (flip > .5 ? (1 - flip) * 2 : 1), w, h); c.clip();
+  textBar(c, x + 24, y + h / 2, w * .62, alpha(PAL.fills[1], .9), 20); c.restore();
+  stroke(c, [[x, y + h / 2], [x + w, y + h / 2]], seed + 1, { lw: 2.6, color: alpha(PAL.shade, .6) });
+}
+function station(c) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 15 });
+  const canopy = PG([[0, 180], [W, 180], [W, 250], [0, 250]]);
+  c.fillStyle = PAL.fills[3]; c.fill(canopy.path); tex(c, canopy.path, canopy.box, { color: PAL.shade, density: .3, seed: 3 });
+  for (let k = 0; k < 6; k++) stroke(c, [[120 + k * 240, 250], [120 + k * 240, 430]], 5 + k, { lw: 12, color: PAL.fills[4] });
+  const ground = rectPath(-10, 900, W + 20, 200); c.fillStyle = PAL.fills[4]; c.fill(ground);
+  tex(c, ground, [0, 900, W, 200], { color: PAL.shade, density: .3, seed: 4 });
+  stroke(c, [[-10, 900], [W + 10, 900]], 6, { lw: 6 });
+}
+function sceneBoard(c, tau, i) {
+  station(c);
+  const bx = CX - 460, by = 300, bw = 920;
+  draw(c, RR(bx - 30, by - 30, bw + 60, 400, 14), PAL.fills[4], 20, { lw: 6, texo: { density: .35 } });
+  for (let k = 0; k < 4; k++) {
+    const t0 = k * 3 / 12, f = clamp((tau - t0) * 4, 0, 1);
+    boardRow(c, bx, by + k * 88, bw, f, 30 + k * 5);
+  }
+  dot(c, bx + bw - 10, by - 10, 14, pulse(i, 6, 3) ? PAL.fills[1] : alpha(PAL.light, .3));
+}
+function bus(c, x, doors, i) {
+  const bw = 900, bh = 320, y = 900 - bh;
+  draw(c, RR(x - bw / 2, y, bw, bh, 30), PAL.fills[0], 60, { lw: 7, texo: { density: .35 } });
+  draw(c, RR(x - bw / 2 + 30, y + 30, bw * .5, bh * .45, 12), PAL.fills[5], 61, { lw: 5, texo: { density: .2 } });
+  for (let k = 0; k < 4; k++) draw(c, RR(x - bw / 2 + 30 + bw * .52 + k * 0, y + 30, 0, 0, 0), null, 62, { line: false });
+  for (let k = 0; k < 3; k++) draw(c, RR(x + bw * .02 + k * 120, y + 30, 100, bh * .45, 10), PAL.fills[5], 70 + k, { lw: 4, texo: { density: .2 } });
+  // the door, folding open
+  const dw = 110 * (1 - doors * .8);
+  draw(c, RR(x - bw / 2 + 40, y + bh * .5, dw, bh * .45, 6), PAL.fills[3], 80, { lw: 4, texo: { density: .3 } });
+  for (const wx of [-bw * .3, bw * .28]) { draw(c, CI(x + wx, 900, 76), PAL.fills[4], 90 + wx, { lw: 6, texo: { density: .3 } }); draw(c, CI(x + wx, 900, 30), PAL.fills[5], 100 + wx, { tex: false, lw: 4 }); }
+  // the route board on the front
+  draw(c, RR(x + bw / 2 - 250, y + 40, 200, 60, 8), PAL.fills[4], 110, { lw: 4, tex: false });
+  textBar(c, x + bw / 2 - 220, y + 70, 140, alpha(PAL.fills[1], .9), 16);
+}
+function sceneBus(c, tau, i) {
+  station(c);
+  c.save(); c.globalAlpha = .5; const bx = CX - 460, by = 300, bw = 920;
+  draw(c, RR(bx - 30, by - 30, bw + 60, 400, 14), PAL.fills[4], 20, { lw: 6, texo: { density: .35 } });
+  for (let k = 0; k < 4; k++) boardRow(c, bx, by + k * 88, bw, 1, 30 + k * 5);
+  c.restore();
+  const p = sm(0, .7, tau, easeOut);
+  bus(c, lerp(-700, CX, p), sm(.75, 1.1, tau, easeOut), i);
+  if (p > .9) speedLines(c, CX - 500, 700, Math.PI, 120 + i, 6, .35);
+}
+function ticket(c, cy, lines, nameP, seed) {
+  const tw = 620, tx = CX - tw / 2;
+  // the machine it comes out of
+  draw(c, RR(tx - 60, 200, tw + 120, 240, 20), PAL.fills[4], seed, { lw: 6, texo: { density: .35 } });
+  stroke(c, [[tx - 20, 430], [tx + tw + 20, 430]], seed + 1, { lw: 6 });
+  draw(c, RR(tx - 20, 410, tw + 40, 24, 8), PAL.night, seed + 2, { tex: false });
+  // the ticket itself, fed downward
+  const th = cy;
+  if (th < 10) return;
+  c.save(); c.beginPath(); c.rect(tx, 434, tw, th); c.clip();
+  draw(c, RR(tx, 434, tw, 700, 6), PAL.light, seed + 3, { lw: 5, texo: { density: .15 } });
+  // perforation down the left
+  for (let y = 450; y < 434 + th + 40; y += 30) dot(c, tx + 24, y, 5, alpha(PAL.ink, .35));
+  textBar(c, tx + 60, 500, 300, alpha(PAL.ink, .6), 22);
+  stroke(c, [[tx + 50, 540], [tx + tw - 50, 540]], seed + 4, { lw: 3, color: alpha(PAL.ink, .3) });
+  for (let k = 0; k < lines; k++) { const y = 590 + k * 58;
+    textBar(c, tx + 60, y, 160, alpha(PAL.ink, .35), 14);
+    textBar(c, tx + 300, y, 220 - (k * 37) % 90, alpha(PAL.ink, .6), 14); }
+  if (nameP > 0) writeOn(c, 'first job', CX, 434 + 640, nameP, { size: 120, ink: PAL.blush, ink2: PAL.fills[2], pen: PAL.blush });
+  c.restore();
+  stroke(c, [[tx, 434 + th], [tx + tw, 434 + th]], seed + 9, { lw: 4, dash: [10, 8], color: alpha(PAL.ink, .5) });
+}
+function sceneTicket(c, tau, i) {
+  station(c);
+  c.save(); c.globalAlpha = .45; bus(c, CX, 1, i); c.restore();
+  const feed = sm(0, 1.1, tau, easeOut);
+  ticket(c, feed * 700, Math.min(4, Math.floor(feed * 6)), sm(.9, 1.7, tau, t => t), 130);
+  if (tau > 1.6) for (let k = 0; k < 3; k++) sparkle(c, 260 + k * 460, 170, 26 + (pulse(i + k, 7, 3) ? 10 : 0), PAL.fills[1], k);
+}
+
+portfolioFilm({
+  look: 'riso', palette: PAL_IX, poster: 4.9, crf: 28,
+  beats: [
+    { name: 'board', dur: 1.6, fn: sceneBoard },
+    { name: 'bus', dur: 1.5, fn: sceneBus },
+    { name: 'ticket', dur: 2.0, fn: sceneTicket },
+  ],
+});
+</script>

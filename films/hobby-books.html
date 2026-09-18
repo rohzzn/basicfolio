@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>hobby-books</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Books, the reading list and the notes in the margins.
+// Look: graphite on cream. Anchor: the ribbon. Signature: the shelf fills, one spine at a time, and the last
+// spine is the one that carries the name.
+// t     dur   scene  what changes                                                      kit
+// 0.0   1.8   shelf  spines land on a shelf one every three frames, leaning as they go    RR, rotate
+// 1.8   1.5   notes  one is pulled out and opened: underlines and a note in the margin    sheet, squig
+// 3.3   1.8   spine  it slides back in, face out, and its spine reads "books"              writeOn (rot)
+
+const PAL_BK = makePalette({
+  paper: '#f4f1e7', paperBand: null, ink: '#2a2721', night: '#262320', chalk: '#ffffff', chalkDim: '#9a948a', guide: 'rgba(42,39,33,.3)',
+  fills: ['#b5543f', '#4a6b7c', '#c9a24a', '#5f7a5a', '#8a5f7a', '#d9d2c2'], shade: '#6a6459', light: '#ffffff', blush: '#b5543f',
+  accents: ['#b5543f', '#4a6b7c', '#c9a24a', '#5f7a5a'], inks: ['#2a2721', '#b5543f'], finish: 'pencil',
+}, 'pencilMinimal');
+const SHELF_Y = 860;
+const BOOKS = [
+  [120, 520, 0], [104, 470, 1], [132, 560, 2], [96, 430, 3], [120, 500, 4],
+  [110, 545, 1], [128, 480, 2], [100, 520, 0], [118, 460, 3],
+];
+function spine(c, x, w, h, k, lean, seed, nameP) {
+  const col = [PAL.fills[0], PAL.fills[1], PAL.fills[2], PAL.fills[3], PAL.fills[4]][k % 5];
+  c.save(); c.translate(x + w / 2, SHELF_Y); c.rotate(lean); c.translate(-w / 2, -h);
+  draw(c, RR(0, 0, w, h, 5), col, seed, { lw: 4, texo: { density: .3 } });
+  stroke(c, [[10, 26], [w - 10, 26]], seed + 1, { lw: 3, color: alpha(PAL.light, .7) });
+  stroke(c, [[10, h - 26], [w - 10, h - 26]], seed + 2, { lw: 3, color: alpha(PAL.light, .7) });
+  if (nameP > 0) { c.save(); c.translate(w / 2, h / 2); c.rotate(-Math.PI / 2); writeOn(c, 'books', 0, 26, nameP, { size: 82, ink: PAL.light, ink2: null, pen: PAL.light }); c.restore(); }
+  else { c.save(); c.translate(w / 2, h / 2); c.rotate(-Math.PI / 2); squig(c, -h * .3, 10, h * .6, 1, { seed: seed + 5, width: 4, amp: 8, color: alpha(PAL.light, .8) }); c.restore(); }
+  c.restore();
+}
+function shelfBoard(c) {
+  paper(c);
+  squig(c, 110, 130, 420, 2, { seed: 1, lineH: 44, width: 3.4, color: alpha(PAL.ink, .4) });
+  const b = RR(60, SHELF_Y, W - 120, 34, 6); draw(c, b, PAL.fills[5], 5, { lw: 5, texo: { density: .25 } });
+  for (const sx of [110, W - 110]) draw(c, RR(sx - 16, SHELF_Y + 34, 32, 120, 4), PAL.fills[5], 6 + sx, { lw: 4, texo: { density: .25 } });
+}
+function sceneShelf(c, tau, i) {
+  shelfBoard(c);
+  let x = 150;
+  BOOKS.forEach(([w, h, k], n) => {
+    const t0 = n * 3 / 12, p = sm(t0, t0 + .3, tau, easeOut);
+    if (p > 0) {
+      const lean = n === BOOKS.length - 1 ? lerp(-.5, -.14, p) : 0;
+      spine(c, x, w, lerp(h * .8, h, p), k, lean, 20 + n * 7, 0);
+    }
+    x += w + 6;
+  });
+  if (tau > 1.4) { const g = sm(1.4, 1.7, tau); stroke(c, [[150, SHELF_Y + 90], [150 + 700 * g, SHELF_Y + 90]], 60, { lw: 4, dash: [16, 12], color: alpha(PAL.ink, .3) }); }
+}
+function openBook(c, tau, note) {
+  const bx = CX, by = CY + 40, w = 1100, h = 620;
+  c.fillStyle = alpha(PAL.shade, .16); c.beginPath(); c.roundRect(bx - w / 2 + 14, by - h / 2 + 20, w, h, 10); c.fill();
+  draw(c, RR(bx - w / 2, by - h / 2, w, h, 10), PAL.light, 70, { lw: 5, tex: false });
+  stroke(c, [[bx, by - h / 2 + 12], [bx, by + h / 2 - 12]], 71, { lw: 4, alpha: .4 });
+  for (const s of [-1, 1]) {
+    const x0 = s < 0 ? bx - w / 2 + 70 : bx + 60, cw = w / 2 - 130;
+    squig(c, x0, by - h / 2 + 90, cw, 7, { seed: 80 + s, lineH: 62, width: 4, color: alpha(PAL.ink, .65) });
+  }
+  // an underline and a note in the margin, drawn as the page is read
+  const u = sm(.15, .7, tau, t => t);
+  if (u > 0) { c.save(); c.globalAlpha = .55; c.strokeStyle = PAL.fills[2]; c.lineWidth = 14; c.lineCap = 'round'; c.beginPath(); c.moveTo(bx + 70, by - 60); c.lineTo(bx + 70 + (w / 2 - 160) * u, by - 60); c.stroke(); c.restore(); }
+  if (note > 0) { c.save(); c.rotate(0); writeOn(c, 'yes', bx - w / 2 + 96, by + 210, note, { size: 84, align: 'left', ink: PAL.blush, ink2: null, pen: PAL.blush, rot: -.06 }); c.restore(); }
+  // the ribbon, the anchor
+  stroke(c, [[bx + 240, by - h / 2], [bx + 250, by + h / 2 + 90]], 90, { lw: 18, color: PAL.fills[0] });
+  draw(c, PG([[bx + 240, by + h / 2 + 90], [bx + 262, by + h / 2 + 90], [bx + 251, by + h / 2 + 130]]), PAL.fills[0], 91, { lw: 4, tex: false });
+}
+function sceneNotes(c, tau, i) {
+  shelfBoard(c);
+  let x = 150;
+  BOOKS.forEach(([w, h, k], n) => { if (n !== BOOKS.length - 1) spine(c, x, w, h, k, 0, 20 + n * 7, 0); x += w + 6; });
+  openBook(c, tau, sm(.75, 1.2, tau, t => t));
+}
+function sceneSpine(c, tau, i) {
+  shelfBoard(c);
+  const p = sm(0, .5, tau, easeIO);
+  let x = 150;
+  BOOKS.forEach(([w, h, k], n) => { if (n !== BOOKS.length - 1) spine(c, x, w, h, k, 0, 20 + n * 7, 0); x += w + 6; });
+  // the one that was open slides back in, face out, and takes the name
+  const last = BOOKS[BOOKS.length - 1];
+  const bx = lerp(CX - 170, x - last[0] - 6, p);
+  spine(c, bx, lerp(340, last[0], p), lerp(560, last[1], p), last[2], 0, 20 + (BOOKS.length - 1) * 7, sm(.45, 1.25, tau, t => t));
+  if (tau > 1.2) for (let r = 1; r <= 2; r++) dottedArc(c, bx + last[0] / 2, SHELF_Y - last[1] / 2, 220 + r * 80, alpha(PAL.ink, .22), 100 + r, 20, 2.6);
+}
+
+portfolioFilm({
+  look: 'pencil', palette: PAL_BK, poster: 4.8,
+  beats: [
+    { name: 'shelf', dur: 1.8, fn: sceneShelf },
+    { name: 'notes', dur: 1.5, fn: sceneNotes },
+    { name: 'spine', dur: 1.8, fn: sceneSpine },
+  ],
+});
+</script>

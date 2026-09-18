@@ -1,0 +1,98 @@
+{
+  "art": {
+    "src": "/hobbies/films/art.mp4",
+    "poster": "/hobbies/films/art.webp",
+    "duration": 5,
+    "width": 960,
+    "height": 720,
+    "v": "59132357"
+  },
+  "books": {
+    "src": "/hobbies/films/books.mp4",
+    "poster": "/hobbies/films/books.webp",
+    "duration": 5.083,
+    "width": 960,
+    "height": 720,
+    "v": "ca5b495d"
+  },
+  "components": {
+    "src": "/hobbies/films/components.mp4",
+    "poster": "/hobbies/films/components.webp",
+    "duration": 5,
+    "width": 960,
+    "height": 720,
+    "v": "9031564c"
+  },
+  "content": {
+    "src": "/hobbies/films/content.mp4",
+    "poster": "/hobbies/films/content.webp",
+    "duration": 4.917,
+    "width": 960,
+    "height": 720,
+    "v": "fecb8122"
+  },
+  "games": {
+    "src": "/hobbies/films/games.mp4",
+    "poster": "/hobbies/films/games.webp",
+    "duration": 5,
+    "width": 960,
+    "height": 720,
+    "v": "f760efde"
+  },
+  "hackathons": {
+    "src": "/hobbies/films/hackathons.mp4",
+    "poster": "/hobbies/films/hackathons.webp",
+    "duration": 5,
+    "width": 960,
+    "height": 720,
+    "v": "147d8eef"
+  },
+  "move": {
+    "src": "/hobbies/films/move.mp4",
+    "poster": "/hobbies/films/move.webp",
+    "duration": 5.083,
+    "width": 960,
+    "height": 720,
+    "v": "b04f2a46"
+  },
+  "music": {
+    "src": "/hobbies/films/music.mp4",
+    "poster": "/hobbies/films/music.webp",
+    "duration": 5.083,
+    "width": 960,
+    "height": 720,
+    "v": "8f6cea28"
+  },
+  "seen": {
+    "src": "/hobbies/films/seen.mp4",
+    "poster": "/hobbies/films/seen.webp",
+    "duration": 5,
+    "width": 960,
+    "height": 720,
+    "v": "aeb14c62"
+  },
+  "typing": {
+    "src": "/hobbies/films/typing.mp4",
+    "poster": "/hobbies/films/typing.webp",
+    "duration": 5,
+    "width": 960,
+    "height": 720,
+    "v": "338c0f84"
+  },
+  "uses": {
+    "src": "/hobbies/films/uses.mp4",
+    "poster": "/hobbies/films/uses.webp",
+    "duration": 5.167,
+    "width": 960,
+    "height": 720,
+    "v": "126d1d9b"
+  },
+  "watchlist": {
+    "src": "/hobbies/films/watchlist.mp4",
+    "poster": "/hobbies/films/watchlist.webp",
+    "duration": 5,
+    "width": 960,
+    "height": 720,
+    "v": "bd21413d"
+  }
+}

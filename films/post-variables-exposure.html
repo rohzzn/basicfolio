@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-variables-exposure</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Environment Variables Don't Hide Data.
+// Look: ink on a cold grey, one hot red. Anchor: the key. Signature: the key is put in an envelope marked
+// SECRET, and the film simply holds the envelope up to the light.
+// t     dur   scene   what changes                                                     kit
+// 0.0   1.6   hide    the key goes into the envelope; the flap seals; a stamp lands       envelope, stamp
+// 1.6   1.5   light   a lamp comes on behind it and the key shows straight through         backlight
+// 3.1   1.9   read    the shape is traced and read out: "not hidden"                       writeOn
+
+const PAL_VE = makePalette({
+  paper: '#e9eaec', paperBand: null, ink: '#1e2128', night: '#171a20', chalk: '#ffffff', chalkDim: '#8b9099', guide: 'rgba(30,33,40,.3)',
+  fills: ['#f6f7f8', '#cfd3d9', '#ffca3a', '#4a6b8a', '#2a2e36'], shade: '#1e2128', light: '#ffffff', blush: '#e63946',
+  accents: ['#e63946', '#ffca3a', '#4a6b8a', '#2a9d8f'], inks: ['#1e2128', '#e63946'], finish: 'ink',
+}, 'paperInk');
+const EX = CX - 400, EY = CY - 250, EW = 800, EH = 500;
+
+function keyShape2(c, x, y, s, rot, col, seed) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+  draw(c, CI(-90, 0, 58), col, seed, { lw: 6, texo: { density: .3 } });
+  draw(c, CI(-90, 0, 24), PAL.paper, seed + 1, { tex: false, lw: 5 });
+  draw(c, RR(-42, -20, 190, 40, 10), col, seed + 2, { lw: 6, texo: { density: .3 } });
+  draw(c, RR(100, 10, 24, 52, 8), col, seed + 3, { lw: 5, tex: false });
+  draw(c, RR(54, 10, 22, 38, 8), col, seed + 4, { lw: 5, tex: false });
+  c.restore();
+}
+function envelope2(c, flap, seed) {
+  c.fillStyle = alpha(PAL.shade, .18); c.beginPath(); c.roundRect(EX + 16, EY + 20, EW, EH, 14); c.fill();
+  draw(c, RR(EX, EY, EW, EH, 14), PAL.fills[0], seed, { lw: 6, texo: { density: .2 } });
+  // the flap, folding down over the top
+  const fy = EY + EH * .5 * flap;
+  draw(c, PG([[EX, EY], [EX + EW, EY], [EX + EW / 2, fy]]), PAL.fills[1], seed + 1, { lw: 6, texo: { density: .25 } });
+  stroke(c, [[EX, EY + EH], [EX + EW / 2, EY + EH * .5], [EX + EW, EY + EH]], seed + 2, { lw: 4, alpha: .5 });
+}
+function sceneHide(c, tau, i) {
+  paper(c);
+  tex(c, rectPath(0, 0, W, H), [0, 0, W, H], { color: PAL.fills[1], density: .12, cell: 16 });
+  const drop = sm(0, .5, tau, easeIn), flap = sm(.5, .85, tau, easeOut);
+  envelope2(c, 0, 10);
+  if (drop < 1) keyShape2(c, CX, lerp(EY - 300, EY + EH * .55, drop), 1.1, lerp(-.4, 0, drop), PAL.fills[2], 20);
+  else { c.save(); c.beginPath(); c.rect(EX, EY + EH * .5, EW, EH * .5); c.clip(); keyShape2(c, CX, EY + EH * .55, 1.1, 0, PAL.fills[2], 20); c.restore(); }
+  envelope2(c, flap, 10);
+  if (flap >= 1) { const s = easeBack(sm(.9, 1.15, tau, t => t)); if (s > .02) { c.save(); c.translate(EX + EW - 150, EY + 120); c.rotate(-.2); c.scale(s, s);
+    for (let k = 0; k < 2; k++) stroke(c, rrPts(-150 - k * 10, -60 - k * 10, 300 + k * 20, 120 + k * 20, 10), 30 + k, { raw: true, close: true, lw: 7, color: PAL.blush, amp: 4 });
+    hand(c, 'secret', 0, 22, { size: 74, ink: PAL.blush, ink2: null }); c.restore(); } }
+}
+function sceneLight(c, tau, i) {
+  paper(c, shade(PAL.paper, .1), null);
+  const on = sm(.15, .6, tau, easeOut);
+  // the lamp behind the envelope
+  for (let r = 7; r >= 1; r--) { c.fillStyle = alpha(PAL.fills[2], .05 * on); c.beginPath(); c.ellipse(CX, CY, 300 + r * 120, 240 + r * 90, 0, 0, TAU); c.fill(); }
+  envelope2(c, 1, 10);
+  // the key, showing through the paper as the light comes up
+  c.save(); c.globalAlpha = on * .85;
+  keyShape2(c, CX, CY + 20, 1.1, 0, alpha(PAL.shade, .8), 20);
+  c.restore();
+  // and the text of the variable, showing through with it
+  if (on > .5) { c.save(); c.globalAlpha = (on - .5) * 1.6;
+    squig(c, EX + 70, EY + 120, EW - 300, 1, { seed: 40, width: 6, amp: 10, color: alpha(PAL.shade, .7) });
+    squig(c, EX + 70, EY + 180, EW - 200, 1, { seed: 41, width: 6, amp: 10, color: alpha(PAL.shade, .7) });
+    c.restore(); }
+  if (tau > 1.1) for (let r = 1; r <= 2; r++) dashedRing(c, CX, CY + 20, 200 + r * 70, alpha(PAL.blush, .5), 50 + r, [16, 12], 4);
+}
+function sceneRead(c, tau, i) {
+  paper(c, shade(PAL.paper, .1), null);
+  for (let r = 7; r >= 1; r--) { c.fillStyle = alpha(PAL.fills[2], .05); c.beginPath(); c.ellipse(CX, CY - 60, 300 + r * 120, 240 + r * 90, 0, 0, TAU); c.fill(); }
+  envelope2(c, 1, 10);
+  c.save(); c.globalAlpha = .85; keyShape2(c, CX, CY - 40, 1.1, 0, alpha(PAL.shade, .8), 20); c.restore();
+  // the outline traced over the shape showing through
+  const p = sm(0, .55, tau, t => t);
+  c.save(); c.translate(CX, CY - 40);
+  strokeOn(c, ellPts(-90, 0, 58, 58, 0, 40).concat([ellPts(-90, 0, 58, 58, 0, 40)[0]]), p, 60, { raw: true, lw: 6, color: PAL.blush });
+  strokeOn(c, rrPts(-42, -20, 190, 40, 10), p, 61, { raw: true, close: true, lw: 6, color: PAL.blush });
+  c.restore();
+  writeOn(c, 'not hidden', CX, CY + 330, sm(.5, 1.3, tau, t => t), { size: 190, ink: PAL.blush, ink2: PAL.ink, pen: PAL.blush });
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_VE, poster: 4.8,
+  beats: [
+    { name: 'hide', dur: 1.6, fn: sceneHide },
+    { name: 'light', dur: 1.5, fn: sceneLight },
+    { name: 'read', dur: 1.9, fn: sceneRead },
+  ],
+});
+</script>
