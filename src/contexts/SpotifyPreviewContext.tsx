@@ -121,7 +121,6 @@ export function SpotifyPreviewProvider({ children }: { children: React.ReactNode
     setCurrentTrackId(null);
     setProgressMs(0);
     setDurationMs(30000);
-    window.dispatchEvent(new CustomEvent('resume-background-music'));
   }, []);
 
   useEffect(() => {
@@ -146,7 +145,6 @@ export function SpotifyPreviewProvider({ children }: { children: React.ReactNode
       setCurrentTrack(null);
       setCurrentTrackId(null);
       setProgressMs(0);
-      window.dispatchEvent(new CustomEvent('resume-background-music'));
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
@@ -190,7 +188,6 @@ export function SpotifyPreviewProvider({ children }: { children: React.ReactNode
     if (!audioRef.current || !currentTrackId) return;
 
     try {
-      window.dispatchEvent(new CustomEvent('pause-background-music'));
       await audioRef.current.play();
       setIsPlaying(true);
     } catch (error) {
@@ -206,7 +203,6 @@ export function SpotifyPreviewProvider({ children }: { children: React.ReactNode
 
       if (currentTrackId === trackId && isPlaying) {
         pausePreview();
-        window.dispatchEvent(new CustomEvent('resume-background-music'));
         return;
       }
 
@@ -240,12 +236,10 @@ export function SpotifyPreviewProvider({ children }: { children: React.ReactNode
         setCurrentTrackId(trackId);
         setProgressMs(0);
         setDurationMs(trackMeta.durationMs ?? 30000);
-        window.dispatchEvent(new CustomEvent('pause-background-music'));
         await audioRef.current.play();
         setIsPlaying(true);
       } catch (error) {
         console.error('Spotify preview playback failed:', error);
-        window.dispatchEvent(new CustomEvent('resume-background-music'));
       } finally {
         setLoadingTrackId(null);
       }

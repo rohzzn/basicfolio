@@ -1,13 +1,12 @@
 "use client";
-import React, { useState, useEffect, useRef, memo, useCallback } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { Menu, X, Gamepad, Music, Loader2, Focus, VolumeX } from "lucide-react";
+import { Menu, X, Gamepad, Music, Loader2, Focus } from "lucide-react";
 import Link from "next/link";
 import Image from "@/components/SiteImage";
 import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
 import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/SpotifyPreviewContext';
-import WeatherToggle from './weather/WeatherToggle';
 
 // These are all opt-in extras (keyboard-shortcut palette, click sound, konami
 // easter egg) that render nothing visible on first paint — load them after
@@ -283,10 +282,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
   const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [audioLoaded, setAudioLoaded] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const wasPlayingBeforePreviewRef = useRef(false);
   
   const discordId = "407922731645009932";
   const pathname = usePathname();
@@ -355,84 +350,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
     const interval = setInterval(fetchLanyardData, 60000); // Poll every 60 seconds instead of 30
     return () => clearInterval(interval);
   }, [discordId]);
-
-  // Background music setup. preload stays 'none' so the browser doesn't fetch
-  // the mp3 until the user actually presses play — otherwise every page load
-  // site-wide pulls the full track for a control almost nobody uses.
-  useEffect(() => {
-    try {
-      // Create audio element
-      const audio = new Audio('/lofi-background.mp3');
-
-      audio.addEventListener('error', () => {
-        console.error('Audio failed to load');
-      });
-
-      // Configure audio
-      audio.loop = true;
-      audio.volume = 0.7;
-      audio.preload = 'none';
-
-      audioRef.current = audio;
-      setAudioLoaded(true);
-
-      return () => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current = null;
-        }
-      };
-    } catch (error) {
-      console.error('Error initializing audio:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    const pauseBackgroundMusic = () => {
-      if (audioRef.current && isPlaying) {
-        wasPlayingBeforePreviewRef.current = true;
-        audioRef.current.pause();
-        setIsPlaying(false);
-      }
-    };
-
-    const resumeBackgroundMusic = () => {
-      if (audioRef.current && wasPlayingBeforePreviewRef.current) {
-        wasPlayingBeforePreviewRef.current = false;
-        audioRef.current.play().catch(() => {});
-        setIsPlaying(true);
-      }
-    };
-
-    window.addEventListener('pause-background-music', pauseBackgroundMusic);
-    window.addEventListener('resume-background-music', resumeBackgroundMusic);
-
-    return () => {
-      window.removeEventListener('pause-background-music', pauseBackgroundMusic);
-      window.removeEventListener('resume-background-music', resumeBackgroundMusic);
-    };
-  }, [isPlaying]);
-
-  // Toggle play/pause for background music
-  const togglePlay = useCallback(async () => {
-    if (audioRef.current) {
-      try {
-        if (isPlaying) {
-          await audioRef.current.pause();
-        } else {
-          const playPromise = audioRef.current.play();
-          if (playPromise !== undefined) {
-            playPromise.catch((error) => {
-              console.error('Failed to play audio:', error);
-            });
-          }
-        }
-        setIsPlaying(!isPlaying);
-      } catch (error) {
-        console.error('Error toggling audio:', error);
-      }
-    }
-  }, [isPlaying]);
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-neutral-950">
@@ -561,25 +478,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </main>
       
-      {/* Bottom Controls - Hidden on mobile and on guestbook (desk workspace) */}
-      {pathname !== "/guestbook" && (
-      <div className={`hidden md:flex fixed right-4 z-40 flex-row items-center gap-1.5 bottom-4 ${previewPlayerActive ? 'lg:bottom-24' : ''}`}>
-        <WeatherToggle />
-        <button
-          onClick={togglePlay}
-          disabled={!audioLoaded}
-          className={`flex items-center gap-1.5 text-zinc-700 dark:text-neutral-300 ${!audioLoaded ? 'opacity-50' : ''}`}
-          aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
-        >
-          {isPlaying ? (
-            <Music className="w-3.5 h-3.5" />
-          ) : (
-            <VolumeX className="w-3.5 h-3.5" />
-          )}
-        </button>
-      </div>
-      )}
-
     </div>
   );
 };
