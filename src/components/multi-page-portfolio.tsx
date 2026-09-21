@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "@/components/SiteImage";
 import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
-import SoundControls from './SoundControls';
+import SoundToggle from './SoundToggle';
 import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/SpotifyPreviewContext';
 
 // These are all opt-in extras (keyboard-shortcut palette, click sound, konami
@@ -430,49 +430,49 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </nav>
 
-          {/* The brook's sound on the left, the socials on the right, just above the status line. */}
-          <div className="flex flex-shrink-0 items-center justify-between px-4 pb-3 sm:px-5 lg:px-6">
-            <SoundControls />
-            <div className="flex items-center gap-3.5">
-              {SOCIALS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Rohan on ${s.label}`}
-                  title={s.label}
-                  className="flex h-4 w-4 items-center justify-center text-zinc-500 transition-colors hover:text-zinc-900 dark:text-neutral-400 dark:hover:text-paper"
-                >
-                  {s.icon}
-                </a>
-              ))}
-            </div>
-          </div>
-
           <div className="p-4 sm:p-5 lg:p-6 border-t border-zinc-200 dark:border-neutral-800 flex-shrink-0">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-2">
-                <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
+            {/* The status on the left, and on the right the mute and the socials, whether or not
+                the status has come back yet. */}
+            <div className="flex w-full items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
+                {isLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-400" aria-label="Loading status" />
+                ) : error || !lanyardData ? (
+                  <span className="text-xs text-zinc-400 dark:text-neutral-500">Status unavailable</span>
+                ) : (
+                  <>
+                    <div
+                      className="w-2 h-2 shrink-0 rounded-full"
+                      style={{
+                        backgroundColor: getStatusColor(lanyardData.discord_status),
+                        boxShadow: `0 0 8px ${getStatusColor(lanyardData.discord_status)}`,
+                      }}
+                    />
+                    <span className="text-xs text-zinc-600 dark:text-neutral-400 capitalize">
+                      {lanyardData.discord_status === "offline" ? "offline" : lanyardData.discord_status}
+                    </span>
+                  </>
+                )}
               </div>
-            ) : error ? (
-              <div className="text-xs text-zinc-400 text-center py-2">
-                Unable to load status
+              <div className="flex shrink-0 items-center gap-3.5">
+                <SoundToggle />
+                {SOCIALS.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Rohan on ${s.label}`}
+                    title={s.label}
+                    className="flex h-4 w-4 items-center justify-center text-zinc-500 transition-colors hover:text-zinc-900 dark:text-neutral-400 dark:hover:text-paper"
+                  >
+                    {s.icon}
+                  </a>
+                ))}
               </div>
-            ) : lanyardData && (
-              <div className="flex flex-col items-start gap-4 w-full">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{
-                      backgroundColor: getStatusColor(lanyardData.discord_status),
-                      boxShadow: `0 0 8px ${getStatusColor(lanyardData.discord_status)}`,
-                    }}
-                  />
-                  <span className="text-xs text-zinc-600 dark:text-neutral-400 capitalize">
-                    {lanyardData.discord_status === "offline" ? "offline" : lanyardData.discord_status}
-                  </span>
-                </div>
+            </div>
+            {!isLoading && !error && lanyardData && (
+              <div className="mt-4 flex flex-col items-start gap-4 w-full empty:hidden">
 
                 <SpotifyCurrentlyPlaying />
 

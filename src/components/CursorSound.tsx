@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
+import { getState, initSound } from '@/lib/site-sound';
 
 const CursorSound: React.FC = () => {
   const clickSoundRef = useRef<HTMLAudioElement | null>(null);
   
   useEffect(() => {
+    initSound();
     // Load click sound
     clickSoundRef.current = new Audio("/public_sounds_trigger.mp3");
     if (clickSoundRef.current) {
@@ -26,7 +28,8 @@ const CursorSound: React.FC = () => {
         target.classList.contains('clickable');
       
       // Only play sound when clicking on clickable elements
-      if (isClickableElement && clickSoundRef.current) {
+      // the mute beside the status in the sidebar silences this too
+      if (isClickableElement && clickSoundRef.current && getState().enabled) {
         clickSoundRef.current.currentTime = 0;
         clickSoundRef.current.play().catch(err => {
           console.debug("Click sound error:", err);

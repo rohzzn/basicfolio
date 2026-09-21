@@ -6,6 +6,7 @@ import FilmCard from "@/components/FilmCard";
 import FilmPreviewPane from "@/components/FilmPreviewPane";
 import films from "@/data/project-films.json";
 import { projects, type Project } from "@/data/projects";
+import { sortByLatest } from "@/lib/project-order";
 
 type CategoryFilter = Project["category"] | "all";
 
@@ -15,16 +16,6 @@ const categories: { id: CategoryFilter; label: string }[] = [
   { id: "game", label: "games" },
   { id: "other", label: "other" },
 ];
-
-function sortByLatest(list: Project[]): Project[] {
-  return [...list].sort((a, b) => {
-    // A pinned project holds the front of its category whatever the year says.
-    if (Boolean(a.pinned) !== Boolean(b.pinned)) return a.pinned ? -1 : 1;
-    const yearDiff = (b.year ?? 0) - (a.year ?? 0);
-    if (yearDiff !== 0) return yearDiff;
-    return a.title.localeCompare(b.title);
-  });
-}
 
 // The films are hung as a contact sheet with a rhythm to it: two large, then three smaller, and
 // round again. Fixed bands rather than a masonry, so every film keeps the 4:3 it was drawn in.
@@ -117,7 +108,7 @@ export default function ProjectsPage() {
   return (
     <div className="max-w-5xl">
       {/* On desktop the header stops where the list does, so the tabs stay over the list. */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:pr-[380px] xl:pr-0 min-[1400px]:pr-[340px]">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:pr-[380px] xl:pr-0 min-[1400px]:pr-[320px]">
         <h2 className="text-lg font-medium dark:text-paper">Projects</h2>
         <div className="flex flex-wrap gap-x-4 gap-y-2" role="tablist" aria-label="Project categories">
           {categories.map((cat) => (
@@ -163,7 +154,7 @@ export default function ProjectsPage() {
             <ProjectRow key={project.slug} project={project} onEnter={() => setActive(project.slug)} />
           ))}
         </div>
-        <div className="hidden w-[340px] shrink-0 lg:block xl:hidden xl:w-[300px] min-[1400px]:block">
+        <div className="hidden w-[340px] shrink-0 lg:block xl:hidden xl:w-[280px] min-[1400px]:block">
           <FilmPreviewPane film={active ? films[active as keyof typeof films] : undefined} />
         </div>
       </div>

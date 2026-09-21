@@ -15,7 +15,7 @@
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Apple Garamond", serif;
   /* the column down the right of every page that the stream runs in (xl and up) */
-  --stream-w: clamp(320px, 28vw, 480px);
+  --stream-w: clamp(340px, 30vw, 520px);
 }
 
 .dark {
@@ -455,58 +455,4 @@ html.e-reader-mode pre {
       animation-range: entry 0% entry 65%;
     }
   }
-}
-
-/* The stream sound's volume in the sidebar: a hairline track that fills to the value (--v),
-   a small thumb, and a tall enough hit area to grab it by. */
-.stream-volume {
-  --vol-fill: #52525b;
-  --vol-rest: #d4d4d8;
-  --vol-ring: #fafafa;
-  -webkit-appearance: none;
-  appearance: none;
-  height: 16px;
-  background: transparent;
-  cursor: pointer;
-}
-.dark .stream-volume {
-  --vol-fill: #d4d4d4;
-  --vol-rest: #404040;
-  --vol-ring: #171717;
-}
-.stream-volume:focus-visible {
-  outline: 2px solid #a1a1aa;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.stream-volume::-webkit-slider-runnable-track {
-  height: 2px;
-  border-radius: 9999px;
-  background: linear-gradient(to right, var(--vol-fill) var(--v, 50%), var(--vol-rest) var(--v, 50%));
-}
-.stream-volume::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 10px;
-  height: 10px;
-  margin-top: -4px;
-  border-radius: 9999px;
-  background: var(--vol-fill);
-  border: 2px solid var(--vol-ring);
-}
-.stream-volume::-moz-range-track {
-  height: 2px;
-  border-radius: 9999px;
-  background: var(--vol-rest);
-}
-.stream-volume::-moz-range-progress {
-  height: 2px;
-  border-radius: 9999px;
-  background: var(--vol-fill);
-}
-.stream-volume::-moz-range-thumb {
-  width: 8px;
-  height: 8px;
-  border-radius: 9999px;
-  background: var(--vol-fill);
-  border: 2px solid var(--vol-ring);
 }
