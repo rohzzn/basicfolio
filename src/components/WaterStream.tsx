@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useMedia } from '@/lib/use-media';
 import { plip } from '@/lib/site-sound';
 
@@ -10,8 +11,15 @@ import { plip } from '@/lib/site-sound';
 //
 // Unlike the films it is live. The cursor is a finger in the water: held still, the current
 // parts around it and sheds eddies behind it the way it does round the stones; moved, it drags
-// the water along and leaves rings. A click drops a pebble with a plip (lib/site-sound). A paper
-// boat and two leaves ride the current and can be pushed about, and a click on the boat rocks it.
+// the water along and leaves rings. A click drops a pebble with a plip (lib/site-sound). Two
+// leaves and a little fleet of paper boats ride the current and can be pushed about.
+//
+// Every boat carries a message from the guestbook, the writer's initial on its sail. One boat at a
+// time, as it drifts past the middle of the stream, unfolds its note beside it on a string, holds
+// it long enough to read, and folds it away; then the next boat takes its turn. Hovering a boat
+// catches it and opens its note there and then, tapping one pins it, and a note opens the
+// guestbook. When a boat floats away at the bottom it comes back in at the top with the next
+// message, newest first, round and round, so every entry drifts past in time.
 //
 // The canvas takes no pointer events. It reads the pointer off the window, so everything under
 // and around it stays exactly as clickable as it was.
@@ -33,8 +41,11 @@ type Pal = {
   stone: string;
   boat: string;
   boatShade: string;
-  flag: string;
+  flags: string[];
   leaves: string[];
+  note: string;
+  noteText: string;
+  noteMuted: string;
   shadow: string;
   shadowAlpha: number;
 };
@@ -55,8 +66,11 @@ const LIGHT: Pal = {
   stone: '#d3ccbb',
   boat: '#fdfbf6',
   boatShade: '#0a5083',
-  flag: '#c8473f',
+  flags: ['#c8473f', '#e8c84a', '#2b5fb8', '#518e9d', '#e4a05c', '#7a5c8e'],
   leaves: ['#8f8e5f', '#df9a57'],
+  note: '#fffdf7',
+  noteText: '#24232e',
+  noteMuted: '#6b6b75',
   shadow: '#0a2a45',
   shadowAlpha: 0.2,
 };
@@ -75,8 +89,11 @@ const DARK: Pal = {
   stone: '#26272b',
   boat: '#e6e0d4',
   boatShade: '#6d9fc4',
-  flag: '#d8614f',
+  flags: ['#d8614f', '#c9ae4a', '#4f78c4', '#5d97a3', '#d09155', '#9277b0'],
   leaves: ['#7f7f4e', '#b97d45'],
+  note: '#1d1d21',
+  noteText: '#ece8e0',
+  noteMuted: '#a3a3ab',
   shadow: '#000000',
   shadowAlpha: 0.5,
 };
@@ -154,11 +171,16 @@ type Floater = {
   seed: number;
   away: number; // seconds until it floats back in; 0 while it is on screen
   bump: number;
+  msg: number; // the guestbook note a boat carries, -1 for none
+  tilt: number;
+  told: boolean; // has shown its note on this trip down
 };
 
-function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean) {
+export type StreamNote = { name: string; date: string; body: string; reply?: string };
+
+function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean, navigate: (href: string) => void) {
   const ctx = canvas.getContext('2d');
-  if (!ctx) return { setDark() {}, destroy() {} };
+  if (!ctx) return { setDark() {}, setNotes() {}, destroy() {} };
   const c = ctx;
   const rand = rng(7);
   let pal = startDark ? DARK : LIGHT;
@@ -231,6 +253,25 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     x: 0, y: 0, r: 0, ux: 0, uy: 0, shed: 0, side: 1, vx: 0, vy: 0, wet: false, rx: 0, ry: 0, still: 0,
   };
   let nextAmbient = 1.5;
+  // the guestbook, and which of its notes the next boat to set off will carry
+  let notes: StreamNote[] = [];
+  let nextNote = 0;
+  let pinned: Floater | null = null;
+  let noteRect: [number, number, number, number] | null = null;
+  let noteOwner: Floater | null = null;
+  let font = 'ui-sans-serif, system-ui, sans-serif';
+  let mainEl: HTMLElement | null = null;
+  let pointing = false;
+  // the boat being read: caught under the cursor (or by its note) and held until let go
+  let held: Floater | null = null;
+  // the boat telling its message on its own, how long it has been telling, and for how long
+  let telling: Floater | null = null;
+  let tellAge = 0;
+  let tellFor = 0;
+  let tellGap = 1.5; // the pause before the next boat may tell
+  // the note on show and how far it has unfolded (0 folded, 1 open)
+  let showing: Floater | null = null;
+  let openness = 0;
   let rippleSeed = 1;
 
   // ---- the water's velocity at a point ----
@@ -344,6 +385,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       a1 *= k;
       a2 *= k;
     }
+    font = getComputedStyle(document.body).fontFamily || font;
     buildBanks();
     placeStones();
     buildDots();
@@ -640,8 +682,18 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       tracers.push(p);
     }
   }
+  function takeNote() {
+    if (notes.length === 0) return -1;
+    const i = nextNote % notes.length;
+    nextNote = (nextNote + 1) % notes.length;
+    return i;
+  }
   function floatIn(f: Floater, y: number) {
     const [x, yy] = placeAt(y, (rand() - 0.5) * 0.7);
+    if (f.boat) {
+      f.msg = takeNote();
+      f.told = false;
+    }
     f.x = x;
     f.y = yy;
     base(x, yy);
@@ -652,11 +704,18 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   function seedFloaters() {
     floaters.length = 0;
     const mk = (boat: boolean, y: number, i: number): Floater => {
-      const f: Floater = { boat, x: 0, y: 0, vx: 0, vy: 0, a: boat ? 0 : rand() * TAU, va: 0, size: boat ? 34 : 14 + rand() * 3, color: i % 2, seed: i * 13 + 5, away: 0, bump: 0 };
+      const f: Floater = {
+        boat, x: 0, y: 0, vx: 0, vy: 0, a: boat ? 0 : rand() * TAU, va: 0,
+        size: boat ? 28 + hash(i, 21) * 8 : 14 + rand() * 3,
+        color: i % 2, seed: i * 13 + 5, away: 0, bump: 0, msg: -1, tilt: (hash(i, 22) - 0.5) * 0.05, told: false,
+      };
       floatIn(f, y);
       return f;
     };
-    floaters.push(mk(false, H * 0.48, 0), mk(false, H * 0.76, 1), mk(true, H * 0.2, 2));
+    floaters.push(mk(false, H * 0.48, 0), mk(false, H * 0.76, 1));
+    // a boat for every hundred and forty or so pixels of stream, spread down it
+    const n = clamp(Math.round(H / 140), 4, 7);
+    for (let i = 0; i < n; i++) floaters.push(mk(true, H * (0.06 + ((i + 0.5) / n) * 0.88), i + 2));
   }
 
   function ripple(x: number, y: number, rMax: number, life: number, k: number, delay = 0) {
@@ -731,9 +790,21 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       return;
     }
     field(f.x, f.y);
+    if (f === held) {
+      // caught: it slows to a stop and bobs where it is while its note is read
+      const hk = Math.exp(-dt * 6);
+      f.vx *= hk;
+      f.vy *= hk;
+      f.va += (-f.a * 7 - f.va * 1.6) * dt;
+      f.a += f.va * dt;
+      f.x += f.vx * dt;
+      f.y += f.vy * dt;
+      return;
+    }
     const k = 1 - Math.exp(-dt * (f.boat ? 1.5 : 2.2));
-    f.vx += (V.x - f.vx) * k;
-    f.vy += (V.y - f.vy) * k;
+    const slow = f === telling ? 0.45 : 1;
+    f.vx += (V.x * slow - f.vx) * k;
+    f.vy += (V.y * slow - f.vy) * k;
     if (f.boat) {
       // the boat rocks back to level; knocks set it swaying
       f.va += (-f.a * 7 - f.va * 1.6) * dt;
@@ -743,6 +814,11 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       f.va += (w * 0.6 + 0.2 - f.va) * (1 - Math.exp(-dt * 2));
     }
     f.a += f.va * dt;
+    if (f.boat && Math.abs(f.a) > 0.35) {
+      // drawn side-on, a boat lists but never tips past a sensible angle
+      f.a = Math.sign(f.a) * 0.35;
+      f.va *= -0.3;
+    }
     f.x += f.vx * dt;
     f.y += f.vy * dt;
     const pad = f.size * (f.boat ? 0.42 : 0.38);
@@ -762,14 +838,62 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       }
     }
     f.bump = Math.max(0, f.bump - dt);
-    if (f.y > H + 44 || f.y < -70) f.away = f.boat ? 5 + rand() * 6 : 2 + rand() * 6;
+    if (f.y > H + 44 || f.y < -70) {
+      f.away = f.boat ? 1 + rand() * 4 : 2 + rand() * 6;
+      if (pinned === f) pinned = null;
+    }
+  }
+
+  // One boat at a time tells its message: the first one passing the middle of the stream that has
+  // not told it yet on this trip. Its note stays up for a few seconds, longer for a longer message.
+  function tell(dt: number) {
+    if (telling) {
+      tellAge += dt;
+      if (tellAge >= tellFor + 0.4 || telling.away > 0) {
+        telling = null;
+        tellGap = 1.4;
+      }
+    } else if ((tellGap -= dt) <= 0) {
+      let pick: Floater | null = null;
+      for (const b of floaters) {
+        if (!b.boat || b.away > 0 || b.msg < 0 || b.told || b.y < H * 0.3 || b.y > H * 0.62) continue;
+        if (!pick || b.y > pick.y) pick = b;
+      }
+      if (pick) {
+        telling = pick;
+        pick.told = true;
+        tellAge = 0;
+        tellFor = clamp(3.5 + (notes[pick.msg]?.body.length ?? 0) * 0.045, 4, 10);
+      }
+    }
+    // the cursor's choice first, then a tapped boat, then the one telling
+    const want = desiredNote();
+    if (want === showing) openness = Math.min(1, openness + dt / 0.25);
+    else if (want && want === held) {
+      showing = want;
+      openness = Math.max(openness, 0.35);
+    } else {
+      openness -= dt / 0.22;
+      if (openness <= 0) {
+        showing = want;
+        openness = 0;
+      }
+    }
+    if (showing && showing.away > 0) {
+      showing = null;
+      openness = 0;
+    }
   }
 
   function step(dt: number) {
     time += dt;
+    // a boat under the cursor, or one whose note the cursor is on, is held
+    const over = pointer.inside ? boatAt(pointer.x, pointer.y, 16) : null;
+    held = over && over.msg >= 0 ? over : pointer.inside && noteOwner && inNote(pointer.x, pointer.y) ? noteOwner : null;
 
     // the finger
-    const wet = pointer.inside && inWater(pointer.x, pointer.y, 0.93) && !stones.some((s) => Math.hypot(pointer.x - s.x, pointer.y - s.y) < s.r + 4);
+    // over a boat or a note the cursor is reading, not dipping into the water
+    const wet = pointer.inside && !held && !over && inWater(pointer.x, pointer.y, 0.93) && !stones.some((s) => Math.hypot(pointer.x - s.x, pointer.y - s.y) < s.r + 4);
     if (wet && !finger.wet) {
       finger.x = finger.rx = pointer.x;
       finger.y = finger.ry = pointer.y;
@@ -889,6 +1013,15 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     }
 
     for (const f of floaters) stepFloater(f, dt);
+    tell(dt);
+    // boats nudge each other apart rather than sailing through one another
+    const afloat = floaters.filter((b) => b.boat && b.away <= 0);
+    for (let i = 0; i < afloat.length; i++)
+      for (let j = i + 1; j < afloat.length; j++) {
+        const a = afloat[i];
+        const b = afloat[j];
+        collide(a, b.x, b.y, (a.size + b.size) * 0.4, b.vx, b.vy);
+      }
 
     // now and then something rises and rings the surface
     if ((nextAmbient -= dt) <= 0) {
@@ -1158,6 +1291,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       shadeSail: [P(0, -20), P(9, -4), P(0, -4)],
       crease: [P(0, -20), P(0, 5)] as Pt[],
       mast: [P(0, -20), P(0, -26)] as Pt[],
+      initial: P(0, -9),
       flag: [P(0, -26), P(7, -24), P(0, -22)],
       s,
       bob,
@@ -1234,7 +1368,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     c.lineTo(b.mast[1][0], b.mast[1][1]);
     c.stroke();
     const flap = Math.sin(time * 5 + f.seed) * 1.2;
-    c.fillStyle = pal.flag;
+    c.fillStyle = pal.flags[(f.msg < 0 ? f.seed : f.msg) % pal.flags.length];
     fillPts([b.flag[0], [b.flag[1][0], b.flag[1][1] + flap], b.flag[2]]);
     c.strokeStyle = pal.ink;
     c.lineWidth = 1.4;
@@ -1249,6 +1383,21 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     c.moveTo(b.crease[0][0], b.crease[0][1]);
     c.lineTo(b.crease[1][0], b.crease[1][1]);
     c.stroke();
+    // the writer's initial on the sail
+    const note = notes[f.msg];
+    if (note) {
+      const initial = Array.from(note.name.trim())[0]?.toUpperCase() ?? '';
+      c.save();
+      c.translate(b.initial[0], b.initial[1]);
+      c.rotate(f.a);
+      c.globalAlpha = 0.85;
+      c.fillStyle = pal.ink;
+      c.font = `700 ${Math.round(7.5 * b.s)}px ${font}`;
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText(initial, -2.4 * b.s, 0);
+      c.restore();
+    }
     // the waterline lapping at the hull
     c.strokeStyle = pal.glint;
     c.lineWidth = 1.4;
@@ -1302,6 +1451,165 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     c.globalAlpha = 1;
   }
 
+  function wrap(text: string, width: number, max: number) {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let line = '';
+    for (const word of words) {
+      const next = line ? line + ' ' + word : word;
+      if (c.measureText(next).width <= width) line = next;
+      else {
+        if (line) lines.push(line);
+        line = word;
+        while (c.measureText(line).width > width && line.length > 1) {
+          let cut = line.length - 1;
+          while (cut > 1 && c.measureText(line.slice(0, cut)).width > width) cut--;
+          lines.push(line.slice(0, cut));
+          line = line.slice(cut);
+        }
+      }
+      if (lines.length >= max) break;
+    }
+    if (line && lines.length < max) lines.push(line);
+    if (lines.length === max && lines.join(' ').length < text.replace(/\s+/g, ' ').length) {
+      let last = lines[max - 1];
+      while (last && c.measureText(last + '…').width > width) last = last.slice(0, -1);
+      lines[max - 1] = last + '…';
+    }
+    return lines;
+  }
+
+  // The note a boat carries, unfolded beside it on a string: who wrote it, when, what they said and
+  // any reply, every word of it, wrapped onto as many lines as it takes. open runs 0 to 1 as it
+  // unfolds and folds away.
+  function drawNote(f: Floater, tick: number, open: number) {
+    const n = notes[f.msg];
+    noteRect = null;
+    noteOwner = null;
+    if (!n) return;
+    const inner = 184;
+    const measure = (fnt: string, lines: string[]) => {
+      c.font = fnt;
+      return Math.max(0, ...lines.map((l) => c.measureText(l).width));
+    };
+    const nameFont = `600 12px ${font}`;
+    const dateFont = `11px ${font}`;
+    const bodyFont = `12px ${font}`;
+    const replyFont = `italic 11px ${font}`;
+    c.font = nameFont;
+    const name = wrap(n.name, inner, 2);
+    const nameW = measure(nameFont, name);
+    const dateW = measure(dateFont, [n.date]);
+    // the date sits beside a short name, and under a long one
+    const dateBeside = name.length === 1 && nameW + dateW + 14 <= inner;
+    c.font = bodyFont;
+    const body = wrap(n.body, inner, 14);
+    c.font = replyFont;
+    const reply = n.reply ? wrap('↳ ' + n.reply, inner, 4) : [];
+    const w = clamp(
+      Math.max(dateBeside ? nameW + dateW + 14 : Math.max(nameW, dateW), measure(bodyFont, body), measure(replyFont, reply), 96) + 20,
+      120,
+      inner + 20
+    );
+    const headH = name.length * 16 + (dateBeside ? 0 : 14);
+    const h = 12 + headH + 6 + body.length * 16 + reply.length * 15 + 8;
+    const side = f.x > W * 0.5 ? -1 : 1;
+    const x = clamp(side < 0 ? f.x - 26 - w : f.x + 26, 6, W - w - 6);
+    const y = clamp(f.y - 18 - h * 0.5, 6, H - h - 6);
+    const bs = f.size / 34;
+    // the string, from the top of the mast to the near edge of the note
+    const mx = f.x;
+    const my = f.y - 26 * bs;
+    const ex = side < 0 ? x + w : x;
+    const ey = y + 14;
+    const ease = 1 - Math.pow(1 - open, 3);
+    c.save();
+    c.strokeStyle = pal.ink;
+    c.globalAlpha = 0.55 * ease;
+    c.lineWidth = 1;
+    c.setLineDash([3, 3]);
+    c.beginPath();
+    c.moveTo(mx, my);
+    c.quadraticCurveTo((mx + ex) / 2, Math.max(my, ey) + 12, ex, ey);
+    c.stroke();
+    c.setLineDash([]);
+    // it unfolds from the string's end: a little squashed and faint, then open
+    c.globalAlpha = ease;
+    c.translate(x + w / 2, y + h / 2 + (1 - ease) * 8);
+    c.rotate(f.tilt);
+    c.scale(0.92 + 0.08 * ease, 0.8 + 0.2 * ease);
+    c.translate(-w / 2, -h / 2);
+    c.fillStyle = pal.shadow;
+    c.globalAlpha = pal.shadowAlpha * 0.8 * ease;
+    c.fillRect(3, 4, w, h);
+    c.globalAlpha = ease;
+    c.fillStyle = pal.note;
+    c.fillRect(0, 0, w, h);
+    c.strokeStyle = pal.ink;
+    c.lineWidth = 1.3;
+    poly([[0, 0], [w / 2, 0], [w, 0], [w, h / 2], [w, h], [w / 2, h], [0, h], [0, h / 2]], 1, f.seed + 500, tick);
+    c.stroke();
+    // a strip of tape across the top
+    c.fillStyle = pal.flags[f.msg % pal.flags.length];
+    c.globalAlpha = 0.35 * ease;
+    c.fillRect(w / 2 - 16, -4, 32, 9);
+    c.globalAlpha = ease;
+    c.textBaseline = 'alphabetic';
+    let ty = 20;
+    c.fillStyle = pal.noteText;
+    c.font = nameFont;
+    name.forEach((l, i) => c.fillText(l, 10, ty + i * 16));
+    c.fillStyle = pal.noteMuted;
+    c.font = dateFont;
+    if (dateBeside) {
+      c.textAlign = 'right';
+      c.fillText(n.date, w - 10, ty);
+      c.textAlign = 'left';
+      ty += 16 * name.length;
+    } else {
+      ty += 16 * name.length - 2;
+      c.fillText(n.date, 10, ty);
+      ty += 14;
+    }
+    ty += 4;
+    c.fillStyle = pal.noteText;
+    c.font = bodyFont;
+    body.forEach((l, i) => c.fillText(l, 10, ty + i * 16));
+    ty += body.length * 16;
+    c.fillStyle = pal.noteMuted;
+    c.font = replyFont;
+    reply.forEach((l, i) => c.fillText(l, 10, ty + i * 15));
+    c.restore();
+    noteRect = [x, y, w, h];
+    noteOwner = f;
+  }
+
+  // extra widens the reach: a boat drifting into a cursor resting in the water is caught before
+  // the finger can push it aside
+  const boatAt = (x: number, y: number, extra = 0) => {
+    let best: Floater | null = null;
+    let bestD = Infinity;
+    for (const f of floaters) {
+      if (!f.boat || f.away > 0) continue;
+      const d = Math.hypot(f.x - x, f.y - 7 * (f.size / 34) - y);
+      if (d < f.size * 0.6 + extra && d < bestD) {
+        best = f;
+        bestD = d;
+      }
+    }
+    return best;
+  };
+  const inNote = (x: number, y: number) =>
+    !!noteRect && x >= noteRect[0] && x <= noteRect[0] + noteRect[2] && y >= noteRect[1] && y <= noteRect[1] + noteRect[3];
+  // whose note should be up: the boat the cursor has caught (or whose note it is on), then a boat
+  // that was tapped, then the one telling its message on its own
+  function desiredNote(): Floater | null {
+    if (held && held.msg >= 0) return held;
+    if (pinned && pinned.away <= 0) return pinned;
+    if (telling && tellAge < tellFor) return telling;
+    return null;
+  }
+
   function drawDrops() {
     for (const d of drops) {
       const k = d.age / d.life;
@@ -1350,6 +1658,25 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       else drawLeaf(f, tick);
     }
     drawDrops();
+    if (still) {
+      // nothing moves: the note follows the cursor and taps straight away
+      const over = pointer.inside ? boatAt(pointer.x, pointer.y) : null;
+      held = over && over.msg >= 0 ? over : pointer.inside && noteOwner && inNote(pointer.x, pointer.y) ? noteOwner : null;
+      showing = desiredNote();
+      openness = showing ? 1 : 0;
+    }
+    if (showing && showing.away <= 0 && openness > 0) drawNote(showing, tick, openness);
+    else {
+      noteRect = null;
+      noteOwner = null;
+    }
+    // over a boat or a note the cursor says it can be clicked
+    const want = pointer.inside && (!!held || !!boatAt(pointer.x, pointer.y) || inNote(pointer.x, pointer.y));
+    if (want !== pointing) {
+      pointing = want;
+      mainEl = mainEl ?? document.querySelector('main');
+      if (mainEl) mainEl.style.cursor = want ? 'pointer' : '';
+    }
   }
 
   // ---- pointer ----
@@ -1360,6 +1687,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     const t = e.target instanceof Element ? e.target : null;
     pointer.inside =
       !!t && !!t.closest('main') && !t.closest(INTERACTIVE) && pointer.x >= 0 && pointer.x <= W && pointer.y >= 0 && pointer.y <= H;
+    if (still) requestAnimationFrame(render);
   };
   const onOut = (e: PointerEvent) => {
     if (!e.relatedTarget) pointer.inside = false;
@@ -1371,10 +1699,20 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     pointer.inside = false;
   };
   const onDown = (e: PointerEvent) => {
-    if (!live || still || e.button !== 0) return;
+    if (!live || e.button !== 0) return;
     onMove(e);
     if (!pointer.inside) return;
     const { x, y } = pointer;
+    if (inNote(x, y)) {
+      navigate('/guestbook');
+      return;
+    }
+    const boat = boatAt(x, y) ?? held;
+    pinned = boat && boat.msg >= 0 && pinned !== boat ? boat : null;
+    if (still) {
+      render();
+      return;
+    }
     for (const f of floaters) {
       if (f.away > 0 || Math.hypot(f.x - x, f.y - (f.boat ? y + 6 : y)) > f.size * 0.55) continue;
       // a tap on something afloat sets it rocking and spinning away from the tap
@@ -1424,16 +1762,16 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   });
   ro.observe(canvas);
   layout();
+  window.addEventListener('pointermove', onMove, { passive: true });
+  window.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('blur', onBlur);
+  document.addEventListener('pointerout', onOut);
   if (still) {
-    // one settled frame, drawn once
+    // one settled frame, drawn again only when the cursor asks for a note
     for (let i = 0; i < 60; i++) step(1 / 30);
     render();
   } else {
-    window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('pointerdown', onDown);
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('blur', onBlur);
-    document.addEventListener('pointerout', onOut);
     document.addEventListener('visibilitychange', onVisibility);
     onVisibility();
   }
@@ -1447,9 +1785,24 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       buildLayers();
       render();
     },
+    setNotes(next: StreamNote[]) {
+      const first = notes.length === 0;
+      notes = next;
+      if (first) {
+        // the boats already afloat take the newest notes, in order down the stream
+        nextNote = 0;
+        floaters
+          .filter((b) => b.boat)
+          .sort((a, b) => b.y - a.y)
+          .forEach((b) => (b.msg = takeNote()));
+      } else nextNote %= Math.max(1, notes.length);
+      floaters.forEach((b) => (b.told = false));
+      if (still) render();
+    },
     destroy() {
       stop();
       ro.disconnect();
+      if (mainEl) mainEl.style.cursor = '';
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointerup', onUp);
@@ -1460,22 +1813,63 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   };
 }
 
+type GuestbookComment = { id: number; createdAt: string; displayName: string; messageBody: string; replyTo?: number };
+
+const plain = (v: string) => v.replace(/[*_`>#]+/g, '').replace(/\s+/g, ' ').trim();
+
+// The guestbook as the boats carry it: newest first, each with the first reply to it, if any.
+async function loadNotes(): Promise<StreamNote[]> {
+  const res = await fetch('/api/guestbook');
+  if (!res.ok) return [];
+  const data = (await res.json()) as { comments?: GuestbookComment[] };
+  const all = data.comments ?? [];
+  const replies = new Map<number, GuestbookComment>();
+  for (const cm of all) if (cm.replyTo && !replies.has(cm.replyTo)) replies.set(cm.replyTo, cm);
+  const month = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+  return all
+    .filter((cm) => !cm.replyTo && plain(cm.messageBody))
+    .map((cm) => {
+      const r = replies.get(cm.id);
+      return {
+        name: plain(cm.displayName) || 'Someone',
+        date: month.format(new Date(cm.createdAt)),
+        body: plain(cm.messageBody),
+        ...(r && { reply: `${plain(r.displayName)}: ${plain(r.messageBody)}` }),
+      };
+    });
+}
+
 // Runs down the right-hand side of every page, from the top of the window to the bottom, in the
-// column the shell keeps free for it (reaching 2rem into the page's own padding beside it). It lives in the shell, so going from page to page never
-// remounts it: the water carries on and the boat is still where you pushed it. Below xl there is
-// no room for it, and nothing runs.
+// column the shell keeps free for it (reaching 2rem into the page's own padding beside it). It
+// lives in the shell, so going from page to page never remounts it: the water carries on and the
+// boats are still where you pushed them. Below xl there is no room for it, and nothing runs.
 export default function WaterStream() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
+  const router = useRouter();
+  const routerRef = useRef(router);
+  routerRef.current = router;
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const isDark = () => document.documentElement.classList.contains('dark');
-    const engine = runStream(canvas, isDark(), reduced);
+    const engine = runStream(canvas, isDark(), reduced, (href) => routerRef.current.push(href));
     const mo = new MutationObserver(() => engine.setDark(isDark()));
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    // the guestbook, now and every ten minutes, so a new entry sets sail before long
+    let cancelled = false;
+    const refresh = () =>
+      loadNotes()
+        .then((n) => {
+          if (!cancelled && n.length) engine.setNotes(n);
+        })
+        .catch(() => {});
+    void refresh();
+    const timer = window.setInterval(refresh, 10 * 60 * 1000);
     return () => {
+      cancelled = true;
+      window.clearInterval(timer);
       mo.disconnect();
       engine.destroy();
     };
