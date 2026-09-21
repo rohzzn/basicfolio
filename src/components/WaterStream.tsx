@@ -4,48 +4,111 @@ import React, { useEffect, useRef } from 'react';
 import { useMedia } from '@/lib/use-media';
 import { plip } from '@/lib/site-sound';
 
-// A clear blue stream down the right-hand side of every page, seen from straight above and drawn
-// on the GPU in a clean, game-like style.
+// A brook down the right side of the About page, drawn the way the films in /films are drawn:
+// flat water on paper under a halftone screen, wobbly ink banks with hatching outside them, and
+// lines whose jitter re-rolls twelve times a second, on twos, so it reads as drawn by hand.
 //
-// Under the water is a smooth sandy bed with a scatter of plain, rounded stones in soft colours,
-// each with a lit side, a shaded side and a small glint, and a soft shadow on the sand round it;
-// three big stones lie a little deeper. The water is aqua over the shallows and a deeper fresh
-// blue down the middle; it bends the bed as its surface moves, throws caustic light across it,
-// glitters where the sun or moon catches it, and meets the page with a white lace of foam.
+// Unlike the films it is live. The cursor is a finger in the water: held still, the current
+// parts around it and sheds eddies behind it the way it does round the stones; moved, it drags
+// the water along and leaves rings. A click drops a pebble with a plip (lib/site-sound, so the
+// sidebar's mute covers it). A paper boat and two leaves ride the current and can be pushed about,
+// and a click on the boat rocks it.
 //
-// Ripples are a real wave simulation on a half-resolution grid, carried downstream with the
-// current: the cursor held in the water sheds a wake, moving it trails ripples, and a click drops
-// a pebble. A few leaves ride the current and can be pushed.
-//
-// It is lit for the visitor's own time of day: the sun's height and bearing come from their clock
-// and the date (at a mid-northern latitude), the moon's from its real phase, so it is bright at
-// midday, warm at the ends of the day and moonlit navy at night. ?time=HH:MM in the address
-// previews another hour.
-//
-// The canvas takes no pointer events: it reads the pointer off the window, so everything under
-// and around it stays exactly as clickable as it was. It needs WebGL2 with float render targets;
-// without them the column is simply left empty.
+// The canvas takes no pointer events. It reads the pointer off the window, so everything under
+// and around it stays exactly as clickable as it was.
 
-type Vec3 = [number, number, number];
+type Pt = [number, number];
+type BankPt = { x: number; y: number; nx: number; ny: number };
+type Pal = {
+  water: string;
+  deep: string;
+  dotAlpha: number;
+  current: string;
+  currentAlpha: number;
+  glint: string;
+  glintAlpha: number;
+  ink: string;
+  hatch: string;
+  hatchAlpha: number;
+  sand: string;
+  stone: string;
+  boat: string;
+  boatShade: string;
+  flag: string;
+  leaves: string[];
+  shadow: string;
+  shadowAlpha: number;
+};
+
+// Light is the paper-boat film's sea on this site's paper; dark is the same drawing in chalk.
+const LIGHT: Pal = {
+  water: '#a9c7c9',
+  deep: '#0a5083',
+  dotAlpha: 0.32,
+  current: '#0a5083',
+  currentAlpha: 0.62,
+  glint: '#fbf9f3',
+  glintAlpha: 0.95,
+  ink: '#24232e',
+  hatch: '#24232e',
+  hatchAlpha: 0.3,
+  sand: '#ebe2d3',
+  stone: '#d3ccbb',
+  boat: '#fdfbf6',
+  boatShade: '#0a5083',
+  flag: '#c8473f',
+  leaves: ['#8f8e5f', '#df9a57'],
+  shadow: '#0a2a45',
+  shadowAlpha: 0.2,
+};
+const DARK: Pal = {
+  water: '#0f1b24',
+  deep: '#6d9fc4',
+  dotAlpha: 0.34,
+  current: '#b4d3e8',
+  currentAlpha: 0.5,
+  glint: '#f5f1ec',
+  glintAlpha: 0.72,
+  ink: '#d8d3c9',
+  hatch: '#8c9098',
+  hatchAlpha: 0.32,
+  sand: '#141413',
+  stone: '#26272b',
+  boat: '#e6e0d4',
+  boatShade: '#6d9fc4',
+  flag: '#d8614f',
+  leaves: ['#7f7f4e', '#b97d45'],
+  shadow: '#000000',
+  shadowAlpha: 0.5,
+};
 
 const TAU = Math.PI * 2;
-const DEG = Math.PI / 180;
+const BOIL = 12; // line jitter re-rolls on twos, like the films
 const V0 = 38; // px/s down the middle of the stream
-const K1 = TAU / 980;
-const K2 = TAU / 520;
-const K3 = TAU / 640;
+const DOT = 7; // halftone cell
+const FINGER = 15; // radius of the dimple the cursor makes
+const PUSH_LIFE = 0.8;
+const TRAIL_DT = 0.07; // how often a speck notes where it is
+const TRAIL_N = 26; // and how many of those it keeps
 const INTERACTIVE = 'a, button, input, textarea, select, label, summary, [role="button"], [contenteditable="true"]';
-// fraction of the height, position across (-1 bank to 1 bank), radius
+// Where the stones sit: fraction of the height, position across the stream (-1 bank to 1 bank), radius.
 const STONES: [number, number, number][] = [
-  [0.22, -0.44, 18],
-  [0.55, 0.4, 23],
-  [0.84, -0.2, 15],
+  [0.22, -0.46, 15],
+  [0.55, 0.42, 19],
+  [0.84, -0.22, 12],
 ];
-const MAX_DROPS = 16;
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
+function hash(a: number, b = 0, c = 0): number {
+  let h = Math.imul(a | 0, 0x27d4eb2d) ^ Math.imul(b | 0, 0x165667b1) ^ Math.imul(c | 0, 0x61c88647);
+  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b);
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
+// The films' seeded generator (films/core.js): nothing here uses Math.random.
 function rng(seed: number): () => number {
   let a = (seed * 1000003) >>> 0;
   return () => {
@@ -56,534 +119,79 @@ function rng(seed: number): () => number {
   };
 }
 
-// sRGB hex to linear light
-function lin(hex: string): Vec3 {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => Math.pow(c / 255, 2.2)) as Vec3;
-}
-const mix3 = (a: Vec3, b: Vec3, t: number): Vec3 => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
-const scale3 = (a: Vec3, k: number): Vec3 => [a[0] * k, a[1] * k, a[2] * k];
-
-// ---------------------------------------------------------------------------------------------
-// Time of day
-// ---------------------------------------------------------------------------------------------
-
-type Sky = {
-  sun: Vec3; // direction to the sun: x east, y north (screen down), z up
-  sunCol: Vec3;
-  sunUp: number;
-  moon: Vec3;
-  moonCol: Vec3;
-  zen: Vec3;
-  hor: Vec3;
-  amb: Vec3;
-  exposure: number;
+// A tracer is a speck carried by the current. It remembers where it has been, and its line is
+// drawn along that path: a trail changes only as fast as the speck moves, so the lines bend
+// round the cursor smoothly instead of being redrawn from scratch every frame.
+type Tracer = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  age: number;
+  life: number;
+  glint: boolean;
+  id: number;
+  sp: number;
+  hx: number[];
+  hy: number[];
+  ht: number;
+};
+type Body = { x: number; y: number; r: number; ux: number; uy: number; shed: number; side: number };
+type Stone = Body & { pts: Pt[]; seed: number };
+type Vortex = { x: number; y: number; g: number; core: number; age: number; life: number };
+type Push = { x: number; y: number; vx: number; vy: number; age: number };
+type Ripple = { x: number; y: number; age: number; life: number; rMax: number; k: number; seed: number };
+type Drop = { x: number; y: number; vx: number; vy: number; age: number; life: number };
+type Floater = {
+  boat: boolean;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  a: number;
+  va: number;
+  size: number;
+  color: number;
+  seed: number;
+  away: number; // seconds until it floats back in; 0 while it is on screen
+  bump: number;
 };
 
-// sky colours by the sun's elevation in degrees
-const SKY_KEYS: { e: number; zen: string; hor: string; sun: string; i: number }[] = [
-  { e: -18, zen: '#02040b', hor: '#060a16', sun: '#000000', i: 0 },
-  { e: -9, zen: '#0b1330', hor: '#241f40', sun: '#000000', i: 0 },
-  { e: -3, zen: '#22386a', hor: '#a86456', sun: '#ff6f3a', i: 0.12 },
-  { e: 2, zen: '#3b5e94', hor: '#ee955a', sun: '#ff9147', i: 0.55 },
-  { e: 8, zen: '#4e7ebc', hor: '#f2c08a', sun: '#ffbd78', i: 0.85 },
-  { e: 22, zen: '#4983c7', hor: '#bdd6ec', sun: '#fff0d8', i: 1 },
-  { e: 60, zen: '#3f7cc4', hor: '#c6def0', sun: '#fffaf2', i: 1.05 },
-];
-
-// South is at the top of the screen, so the midday sun lights things from above the way the eye
-// expects (lit from below, pebbles read as dents); morning light comes from the right, evening
-// light from the left.
-function dirFrom(elev: number, az: number): Vec3 {
-  return [Math.sin(az) * Math.cos(elev), Math.cos(az) * Math.cos(elev), Math.sin(elev)];
-}
-
-function skyAt(now: Date): Sky {
-  const lat = 40 * DEG;
-  const start = new Date(now.getFullYear(), 0, 0);
-  const day = Math.floor((+now - +start) / 864e5);
-  const decl = 23.44 * DEG * Math.sin((TAU * (284 + day)) / 365);
-  // clock noon is about 12:10 solar, an hour later in summer time
-  const jan = new Date(now.getFullYear(), 0, 1).getTimezoneOffset();
-  const jul = new Date(now.getFullYear(), 6, 1).getTimezoneOffset();
-  const dst = now.getTimezoneOffset() < Math.max(jan, jul);
-  const hour = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
-  const ha = (hour - 12.2 - (dst ? 1 : 0)) * 15 * DEG;
-  const place = (h: number, d: number) => {
-    const e = Math.asin(Math.sin(lat) * Math.sin(d) + Math.cos(lat) * Math.cos(d) * Math.cos(h));
-    const az = Math.atan2(Math.sin(h), Math.cos(h) * Math.sin(lat) - Math.tan(d) * Math.cos(lat)) + Math.PI;
-    return { e, az };
-  };
-  const sun = place(ha, decl);
-  // the moon: its phase from a known new moon, trailing the sun by that much of a day
-  const phase = ((((+now / 864e5 - 10962.76) / 29.530588853) % 1) + 1) % 1;
-  const moon = place(ha - phase * TAU, decl * Math.cos(phase * TAU));
-  const lit = (1 - Math.cos(phase * TAU)) / 2;
-
-  const e = sun.e / DEG;
-  let k = 0;
-  while (k < SKY_KEYS.length - 2 && e > SKY_KEYS[k + 1].e) k++;
-  const a = SKY_KEYS[k];
-  const b = SKY_KEYS[k + 1];
-  const t = clamp((e - a.e) / (b.e - a.e), 0, 1);
-  const zen = mix3(lin(a.zen), lin(b.zen), t);
-  const hor = mix3(lin(a.hor), lin(b.hor), t);
-  const sunI = lerp(a.i, b.i, t);
-  const sunCol = scale3(mix3(lin(a.sun), lin(b.sun), t), sunI * 2.0);
-  const moonUp = clamp((moon.e / DEG + 4) / 14, 0, 1);
-  const moonCol = scale3(lin('#c4d2ff'), (0.05 + 0.2 * lit) * moonUp);
-  const amb = mix3(zen, hor, 0.45).map((c, i) => c * 0.85 + [0.0015, 0.002, 0.004][i]) as Vec3;
-  const daylight = clamp((e + 8) / 18, 0, 1);
-  return {
-    sun: dirFrom(sun.e, sun.az),
-    sunCol,
-    sunUp: clamp((e + 1) / 9, 0, 1),
-    moon: dirFrom(moon.e, moon.az),
-    moonCol,
-    zen,
-    hor,
-    amb,
-    exposure: lerp(2.4, 0.7, daylight),
-  };
-}
-
-function lerpSky(a: Sky, b: Sky, t: number): Sky {
-  return {
-    sun: mix3(a.sun, b.sun, t),
-    sunCol: mix3(a.sunCol, b.sunCol, t),
-    sunUp: lerp(a.sunUp, b.sunUp, t),
-    moon: mix3(a.moon, b.moon, t),
-    moonCol: mix3(a.moonCol, b.moonCol, t),
-    zen: mix3(a.zen, b.zen, t),
-    hor: mix3(a.hor, b.hor, t),
-    amb: mix3(a.amb, b.amb, t),
-    exposure: lerp(a.exposure, b.exposure, t),
-  };
-}
-
-// ?time=HH:MM holds the clock at that hour, today
-function clockOverride(): Date | null {
-  try {
-    const m = /(?:^|[?&])time=(\d{1,2}):?(\d{2})?/.exec(window.location.search);
-    if (!m) return null;
-    const d = new Date();
-    d.setHours(Number(m[1]) % 24, Number(m[2] ?? 0), 0, 0);
-    return d;
-  } catch {
-    return null;
-  }
-}
-
-// ---------------------------------------------------------------------------------------------
-// Shaders
-// ---------------------------------------------------------------------------------------------
-
-const VERT = `#version 300 es
-in vec2 aPos;
-out vec2 vUv;
-void main() { vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
-
-const COMMON = `
-float hash12(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
-vec2 hash22(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xx + p3.yz) * p3.zy); }
-float vnoise(vec2 p) {
-  vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
-  return mix(mix(hash12(i), hash12(i + vec2(1, 0)), u.x), mix(hash12(i + vec2(0, 1)), hash12(i + vec2(1, 1)), u.x), u.y);
-}
-float fbm(vec2 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { s += a * vnoise(p); p = p * 2.03 + 17.1; a *= 0.5; } return s; }
-vec2 grad2(vec2 p) { float a = hash12(p) * 6.2831853; return vec2(cos(a), sin(a)); }
-// gradient noise with its derivatives (value, d/dx, d/dy)
-vec3 noised(vec2 p) {
-  vec2 i = floor(p), f = fract(p);
-  vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
-  vec2 du = 30.0 * f * f * (f * (f - 2.0) + 1.0);
-  vec2 ga = grad2(i), gb = grad2(i + vec2(1, 0)), gc = grad2(i + vec2(0, 1)), gd = grad2(i + vec2(1, 1));
-  float va = dot(ga, f), vb = dot(gb, f - vec2(1, 0)), vc = dot(gc, f - vec2(0, 1)), vd = dot(gd, f - vec2(1, 1));
-  return vec3(va + u.x * (vb - va) + u.y * (vc - va) + u.x * u.y * (va - vb - vc + vd),
-              ga + u.x * (gb - ga) + u.y * (gc - ga) + u.x * u.y * (ga - gb - gc + gd) + du * (u.yx * (va - vb - vc + vd) + vec2(vb, vc) - va));
-}`;
-
-// Once per size: the ground (albedo and height), its normals, and the current over it.
-const BAKE = `#version 300 es
-precision highp float;
-uniform vec2 uSize;
-uniform vec4 uGeo;          // centre x, bend 1, bend 2, half width
-uniform vec4 uStone[3];     // x, y, radius
-uniform vec4 uStoneFlow[3]; // the current arriving at each stone, px/s
-in vec2 vUv;
-layout(location = 0) out vec4 oA; // linear albedo, height (water line at 0)
-layout(location = 1) out vec4 oB; // ground normal xy, rock, foam source
-layout(location = 2) out vec4 oC; // current xy (px/s, y down), across (-1..1 bank to bank)
-${COMMON}
-const float K1 = ${K1}, K2 = ${K2}, K3 = ${K3};
-float cX(float y) { return uGeo.x + uGeo.y * sin(y * K1 + 0.9) + uGeo.z * sin(y * K2 + 2.1); }
-float sl(float y) { return uGeo.y * K1 * cos(y * K1 + 0.9) + uGeo.z * K2 * cos(y * K2 + 2.1); }
-float hW(float y) { return uGeo.w * (1.0 + 0.16 * sin(y * K3 + 4.0)); }
-float across(vec2 p, out vec2 t) {
-  float s = p.y;
-  for (int k = 0; k < 2; k++) { float m = sl(s); s += ((p.x - cX(s)) * m + (p.y - s)) / (1.0 + m * m); }
-  float m = sl(s), inv = inversesqrt(1.0 + m * m);
-  t = vec2(m * inv, inv);
-  return ((p.x - cX(s)) * inv + (p.y - s) * (-m * inv)) / hW(s);
-}
-vec3 srgb(vec3 c) { return pow(c, vec3(2.2)); }
-// One stone per cell, each its own size, oval and turned its own way, some overlapping and some
-// leaving sand between them: returns the height of the highest stone here, its id, how close to
-// its rim this point is (0 at the rim, 1 at the crown), and how near the nearest rim is (1 on it).
-vec4 stones(vec2 x, float cover) {
-  vec2 n = floor(x), f = fract(x);
-  float best = 0.0, bid = 0.0, crown = 0.0, near = 9.0;
-  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
-    vec2 id = n + vec2(i, j);
-    float k = hash12(id + 7.13);
-    if (k > cover) continue;
-    vec2 c = vec2(i, j) + 0.5 + (hash22(id) - 0.5) * 0.7 - f;
-    float ang = hash12(id + 1.7) * 6.2831853;
-    vec2 cs = vec2(cos(ang), sin(ang));
-    vec2 q = vec2(dot(c, cs), dot(c, vec2(-cs.y, cs.x))) * vec2(1.0, 1.0 + hash12(id + 3.3) * 0.7);
-    float rad = 0.3 + 0.24 * hash12(id + 5.5);
-    float d = length(q) / rad;
-    near = min(near, d);
-    if (d < 1.0) {
-      float dome = sqrt(1.0 - d * d) * (0.55 + 0.45 * hash12(id + 9.1)) * rad * 2.0;
-      if (dome > best) { best = dome; bid = hash12(id + 11.9); crown = 1.0 - d; }
-    }
-  }
-  return vec4(best, bid, crown, near);
-}
-// smooth pebbles in soft colours: cream, pale grey, blue-grey, warm beige, a little terracotta
-// clean stone colours, the kind a game would pick: soft greys, blue-grey, warm beige, slate
-vec3 stone(float k) {
-  vec3 c = k < .2 ? vec3(.86,.88,.90) : k < .38 ? vec3(.90,.84,.76) : k < .54 ? vec3(.74,.82,.90) : k < .7 ? vec3(.95,.89,.78)
-         : k < .84 ? vec3(.70,.74,.79) : vec3(.97,.96,.94);
-  return srgb(c * (0.95 + 0.08 * fract(k * 37.1)));
-}
-// the ground's height (water line at 0), its colour, whether it is a boulder, and the relief on
-// it (everything but the channel's own gentle slope, which is what the shading is taken from)
-float ground(vec2 p, out vec3 alb, out float rock, out float relief) {
-  vec2 t;
-  float u = across(p, t), au = abs(u);
-  float pool = 0.85 + 0.5 * (fbm(p * 0.007 + 3.1) - 0.5);
-  float channel = -max(0.0, 1.0 - u * u) * pool + max(0.0, au - 1.0) * 1.3 + 0.03;
-  float h = channel;
-  // smooth sand, and a scatter of clean, rounded stones lying on it, all under the water
-  alb = srgb(vec3(0.93, 0.87, 0.74)) * (0.97 + 0.05 * vnoise(p * 0.03));
-  float under = smoothstep(0.1, 0.3, -channel); // none at the water's edge
-  vec4 big = stones(p / 24.0, 0.5);
-  vec4 small = stones(p / 11.0 + 31.7, 0.16);
-  float hb = big.x * 0.1 * under, hs = small.x * 0.06 * under;
-  // a soft contact shadow on the sand round each stone
-  alb *= 1.0 - 0.28 * under * max(smoothstep(1.45, 1.0, big.w), smoothstep(1.35, 1.0, small.w) * 0.7);
-  if (hs > 0.001) { alb = stone(small.y); h += hs; }
-  if (hb > hs && hb > 0.001) { alb = stone(big.y); h += hb - hs; }
-
-  // three big stones, lying just under the surface
-  rock = 0.0;
-  for (int i = 0; i < 3; i++) {
-    vec4 s = uStone[i];
-    vec2 z = p - s.xy;
-    vec2 fd = normalize(uStoneFlow[i].xy + 1e-4);
-    vec2 zz = vec2(dot(z, vec2(-fd.y, fd.x)), dot(z, fd) / 1.3);
-    float d = length(zz) / s.z;
-    if (d < 1.0) {
-      float hr = -0.75 + 0.45 * pow(1.0 - d * d, 0.5);
-      if (hr > h) {
-        h = hr;
-        alb = srgb(vec3(0.62, 0.67, 0.73) * (0.94 + 0.06 * float(i)));
-      }
-    }
-  }
-  relief = h - channel;
-  return h;
-}
-void main() {
-  vec2 p = vec2(vUv.x, 1.0 - vUv.y) * uSize;
-  vec3 alb, tmp; float rock, r2, rel, a, b, c, d;
-  float h = ground(p, alb, rock, rel);
-  float e = 0.75;
-  ground(p + vec2(e, 0), tmp, r2, a); ground(p - vec2(e, 0), tmp, r2, b);
-  ground(p + vec2(0, e), tmp, r2, c); ground(p - vec2(0, e), tmp, r2, d);
-  vec2 n = -vec2(a - b, c - d) / (2.0 * e) * 40.0;
-  vec2 t;
-  float u = across(p, t);
-  vec2 v = t * ${V0}.0 * max(0.0, 1.0 - 0.72 * u * u);
-  // the current parts gently round the big stones below it
-  for (int i = 0; i < 3; i++) {
-    vec4 s = uStone[i];
-    vec2 U = uStoneFlow[i].xy, z = p - s.xy;
-    float a2 = s.z * s.z * 0.8, r = dot(z, z);
-    if (r < 36.0 * a2) {
-      r = max(r, a2);
-      float A = z.x * z.x - z.y * z.y, B = 2.0 * z.x * z.y;
-      v -= a2 * vec2(U.x * A + U.y * B, U.x * B - U.y * A) / (r * r);
-    }
-  }
-  if (h > 0.0) v = vec2(0.0);
-  oA = vec4(alb, h);
-  oB = vec4(n, rock, 0.0);
-  oC = vec4(v, u, 0.0);
-}`;
-
-// Every frame, twice: the ripples. r height, g the height a step ago, b foam. The whole field is
-// carried downstream with the current, and dry ground holds it at rest, so waves bounce off it.
-const SIM = `#version 300 es
-precision highp float;
-uniform sampler2D uS, uA, uB, uC;
-uniform vec2 uSimSize, uSize;
-uniform float uDt;
-uniform vec4 uDrop[${MAX_DROPS}];
-uniform int uDropN;
-out vec4 o;
-void main() {
-  vec2 uv = gl_FragCoord.xy / uSimSize;
-  vec2 vel = texture(uC, uv).xy;
-  vec2 suv = uv - vec2(vel.x, -vel.y) * uDt / uSize;
-  vec2 e = 1.0 / uSimSize;
-  vec4 c = texture(uS, suv);
-  float h = (texture(uS, suv + vec2(0, e.y)).r + texture(uS, suv - vec2(0, e.y)).r
-           + texture(uS, suv + vec2(e.x, 0)).r + texture(uS, suv - vec2(e.x, 0)).r) * 0.5 - c.g;
-  h *= 0.992;
-  float foam = c.b * exp(-uDt * 0.8) + texture(uB, uv).w * uDt * 1.6;
-  vec2 p = vec2(uv.x, 1.0 - uv.y) * uSize;
-  for (int i = 0; i < ${MAX_DROPS}; i++) {
-    if (i >= uDropN) break;
-    vec4 d = uDrop[i];
-    float r = length(p - d.xy);
-    if (r < d.z) h += d.w * (0.5 + 0.5 * cos(3.14159265 * r / d.z));
-  }
-  if (texture(uA, uv).a > -0.005) h = 0.0;
-  o = vec4(h, c.r, clamp(foam, 0.0, 1.0), 1.0);
-}`;
-
-const RENDER = `#version 300 es
-precision highp float;
-uniform sampler2D uA, uB, uC, uS;
-uniform vec2 uSize, uSimSize;
-uniform float uTime, uExposure, uSunUp;
-uniform vec3 uSun, uSunCol, uMoon, uMoonCol, uZen, uHor, uAmb, uEye;
-uniform vec4 uLeaf[4];     // x, y, angle, length
-uniform vec3 uLeafCol[4];
-uniform int uLeafN;
-in vec2 vUv;
-out vec4 o;
-${COMMON}
-// light focused on the bed by the waves above it
-float caustic(vec2 p, float t) {
-  vec2 i = p; float c = 1.0; float inten = 0.005;
-  for (int n = 0; n < 4; n++) {
-    float tt = t * (1.0 - 3.5 / float(n + 1));
-    i = p + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
-    c += 1.0 / length(vec2(p.x / (sin(i.x + tt) / inten), p.y / (cos(i.y + tt) / inten)));
-  }
-  c /= 4.0;
-  c = 1.17 - pow(c, 1.4);
-  return pow(abs(c), 7.0);
-}
-vec3 aces(vec3 x) { return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0); }
-vec2 toUv(vec2 p) { return vec2(p.x, uSize.y - p.y) / uSize; }
-// a leaf along x from its stalk (-0.5) to its tip (0.5): widest a third of the way up, pointed at
-// the tip; returned as a distance in leaf units, negative inside
-float leafSd(vec2 l) {
-  float t = clamp(l.x + 0.5, 0.0, 1.0);
-  float w = 0.24 * pow(sin(3.14159 * pow(t, 0.8)), 0.9);
-  float body = abs(l.y) - w;
-  float ends = abs(l.x) - 0.5;
-  float stalk = max(abs(l.y) - 0.018, max(l.x + 0.5 - 0.0, -(l.x + 0.66)));
-  return min(max(body, ends), stalk);
-}
-vec3 lightOn(vec3 n) {
-  return uSunCol * max(dot(n, uSun), 0.0) * smoothstep(-0.02, 0.1, uSun.z) + uMoonCol * max(dot(n, uMoon), 0.0) + uAmb * (0.55 + 0.45 * n.z);
-}
-void main() {
-  vec2 p = vec2(vUv.x, 1.0 - vUv.y) * uSize;
-  vec4 A = texture(uA, vUv), B = texture(uB, vUv), C = texture(uC, vUv);
-  float h = A.a;
-  // only the water is drawn: it meets the page at its own edge
-  float alpha = smoothstep(0.004, -0.006, h);
-  if (alpha <= 0.002) { o = vec4(0.0); return; }
-
-  // ripples
-  vec2 se = 1.0 / uSimSize;
-  vec4 S = texture(uS, vUv);
-  vec2 rs = vec2(texture(uS, vUv + vec2(se.x, 0)).r - texture(uS, vUv - vec2(se.x, 0)).r,
-                 texture(uS, vUv - vec2(0, se.y)).r - texture(uS, vUv + vec2(0, se.y)).r);
-
-  // small waves carried by the current: two phases of a flow map, cross-faded
-  vec2 fl = C.xy;
-  float ph0 = fract(uTime * 0.22), ph1 = fract(uTime * 0.22 + 0.5);
-  float w0 = 1.0 - abs(2.0 * ph0 - 1.0);
-  vec2 q0 = p - fl * ph0 * 4.5, q1 = p - fl * ph1 * 4.5 + vec2(41.0, 17.0);
-  vec2 g0 = noised(q0 * 0.065).yz * 0.55 + noised(q0 * 0.17 + 5.0).yz * 0.28;
-  vec2 g1 = noised(q1 * 0.065).yz * 0.55 + noised(q1 * 0.17 + 5.0).yz * 0.28;
-  float spd = clamp(length(fl) / 38.0, 0.0, 1.5);
-  float depth = max(0.0, -h);
-  vec2 slope = (g0 * w0 + g1 * (1.0 - w0)) * (0.05 + 0.15 * spd) + rs * 9.0 * smoothstep(0.0, 0.08, depth);
-  slope += noised(p * 0.11 + vec2(uTime * 0.35, uTime * 0.2)).yz * 0.018;
-  vec3 N = normalize(vec3(-slope, 1.0));
-
-  // the bed, seen through the moving surface, softer the deeper it lies
-  vec2 rp = p - slope * depth * 14.0;
-  float blur = clamp(depth * 0.7, 0.0, 1.0);
-  vec4 Ar = textureLod(uA, toUv(rp), blur), Br = textureLod(uB, toUv(rp), blur);
-  float dr = max(0.0, -Ar.a);
-  vec3 nb = normalize(vec3(Br.xy, 1.0));
-  vec2 cq0 = rp - fl * ph0 * 4.5, cq1 = rp - fl * ph1 * 4.5 + vec2(41.0, 17.0);
-  float ca = caustic(cq0 * 0.045 - 250.0, uTime * 0.5) * w0 + caustic(cq1 * 0.045 - 250.0, uTime * 0.5) * (1.0 - w0);
-  // game-style shading: a lit side and a shaded side with a soft step between, and a small glint
-  vec3 Ls = normalize(uSun + vec3(0.0, 0.0, 0.6));
-  float lam = smoothstep(-0.05, 0.35, dot(nb, Ls));
-  vec3 lightB = (uSunCol * smoothstep(-0.02, 0.1, uSun.z) + uMoonCol) * mix(0.55, 1.0, lam) + uAmb;
-  vec3 bed = Ar.rgb * (lightB + uSunCol * min(ca, 1.5) * 0.9 * exp(-dr * 1.0) * smoothstep(0.0, 0.3, uSun.z));
-  bed += (uSunCol * smoothstep(-0.02, 0.1, uSun.z) + uMoonCol) * pow(max(dot(reflect(-uEye, nb), Ls), 0.0), 24.0) * 0.32 * step(0.02, 1.0 - nb.z);
-  // clear water: aqua over the shallows, a deep fresh blue where it is deeper
-  float dt = dr + 0.16;
-  vec3 T = exp(-vec3(1.3, 0.45, 0.13) * dt * 2.8);
-  vec3 scat = vec3(0.01, 0.06, 0.17) * (uAmb * 4.0 + uSunCol * uSunUp * 0.55);
-  vec3 under = bed * T + scat * (1.0 - T);
-
-  // the surface: the sky it reflects, and the sun or moon where it catches them
-  vec3 R = reflect(-uEye, N);
-  vec3 sky = mix(uHor, uZen, pow(clamp(R.z, 0.0, 1.0), 0.55));
-  float F = min(1.0, (0.02 + 0.98 * pow(1.0 - max(dot(N, uEye), 0.0), 5.0)) * 1.6);
-  float sd = max(dot(R, uSun), 0.0), md = max(dot(R, uMoon), 0.0);
-  vec3 spec = uSunCol * (pow(sd, 1400.0) * 90.0 + pow(sd, 90.0) * 0.35) * smoothstep(-0.05, 0.05, uSun.z)
-            + uMoonCol * (pow(md, 900.0) * 60.0 + pow(md, 60.0) * 0.25) * smoothstep(-0.05, 0.05, uMoon.z);
-  vec3 water = mix(under, sky, F) + spec;
-
-  // foam behind the rocks, where it has been stirred, and in a lace along the edges
-  float fn = (vnoise(q0 * 0.35) * 0.6 + vnoise(q0 * 0.9 + 3.0) * 0.4) * w0 + (vnoise(q1 * 0.35) * 0.6 + vnoise(q1 * 0.9 + 3.0) * 0.4) * (1.0 - w0);
-  float shore = max(smoothstep(0.03, 0.012, depth), smoothstep(0.09, 0.0, depth) * smoothstep(0.45, 0.75, fn) * 0.7);
-  float foam = clamp(smoothstep(0.1, 0.9, S.b * 1.6 * (0.4 + fn)) + shore * 0.7, 0.0, 1.0);
-  vec3 foamCol = uSunCol * max(uSun.z, 0.0) * 0.95 + uAmb * 1.4 + uMoonCol * 0.6;
-  water = mix(water, foamCol, foam * 0.8);
-
-  vec3 col = water;
-
-  // leaves: their shadows, then the leaves themselves
-  vec2 so = -uSun.xy / max(uSun.z, 0.3) * 3.0;
-  for (int i = 0; i < 4; i++) {
-    if (i >= uLeafN) break;
-    vec4 lf = uLeaf[i];
-    vec2 d = p - lf.xy - so;
-    vec2 l = vec2(cos(lf.z) * d.x + sin(lf.z) * d.y, -sin(lf.z) * d.x + cos(lf.z) * d.y) / lf.w;
-    col *= 1.0 - 0.4 * uSunUp * smoothstep(1.5, -1.5, leafSd(l) * lf.w);
-  }
-  for (int i = 0; i < 4; i++) {
-    if (i >= uLeafN) break;
-    vec4 lf = uLeaf[i];
-    vec2 d = p - lf.xy;
-    vec2 l = vec2(cos(lf.z) * d.x + sin(lf.z) * d.y, -sin(lf.z) * d.x + cos(lf.z) * d.y) / lf.w;
-    float cov = smoothstep(0.7, -0.7, leafSd(l) * lf.w);
-    if (cov <= 0.0) continue;
-    vec3 lc = uLeafCol[i] * (0.9 + 0.15 * vnoise(l * 7.0)) * (1.0 + 0.2 * smoothstep(0.2, -0.3, l.x));
-    float vein = max(smoothstep(0.02, 0.0, abs(l.y)) * step(-0.5, l.x) * step(l.x, 0.42),
-                     smoothstep(0.8, 1.0, sin((l.x - abs(l.y) * 1.2) * 30.0)) * 0.35 * step(abs(l.y), 0.2));
-    lc = mix(lc, lc * 0.72, vein);
-    vec3 nl = normalize(vec3(-sin(lf.z) * l.y, cos(lf.z) * l.y, 1.4));
-    vec3 lit = lc * lightOn(nl) + uSunCol * pow(max(dot(reflect(-uEye, nl), uSun), 0.0), 40.0) * 0.12;
-    col = mix(col, lit, cov);
-  }
-
-  col = pow(aces(col * uExposure), vec3(1.0 / 2.2));
-  o = vec4(col * alpha, alpha);
-}`;
-
-// ---------------------------------------------------------------------------------------------
-// The engine
-// ---------------------------------------------------------------------------------------------
-
-type Leaf = { x: number; y: number; vx: number; vy: number; a: number; va: number; size: number; color: Vec3; away: number };
-type Push = { x: number; y: number; vx: number; vy: number; age: number };
-type Stone = { x: number; y: number; r: number; ux: number; uy: number };
-type Drop = [number, number, number, number];
-
-const LEAF_COLORS = ['#7fa650', '#e0b44a', '#d9853b', '#9cbf5c'].map(lin);
-
-function runStream(canvas: HTMLCanvasElement, still: boolean) {
-  const glc = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: 'low-power' });
-  if (!glc || !glc.getExtension('EXT_color_buffer_float')) return { destroy() {} };
-  const gl = glc;
+function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean) {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return { setDark() {}, destroy() {} };
+  const c = ctx;
   const rand = rng(7);
-
-  // ---- programs ----
-  function shader(type: number, src: string) {
-    const s = gl.createShader(type) as WebGLShader;
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
-    return s;
-  }
-  function program(frag: string) {
-    const p = gl.createProgram() as WebGLProgram;
-    gl.attachShader(p, shader(gl.VERTEX_SHADER, VERT));
-    gl.attachShader(p, shader(gl.FRAGMENT_SHADER, frag));
-    gl.bindAttribLocation(p, 0, 'aPos');
-    gl.linkProgram(p);
-    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) console.error(gl.getProgramInfoLog(p));
-    const locs = new Map<string, WebGLUniformLocation | null>();
-    const loc = (n: string) => {
-      if (!locs.has(n)) locs.set(n, gl.getUniformLocation(p, n));
-      return locs.get(n) ?? null;
-    };
-    return { p, loc };
-  }
-  const bake = program(BAKE);
-  const sim = program(SIM);
-  const draw = program(RENDER);
-
-  const vao = gl.createVertexArray();
-  gl.bindVertexArray(vao);
-  const buf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(0);
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-
-  const textures: WebGLTexture[] = [];
-  const framebuffers: WebGLFramebuffer[] = [];
-  function texture(w: number, h: number, levels = 1) {
-    const t = gl.createTexture() as WebGLTexture;
-    gl.bindTexture(gl.TEXTURE_2D, t);
-    gl.texStorage2D(gl.TEXTURE_2D, levels, gl.RGBA16F, w, h);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, levels > 1 ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    textures.push(t);
-    return t;
-  }
-  function framebuffer(ts: WebGLTexture[]) {
-    const f = gl.createFramebuffer() as WebGLFramebuffer;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
-    ts.forEach((t, i) => gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, t, 0));
-    gl.drawBuffers(ts.map((_, i) => gl.COLOR_ATTACHMENT0 + i));
-    framebuffers.push(f);
-    return f;
-  }
-  function freeTargets() {
-    textures.splice(0).forEach((t) => gl.deleteTexture(t));
-    framebuffers.splice(0).forEach((f) => gl.deleteFramebuffer(f));
-  }
-
-  // ---- geometry (CSS px, y down) ----
+  let pal = startDark ? DARK : LIGHT;
   let W = 0;
   let H = 0;
+  let dpr = 1;
   let live = false;
+  let time = 0;
+
+  // ---- the course of the stream: a centreline x(y) and a half-width, both gentle sines ----
   let cx0 = 0;
   let a1 = 0;
   let a2 = 0;
   let hw0 = 0;
+  const K1 = TAU / 980;
+  const K2 = TAU / 520;
+  const K3 = TAU / 640;
   const centerX = (y: number) => cx0 + a1 * Math.sin(y * K1 + 0.9) + a2 * Math.sin(y * K2 + 2.1);
-  const slopeAt = (y: number) => a1 * K1 * Math.cos(y * K1 + 0.9) + a2 * K2 * Math.cos(y * K2 + 2.1);
+  const slope = (y: number) => a1 * K1 * Math.cos(y * K1 + 0.9) + a2 * K2 * Math.cos(y * K2 + 2.1);
   const halfW = (y: number) => hw0 * (1 + 0.16 * Math.sin(y * K3 + 4));
+
+  // The local frame at a point: the tangent downstream, the normal towards the right bank, and u,
+  // how far across the stream the point is (-1 left bank, 0 middle, 1 right bank). Two Newton steps
+  // find the spot on the centreline whose normal passes through the point.
   const F = { tx: 0, ty: 1, nx: 1, ny: 0, u: 0, hw: 1 };
   function frameAt(x: number, y: number) {
     let s = y;
     for (let k = 0; k < 2; k++) {
-      const m = slopeAt(s);
+      const m = slope(s);
       s += ((x - centerX(s)) * m + (y - s)) / (1 + m * m);
     }
-    const m = slopeAt(s);
+    const m = slope(s);
     const inv = 1 / Math.sqrt(1 + m * m);
     F.tx = m * inv;
     F.ty = inv;
@@ -592,82 +200,144 @@ function runStream(canvas: HTMLCanvasElement, still: boolean) {
     F.hw = halfW(s);
     F.u = ((x - centerX(s)) * F.nx + (y - s) * F.ny) / F.hw;
   }
-  function placeAt(s: number, u: number): [number, number] {
-    const m = slopeAt(s);
+  function placeAt(s: number, u: number): Pt {
+    const m = slope(s);
     const inv = 1 / Math.sqrt(1 + m * m);
     const d = u * halfW(s);
     return [centerX(s) + inv * d, s - m * inv * d];
   }
-
-  let stones: Stone[] = [];
-  const onRock = (x: number, y: number, pad = 0) => stones.some((s) => Math.hypot(x - s.x, y - s.y) < s.r * 0.82 + pad);
-  const inWater = (x: number, y: number) => {
+  const inWater = (x: number, y: number, lim: number) => {
     frameAt(x, y);
-    return Math.abs(F.u) < 0.95 && !onRock(x, y);
+    return Math.abs(F.u) < lim;
   };
 
-  // the current, for the leaves: the same as the one baked for the ripples, plus the cursor's pushes
+  // ---- state ----
+  const tracers: Tracer[] = [];
+  let stones: Stone[] = [];
+  const vortices: Vortex[] = [];
   const pushes: Push[] = [];
+  const ripples: Ripple[] = [];
+  const drops: Drop[] = [];
+  const floaters: Floater[] = [];
+  let left: BankPt[] = [];
+  let right: BankPt[] = [];
+  let waterPath = new Path2D();
+  let dotX = new Float32Array(0);
+  let dotY = new Float32Array(0);
+  let dotD = new Float32Array(0);
+  let under: HTMLCanvasElement | null = null;
+  let over: HTMLCanvasElement | null = null;
+  const pointer = { x: -1e4, y: -1e4, inside: false };
+  const finger: Body & { vx: number; vy: number; wet: boolean; rx: number; ry: number; still: number } = {
+    x: 0, y: 0, r: 0, ux: 0, uy: 0, shed: 0, side: 1, vx: 0, vy: 0, wet: false, rx: 0, ry: 0, still: 0,
+  };
+  let nextAmbient = 1.5;
+  let rippleSeed = 1;
+
+  // ---- the water's velocity at a point ----
   const V = { x: 0, y: 0 };
-  function flowAt(x: number, y: number) {
+  function base(x: number, y: number) {
     frameAt(x, y);
     const u = F.u;
-    const s = V0 * Math.max(0, 1 - 0.72 * u * u);
-    V.x = F.tx * s;
-    V.y = F.ty * s;
-    for (const st of stones) {
-      const zx = x - st.x;
-      const zy = y - st.y;
-      const a2r = st.r * st.r * 0.8;
-      let r2 = zx * zx + zy * zy;
-      if (r2 > 36 * a2r) continue;
-      r2 = Math.max(r2, a2r);
-      const A = zx * zx - zy * zy;
-      const B = 2 * zx * zy;
-      V.x -= (a2r * (st.ux * A + st.uy * B)) / (r2 * r2);
-      V.y -= (a2r * (st.ux * B - st.uy * A)) / (r2 * r2);
+    if (Math.abs(u) > 1.02) {
+      V.x = 0;
+      V.y = 0;
+      return;
+    }
+    const prof = Math.max(0, 1 - 0.72 * u * u);
+    const s = V0 * prof;
+    // a lazy curl noise on top, so no two stretches of the current look alike
+    const t = time;
+    const c1 = Math.cos(x * 0.021 + y * 0.013 + t * 0.35);
+    const c2 = Math.cos(-x * 0.017 + y * 0.027 - t * 0.28 + 1.7);
+    const c3 = Math.cos(x * 0.035 - y * 0.009 + t * 0.5 + 4.2);
+    V.x = F.tx * s + prof * (160 * 0.013 * c1 + 125 * 0.027 * c2 - 90 * 0.009 * c3);
+    V.y = F.ty * s - prof * (160 * 0.021 * c1 - 125 * 0.017 * c2 + 90 * 0.035 * c3);
+  }
+  // Flow round a cylinder: the doublet that turns uniform flow U into flow that parts round radius r.
+  function obstacle(x: number, y: number, o: Body) {
+    let zx = x - o.x;
+    let zy = y - o.y;
+    let r2 = zx * zx + zy * zy;
+    const a2r = o.r * o.r;
+    if (r2 > 36 * a2r) return;
+    if (r2 < a2r) {
+      // anything caught inside eases out and slides round the rim, rather than being thrown
+      const d = Math.sqrt(r2) || 0.01;
+      const k = (1 - d / o.r) * 60;
+      V.x += (zx / d) * k;
+      V.y += (zy / d) * k;
+      zx *= o.r / d;
+      zy *= o.r / d;
+      r2 = a2r;
+    }
+    const A = zx * zx - zy * zy;
+    const B = 2 * zx * zy;
+    const r4 = r2 * r2;
+    V.x -= (a2r * (o.ux * A + o.uy * B)) / r4;
+    V.y -= (a2r * (o.ux * B - o.uy * A)) / r4;
+  }
+  function field(x: number, y: number) {
+    base(x, y);
+    if (V.x === 0 && V.y === 0) return;
+    for (const s of stones) obstacle(x, y, s);
+    if (finger.r > 0.5) obstacle(x, y, finger);
+    for (const v of vortices) {
+      const dx = x - v.x;
+      const dy = y - v.y;
+      const r2 = dx * dx + dy * dy;
+      if (r2 > 4200) continue;
+      const env = Math.min(1, v.age / 0.3) * (1 - v.age / v.life);
+      const k = (v.g * env) / (TAU * (r2 + v.core * v.core));
+      V.x -= dy * k;
+      V.y += dx * k;
     }
     for (const p of pushes) {
       const dx = x - p.x;
       const dy = y - p.y;
       const r2 = dx * dx + dy * dy;
       if (r2 > 3000) continue;
-      const k = Math.exp(-r2 / 700) * (1 - p.age / 0.8) * 0.8;
+      const k = Math.exp(-r2 / 700) * (1 - p.age / PUSH_LIFE) * 0.8;
       V.x += p.vx * k;
       V.y += p.vy * k;
     }
   }
+  function curl(x: number, y: number) {
+    field(x + 3, y);
+    const a = V.y;
+    field(x - 3, y);
+    const b = V.y;
+    field(x, y + 3);
+    const d = V.x;
+    field(x, y - 3);
+    const e = V.x;
+    return (a - b) / 6 - (d - e) / 6;
+  }
 
-  // ---- targets ----
-  let bakeScale = 1;
-  let renderScale = 1;
-  let simW = 1;
-  let simH = 1;
-  let texA: WebGLTexture | null = null;
-  let texB: WebGLTexture | null = null;
-  let texC: WebGLTexture | null = null;
-  let bakeFb: WebGLFramebuffer | null = null;
-  const state: WebGLTexture[] = [];
-  const stateFb: WebGLFramebuffer[] = [];
-  let cur = 0;
-
+  // ---- layout ----
   function layout() {
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
+    const scale = Math.min(2, window.devicePixelRatio || 1);
     live = w >= 280 && h >= 240;
-    if (!live || (w === W && h === H)) return;
+    // Nothing moved (the observer's first call, a page change): leave the water exactly as it is.
+    if (!live || (w === W && h === H && scale === dpr)) return;
+    const first = W === 0;
+    const kx = first ? 1 : w / W;
+    const ky = first ? 1 : h / H;
     W = w;
     H = h;
-    const dpr = window.devicePixelRatio || 1;
-    renderScale = Math.min(dpr, 1.25);
-    bakeScale = Math.min(dpr, 1.5);
-    canvas.width = Math.round(W * renderScale);
-    canvas.height = Math.round(H * renderScale);
-
+    dpr = scale;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
     hw0 = clamp(W * 0.27, 90, 132);
+    // Room for the bends. Both banks, hatching and grass included, stay inside the canvas, with a
+    // little more held back on the right so nothing runs under the scrollbar.
     const rim = hw0 * 1.16;
-    cx0 = (W + 26 - 34) / 2;
-    const room = Math.max(0, cx0 - rim - 26);
+    const marginL = 26;
+    const marginR = 34;
+    cx0 = (W + marginL - marginR) / 2;
+    const room = Math.max(0, cx0 - rim - marginL);
     a1 = Math.min(W * 0.15, 84);
     a2 = a1 * 0.25;
     if (a1 + a2 > room) {
@@ -675,130 +345,1015 @@ function runStream(canvas: HTMLCanvasElement, still: boolean) {
       a1 *= k;
       a2 *= k;
     }
+    buildBanks();
+    placeStones();
+    buildDots();
+    buildLayers();
+    seedTracers();
+    vortices.length = 0;
+    pushes.length = 0;
+    if (first) seedFloaters();
+    else
+      for (const f of floaters) {
+        f.x *= kx;
+        f.y *= ky;
+      }
+  }
+
+  function buildBanks() {
+    left = [];
+    right = [];
+    for (let y = -160; y <= H + 160; y += 6) {
+      const m = slope(y);
+      const inv = 1 / Math.sqrt(1 + m * m);
+      const nx = inv;
+      const ny = -m * inv;
+      const cxy = centerX(y);
+      const hw = halfW(y);
+      left.push({ x: cxy - nx * hw, y: y - ny * hw, nx: -nx, ny: -ny });
+      right.push({ x: cxy + nx * hw, y: y + ny * hw, nx, ny });
+    }
+    waterPath = new Path2D();
+    left.forEach((p, i) => (i ? waterPath.lineTo(p.x, p.y) : waterPath.moveTo(p.x, p.y)));
+    for (let i = right.length - 1; i >= 0; i--) waterPath.lineTo(right[i].x, right[i].y);
+    waterPath.closePath();
+  }
+
+  function placeStones() {
     const scale = hw0 / 85;
-    stones = STONES.map(([fy, u, r]) => {
+    stones = STONES.map(([fy, u, r0], i) => {
+      const R = rng(40 + i);
+      const r = r0 * scale;
       const [x, y] = placeAt(fy * H, u);
-      frameAt(x, y);
-      const s = V0 * Math.max(0, 1 - 0.72 * F.u * F.u);
-      return { x, y, r: r * scale, ux: F.tx * s, uy: F.ty * s };
-    });
-
-    freeTargets();
-    const bw = Math.round(W * bakeScale);
-    const bh = Math.round(H * bakeScale);
-    texA = texture(bw, bh, 4);
-    texB = texture(bw, bh, 4);
-    texC = texture(bw, bh);
-    bakeFb = framebuffer([texA, texB, texC]);
-    simW = Math.ceil(W / 2);
-    simH = Math.ceil(H / 2);
-    state.length = 0;
-    stateFb.length = 0;
-    for (let i = 0; i < 2; i++) {
-      const t = texture(simW, simH);
-      state.push(t);
-      stateFb.push(framebuffer([t]));
-      gl.clearColor(0, 0, 0, 1);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-    }
-
-    // bake the ground
-    gl.bindFramebuffer(gl.FRAMEBUFFER, bakeFb);
-    gl.viewport(0, 0, bw, bh);
-    gl.useProgram(bake.p);
-    gl.uniform2f(bake.loc('uSize'), W, H);
-    gl.uniform4f(bake.loc('uGeo'), cx0, a1, a2, hw0);
-    gl.uniform4fv(bake.loc('uStone'), stones.flatMap((s) => [s.x, s.y, s.r, 0]));
-    gl.uniform4fv(bake.loc('uStoneFlow'), stones.flatMap((s) => [s.ux, s.uy, 0, 0]));
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    for (const t of [texA, texB]) {
-      gl.bindTexture(gl.TEXTURE_2D, t);
-      gl.generateMipmap(gl.TEXTURE_2D);
-    }
-
-    if (leaves.length === 0) seedLeaves();
-  }
-
-  // ---- leaves ----
-  const leaves: Leaf[] = [];
-  function floatIn(l: Leaf, y: number) {
-    const [x, yy] = placeAt(y, (rand() - 0.5) * 0.8);
-    l.x = x;
-    l.y = yy;
-    flowAt(x, yy);
-    l.vx = V.x;
-    l.vy = V.y;
-    l.away = 0;
-  }
-  function seedLeaves() {
-    [0.3, 0.62, 0.9].forEach((fy, i) => {
-      const l: Leaf = { x: 0, y: 0, vx: 0, vy: 0, a: rand() * TAU, va: 0, size: 30 + rand() * 6, color: LEAF_COLORS[i % LEAF_COLORS.length], away: 0 };
-      floatIn(l, fy * H);
-      leaves.push(l);
+      const rot = R() * TAU;
+      const ell = 1.05 + R() * 0.08;
+      const pts: Pt[] = [];
+      for (let k = 0; k < 18; k++) {
+        const a = (k / 18) * TAU;
+        const rr = r * (1 + (R() - 0.5) * 0.14);
+        const ex = Math.cos(a) * rr * ell;
+        const ey = (Math.sin(a) * rr) / ell;
+        pts.push([x + ex * Math.cos(rot) - ey * Math.sin(rot), y + ex * Math.sin(rot) + ey * Math.cos(rot)]);
+      }
+      return { x, y, r: r * ell * 1.02, pts, seed: 60 + i * 7, ux: 0, uy: V0, shed: R(), side: 1 };
     });
   }
-  function collide(l: Leaf, cx: number, cy: number, R: number, vx: number, vy: number) {
-    const dx = l.x - cx;
-    const dy = l.y - cy;
+
+  function buildDots() {
+    const xs: number[] = [];
+    const ys: number[] = [];
+    const ds: number[] = [];
+    for (let y = -DOT; y < H + DOT; y += DOT) {
+      for (let x = DOT / 2; x < W; x += DOT) {
+        frameAt(x, y);
+        const u = F.u;
+        if (Math.abs(u) >= 0.985) continue;
+        // deeper towards the middle, with a few slow pools along the way
+        const depth = Math.pow(1 - u * u, 1.2);
+        const pool = 0.82 + 0.3 * Math.sin(x * 0.031 + y * 0.012) * Math.sin(y * 0.021 + 1.3);
+        xs.push(x);
+        ys.push(y);
+        ds.push(clamp((0.03 + 0.36 * depth) * pool, 0, 0.5));
+      }
+    }
+    dotX = Float32Array.from(xs);
+    dotY = Float32Array.from(ys);
+    dotD = Float32Array.from(ds);
+  }
+
+  function newLayer(): [HTMLCanvasElement, CanvasRenderingContext2D] | null {
+    const l = document.createElement('canvas');
+    l.width = canvas.width;
+    l.height = canvas.height;
+    const g = l.getContext('2d');
+    if (!g) return null;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.lineCap = 'round';
+    g.lineJoin = 'round';
+    return [l, g];
+  }
+
+  function strokeBank(g: CanvasRenderingContext2D, bank: BankPt[], off = 0) {
+    g.beginPath();
+    bank.forEach((p, i) => {
+      const x = p.x + p.nx * off;
+      const y = p.y + p.ny * off;
+      if (i) g.lineTo(x, y);
+      else g.moveTo(x, y);
+    });
+    g.stroke();
+  }
+  function wobLine(g: CanvasRenderingContext2D, pts: Pt[], amp: number, seed: number, close = false) {
+    const R = rng(seed);
+    g.beginPath();
+    pts.forEach(([x, y], i) => {
+      const jx = x + (R() - 0.5) * amp;
+      const jy = y + (R() - 0.5) * amp;
+      if (i) g.lineTo(jx, jy);
+      else g.moveTo(jx, jy);
+    });
+    if (close) g.closePath();
+    g.stroke();
+  }
+
+  // Everything that holds still is drawn once per size and theme: the water and the hatched earth
+  // under the moving marks, the ink banks, tufts and stones over them.
+  function buildLayers() {
+    const u = newLayer();
+    const o = newLayer();
+    if (!u || !o) return;
+    const [ul, g] = u;
+    const [ol, h] = o;
+
+    // wet earth and hatching, only outside the water
+    g.save();
+    const outside = new Path2D();
+    outside.rect(-10, -10, W + 20, H + 20);
+    outside.addPath(waterPath);
+    g.clip(outside, 'evenodd');
+    g.strokeStyle = pal.sand;
+    g.lineWidth = 20;
+    strokeBank(g, left);
+    strokeBank(g, right);
+    const R = rng(11);
+    const ha = 1.15;
+    const hx = Math.cos(ha);
+    const hy = Math.sin(ha);
+    g.strokeStyle = pal.hatch;
+    g.globalAlpha = pal.hatchAlpha;
+    g.lineWidth = 1;
+    g.beginPath();
+    for (const bank of [left, right]) {
+      for (let i = 0; i < bank.length - 1; i++) {
+        for (let half = 0; half < 2; half++) {
+          const p = bank[i];
+          const q = bank[i + 1];
+          const t = half * 0.5;
+          const px = p.x + (q.x - p.x) * t;
+          const py = p.y + (q.y - p.y) * t;
+          for (let row = 0; row < 3; row++) {
+            if (R() > [0.8, 0.45, 0.18][row]) continue;
+            const off = 2 + row * 5 + R() * 2.5;
+            const len = 4 + R() * 5 - row;
+            const x0 = px + p.nx * off;
+            const y0 = py + p.ny * off;
+            g.moveTo(x0, y0);
+            g.lineTo(x0 + hx * len, y0 + hy * len);
+          }
+        }
+      }
+    }
+    g.stroke();
+    g.restore();
+    g.fillStyle = pal.water;
+    g.fill(waterPath);
+
+    // the banks, drawn twice like a crayon: a firm pass and a ghost of it
+    h.strokeStyle = pal.ink;
+    for (const [bank, seed] of [
+      [left, 21],
+      [right, 22],
+    ] as [BankPt[], number][]) {
+      const pts: Pt[] = bank.map((p) => [p.x, p.y]);
+      h.globalAlpha = 0.9;
+      h.lineWidth = 1.5;
+      wobLine(h, pts, 1.1, seed);
+      h.globalAlpha = 0.3;
+      h.lineWidth = 1;
+      wobLine(h, pts, 2.2, seed + 50);
+    }
+    h.globalAlpha = 1;
+
+    // tufts of grass and a few pebbles on the banks
+    const T = rng(31);
+    for (const bank of [left, right]) {
+      let next = 30 + T() * 90;
+      let run = 0;
+      for (let i = 1; i < bank.length; i++) {
+        run += Math.hypot(bank[i].x - bank[i - 1].x, bank[i].y - bank[i - 1].y);
+        if (run < next) continue;
+        next = run + 70 + T() * 130;
+        const p = bank[i];
+        const off = 9 + T() * 9;
+        const bx = p.x + p.nx * off;
+        const by = p.y + p.ny * off;
+        if (T() < 0.7) {
+          // grass drawn side-on, the way a picture map draws it: blades fanning up from one root
+          const blades = 4 + Math.floor(T() * 3);
+          h.strokeStyle = pal.ink;
+          h.globalAlpha = 0.65;
+          h.lineWidth = 1;
+          h.beginPath();
+          for (let b = 0; b < blades; b++) {
+            const q = b / (blades - 1) - 0.5;
+            const a = -Math.PI / 2 + q * 1.5 + (T() - 0.5) * 0.2;
+            const L = (7 + T() * 3) * (1 - Math.abs(q) * 0.8);
+            const rx = bx + q * 3;
+            h.moveTo(rx, by);
+            h.quadraticCurveTo(rx + Math.cos(a) * L * 0.4, by - L * 0.55, rx + Math.cos(a) * L, by + Math.sin(a) * L);
+          }
+          h.stroke();
+        } else {
+          const r = 1.8 + T() * 1.6;
+          h.globalAlpha = 1;
+          h.fillStyle = pal.stone;
+          h.beginPath();
+          h.ellipse(bx, by, r * 1.3, r, T() * 3, 0, TAU);
+          h.fill();
+          h.strokeStyle = pal.ink;
+          h.globalAlpha = 0.6;
+          h.lineWidth = 0.9;
+          h.stroke();
+        }
+      }
+    }
+    h.globalAlpha = 1;
+
+    // the stones: a shadow on the water, a flat fill, a dot screen on the side away from the light,
+    // a wobbly outline, and a wet highlight
+    for (const s of stones) {
+      const path = new Path2D();
+      s.pts.forEach(([x, y], i) => (i ? path.lineTo(x, y) : path.moveTo(x, y)));
+      path.closePath();
+      h.save();
+      h.translate(2.5, 3.2);
+      h.fillStyle = pal.shadow;
+      h.globalAlpha = pal.shadowAlpha;
+      h.fill(path);
+      h.restore();
+      h.fillStyle = pal.stone;
+      h.fill(path);
+      h.save();
+      h.clip(path);
+      h.fillStyle = pal.ink;
+      h.globalAlpha = 0.5;
+      h.beginPath();
+      const cell = 3.4;
+      for (let y = s.y - s.r; y < s.y + s.r; y += cell) {
+        for (let x = s.x - s.r; x < s.x + s.r; x += cell) {
+          const d = clamp((((x - s.x) * 0.6 + (y - s.y) * 0.8) / s.r) * 0.45 + 0.12, 0, 0.6);
+          if (d < 0.05) continue;
+          const rad = cell * 0.5 * Math.sqrt(d);
+          h.moveTo(x + rad, y);
+          h.arc(x, y, rad, 0, TAU);
+        }
+      }
+      h.fill();
+      h.restore();
+      h.strokeStyle = pal.ink;
+      h.globalAlpha = 0.9;
+      h.lineWidth = 1.4;
+      wobLine(h, s.pts, 0.9, s.seed, true);
+      h.strokeStyle = pal.glint;
+      h.globalAlpha = 0.85;
+      h.lineWidth = 1.5;
+      h.beginPath();
+      h.arc(s.x - s.r * 0.1, s.y - s.r * 0.1, s.r * 0.62, Math.PI * 1.08, Math.PI * 1.42);
+      h.stroke();
+      h.globalAlpha = 1;
+    }
+
+    under = ul;
+    over = ol;
+  }
+
+  // ---- things in the water ----
+  function respawn(p: Tracer) {
+    const [x, y] = placeAt(-10 + rand() * (H + 20), (rand() * 2 - 1) * 0.9);
+    p.x = x;
+    p.y = y;
+    p.hx.length = 0;
+    p.hy.length = 0;
+    p.ht = 0;
+    base(x, y);
+    p.vx = V.x;
+    p.vy = V.y;
+    p.age = 0;
+    p.life = 2.4 + rand() * 2.6;
+  }
+  function seedTracers() {
+    const n = Math.round(clamp((2 * hw0 * H) / 1500, 50, 160));
+    tracers.length = 0;
+    for (let i = 0; i < n; i++) {
+      const p: Tracer = { x: 0, y: 0, vx: 0, vy: V0, age: 0, life: 1, glint: i % 20 < 7, id: i, sp: V0, hx: [], hy: [], ht: 0 };
+      respawn(p);
+      p.age = rand() * p.life;
+      tracers.push(p);
+    }
+  }
+  function floatIn(f: Floater, y: number) {
+    const [x, yy] = placeAt(y, (rand() - 0.5) * 0.7);
+    f.x = x;
+    f.y = yy;
+    base(x, yy);
+    f.vx = V.x;
+    f.vy = V.y;
+    f.away = 0;
+  }
+  function seedFloaters() {
+    floaters.length = 0;
+    const mk = (boat: boolean, y: number, i: number): Floater => {
+      const f: Floater = { boat, x: 0, y: 0, vx: 0, vy: 0, a: boat ? 0 : rand() * TAU, va: 0, size: boat ? 34 : 14 + rand() * 3, color: i % 2, seed: i * 13 + 5, away: 0, bump: 0 };
+      floatIn(f, y);
+      return f;
+    };
+    floaters.push(mk(false, H * 0.48, 0), mk(false, H * 0.76, 1), mk(true, H * 0.2, 2));
+  }
+
+  function ripple(x: number, y: number, rMax: number, life: number, k: number, delay = 0) {
+    ripples.push({ x, y, age: -delay, life, rMax, k, seed: rippleSeed++ });
+    if (ripples.length > 26) ripples.shift();
+  }
+
+  function pebble(x: number, y: number) {
+    ripple(x, y, 44, 2, 1);
+    ripple(x, y, 28, 1.6, 0.7, 0.14);
+    const n = 7 + Math.floor(rand() * 4);
+    for (let i = 0; i < n; i++) {
+      const a = rand() * TAU;
+      const sp = 60 + rand() * 90;
+      drops.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, life: 0.28 + rand() * 0.2 });
+    }
+    // the water is shoved outwards for a moment
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * TAU;
+      pushes.push({ x: x + Math.cos(a) * 10, y: y + Math.sin(a) * 10, vx: Math.cos(a) * 90, vy: Math.sin(a) * 90, age: 0 });
+    }
+    while (pushes.length > 40) pushes.shift();
+    plip(1, 0.08);
+    plip(1.5, 0.025, 0.32);
+  }
+
+  // ---- simulation ----
+  function shed(o: Body, dt: number, cap = Infinity) {
+    o.shed -= dt;
+    const um = Math.min(cap, Math.hypot(o.ux, o.uy));
+    if (o.shed > 0 || um < 8) return;
+    o.shed = clamp((5 * o.r) / um, 0.45, 1.5);
+    o.side = -o.side;
+    const uu = Math.hypot(o.ux, o.uy);
+    const tx = o.ux / uu;
+    const ty = o.uy / uu;
+    vortices.push({
+      x: o.x + tx * o.r * 1.35 - ty * o.side * o.r * 0.55,
+      y: o.y + ty * o.r * 1.35 + tx * o.side * o.r * 0.55,
+      g: -o.side * TAU * um * o.r * 0.42,
+      core: o.r * 0.8,
+      age: 0,
+      life: 2.8,
+    });
+    if (vortices.length > 28) vortices.shift();
+  }
+
+  function collide(f: Floater, cx: number, cy: number, R: number, vx: number, vy: number) {
+    const dx = f.x - cx;
+    const dy = f.y - cy;
     const d = Math.hypot(dx, dy);
     if (d >= R || d === 0) return;
     const nx = dx / d;
     const ny = dy / d;
-    l.x = cx + nx * R;
-    l.y = cy + ny * R;
-    const rel = (l.vx - vx) * nx + (l.vy - vy) * ny;
+    f.x = cx + nx * R;
+    f.y = cy + ny * R;
+    const rel = (f.vx - vx) * nx + (f.vy - vy) * ny;
     if (rel >= 0) return;
-    l.vx -= nx * rel * 1.4;
-    l.vy -= ny * rel * 1.4;
-    l.va += (nx * (l.vy - vy) - ny * (l.vx - vx)) * 0.015;
-  }
-  function stepLeaf(l: Leaf, dt: number) {
-    if (l.away > 0) {
-      if ((l.away -= dt) <= 0) floatIn(l, -24);
-      return;
+    f.vx -= nx * rel * 1.4;
+    f.vy -= ny * rel * 1.4;
+    f.va += (nx * (f.vy - vy) - ny * (f.vx - vx)) * 0.012;
+    if (rel < -30 && f.bump <= 0) {
+      ripple(f.x, f.y, 12 + f.size * 0.4, 1, 0.5);
+      f.bump = 0.35;
     }
-    flowAt(l.x, l.y);
-    const k = 1 - Math.exp(-dt * 2.2);
-    l.vx += (V.x - l.vx) * k;
-    l.vy += (V.y - l.vy) * k;
-    // turn with the water's own spin, and a little on their own
-    flowAt(l.x + 3, l.y);
-    const a = V.y;
-    flowAt(l.x - 3, l.y);
-    const b = V.y;
-    flowAt(l.x, l.y + 3);
-    const c = V.x;
-    flowAt(l.x, l.y - 3);
-    const d = V.x;
-    const curl = (a - b) / 6 - (c - d) / 6;
-    l.va += (curl * 0.6 + 0.15 - l.va) * (1 - Math.exp(-dt * 2));
-    l.a += l.va * dt;
-    l.x += l.vx * dt;
-    l.y += l.vy * dt;
-    for (const s of stones) collide(l, s.x, s.y, s.r * 0.85 + l.size * 0.35, 0, 0);
-    if (finger.wet) collide(l, finger.x, finger.y, 10 + l.size * 0.35, finger.vx, finger.vy);
-    frameAt(l.x, l.y);
-    if (Math.abs(F.u) > 0.8) {
-      const sgn = Math.sign(F.u);
-      const push = (Math.abs(F.u) - 0.8) * F.hw * sgn;
-      l.x -= F.nx * push;
-      l.y -= F.ny * push;
-      const vn = l.vx * F.nx + l.vy * F.ny;
-      if (vn * sgn > 0) {
-        l.vx -= F.nx * vn * 1.3;
-        l.vy -= F.ny * vn * 1.3;
-      }
-    }
-    if (l.y > H + 30 || l.y < -60) l.away = 3 + rand() * 7;
   }
 
-  // ---- the pointer ----
-  const pointer = { x: -1e4, y: -1e4, inside: false };
-  const finger = { x: 0, y: 0, vx: 0, vy: 0, wet: false, px: 0, py: 0 };
-  const drops: Drop[] = [];
-  const addDrop = (x: number, y: number, r: number, s: number) => {
-    if (drops.length < MAX_DROPS) drops.push([x, y, r, s]);
-  };
+  function stepFloater(f: Floater, dt: number) {
+    if (f.away > 0) {
+      f.away -= dt;
+      if (f.away <= 0) floatIn(f, -28);
+      return;
+    }
+    field(f.x, f.y);
+    const k = 1 - Math.exp(-dt * (f.boat ? 1.5 : 2.2));
+    f.vx += (V.x - f.vx) * k;
+    f.vy += (V.y - f.vy) * k;
+    if (f.boat) {
+      // the boat rocks back to level; knocks set it swaying
+      f.va += (-f.a * 7 - f.va * 1.6) * dt;
+    } else {
+      // leaves turn with the water's own spin, and a little on their own
+      const w = curl(f.x, f.y);
+      f.va += (w * 0.6 + 0.2 - f.va) * (1 - Math.exp(-dt * 2));
+    }
+    f.a += f.va * dt;
+    f.x += f.vx * dt;
+    f.y += f.vy * dt;
+    const pad = f.size * (f.boat ? 0.42 : 0.38);
+    for (const s of stones) collide(f, s.x, s.y, s.r + pad, 0, 0);
+    if (finger.r > 3) collide(f, finger.x, finger.y, finger.r + pad, finger.vx, finger.vy);
+    frameAt(f.x, f.y);
+    const lim = f.boat ? 0.68 : 0.8;
+    if (Math.abs(F.u) > lim) {
+      const sgn = Math.sign(F.u);
+      const push = (Math.abs(F.u) - lim) * F.hw * sgn;
+      f.x -= F.nx * push;
+      f.y -= F.ny * push;
+      const vn = f.vx * F.nx + f.vy * F.ny;
+      if (vn * sgn > 0) {
+        f.vx -= F.nx * vn * 1.3;
+        f.vy -= F.ny * vn * 1.3;
+      }
+    }
+    f.bump = Math.max(0, f.bump - dt);
+    if (f.y > H + 44 || f.y < -70) f.away = f.boat ? 5 + rand() * 6 : 2 + rand() * 6;
+  }
+
+  function step(dt: number) {
+    time += dt;
+
+    // the finger
+    const wet = pointer.inside && inWater(pointer.x, pointer.y, 0.93) && !stones.some((s) => Math.hypot(pointer.x - s.x, pointer.y - s.y) < s.r + 4);
+    if (wet && !finger.wet) {
+      finger.x = finger.rx = pointer.x;
+      finger.y = finger.ry = pointer.y;
+      finger.vx = finger.vy = 0;
+      finger.still = 0;
+      ripple(pointer.x, pointer.y, 22, 1.1, 0.7);
+    } else if (!wet && finger.wet && finger.r > 4) {
+      ripple(finger.x, finger.y, 16, 0.9, 0.45);
+    }
+    finger.wet = wet;
+    if (wet) {
+      const k = 1 - Math.exp(-dt * 14);
+      finger.vx += ((pointer.x - finger.x) / dt - finger.vx) * k;
+      finger.vy += ((pointer.y - finger.y) / dt - finger.vy) * k;
+      const fs = Math.hypot(finger.vx, finger.vy);
+      if (fs > 900) {
+        finger.vx *= 900 / fs;
+        finger.vy *= 900 / fs;
+      }
+      finger.x = pointer.x;
+      finger.y = pointer.y;
+    } else {
+      finger.vx *= 0.9;
+      finger.vy *= 0.9;
+    }
+    finger.r += ((wet ? FINGER : 0) - finger.r) * (1 - Math.exp(-dt * 12));
+    const fs = Math.hypot(finger.vx, finger.vy);
+    if (wet) {
+      base(finger.x, finger.y);
+      let ux = V.x - finger.vx;
+      let uy = V.y - finger.vy;
+      const um = Math.hypot(ux, uy);
+      if (um > 110) {
+        ux *= 110 / um;
+        uy *= 110 / um;
+      }
+      finger.ux = ux;
+      finger.uy = uy;
+      if (fs > 25) {
+        const k = Math.min(0.4, 220 / fs);
+        pushes.push({ x: finger.x, y: finger.y, vx: finger.vx * k, vy: finger.vy * k, age: 0 });
+        if (pushes.length > 40) pushes.shift();
+      }
+      if (Math.hypot(finger.x - finger.rx, finger.y - finger.ry) > 30) {
+        ripple(finger.x, finger.y, 18 + Math.min(fs, 600) * 0.03, 1.2, 0.55);
+        finger.rx = finger.x;
+        finger.ry = finger.y;
+        finger.still = 0;
+      } else if ((finger.still += dt) > 1.6) {
+        finger.still = 0;
+        ripple(finger.x, finger.y, 20, 1.5, 0.3);
+      }
+    }
+
+    // stones and the finger shed eddies
+    for (const s of stones) {
+      base(s.x, s.y);
+      s.ux = V.x;
+      s.uy = V.y;
+      shed(s, dt);
+    }
+    if (finger.r > 6) shed(finger, dt, 60);
+    for (let i = vortices.length - 1; i >= 0; i--) {
+      const v = vortices[i];
+      base(v.x, v.y);
+      v.x += V.x * dt * 0.92;
+      v.y += V.y * dt * 0.92;
+      v.age += dt;
+      if (v.age >= v.life || v.y > H + 60) vortices.splice(i, 1);
+    }
+    for (let i = pushes.length - 1; i >= 0; i--) if ((pushes[i].age += dt) >= PUSH_LIFE) pushes.splice(i, 1);
+
+    // the current
+    for (const p of tracers) {
+      field(p.x, p.y);
+      p.sp = Math.hypot(V.x, V.y);
+      const u = F.u;
+      p.x += V.x * dt;
+      p.y += V.y * dt;
+      p.vx += (V.x - p.vx) * 0.2;
+      p.vy += (V.y - p.vy) * 0.2;
+      p.age += dt;
+      if ((p.ht += dt) >= TRAIL_DT) {
+        p.ht = 0;
+        p.hx.unshift(p.x);
+        p.hy.unshift(p.y);
+        if (p.hx.length > TRAIL_N) {
+          p.hx.pop();
+          p.hy.pop();
+        }
+      }
+      if (p.age >= p.life || Math.abs(u) > 0.97 || p.y > H + 30) respawn(p);
+    }
+
+    // rings drift downstream as they spread
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const r = ripples[i];
+      r.age += dt;
+      if (r.age >= r.life) {
+        ripples.splice(i, 1);
+        continue;
+      }
+      if (r.age < 0) continue;
+      base(r.x, r.y);
+      r.x += V.x * dt * 0.8;
+      r.y += V.y * dt * 0.8;
+    }
+    for (let i = drops.length - 1; i >= 0; i--) {
+      const d = drops[i];
+      d.age += dt;
+      d.x += d.vx * dt;
+      d.y += d.vy * dt;
+      if (d.age >= d.life) {
+        if (inWater(d.x, d.y, 0.98)) ripple(d.x, d.y, 9 + rand() * 6, 0.8, 0.5);
+        drops.splice(i, 1);
+      }
+    }
+
+    for (const f of floaters) stepFloater(f, dt);
+
+    // now and then something rises and rings the surface
+    if ((nextAmbient -= dt) <= 0) {
+      nextAmbient = 2.5 + rand() * 5;
+      const [x, y] = placeAt(H * (0.05 + rand() * 0.9), (rand() - 0.5) * 1.3);
+      if (!stones.some((s) => Math.hypot(x - s.x, y - s.y) < s.r + 10)) ripple(x, y, 14 + rand() * 10, 1.7, 0.42);
+    }
+  }
+
+  // ---- drawing ----
+  function ring(cx: number, cy: number, r: number, seed: number, tick: number, amp: number, a0 = 0, a1r = TAU) {
+    const n = clamp(Math.round(Math.max(24, r * 1.2) * ((a1r - a0) / TAU)), 6, 110);
+    c.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const a = a0 + ((a1r - a0) * i) / n;
+      const rr = r + (hash(seed, i % n, tick) - 0.5) * amp;
+      const x = cx + Math.cos(a) * rr;
+      const y = cy + Math.sin(a) * rr;
+      if (i) c.lineTo(x, y);
+      else c.moveTo(x, y);
+    }
+    c.stroke();
+  }
+
+  function drawDots() {
+    const rs = ripples
+      .filter((r) => r.age > 0)
+      .map((r) => {
+        const k = r.age / r.life;
+        return { x: r.x, y: r.y, r: r.rMax * easeOut(k), s: r.k * Math.pow(1 - k, 1.4) };
+      });
+    const fr = finger.r;
+    const t = time;
+    c.fillStyle = pal.deep;
+    c.globalAlpha = pal.dotAlpha;
+    c.beginPath();
+    for (let i = 0; i < dotX.length; i++) {
+      let x = dotX[i];
+      let y = dotY[i];
+      // light on the bed: a slow caustic that drifts downstream
+      const cs = (Math.sin(x * 0.043 + t * 0.6) + Math.sin(y * 0.037 - t * 0.9 + x * 0.018) + Math.sin((x + y) * 0.027 - t * 0.5)) / 3;
+      const d = dotD[i] * (0.8 + 0.34 * cs);
+      // a passing ring bends the screen under it
+      for (const r of rs) {
+        const dx = x - r.x;
+        const dy = y - r.y;
+        const d2 = dx * dx + dy * dy;
+        const lo = Math.max(0, r.r - 12);
+        if (d2 > (r.r + 12) * (r.r + 12) || d2 < lo * lo) continue;
+        const dist = Math.sqrt(d2) || 1;
+        const q = (dist - r.r) / 12;
+        const off = Math.sin(q * Math.PI) * (1 - Math.abs(q)) * 3.2 * r.s;
+        x += (dx / dist) * off;
+        y += (dy / dist) * off;
+      }
+      // and the finger dimples it
+      if (fr > 1) {
+        const dx = x - finger.x;
+        const dy = y - finger.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        if (dist < fr * 2.4) {
+          const q = 1 - dist / (fr * 2.4);
+          const off = q * q * 5 * (fr / FINGER);
+          x += (dx / dist) * off;
+          y += (dy / dist) * off;
+        }
+      }
+      const rad = DOT * 0.5 * Math.sqrt(Math.max(0, d));
+      if (rad < 0.35) continue;
+      c.moveTo(x + rad, y);
+      c.arc(x, y, rad, 0, TAU);
+    }
+    c.fill();
+    c.globalAlpha = 1;
+  }
+
+  const BUCKETS = 6;
+  const STROKE = [0.35, 0.8, 1, 0.75, 0.3]; // weight along a current line, head to tail
+  const pts: Pt[] = [];
+  function drawCurrents(tick: number) {
+    const lines: Path2D[] = [];
+    const glints: Path2D[] = [];
+    for (let b = 0; b < BUCKETS; b++) {
+      lines.push(new Path2D());
+      glints.push(new Path2D());
+    }
+    const bucket = (a: number) => clamp(Math.floor(a * BUCKETS), 0, BUCKETS - 1);
+    for (const p of tracers) {
+      const env = Math.sin(Math.PI * clamp(p.age / p.life, 0, 1));
+      if (env < 0.05) continue;
+      if (p.glint) {
+        const s = Math.hypot(p.vx, p.vy) || 1;
+        const tx = p.vx / s;
+        const ty = p.vy / s;
+        const size = 0.8 + hash(p.id, 3) * 0.6;
+        const tw = 0.55 + 0.45 * Math.sin(time * 2.6 + p.id);
+        const path = glints[bucket(env * tw)];
+        for (let k = -2; k <= 2; k++) {
+          const j = (hash(p.id, k + 5, tick) - 0.5) * 0.7;
+          const x = p.x - ty * k * 2.6 * size - tx * 0.4 * k * k * size + j;
+          const y = p.y + tx * k * 2.6 * size - ty * 0.4 * k * k * size - j;
+          if (k === -2) path.moveTo(x, y);
+          else path.lineTo(x, y);
+        }
+      } else {
+        // The speck's own trail, newest first, cut to this line's length, with a slight sinuous
+        // swing across it, and heavier in the middle than at either end, like a brush stroke.
+        const L = (40 + hash(p.id, 9) * 55) * clamp(p.sp / V0, 0.45, 1.3);
+        const amp = 0.9 + hash(p.id, 11) * 1;
+        const phase = hash(p.id, 12) * TAU + time * 1.6;
+        pts.length = 0;
+        let px = p.x;
+        let py = p.y;
+        let run = 0;
+        const raw: number[] = [px, py, 0];
+        for (let i = 0; i < p.hx.length && run < L; i++) {
+          run += Math.hypot(p.hx[i] - px, p.hy[i] - py);
+          px = p.hx[i];
+          py = p.hy[i];
+          raw.push(px, py, run);
+        }
+        const n = raw.length / 3;
+        if (n < 3 || run < 6) continue;
+        for (let i = 0; i < n; i++) {
+          const j0 = Math.max(0, i - 1) * 3;
+          const j1 = Math.min(n - 1, i + 1) * 3;
+          const dx = raw[j1] - raw[j0];
+          const dy = raw[j1 + 1] - raw[j0 + 1];
+          const dl = Math.hypot(dx, dy) || 1;
+          const along = raw[i * 3 + 2];
+          const wave = Math.sin(along * 0.11 + phase) * amp * Math.sin((Math.PI * along) / run);
+          pts.push([
+            raw[i * 3] - (dy / dl) * wave + (hash(p.id, i, tick) - 0.5) * 0.7,
+            raw[i * 3 + 1] + (dx / dl) * wave + (hash(p.id, i + 40, tick) - 0.5) * 0.7,
+          ]);
+        }
+        const a = env * clamp(p.sp / 30, 0.45, 1);
+        const segs = STROKE.length;
+        for (let k = 0; k < segs; k++) {
+          const i0 = Math.floor((k * (pts.length - 1)) / segs);
+          const i1 = Math.floor(((k + 1) * (pts.length - 1)) / segs);
+          if (i1 <= i0) continue;
+          const path = lines[bucket(a * STROKE[k])];
+          path.moveTo(pts[i0][0], pts[i0][1]);
+          for (let i = i0 + 1; i <= i1; i++) path.lineTo(pts[i][0], pts[i][1]);
+        }
+      }
+    }
+    c.lineWidth = 1.2;
+    c.strokeStyle = pal.current;
+    for (let b = 0; b < BUCKETS; b++) {
+      c.globalAlpha = ((b + 0.5) / BUCKETS) * pal.currentAlpha;
+      c.stroke(lines[b]);
+    }
+    c.strokeStyle = pal.glint;
+    for (let b = 0; b < BUCKETS; b++) {
+      c.globalAlpha = ((b + 0.5) / BUCKETS) * pal.glintAlpha;
+      c.stroke(glints[b]);
+    }
+    c.globalAlpha = 1;
+  }
+
+  // a broken cream line just inside each bank, lapping in and out
+  function drawFoam() {
+    c.strokeStyle = pal.glint;
+    c.lineWidth = 1.2;
+    c.globalAlpha = pal.glintAlpha * 0.6;
+    c.beginPath();
+    [left, right].forEach((bank, side) => {
+      for (let i = 0; i < bank.length - 1; i++) {
+        if (hash(i >> 1, side, 77) < 0.45) continue;
+        const p = bank[i];
+        const q = bank[i + 1];
+        const o0 = 3.2 + 1.3 * Math.sin(time * 1.2 + i * 0.4 + side * 2);
+        const o1 = 3.2 + 1.3 * Math.sin(time * 1.2 + (i + 1) * 0.4 + side * 2);
+        c.moveTo(p.x - p.nx * o0, p.y - p.ny * o0);
+        c.lineTo(q.x - q.nx * o1, q.y - q.ny * o1);
+      }
+    });
+    c.stroke();
+    c.globalAlpha = 1;
+  }
+
+  function drawRipples(tick: number) {
+    for (const r of ripples) {
+      if (r.age <= 0) continue;
+      const k = r.age / r.life;
+      const R = r.rMax * easeOut(k);
+      const fade = Math.pow(1 - k, 1.5) * Math.min(1, r.age / 0.06) * r.k;
+      [R, R * 0.62].forEach((rr, j) => {
+        if (rr < 2) return;
+        const a = fade * (j ? 0.55 : 1);
+        c.strokeStyle = pal.deep;
+        c.lineWidth = 1.1;
+        c.globalAlpha = a * 0.35;
+        ring(r.x, r.y, rr + 2.2, r.seed * 7 + j + 3, tick, 1.1);
+        c.strokeStyle = pal.glint;
+        c.lineWidth = 1.5;
+        c.globalAlpha = a * pal.glintAlpha;
+        ring(r.x, r.y, rr, r.seed * 7 + j, tick, 1.1);
+      });
+    }
+    c.globalAlpha = 1;
+  }
+
+  // the water piling up on the upstream side of whatever is in its way
+  function bow(o: Body, r: number, tick: number, seed: number, strength: number) {
+    const um = Math.hypot(o.ux, o.uy);
+    if (um < 4) return;
+    const up = Math.atan2(-o.uy, -o.ux);
+    const span = 0.9 + Math.min(um, 200) / 400;
+    c.strokeStyle = pal.glint;
+    c.lineWidth = 1.6;
+    c.globalAlpha = pal.glintAlpha * strength * Math.min(1, um / 30);
+    ring(o.x, o.y, r + 2.4 + 0.8 * Math.sin(time * 3.1 + seed), seed, tick, 0.9, up - span, up + span);
+    c.lineWidth = 1.1;
+    c.globalAlpha *= 0.45;
+    ring(o.x, o.y, r + 6.5 + 0.8 * Math.sin(time * 2.3 + seed), seed + 1, tick, 1.2, up - span * 0.6, up + span * 0.6);
+    c.globalAlpha = 1;
+  }
+
+  function drawFinger(tick: number) {
+    const fr = finger.r;
+    if (fr < 0.8) return;
+    const a = fr / FINGER;
+    c.strokeStyle = pal.deep;
+    c.lineWidth = 1.1;
+    c.globalAlpha = 0.3 * a;
+    ring(finger.x, finger.y, fr + 2.6, 901, tick, 0.8);
+    c.strokeStyle = pal.glint;
+    c.lineWidth = 1.6;
+    c.globalAlpha = pal.glintAlpha * 0.9 * a;
+    ring(finger.x, finger.y, fr, 900, tick, 0.8);
+    c.globalAlpha = 1;
+    bow(finger, fr, tick, 902, a);
+  }
+
+  function poly(pts: Pt[], amp: number, seed: number, tick: number) {
+    c.beginPath();
+    pts.forEach(([x, y], i) => {
+      const jx = x + (hash(seed, i, tick) - 0.5) * amp;
+      const jy = y + (hash(seed, i + 30, tick) - 0.5) * amp;
+      if (i) c.lineTo(jx, jy);
+      else c.moveTo(jx, jy);
+    });
+    c.closePath();
+  }
+  function fillPts(pts: Pt[]) {
+    c.beginPath();
+    pts.forEach(([x, y], i) => (i ? c.lineTo(x, y) : c.moveTo(x, y)));
+    c.closePath();
+    c.fill();
+  }
+
+  // The boat is drawn side-on, the way a picture map draws its houses and trees, so it reads as a
+  // paper boat at a glance; it rocks and lists but never turns over. Leaves lie flat.
+  function boatPts(f: Floater) {
+    const s = f.size / 34;
+    const bob = Math.sin(time * 2.2 + f.seed) * 0.7;
+    const ca = Math.cos(f.a);
+    const sa = Math.sin(f.a);
+    const P = (lx: number, ly: number): Pt => [f.x + (lx * ca - ly * sa) * s, f.y + bob + (lx * sa + ly * ca) * s];
+    return {
+      hull: [P(-17, -4), P(17, -4), P(11, 5), P(-11, 5)],
+      sail: [P(-9, -4), P(0, -20), P(9, -4)],
+      shadeHull: [P(0, -4), P(17, -4), P(11, 5), P(0, 5)],
+      shadeSail: [P(0, -20), P(9, -4), P(0, -4)],
+      crease: [P(0, -20), P(0, 5)] as Pt[],
+      mast: [P(0, -20), P(0, -26)] as Pt[],
+      flag: [P(0, -26), P(7, -24), P(0, -22)],
+      s,
+      bob,
+    };
+  }
+
+  function drawShadows() {
+    c.fillStyle = pal.shadow;
+    c.globalAlpha = pal.shadowAlpha;
+    for (const f of floaters) {
+      if (f.away > 0) continue;
+      if (f.boat) {
+        const b = boatPts(f);
+        c.beginPath();
+        c.ellipse(f.x + 3, f.y + 6 + b.bob, 16 * b.s, 4.2 * b.s, 0, 0, TAU);
+        c.fill();
+      } else {
+        c.save();
+        c.translate(f.x + 2, f.y + 3);
+        c.rotate(f.a);
+        c.beginPath();
+        c.ellipse(0, 0, f.size * 0.5, f.size * 0.17, 0, 0, TAU);
+        c.fill();
+        c.restore();
+      }
+    }
+    c.globalAlpha = 1;
+  }
+
+  function halftone(pts: Pt[], color: string, density: number, cell: number) {
+    let x0 = 1e9;
+    let y0 = 1e9;
+    let x1 = -1e9;
+    let y1 = -1e9;
+    for (const [x, y] of pts) {
+      x0 = Math.min(x0, x);
+      y0 = Math.min(y0, y);
+      x1 = Math.max(x1, x);
+      y1 = Math.max(y1, y);
+    }
+    c.save();
+    c.beginPath();
+    pts.forEach(([x, y], i) => (i ? c.lineTo(x, y) : c.moveTo(x, y)));
+    c.closePath();
+    c.clip();
+    c.fillStyle = color;
+    c.beginPath();
+    const rad = cell * 0.5 * Math.sqrt(density);
+    for (let y = Math.floor(y0 / cell) * cell; y <= y1; y += cell) {
+      for (let x = Math.floor(x0 / cell) * cell; x <= x1; x += cell) {
+        c.moveTo(x + rad, y);
+        c.arc(x, y, rad, 0, TAU);
+      }
+    }
+    c.fill();
+    c.restore();
+  }
+
+  function drawBoat(f: Floater, tick: number) {
+    const b = boatPts(f);
+    c.lineWidth = 1.4;
+    c.fillStyle = pal.boat;
+    fillPts(b.hull);
+    fillPts(b.sail);
+    c.globalAlpha = 0.55;
+    halftone(b.shadeHull, pal.boatShade, 0.45, 2.6);
+    halftone(b.shadeSail, pal.boatShade, 0.3, 2.6);
+    c.globalAlpha = 1;
+    // the flag, the one spot of colour, pulled back and forth by the breeze
+    c.strokeStyle = pal.ink;
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo(b.mast[0][0], b.mast[0][1]);
+    c.lineTo(b.mast[1][0], b.mast[1][1]);
+    c.stroke();
+    const flap = Math.sin(time * 5 + f.seed) * 1.2;
+    c.fillStyle = pal.flag;
+    fillPts([b.flag[0], [b.flag[1][0], b.flag[1][1] + flap], b.flag[2]]);
+    c.strokeStyle = pal.ink;
+    c.lineWidth = 1.4;
+    c.globalAlpha = 0.95;
+    poly(b.hull, 0.8, f.seed, tick);
+    c.stroke();
+    poly(b.sail, 0.8, f.seed + 1, tick);
+    c.stroke();
+    c.lineWidth = 0.9;
+    c.globalAlpha = 0.5;
+    c.beginPath();
+    c.moveTo(b.crease[0][0], b.crease[0][1]);
+    c.lineTo(b.crease[1][0], b.crease[1][1]);
+    c.stroke();
+    // the waterline lapping at the hull
+    c.strokeStyle = pal.glint;
+    c.lineWidth = 1.4;
+    c.globalAlpha = pal.glintAlpha * 0.9;
+    const wl = f.y + b.bob + 4.5 * b.s;
+    const w = 19 * b.s;
+    c.beginPath();
+    for (let i = 0; i <= 8; i++) {
+      const x = f.x - w + (2 * w * i) / 8;
+      const y = wl + Math.sin(i * 1.3 + time * 4) * 0.9;
+      if (i) c.lineTo(x, y);
+      else c.moveTo(x, y);
+    }
+    c.stroke();
+    c.globalAlpha = 1;
+  }
+
+  function drawLeaf(f: Floater, tick: number) {
+    const L = f.size;
+    const w = L * 0.3;
+    const ca = Math.cos(f.a);
+    const sa = Math.sin(f.a);
+    const P = (lx: number, ly: number): Pt => [f.x + lx * ca - ly * sa, f.y + lx * sa + ly * ca];
+    const top: Pt[] = [];
+    const bot: Pt[] = [];
+    for (let k = 0; k <= 10; k++) {
+      const t = k / 10;
+      const lx = -L / 2 + L * t;
+      const ly = w * Math.pow(Math.sin(Math.PI * t), 0.85) * (1 - 0.25 * t);
+      top.push(P(lx, -ly));
+      bot.push(P(lx, ly));
+    }
+    const outline = [...top, ...bot.slice(1, -1).reverse()];
+    c.fillStyle = pal.leaves[f.color % pal.leaves.length];
+    fillPts(outline);
+    c.globalAlpha = 0.45;
+    halftone([...bot, P(L / 2, 0), P(-L / 2, 0)], pal.ink, 0.28, 2.4);
+    c.globalAlpha = 0.9;
+    c.strokeStyle = pal.ink;
+    c.lineWidth = 1.1;
+    poly(outline, 0.7, f.seed, tick);
+    c.stroke();
+    c.globalAlpha = 0.6;
+    c.lineWidth = 0.9;
+    const s0 = P(-L / 2 - 3.5, 0.6);
+    const s1 = P(L * 0.36, 0);
+    c.beginPath();
+    c.moveTo(s0[0], s0[1]);
+    c.lineTo(s1[0], s1[1]);
+    c.stroke();
+    c.globalAlpha = 1;
+  }
+
+  function drawDrops() {
+    for (const d of drops) {
+      const k = d.age / d.life;
+      const hop = Math.sin(Math.PI * k);
+      const r = 1.3 + hop * 1.4;
+      c.fillStyle = pal.shadow;
+      c.globalAlpha = pal.shadowAlpha;
+      c.beginPath();
+      c.arc(d.x + hop * 3, d.y + hop * 5, r * 0.8, 0, TAU);
+      c.fill();
+      c.globalAlpha = 1;
+      c.fillStyle = pal.glint;
+      c.beginPath();
+      c.arc(d.x, d.y - hop * 6, r, 0, TAU);
+      c.fill();
+      c.strokeStyle = pal.deep;
+      c.lineWidth = 0.8;
+      c.globalAlpha = 0.6;
+      c.stroke();
+      c.globalAlpha = 1;
+    }
+  }
+
+  function render() {
+    if (!live) return;
+    const tick = Math.floor(time * BOIL);
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, W, H);
+    c.lineCap = 'round';
+    c.lineJoin = 'round';
+    if (under) c.drawImage(under, 0, 0, W, H);
+    drawDots();
+    c.save();
+    c.clip(waterPath);
+    drawCurrents(tick);
+    drawFoam();
+    drawRipples(tick);
+    drawShadows();
+    c.restore();
+    if (over) c.drawImage(over, 0, 0, W, H);
+    stones.forEach((s, i) => bow(s, s.r, tick, 700 + i * 3, 1));
+    drawFinger(tick);
+    for (const f of floaters) {
+      if (f.away > 0) continue;
+      if (f.boat) drawBoat(f, tick);
+      else drawLeaf(f, tick);
+    }
+    drawDrops();
+  }
+
+  // ---- pointer ----
   const onMove = (e: PointerEvent) => {
     const r = canvas.getBoundingClientRect();
     pointer.x = e.clientX - r.left;
@@ -821,152 +1376,26 @@ function runStream(canvas: HTMLCanvasElement, still: boolean) {
     onMove(e);
     if (!pointer.inside) return;
     const { x, y } = pointer;
-    for (const l of leaves) {
-      if (l.away > 0 || Math.hypot(l.x - x, l.y - y) > l.size * 0.6) continue;
-      const dx = l.x - x || 0.1;
-      const dy = l.y - y;
+    for (const f of floaters) {
+      if (f.away > 0 || Math.hypot(f.x - x, f.y - (f.boat ? y + 6 : y)) > f.size * 0.55) continue;
+      // a tap on something afloat sets it rocking and spinning away from the tap
+      const dx = f.x - x || 0.1;
+      const dy = f.y - y;
       const d = Math.hypot(dx, dy) || 1;
-      l.vx += (dx / d) * 60;
-      l.vy += (dy / d) * 60;
-      l.va += (dx > 0 ? 1 : -1) * 5;
-      addDrop(l.x, l.y, 9, 0.9);
+      f.vx += (dx / d) * 70;
+      f.vy += (dy / d) * 70;
+      f.va += (dx > 0 ? 1 : -1) * (f.boat ? 2.4 : 5);
+      ripple(f.x, f.y, 26, 1.3, 0.7);
       plip(0.8, 0.06);
       return;
     }
-    if (!inWater(x, y)) return;
-    addDrop(x, y, 11, -1.4);
-    plip(1, 0.08);
-    plip(1.5, 0.025, 0.32);
+    if (!inWater(x, y, 0.97) || stones.some((s) => Math.hypot(x - s.x, y - s.y) < s.r)) return;
+    pebble(x, y);
   };
-
-  // ---- a frame ----
-  let time = 0;
-  let sky = skyAt(clockOverride() ?? new Date());
-  let skyTarget = sky;
-  let skyCheck = 0;
-  let nextAmbient = 1.5;
-
-  function step(dt: number) {
-    time += dt;
-    // the sky, eased towards where the clock says it is
-    if ((skyCheck -= dt) <= 0) {
-      skyCheck = 20;
-      skyTarget = skyAt(clockOverride() ?? new Date());
-    }
-    sky = lerpSky(sky, skyTarget, 1 - Math.exp(-dt * 0.5));
-
-    // the finger
-    const wet = pointer.inside && inWater(pointer.x, pointer.y);
-    if (wet && !finger.wet) {
-      finger.x = finger.px = pointer.x;
-      finger.y = finger.py = pointer.y;
-      finger.vx = finger.vy = 0;
-      addDrop(pointer.x, pointer.y, 8, 0.9);
-    }
-    finger.wet = wet;
-    if (wet) {
-      const k = 1 - Math.exp(-dt * 14);
-      finger.vx += ((pointer.x - finger.x) / dt - finger.vx) * k;
-      finger.vy += ((pointer.y - finger.y) / dt - finger.vy) * k;
-      finger.x = pointer.x;
-      finger.y = pointer.y;
-      const fs = Math.hypot(finger.vx, finger.vy);
-      // held still, it sheds a wake; moving, it trails ripples behind it
-      addDrop(finger.x, finger.y, 5, 0.09 * Math.sin(time * 24));
-      const run = Math.hypot(finger.x - finger.px, finger.y - finger.py);
-      if (run > 6) {
-        addDrop(finger.x, finger.y, 6, 0.25 + Math.min(fs, 800) / 1400);
-        finger.px = finger.x;
-        finger.py = finger.y;
-      }
-      if (fs > 25) {
-        const kk = Math.min(0.4, 220 / fs);
-        pushes.push({ x: finger.x, y: finger.y, vx: finger.vx * kk, vy: finger.vy * kk, age: 0 });
-        if (pushes.length > 40) pushes.shift();
-      }
-    } else {
-      finger.vx *= 0.9;
-      finger.vy *= 0.9;
-    }
-    for (let i = pushes.length - 1; i >= 0; i--) if ((pushes[i].age += dt) >= 0.8) pushes.splice(i, 1);
-
-    // now and then something touches the surface
-    if ((nextAmbient -= dt) <= 0) {
-      nextAmbient = 1.5 + rand() * 3.5;
-      const [x, y] = placeAt(H * (0.05 + rand() * 0.9), (rand() - 0.5) * 1.4);
-      if (!onRock(x, y, 6)) addDrop(x, y, 3.5, 0.5 + rand() * 0.4);
-    }
-    for (const l of leaves) stepLeaf(l, dt);
-  }
-
-  function simulate(dt: number) {
-    gl.useProgram(sim.p);
-    gl.viewport(0, 0, simW, simH);
-    gl.uniform2f(sim.loc('uSimSize'), simW, simH);
-    gl.uniform2f(sim.loc('uSize'), W, H);
-    gl.uniform1f(sim.loc('uDt'), dt / 2);
-    for (let pass = 0; pass < 2; pass++) {
-      const flat = new Float32Array(MAX_DROPS * 4);
-      const n = pass === 0 ? drops.length : 0;
-      for (let i = 0; i < n; i++) flat.set(drops[i], i * 4);
-      gl.uniform4fv(sim.loc('uDrop'), flat);
-      gl.uniform1i(sim.loc('uDropN'), n);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, stateFb[1 - cur]);
-      bindTextures(sim, [['uS', state[cur]], ['uA', texA], ['uB', texB], ['uC', texC]]);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      cur = 1 - cur;
-    }
-    drops.length = 0;
-  }
-
-  function bindTextures(prog: ReturnType<typeof program>, list: [string, WebGLTexture | null][]) {
-    list.forEach(([name, t], i) => {
-      gl.activeTexture(gl.TEXTURE0 + i);
-      gl.bindTexture(gl.TEXTURE_2D, t);
-      gl.uniform1i(prog.loc(name), i);
-    });
-  }
-
-  function render() {
-    if (!live) return;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.useProgram(draw.p);
-    bindTextures(draw, [['uA', texA], ['uB', texB], ['uC', texC], ['uS', state[cur]]]);
-    gl.uniform2f(draw.loc('uSize'), W, H);
-    gl.uniform2f(draw.loc('uSimSize'), simW, simH);
-    gl.uniform1f(draw.loc('uTime'), time % 3600);
-    gl.uniform1f(draw.loc('uExposure'), sky.exposure);
-    gl.uniform1f(draw.loc('uSunUp'), sky.sunUp);
-    gl.uniform3fv(draw.loc('uSun'), sky.sun);
-    gl.uniform3fv(draw.loc('uSunCol'), sky.sunCol);
-    gl.uniform3fv(draw.loc('uMoon'), sky.moon);
-    gl.uniform3fv(draw.loc('uMoonCol'), sky.moonCol);
-    gl.uniform3fv(draw.loc('uZen'), sky.zen);
-    gl.uniform3fv(draw.loc('uHor'), sky.hor);
-    gl.uniform3fv(draw.loc('uAmb'), sky.amb);
-    // look down from a little way off the light, so its glitter can show
-    const light = sky.sun[2] > -0.05 ? sky.sun : sky.moon;
-    const lh = Math.hypot(light[0], light[1]) || 1;
-    const ex = (-light[0] / lh) * 0.32;
-    const ey = (-light[1] / lh) * 0.32;
-    const el = Math.hypot(ex, ey, 1);
-    gl.uniform3f(draw.loc('uEye'), ex / el, ey / el, 1 / el);
-    const shown = leaves.filter((l) => l.away <= 0);
-    gl.uniform4fv(draw.loc('uLeaf'), new Float32Array(16).map((_, i) => {
-      const l = shown[i >> 2];
-      if (!l) return 0;
-      return [l.x, l.y, l.a, l.size][i & 3];
-    }));
-    gl.uniform3fv(draw.loc('uLeafCol'), new Float32Array(12).map((_, i) => shown[Math.floor(i / 3)]?.color[i % 3] ?? 0));
-    gl.uniform1i(draw.loc('uLeafN'), shown.length);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  }
 
   // ---- loop ----
   let raf = 0;
   let last = 0;
-  let slow = 0;
   const loop = (now: number) => {
     raf = requestAnimationFrame(loop);
     const t = now / 1000;
@@ -974,20 +1403,11 @@ function runStream(canvas: HTMLCanvasElement, still: boolean) {
     if (dt < 1 / 75) return; // high-refresh screens still draw at 60
     last = t;
     if (!live) return;
-    // if the frames are dragging, draw fewer pixels
-    slow = dt > 0.024 ? slow + 1 : Math.max(0, slow - 1);
-    if (slow > 90 && renderScale > 0.6) {
-      slow = 0;
-      renderScale *= 0.85;
-      canvas.width = Math.round(W * renderScale);
-      canvas.height = Math.round(H * renderScale);
-    }
     step(Math.min(dt, 1 / 30));
-    simulate(Math.min(dt, 1 / 30));
     render();
   };
   const start = () => {
-    if (raf || still || document.hidden || !live) return;
+    if (raf || still || document.hidden) return;
     last = performance.now() / 1000;
     raf = requestAnimationFrame(loop);
   };
@@ -996,21 +1416,18 @@ function runStream(canvas: HTMLCanvasElement, still: boolean) {
     raf = 0;
   };
   const onVisibility = () => (document.hidden || !live ? stop() : start());
-  const onLost = (e: Event) => {
-    e.preventDefault();
-    stop();
-    live = false;
-  };
 
   const ro = new ResizeObserver(() => {
     layout();
     render();
+    // hidden below xl: the loop only runs while there is a stream to draw
     if (!still) onVisibility();
   });
   ro.observe(canvas);
-  canvas.addEventListener('webglcontextlost', onLost);
   layout();
   if (still) {
+    // one settled frame, drawn once
+    for (let i = 0; i < 60; i++) step(1 / 30);
     render();
   } else {
     window.addEventListener('pointermove', onMove, { passive: true });
@@ -1023,28 +1440,31 @@ function runStream(canvas: HTMLCanvasElement, still: boolean) {
   }
 
   return {
+    setDark(dark: boolean) {
+      const next = dark ? DARK : LIGHT;
+      if (next === pal) return;
+      pal = next;
+      if (!live) return;
+      buildLayers();
+      render();
+    },
     destroy() {
       stop();
       ro.disconnect();
-      canvas.removeEventListener('webglcontextlost', onLost);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('pointerout', onOut);
       document.removeEventListener('visibilitychange', onVisibility);
-      freeTargets();
-      [bake, sim, draw].forEach((pr) => gl.deleteProgram(pr.p));
-      gl.deleteBuffer(buf);
-      gl.deleteVertexArray(vao);
     },
   };
 }
 
 // Runs down the right-hand side of every page, from the top of the window to the bottom, in the
-// column the shell keeps free for it (reaching 2rem into the page's own padding beside it). It
-// lives in the shell, so going from page to page never remounts it: the water carries on and the
-// leaves are still where you pushed them. Below xl there is no room for it, and nothing runs.
+// column the shell keeps free for it (reaching 2rem into the page's own padding beside it). It lives in the shell, so going from page to page never
+// remounts it: the water carries on and the boat is still where you pushed it. Below xl there is
+// no room for it, and nothing runs.
 export default function WaterStream() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
@@ -1052,8 +1472,14 @@ export default function WaterStream() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const engine = runStream(canvas, reduced);
-    return () => engine.destroy();
+    const isDark = () => document.documentElement.classList.contains('dark');
+    const engine = runStream(canvas, isDark(), reduced);
+    const mo = new MutationObserver(() => engine.setDark(isDark()));
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => {
+      mo.disconnect();
+      engine.destroy();
+    };
   }, [reduced]);
 
   return (
