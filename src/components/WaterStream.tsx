@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useMedia } from '@/lib/use-media';
+import { plip } from '@/lib/stream-sound';
 
 // A brook down the right side of the About page, drawn the way the films in /films are drawn:
 // flat water on paper under a halftone screen, wobbly ink banks with hatching outside them, and
@@ -9,8 +10,9 @@ import { useMedia } from '@/lib/use-media';
 //
 // Unlike the films it is live. The cursor is a finger in the water: held still, the current
 // parts around it and sheds eddies behind it the way it does round the stones; moved, it drags
-// the water along and leaves rings. A click drops a pebble. A paper boat and two leaves ride the
-// current and can be pushed about, and a click on the boat rocks it.
+// the water along and leaves rings. A click drops a pebble, with a plip through the site's stream
+// sound (lib/stream-sound), so the sidebar's switch and volume cover it too. A paper boat and two
+// leaves ride the current and can be pushed about, and a click on the boat rocks it.
 //
 // The canvas takes no pointer events. It reads the pointer off the window, so everything under
 // and around it stays exactly as clickable as it was.
@@ -86,6 +88,8 @@ const V0 = 38; // px/s down the middle of the stream
 const DOT = 7; // halftone cell
 const FINGER = 15; // radius of the dimple the cursor makes
 const PUSH_LIFE = 0.8;
+const TRAIL_DT = 0.07; // how often a speck notes where it is
+const TRAIL_N = 26; // and how many of those it keeps
 const INTERACTIVE = 'a, button, input, textarea, select, label, summary, [role="button"], [contenteditable="true"]';
 // Where the stones sit: fraction of the height, position across the stream (-1 bank to 1 bank), radius.
 const STONES: [number, number, number][] = [
@@ -115,7 +119,23 @@ function rng(seed: number): () => number {
   };
 }
 
-type Tracer = { x: number; y: number; age: number; life: number; glint: boolean; id: number; sp: number };
+// A tracer is a speck carried by the current. It remembers where it has been, and its line is
+// drawn along that path: a trail changes only as fast as the speck moves, so the lines bend
+// round the cursor smoothly instead of being redrawn from scratch every frame.
+type Tracer = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  age: number;
+  life: number;
+  glint: boolean;
+  id: number;
+  sp: number;
+  hx: number[];
+  hy: number[];
+  ht: number;
+};
 type Body = { x: number; y: number; r: number; ux: number; uy: number; shed: number; side: number };
 type Stone = Body & { pts: Pt[]; seed: number };
 type Vortex = { x: number; y: number; g: number; core: number; age: number; life: number };
@@ -236,17 +256,20 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   }
   // Flow round a cylinder: the doublet that turns uniform flow U into flow that parts round radius r.
   function obstacle(x: number, y: number, o: Body) {
-    const zx = x - o.x;
-    const zy = y - o.y;
-    const r2 = zx * zx + zy * zy;
+    let zx = x - o.x;
+    let zy = y - o.y;
+    let r2 = zx * zx + zy * zy;
     const a2r = o.r * o.r;
     if (r2 > 36 * a2r) return;
     if (r2 < a2r) {
-      const d = Math.sqrt(r2) || 1;
-      const sp = Math.hypot(o.ux, o.uy) + 12;
-      V.x += (zx / d) * sp;
-      V.y += (zy / d) * sp;
-      return;
+      // anything caught inside eases out and slides round the rim, rather than being thrown
+      const d = Math.sqrt(r2) || 0.01;
+      const k = (1 - d / o.r) * 60;
+      V.x += (zx / d) * k;
+      V.y += (zy / d) * k;
+      zx *= o.r / d;
+      zy *= o.r / d;
+      r2 = a2r;
     }
     const A = zx * zx - zy * zy;
     const B = 2 * zx * zy;
@@ -295,27 +318,33 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   function layout() {
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
+    const scale = Math.min(2, window.devicePixelRatio || 1);
     live = w >= 280 && h >= 240;
-    if (!live) return;
+    // Nothing moved (the observer's first call, a page change): leave the water exactly as it is.
+    if (!live || (w === W && h === H && scale === dpr)) return;
     const first = W === 0;
     const kx = first ? 1 : w / W;
     const ky = first ? 1 : h / H;
     W = w;
     H = h;
-    dpr = Math.min(2, window.devicePixelRatio || 1);
+    dpr = scale;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
-    hw0 = clamp(W * 0.19, 56, 92);
-    a1 = clamp(W * 0.15, 20, 84);
+    hw0 = clamp(W * 0.25, 84, 120);
+    // Room for the bends. Both banks, hatching and grass included, stay inside the canvas, with a
+    // little more held back on the right so nothing runs under the scrollbar.
+    const rim = hw0 * 1.16;
+    const marginL = 26;
+    const marginR = 34;
+    cx0 = (W + marginL - marginR) / 2;
+    const room = Math.max(0, cx0 - rim - marginL);
+    a1 = Math.min(W * 0.15, 84);
     a2 = a1 * 0.25;
-    // the whole stream, banks and hatching included, stays inside the canvas
-    const room = W / 2 - hw0 * 1.16 - 34;
     if (a1 + a2 > room) {
-      const k = Math.max(0, room) / (a1 + a2);
+      const k = room / (a1 + a2);
       a1 *= k;
       a2 *= k;
     }
-    cx0 = W / 2;
     buildBanks();
     placeStones();
     buildDots();
@@ -593,6 +622,12 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     const [x, y] = placeAt(-10 + rand() * (H + 20), (rand() * 2 - 1) * 0.9);
     p.x = x;
     p.y = y;
+    p.hx.length = 0;
+    p.hy.length = 0;
+    p.ht = 0;
+    base(x, y);
+    p.vx = V.x;
+    p.vy = V.y;
     p.age = 0;
     p.life = 2.4 + rand() * 2.6;
   }
@@ -600,7 +635,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     const n = Math.round(clamp((2 * hw0 * H) / 1500, 50, 160));
     tracers.length = 0;
     for (let i = 0; i < n; i++) {
-      const p: Tracer = { x: 0, y: 0, age: 0, life: 1, glint: i % 20 < 7, id: i, sp: V0 };
+      const p: Tracer = { x: 0, y: 0, vx: 0, vy: V0, age: 0, life: 1, glint: i % 20 < 7, id: i, sp: V0, hx: [], hy: [], ht: 0 };
       respawn(p);
       p.age = rand() * p.life;
       tracers.push(p);
@@ -630,34 +665,6 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     if (ripples.length > 26) ripples.shift();
   }
 
-  // ---- sound: a drop of water, synthesised, only ever in answer to a click ----
-  let audio: AudioContext | null = null;
-  function plip(pitch: number, gain: number, delay = 0) {
-    try {
-      if (!audio) audio = new AudioContext();
-      if (audio.state === 'suspended') void audio.resume();
-      const t = audio.currentTime + delay;
-      const o = audio.createOscillator();
-      const g = audio.createGain();
-      const lp = audio.createBiquadFilter();
-      lp.type = 'lowpass';
-      lp.frequency.value = 2600;
-      o.type = 'sine';
-      o.frequency.setValueAtTime(360 * pitch, t);
-      o.frequency.exponentialRampToValueAtTime(1150 * pitch, t + 0.075);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(gain, t + 0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
-      o.connect(lp);
-      lp.connect(g);
-      g.connect(audio.destination);
-      o.start(t);
-      o.stop(t + 0.16);
-    } catch {
-      // no audio, no plip
-    }
-  }
-
   function pebble(x: number, y: number) {
     ripple(x, y, 44, 2, 1);
     ripple(x, y, 28, 1.6, 0.7, 0.14);
@@ -678,14 +685,15 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   }
 
   // ---- simulation ----
-  function shed(o: Body, dt: number) {
+  function shed(o: Body, dt: number, cap = Infinity) {
     o.shed -= dt;
-    const um = Math.hypot(o.ux, o.uy);
+    const um = Math.min(cap, Math.hypot(o.ux, o.uy));
     if (o.shed > 0 || um < 8) return;
     o.shed = clamp((5 * o.r) / um, 0.45, 1.5);
     o.side = -o.side;
-    const tx = o.ux / um;
-    const ty = o.uy / um;
+    const uu = Math.hypot(o.ux, o.uy);
+    const tx = o.ux / uu;
+    const ty = o.uy / uu;
     vortices.push({
       x: o.x + tx * o.r * 1.35 - ty * o.side * o.r * 0.55,
       y: o.y + ty * o.r * 1.35 + tx * o.side * o.r * 0.55,
@@ -795,14 +803,15 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       let ux = V.x - finger.vx;
       let uy = V.y - finger.vy;
       const um = Math.hypot(ux, uy);
-      if (um > 180) {
-        ux *= 180 / um;
-        uy *= 180 / um;
+      if (um > 110) {
+        ux *= 110 / um;
+        uy *= 110 / um;
       }
       finger.ux = ux;
       finger.uy = uy;
       if (fs > 25) {
-        pushes.push({ x: finger.x, y: finger.y, vx: finger.vx * 0.55, vy: finger.vy * 0.55, age: 0 });
+        const k = Math.min(0.4, 220 / fs);
+        pushes.push({ x: finger.x, y: finger.y, vx: finger.vx * k, vy: finger.vy * k, age: 0 });
         if (pushes.length > 40) pushes.shift();
       }
       if (Math.hypot(finger.x - finger.rx, finger.y - finger.ry) > 30) {
@@ -823,7 +832,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       s.uy = V.y;
       shed(s, dt);
     }
-    if (finger.r > 6) shed(finger, dt);
+    if (finger.r > 6) shed(finger, dt, 60);
     for (let i = vortices.length - 1; i >= 0; i--) {
       const v = vortices[i];
       base(v.x, v.y);
@@ -841,7 +850,18 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       const u = F.u;
       p.x += V.x * dt;
       p.y += V.y * dt;
+      p.vx += (V.x - p.vx) * 0.2;
+      p.vy += (V.y - p.vy) * 0.2;
       p.age += dt;
+      if ((p.ht += dt) >= TRAIL_DT) {
+        p.ht = 0;
+        p.hx.unshift(p.x);
+        p.hy.unshift(p.y);
+        if (p.hx.length > TRAIL_N) {
+          p.hx.pop();
+          p.hy.pop();
+        }
+      }
       if (p.age >= p.life || Math.abs(u) > 0.97 || p.y > H + 30) respawn(p);
     }
 
@@ -961,10 +981,9 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       const env = Math.sin(Math.PI * clamp(p.age / p.life, 0, 1));
       if (env < 0.05) continue;
       if (p.glint) {
-        field(p.x, p.y);
-        const s = Math.hypot(V.x, V.y) || 1;
-        const tx = V.x / s;
-        const ty = V.y / s;
+        const s = Math.hypot(p.vx, p.vy) || 1;
+        const tx = p.vx / s;
+        const ty = p.vy / s;
         const size = 0.8 + hash(p.id, 3) * 0.6;
         const tw = 0.55 + 0.45 * Math.sin(time * 2.6 + p.id);
         const path = glints[bucket(env * tw)];
@@ -976,26 +995,36 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
           else path.lineTo(x, y);
         }
       } else {
-        // A long, slightly sinuous line traced back up the current from the tracer, heavier in
-        // the middle than at either end, like a brush stroke.
-        const L = clamp(28 + p.sp * 1.3, 30, 96) * (0.75 + hash(p.id, 9) * 0.5);
-        const n = Math.max(6, Math.round(L / 5));
-        const st = L / n;
-        const amp = 1.2 + hash(p.id, 11) * 1.4;
+        // The speck's own trail, newest first, cut to this line's length, with a slight sinuous
+        // swing across it, and heavier in the middle than at either end, like a brush stroke.
+        const L = (40 + hash(p.id, 9) * 55) * clamp(p.sp / V0, 0.45, 1.3);
+        const amp = 0.9 + hash(p.id, 11) * 1;
         const phase = hash(p.id, 12) * TAU + time * 1.6;
-        let x = p.x;
-        let y = p.y;
         pts.length = 0;
-        for (let i = 0; i <= n; i++) {
-          field(x, y);
-          const s = Math.hypot(V.x, V.y);
-          if (s < 0.5) break;
-          const tx = V.x / s;
-          const ty = V.y / s;
-          const wave = Math.sin(i * st * 0.11 + phase) * amp * Math.sin((Math.PI * i) / n);
-          pts.push([x - ty * wave + (hash(p.id, i, tick) - 0.5) * 0.9, y + tx * wave + (hash(p.id, i + 40, tick) - 0.5) * 0.9]);
-          x -= tx * st;
-          y -= ty * st;
+        let px = p.x;
+        let py = p.y;
+        let run = 0;
+        const raw: number[] = [px, py, 0];
+        for (let i = 0; i < p.hx.length && run < L; i++) {
+          run += Math.hypot(p.hx[i] - px, p.hy[i] - py);
+          px = p.hx[i];
+          py = p.hy[i];
+          raw.push(px, py, run);
+        }
+        const n = raw.length / 3;
+        if (n < 3 || run < 6) continue;
+        for (let i = 0; i < n; i++) {
+          const j0 = Math.max(0, i - 1) * 3;
+          const j1 = Math.min(n - 1, i + 1) * 3;
+          const dx = raw[j1] - raw[j0];
+          const dy = raw[j1 + 1] - raw[j0 + 1];
+          const dl = Math.hypot(dx, dy) || 1;
+          const along = raw[i * 3 + 2];
+          const wave = Math.sin(along * 0.11 + phase) * amp * Math.sin((Math.PI * along) / run);
+          pts.push([
+            raw[i * 3] - (dy / dl) * wave + (hash(p.id, i, tick) - 0.5) * 0.7,
+            raw[i * 3 + 1] + (dx / dl) * wave + (hash(p.id, i + 40, tick) - 0.5) * 0.7,
+          ]);
         }
         const a = env * clamp(p.sp / 30, 0.45, 1);
         const segs = STROKE.length;
@@ -1386,17 +1415,19 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     cancelAnimationFrame(raf);
     raf = 0;
   };
-  const onVisibility = () => (document.hidden ? stop() : start());
+  const onVisibility = () => (document.hidden || !live ? stop() : start());
 
   const ro = new ResizeObserver(() => {
     layout();
     render();
+    // hidden below xl: the loop only runs while there is a stream to draw
+    if (!still) onVisibility();
   });
   ro.observe(canvas);
   layout();
   if (still) {
     // one settled frame, drawn once
-    for (let i = 0; i < 30; i++) step(1 / 30);
+    for (let i = 0; i < 60; i++) step(1 / 30);
     render();
   } else {
     window.addEventListener('pointermove', onMove, { passive: true });
@@ -1405,12 +1436,14 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     window.addEventListener('blur', onBlur);
     document.addEventListener('pointerout', onOut);
     document.addEventListener('visibilitychange', onVisibility);
-    start();
+    onVisibility();
   }
 
   return {
     setDark(dark: boolean) {
-      pal = dark ? DARK : LIGHT;
+      const next = dark ? DARK : LIGHT;
+      if (next === pal) return;
+      pal = next;
       if (!live) return;
       buildLayers();
       render();
@@ -1424,40 +1457,36 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('pointerout', onOut);
       document.removeEventListener('visibilitychange', onVisibility);
-      void audio?.close();
     },
   };
 }
 
-// Sits in the space to the right of the About column, from the top of the window to the bottom.
-// Narrower than that (and on phones) there is no room for it, and nothing runs.
-export default function WaterStream({ dark }: { dark: boolean }) {
+// Runs down the right-hand side of every page, from the top of the window to the bottom, in the
+// column the shell keeps free for it (reaching 2rem into the page's own padding beside it). It lives in the shell, so going from page to page never
+// remounts it: the water carries on and the boat is still where you pushed it. Below xl there is
+// no room for it, and nothing runs.
+export default function WaterStream() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const engineRef = useRef<ReturnType<typeof runStream> | null>(null);
-  const darkRef = useRef(dark);
-  darkRef.current = dark;
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const engine = runStream(canvas, darkRef.current, reduced);
-    engineRef.current = engine;
+    const isDark = () => document.documentElement.classList.contains('dark');
+    const engine = runStream(canvas, isDark(), reduced);
+    const mo = new MutationObserver(() => engine.setDark(isDark()));
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     return () => {
+      mo.disconnect();
       engine.destroy();
-      engineRef.current = null;
     };
   }, [reduced]);
-
-  useEffect(() => {
-    engineRef.current?.setDark(dark);
-  }, [dark]);
 
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-y-0 right-0 hidden lg:block"
-      style={{ left: 'calc(16rem + 2.5rem + 52ch + 3rem)' }}
+      className="pointer-events-none fixed inset-y-0 right-0 hidden xl:block"
+      style={{ width: 'calc(var(--stream-w) + 2rem)' }}
     >
       <canvas ref={canvasRef} className="block h-full w-full" />
     </div>

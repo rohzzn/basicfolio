@@ -65,7 +65,7 @@ const WritingPage = () => {
     <div className="max-w-5xl">
       {/* At desktop widths the header stops where the list does, so the tabs stay over the list
           rather than over the preview. */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:pr-[380px]">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:pr-[380px] xl:pr-0 min-[1400px]:pr-[340px]">
         <h2 className="text-lg font-medium dark:text-paper">Writing</h2>
         <div className="flex flex-wrap gap-x-4 gap-y-2" role="tablist" aria-label="Writing categories">
           {categories.map((cat) => (
@@ -203,7 +203,7 @@ const WritingPage = () => {
             ))}
           </div>
 
-          <div className="hidden w-[340px] shrink-0 lg:block">
+          <div className="hidden w-[340px] shrink-0 lg:block xl:hidden xl:w-[300px] min-[1400px]:block">
             <FilmPreviewPane film={active ? films[active as keyof typeof films] : undefined} />
           </div>
         </div>

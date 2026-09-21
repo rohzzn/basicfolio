@@ -45,7 +45,7 @@ export default function SpotifyPreviewPlayerBar() {
   const track = currentTrack;
 
   return (
-    <div className="fixed bottom-0 right-0 left-0 z-50 hidden border-t border-zinc-200 bg-zinc-50/95 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/95 lg:left-64 lg:block">
+    <div className="fixed bottom-0 right-0 left-0 z-50 hidden border-t border-zinc-200 bg-zinc-50/95 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/95 lg:left-64 lg:block xl:right-[var(--stream-w)]">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <div className="relative h-12 w-12 shrink-0">

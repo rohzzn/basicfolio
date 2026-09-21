@@ -63,7 +63,7 @@ export default function HobbiesPage() {
           ))}
         </div>
 
-        <div className="hidden w-[340px] shrink-0 lg:block">
+        <div className="hidden w-[340px] shrink-0 lg:block xl:hidden xl:w-[300px] min-[1400px]:block">
           <FilmPreviewPane film={active ? films[active as keyof typeof films] : undefined} />
         </div>
       </div>

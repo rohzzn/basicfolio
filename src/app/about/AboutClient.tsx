@@ -5,7 +5,6 @@ import Image from '@/components/SiteImage';
 import Link from 'next/link';
 import type { CalendarActivity } from '@/lib/github-calendar';
 import { languageColor, type LanguageCalendar } from '@/lib/github-languages';
-import WaterStream from '@/components/WaterStream';
 
 const CAL_MARGIN = 3;
 const MAX_BLOCK = 28;
@@ -262,7 +261,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ calendarData, languageCalenda
       {/* GitHub Contributions */}
       <ProseGitHubCalendar isDark={isDark} data={calendarData} languages={languageCalendar} />
 
-      <WaterStream dark={isDark} />
+
     </div>
   );
 };
