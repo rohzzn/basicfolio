@@ -10,9 +10,8 @@ import { plip } from '@/lib/site-sound';
 //
 // Unlike the films it is live. The cursor is a finger in the water: held still, the current
 // parts around it and sheds eddies behind it the way it does round the stones; moved, it drags
-// the water along and leaves rings. A click drops a pebble with a plip (lib/site-sound, so the
-// sidebar's mute covers it). A paper boat and two leaves ride the current and can be pushed about,
-// and a click on the boat rocks it.
+// the water along and leaves rings. A click drops a pebble with a plip (lib/site-sound). A paper
+// boat and two leaves ride the current and can be pushed about, and a click on the boat rocks it.
 //
 // The canvas takes no pointer events. It reads the pointer off the window, so everything under
 // and around it stays exactly as clickable as it was.

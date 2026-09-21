@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "@/components/SiteImage";
 import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
-import SoundToggle from './SoundToggle';
 import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/SpotifyPreviewContext';
 
 // These are all opt-in extras (keyboard-shortcut palette, click sound, konami
@@ -19,27 +18,10 @@ const EReaderEasterEgg = dynamic(() => import('./EReaderEasterEgg'), { ssr: fals
 // so the canvas arriving a moment later moves nothing.
 const WaterStream = dynamic(() => import('./WaterStream'), { ssr: false });
 
+// The socials beside the status, as a single letter each rather than a logo.
 const SOCIALS = [
-  {
-    label: 'Instagram',
-    href: 'https://instagram.com/rohzzn',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-[15px] w-[15px]" aria-hidden>
-        <rect x="3" y="3" width="18" height="18" rx="5" />
-        <circle cx="12" cy="12" r="4" />
-        <circle cx="17.4" cy="6.6" r="0.9" fill="currentColor" stroke="none" />
-      </svg>
-    ),
-  },
-  {
-    label: 'X',
-    href: 'https://x.com/rohzzn',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="h-[13px] w-[13px]" aria-hidden>
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-      </svg>
-    ),
-  },
+  { label: 'Instagram', text: 'G.', href: 'https://instagram.com/rohzzn' },
+  { label: 'X', text: 'X.', href: 'https://x.com/rohzzn' },
 ];
 
 interface NavLinkProps {
@@ -431,8 +413,8 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
           </nav>
 
           <div className="p-4 sm:p-5 lg:p-6 border-t border-zinc-200 dark:border-neutral-800 flex-shrink-0">
-            {/* The status on the left, and on the right the mute and the socials, whether or not
-                the status has come back yet. */}
+            {/* The status on the left and the socials on the right, whether or not the status has
+                come back yet. */}
             <div className="flex w-full items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
                 {isLoading ? (
@@ -455,7 +437,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
                 )}
               </div>
               <div className="flex shrink-0 items-center gap-3.5">
-                <SoundToggle />
                 {SOCIALS.map((s) => (
                   <a
                     key={s.label}
@@ -464,9 +445,9 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
                     rel="noopener noreferrer"
                     aria-label={`Rohan on ${s.label}`}
                     title={s.label}
-                    className="flex h-4 w-4 items-center justify-center text-zinc-500 transition-colors hover:text-zinc-900 dark:text-neutral-400 dark:hover:text-paper"
+                    className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-neutral-400 dark:hover:text-paper"
                   >
-                    {s.icon}
+                    {s.text}
                   </a>
                 ))}
               </div>
