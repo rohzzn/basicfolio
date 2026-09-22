@@ -11,15 +11,16 @@ import { plip } from '@/lib/site-sound';
 //
 // Unlike the films it is live. The cursor is a finger in the water: held still, the current
 // parts around it and sheds eddies behind it the way it does round the stones; moved, it drags
-// the water along and leaves rings. A click drops a pebble with a plip (lib/site-sound). Two
-// leaves and a little fleet of paper boats ride the current and can be pushed about.
+// the water along and leaves rings. A click drops a pebble with a plip (lib/site-sound). Four
+// leaves and a few paper boats ride the current, and the cursor pushes them about.
 //
 // Every boat carries a message from the guestbook, the writer's initial on its sail. One boat at a
 // time, as it drifts past the middle of the stream, unfolds its note beside it on a string, holds
-// it long enough to read, and folds it away; then the next boat takes its turn. Hovering a boat
-// catches it and opens its note there and then, tapping one pins it, and a note opens the
-// guestbook. When a boat floats away at the bottom it comes back in at the top with the next
-// message, newest first, round and round, so every entry drifts past in time.
+// it long enough to read, and folds it away; then the next boat takes its turn. Bringing the
+// cursor to a boat opens its note too (while pushing it along), tapping one pins it, and a note
+// opens the guestbook. When a boat floats away at the bottom it comes back in at the top with a
+// message not yet shown, newest first; no message comes round again until every one has had its
+// turn, and each visitor's place in that round is remembered from one visit to the next.
 //
 // The canvas takes no pointer events. It reads the pointer off the window, so everything under
 // and around it stays exactly as clickable as it was.
@@ -67,7 +68,7 @@ const LIGHT: Pal = {
   boat: '#fdfbf6',
   boatShade: '#0a5083',
   flags: ['#c8473f', '#e8c84a', '#2b5fb8', '#518e9d', '#e4a05c', '#7a5c8e'],
-  leaves: ['#8f8e5f', '#df9a57'],
+  leaves: ['#8f8e5f', '#df9a57', '#c8663f', '#c9a13a'],
   note: '#fffdf7',
   noteText: '#24232e',
   noteMuted: '#6b6b75',
@@ -90,7 +91,7 @@ const DARK: Pal = {
   boat: '#e6e0d4',
   boatShade: '#6d9fc4',
   flags: ['#d8614f', '#c9ae4a', '#4f78c4', '#5d97a3', '#d09155', '#9277b0'],
-  leaves: ['#7f7f4e', '#b97d45'],
+  leaves: ['#7f7f4e', '#b97d45', '#a45a3c', '#a88a3a'],
   note: '#1d1d21',
   noteText: '#ece8e0',
   noteMuted: '#a3a3ab',
@@ -176,7 +177,25 @@ type Floater = {
   told: boolean; // has shown its note on this trip down
 };
 
-export type StreamNote = { name: string; date: string; body: string; reply?: string };
+export type StreamNote = { id: number; name: string; date: string; body: string; reply?: string };
+
+// the messages this visitor has already been shown in the current round, kept between visits
+const SEEN_KEY = 'streamSeen';
+function loadSeen(): Set<number> {
+  try {
+    const v = JSON.parse(localStorage.getItem(SEEN_KEY) ?? '[]');
+    return new Set(Array.isArray(v) ? v.filter((n) => typeof n === 'number') : []);
+  } catch {
+    return new Set();
+  }
+}
+function saveSeen(seen: Set<number>) {
+  try {
+    localStorage.setItem(SEEN_KEY, JSON.stringify([...seen]));
+  } catch {
+    // storage blocked: the round simply starts over next visit
+  }
+}
 
 function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean, navigate: (href: string) => void) {
   const ctx = canvas.getContext('2d');
@@ -255,15 +274,14 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   let nextAmbient = 1.5;
   // the guestbook, and which of its notes the next boat to set off will carry
   let notes: StreamNote[] = [];
-  let nextNote = 0;
+  const seen = loadSeen();
   let pinned: Floater | null = null;
   let noteRect: [number, number, number, number] | null = null;
-  let noteOwner: Floater | null = null;
   let font = 'ui-sans-serif, system-ui, sans-serif';
   let mainEl: HTMLElement | null = null;
   let pointing = false;
-  // the boat being read: caught under the cursor (or by its note) and held until let go
-  let held: Floater | null = null;
+  // the boat the cursor is at: its note shows while the cursor stays near it or on the note
+  let hover: Floater | null = null;
   // the boat telling its message on its own, how long it has been telling, and for how long
   let telling: Floater | null = null;
   let tellAge = 0;
@@ -682,16 +700,31 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       tracers.push(p);
     }
   }
-  function takeNote() {
+  // The next message for a boat to carry: the newest one this visitor has not been shown and no
+  // other boat is carrying. Once every message has had its turn, a new round begins.
+  function takeNote(self: Floater) {
     if (notes.length === 0) return -1;
-    const i = nextNote % notes.length;
-    nextNote = (nextNote + 1) % notes.length;
+    const busy = new Set(floaters.filter((b) => b.boat && b !== self && b.away <= 0 && b.msg >= 0).map((b) => b.msg));
+    const pick = () => notes.findIndex((n, i) => !seen.has(n.id) && !busy.has(i));
+    let i = pick();
+    if (i < 0) {
+      seen.clear();
+      saveSeen(seen);
+      i = pick();
+    }
     return i;
+  }
+  function markSeen(b: Floater) {
+    b.told = true;
+    const n = notes[b.msg];
+    if (!n || seen.has(n.id)) return;
+    seen.add(n.id);
+    saveSeen(seen);
   }
   function floatIn(f: Floater, y: number) {
     const [x, yy] = placeAt(y, (rand() - 0.5) * 0.7);
     if (f.boat) {
-      f.msg = takeNote();
+      f.msg = takeNote(f);
       f.told = false;
     }
     f.x = x;
@@ -707,15 +740,15 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       const f: Floater = {
         boat, x: 0, y: 0, vx: 0, vy: 0, a: boat ? 0 : rand() * TAU, va: 0,
         size: boat ? 28 + hash(i, 21) * 8 : 14 + rand() * 3,
-        color: i % 2, seed: i * 13 + 5, away: 0, bump: 0, msg: -1, tilt: (hash(i, 22) - 0.5) * 0.05, told: false,
+        color: i % 4, seed: i * 13 + 5, away: 0, bump: 0, msg: -1, tilt: (hash(i, 22) - 0.5) * 0.05, told: false,
       };
       floatIn(f, y);
       return f;
     };
-    floaters.push(mk(false, H * 0.48, 0), mk(false, H * 0.76, 1));
-    // a boat for every hundred and forty or so pixels of stream, spread down it
-    const n = clamp(Math.round(H / 140), 4, 7);
-    for (let i = 0; i < n; i++) floaters.push(mk(true, H * (0.06 + ((i + 0.5) / n) * 0.88), i + 2));
+    [0.18, 0.44, 0.68, 0.9].forEach((fy, i) => floaters.push(mk(false, H * fy, i)));
+    // three boats, four on a tall screen, spread down the stream
+    const n = clamp(Math.round(H / 260), 3, 4);
+    for (let i = 0; i < n; i++) floaters.push(mk(true, H * (0.08 + ((i + 0.5) / n) * 0.84), i + 4));
   }
 
   function ripple(x: number, y: number, rMax: number, life: number, k: number, delay = 0) {
@@ -790,17 +823,6 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       return;
     }
     field(f.x, f.y);
-    if (f === held) {
-      // caught: it slows to a stop and bobs where it is while its note is read
-      const hk = Math.exp(-dt * 6);
-      f.vx *= hk;
-      f.vy *= hk;
-      f.va += (-f.a * 7 - f.va * 1.6) * dt;
-      f.a += f.va * dt;
-      f.x += f.vx * dt;
-      f.y += f.vy * dt;
-      return;
-    }
     const k = 1 - Math.exp(-dt * (f.boat ? 1.5 : 2.2));
     const slow = f === telling ? 0.45 : 1;
     f.vx += (V.x * slow - f.vx) * k;
@@ -861,7 +883,6 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       }
       if (pick) {
         telling = pick;
-        pick.told = true;
         tellAge = 0;
         tellFor = clamp(3.5 + (notes[pick.msg]?.body.length ?? 0) * 0.045, 4, 10);
       }
@@ -869,7 +890,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     // the cursor's choice first, then a tapped boat, then the one telling
     const want = desiredNote();
     if (want === showing) openness = Math.min(1, openness + dt / 0.25);
-    else if (want && want === held) {
+    else if (want && want === hover) {
       showing = want;
       openness = Math.max(openness, 0.35);
     } else {
@@ -883,17 +904,37 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       showing = null;
       openness = 0;
     }
+    // a note that has been open a moment counts as read, and will not come round again this round
+    if (showing && openness > 0.6) markSeen(showing);
+  }
+
+  // the boat the cursor has come to, kept while the cursor stays near it (the finger pushes it on
+  // a little) or rests on its note
+  function trackHover() {
+    if (!pointer.inside) {
+      hover = null;
+      return;
+    }
+    const near = boatAt(pointer.x, pointer.y, 14);
+    if (near && near.msg >= 0) hover = near;
+    else if (
+      hover &&
+      (hover.away > 0 ||
+        (Math.hypot(hover.x - pointer.x, hover.y - pointer.y) > hover.size * 0.6 + 50 && !inNote(pointer.x, pointer.y)))
+    )
+      hover = null;
   }
 
   function step(dt: number) {
     time += dt;
-    // a boat under the cursor, or one whose note the cursor is on, is held
-    const over = pointer.inside ? boatAt(pointer.x, pointer.y, 16) : null;
-    held = over && over.msg >= 0 ? over : pointer.inside && noteOwner && inNote(pointer.x, pointer.y) ? noteOwner : null;
+    trackHover();
 
-    // the finger
-    // over a boat or a note the cursor is reading, not dipping into the water
-    const wet = pointer.inside && !held && !over && inWater(pointer.x, pointer.y, 0.93) && !stones.some((s) => Math.hypot(pointer.x - s.x, pointer.y - s.y) < s.r + 4);
+    // the finger, which pushes boats and leaves as it goes; resting on a note it is reading instead
+    const wet =
+      pointer.inside &&
+      !inNote(pointer.x, pointer.y) &&
+      inWater(pointer.x, pointer.y, 0.93) &&
+      !stones.some((s) => Math.hypot(pointer.x - s.x, pointer.y - s.y) < s.r + 4);
     if (wet && !finger.wet) {
       finger.x = finger.rx = pointer.x;
       finger.y = finger.ry = pointer.y;
@@ -1485,7 +1526,6 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   function drawNote(f: Floater, tick: number, open: number) {
     const n = notes[f.msg];
     noteRect = null;
-    noteOwner = null;
     if (!n) return;
     const inner = 184;
     const measure = (fnt: string, lines: string[]) => {
@@ -1581,7 +1621,6 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     reply.forEach((l, i) => c.fillText(l, 10, ty + i * 15));
     c.restore();
     noteRect = [x, y, w, h];
-    noteOwner = f;
   }
 
   // extra widens the reach: a boat drifting into a cursor resting in the water is caught before
@@ -1601,10 +1640,10 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   };
   const inNote = (x: number, y: number) =>
     !!noteRect && x >= noteRect[0] && x <= noteRect[0] + noteRect[2] && y >= noteRect[1] && y <= noteRect[1] + noteRect[3];
-  // whose note should be up: the boat the cursor has caught (or whose note it is on), then a boat
-  // that was tapped, then the one telling its message on its own
+  // whose note should be up: the boat the cursor is at, then a boat that was tapped, then the one
+  // telling its message on its own
   function desiredNote(): Floater | null {
-    if (held && held.msg >= 0) return held;
+    if (hover && hover.msg >= 0 && hover.away <= 0) return hover;
     if (pinned && pinned.away <= 0) return pinned;
     if (telling && tellAge < tellFor) return telling;
     return null;
@@ -1660,18 +1699,16 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     drawDrops();
     if (still) {
       // nothing moves: the note follows the cursor and taps straight away
-      const over = pointer.inside ? boatAt(pointer.x, pointer.y) : null;
-      held = over && over.msg >= 0 ? over : pointer.inside && noteOwner && inNote(pointer.x, pointer.y) ? noteOwner : null;
+      trackHover();
       showing = desiredNote();
       openness = showing ? 1 : 0;
     }
     if (showing && showing.away <= 0 && openness > 0) drawNote(showing, tick, openness);
     else {
       noteRect = null;
-      noteOwner = null;
     }
     // over a boat or a note the cursor says it can be clicked
-    const want = pointer.inside && (!!held || !!boatAt(pointer.x, pointer.y) || inNote(pointer.x, pointer.y));
+    const want = pointer.inside && (!!boatAt(pointer.x, pointer.y) || inNote(pointer.x, pointer.y));
     if (want !== pointing) {
       pointing = want;
       mainEl = mainEl ?? document.querySelector('main');
@@ -1707,7 +1744,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       navigate('/guestbook');
       return;
     }
-    const boat = boatAt(x, y) ?? held;
+    const boat = boatAt(x, y, 8);
     pinned = boat && boat.msg >= 0 && pinned !== boat ? boat : null;
     if (still) {
       render();
@@ -1787,16 +1824,22 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     },
     setNotes(next: StreamNote[]) {
       const first = notes.length === 0;
-      notes = next;
       if (first) {
-        // the boats already afloat take the newest notes, in order down the stream
-        nextNote = 0;
-        floaters
-          .filter((b) => b.boat)
-          .sort((a, b) => b.y - a.y)
-          .forEach((b) => (b.msg = takeNote()));
-      } else nextNote %= Math.max(1, notes.length);
-      floaters.forEach((b) => (b.told = false));
+        notes = next;
+        // the boats afloat take the newest unseen notes, the one nearest to telling first
+        const boats = floaters.filter((b) => b.boat);
+        const coming = boats.filter((b) => b.y <= H * 0.62).sort((a, b) => b.y - a.y);
+        const gone = boats.filter((b) => b.y > H * 0.62);
+        [...coming, ...gone].forEach((b) => {
+          b.msg = takeNote(b);
+          b.told = false;
+        });
+      } else {
+        // a refresh can put new entries in front: every boat keeps the message it already carries
+        const at = new Map(next.map((n, i) => [n.id, i]));
+        for (const b of floaters) if (b.boat) b.msg = b.msg >= 0 ? at.get(notes[b.msg]?.id ?? -1) ?? -1 : -1;
+        notes = next;
+      }
       if (still) render();
     },
     destroy() {
@@ -1831,6 +1874,7 @@ async function loadNotes(): Promise<StreamNote[]> {
     .map((cm) => {
       const r = replies.get(cm.id);
       return {
+        id: cm.id,
         name: plain(cm.displayName) || 'Someone',
         date: month.format(new Date(cm.createdAt)),
         body: plain(cm.messageBody),
