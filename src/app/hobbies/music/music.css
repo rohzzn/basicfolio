@@ -1,0 +1,637 @@
+/* The record room: ink and wood on the page's paper, the same as the bookshelf; darker wood and
+   pale ink in dark mode. */
+.music {
+  --mu-ink: #24232e;
+  --mu-paper: #fffdf7;
+  --mu-wood: #caa377;
+  --mu-wood-edge: #9f7a50;
+  --mu-metal: #d3ccbb;
+  --mu-vinyl: #1c1b22;
+  --mu-groove: #2c2b34;
+  --mu-muted: #6b6b75;
+  --mu-rule: #dde5ee;
+  --mu-margin: #eab0aa;
+  --mu-shadow: rgba(36, 35, 46, 0.16);
+  --mu-light: #e0503f;
+}
+
+.dark .music {
+  --mu-ink: #d8d3c9;
+  --mu-paper: #1b1b1f;
+  --mu-wood: #5d4834;
+  --mu-wood-edge: #47372a;
+  --mu-metal: #8f887a;
+  --mu-vinyl: #0d0d10;
+  --mu-groove: #1f1e25;
+  --mu-muted: #a3a3a3;
+  --mu-rule: #2c2f36;
+  --mu-margin: #6a3f3a;
+  --mu-shadow: rgba(0, 0, 0, 0.5);
+  --mu-light: #ff6a55;
+}
+
+.music-hand {
+  font-family: "Bradley Hand", "Segoe Script", "Chalkboard", "Comic Sans MS", cursive;
+}
+
+/* ── the turntable ───────────────────────────────────────────────────────────── */
+
+.tt {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  align-items: center;
+  gap: 1.75rem;
+}
+
+@media (max-width: 639px) {
+  .tt {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.tt-plinth {
+  position: relative;
+  aspect-ratio: 1.3;
+  background: var(--mu-wood);
+  border: 1.5px solid var(--mu-ink);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 -6px 0 var(--mu-wood-edge),
+    4px 5px 0 var(--mu-shadow);
+}
+
+.tt-platter {
+  position: absolute;
+  left: 5.5%;
+  top: 8%;
+  width: 64.6%;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 50%;
+  background: #3a3945;
+  border: 1.5px solid var(--mu-ink);
+  cursor: pointer;
+}
+
+.tt-platter:disabled {
+  cursor: default;
+}
+
+.tt-platter:focus-visible,
+.tt-start:focus-visible {
+  outline: 2px solid #a1a1aa;
+  outline-offset: 3px;
+}
+
+.tt-record {
+  position: absolute;
+  inset: 3%;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, var(--mu-vinyl) 0 2.2px, var(--mu-groove) 2.2px 3px);
+  animation: tt-spin 1.8s linear infinite;
+  animation-play-state: paused;
+}
+
+.tt-spinning .tt-record {
+  animation-play-state: running;
+}
+
+@keyframes tt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tt-label {
+  position: absolute;
+  inset: 32%;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f3ead6;
+  border: 1.5px solid #0d0d10;
+}
+
+/* the shine on the vinyl stays put while the record turns under it */
+.tt-sheen {
+  position: absolute;
+  inset: 3%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(
+    from 30deg,
+    transparent 0 6%,
+    rgba(255, 255, 255, 0.13) 10%,
+    transparent 16% 50%,
+    rgba(255, 255, 255, 0.1) 58%,
+    transparent 64%
+  );
+}
+
+.tt-spindle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--mu-metal);
+  border: 1px solid #0d0d10;
+}
+
+.tt-arm-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.tt-metal {
+  fill: var(--mu-metal);
+  stroke: var(--mu-ink);
+  stroke-width: 0.9;
+}
+
+.tt-pin {
+  fill: var(--mu-ink);
+}
+
+.tt-arm-line {
+  fill: none;
+  stroke: var(--mu-ink);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.tt-arm {
+  transform-box: view-box;
+  transform-origin: 111px 16px;
+  transition: transform 900ms cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+
+.tt-spinning .tt-arm {
+  transform: rotate(25deg);
+}
+
+.tt-start {
+  position: absolute;
+  left: 3.5%;
+  bottom: 6%;
+  display: grid;
+  place-items: center;
+  width: 11%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: var(--mu-ink);
+  background: var(--mu-metal);
+  border: 1.5px solid var(--mu-ink);
+  box-shadow: 0 2px 0 var(--mu-wood-edge);
+  transition: transform 80ms ease-out;
+}
+
+.dark .tt-start {
+  color: #1b1b1f;
+}
+
+.tt-start:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.tt-light {
+  position: absolute;
+  right: 5.5%;
+  bottom: 9%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6b3b35;
+  border: 1px solid var(--mu-ink);
+  transition: background 300ms, box-shadow 300ms;
+}
+
+.tt-spinning .tt-light {
+  background: var(--mu-light);
+  box-shadow: 0 0 6px var(--mu-light);
+}
+
+/* the pitch slider, for looks */
+.tt-pitch {
+  position: absolute;
+  right: 6.5%;
+  top: 44%;
+  width: 5px;
+  height: 30%;
+  border-radius: 3px;
+  background: var(--mu-wood-edge);
+  border: 1px solid var(--mu-ink);
+}
+
+.tt-pitch span {
+  position: absolute;
+  left: -5px;
+  top: 42%;
+  width: 13px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--mu-metal);
+  border: 1px solid var(--mu-ink);
+}
+
+.tt-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--mu-rule);
+  overflow: hidden;
+}
+
+.tt-progress span {
+  display: block;
+  height: 100%;
+  background: var(--mu-ink);
+  transition: width 400ms linear;
+}
+
+/* ── the dividers along the top of the crate ─────────────────────────────────── */
+
+.dividers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px;
+  border-bottom: 1.5px solid var(--mu-ink);
+}
+
+.divider {
+  position: relative;
+  top: 1.5px;
+  padding: 5px 14px 4px;
+  font-size: 16px;
+  color: var(--mu-muted);
+  background: var(--mu-paper);
+  border: 1.5px solid var(--mu-ink);
+  border-bottom: 0;
+  border-radius: 7px 7px 0 0;
+  transition: transform 150ms ease-out, color 150ms;
+  transform: translateY(3px);
+}
+
+.divider:hover {
+  color: var(--mu-ink);
+  transform: translateY(0);
+}
+
+.divider[aria-selected="true"] {
+  color: var(--mu-ink);
+  background: var(--mu-wood);
+  transform: translateY(0);
+  padding-top: 8px;
+}
+
+.dark .divider[aria-selected="true"] {
+  color: #f3ead6;
+}
+
+/* on a phone the four cards sit on one line */
+@media (max-width: 639px) {
+  .dividers {
+    gap: 3px;
+  }
+  .divider {
+    padding: 4px 8px 3px;
+    font-size: 14px;
+  }
+  .divider[aria-selected="true"] {
+    padding-top: 6px;
+  }
+}
+
+/* ── the crate ───────────────────────────────────────────────────────────────── */
+
+.crate-wrap {
+  width: calc(var(--s) + 28px);
+  --s: 236px;
+  --step: 13px;
+}
+
+@media (max-width: 639px) {
+  .crate-wrap {
+    --s: 210px;
+    margin: 0 auto;
+  }
+}
+
+.crate {
+  position: relative;
+  height: calc(var(--s) + 8 * var(--step) + 30px);
+  outline: none;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.crate:focus-visible .crate-board {
+  outline: 2px solid #a1a1aa;
+  outline-offset: 3px;
+}
+
+.crate-bin {
+  position: absolute;
+  left: 14px;
+  top: 0;
+  width: var(--s);
+  height: 100%;
+  perspective: 900px;
+  perspective-origin: 50% 0%;
+}
+
+.crate-sleeve {
+  position: absolute;
+  left: 0;
+  top: calc(8 * var(--step));
+  width: var(--s);
+  height: var(--s);
+  transform-origin: 50% 100%;
+  transition:
+    transform 380ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 300ms ease;
+}
+
+.crate-lift {
+  position: absolute;
+  inset: 0;
+  display: block;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 220ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.crate-lift:hover {
+  transform: translateY(-4px);
+}
+
+.crate-sleeve-front .crate-lift:hover {
+  transform: translateY(-12px);
+}
+
+.crate-cover {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--mu-paper);
+  border: 1.5px solid var(--mu-ink);
+  color: var(--mu-ink);
+}
+
+.crate-shade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+}
+
+/* the record inside the front sleeve, which slides up out of it when you reach for it */
+.crate-record {
+  position: absolute;
+  left: 7%;
+  top: 3%;
+  width: 86%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, var(--mu-vinyl) 0 2.2px, var(--mu-groove) 2.2px 3px);
+  border: 1.5px solid #0d0d10;
+  transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.crate-sleeve-front .crate-lift:hover .crate-record,
+.crate:focus-visible .crate-sleeve-front .crate-record {
+  transform: translateY(-30%);
+}
+
+.crate-record-label {
+  position: absolute;
+  inset: 33%;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 1.5px solid #0d0d10;
+}
+
+.crate-sticker {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  padding: 1px 8px;
+  font-size: 13px;
+  color: #24232e;
+  background: #f6d77f;
+  border: 1.5px solid #24232e;
+  border-radius: 999px;
+  transform: rotate(6deg);
+}
+
+.crate-board {
+  position: absolute;
+  z-index: 60;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--s) * 0.3);
+  background: var(--mu-wood);
+  border: 1.5px solid var(--mu-ink);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 -5px 0 var(--mu-wood-edge),
+    4px 5px 0 var(--mu-shadow);
+  pointer-events: none;
+}
+
+.crate-handle {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  width: 34%;
+  height: 16%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: var(--mu-wood-edge);
+  border: 1.5px solid var(--mu-ink);
+}
+
+.crate-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18%;
+  text-align: center;
+  font-size: 19px;
+  color: var(--mu-ink);
+}
+
+.dark .crate-label {
+  color: #f3ead6;
+}
+
+.crate-nav {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--mu-ink);
+  border: 1.5px solid var(--mu-ink);
+  border-radius: 50%;
+  transition: opacity 150ms, transform 150ms;
+}
+
+.crate-nav:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.crate-nav:disabled {
+  opacity: 0.3;
+}
+
+/* ── the index card beside the crate ─────────────────────────────────────────── */
+
+.index-card {
+  position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: var(--mu-paper);
+  background-image:
+    linear-gradient(to right, transparent 34px, var(--mu-margin) 34px, var(--mu-margin) 35px, transparent 35px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 35px, var(--mu-rule) 35px, var(--mu-rule) 36px);
+  background-attachment: local;
+  border: 1.5px solid var(--mu-ink);
+  border-radius: 4px;
+  box-shadow: 4px 5px 0 var(--mu-shadow);
+  scrollbar-width: thin;
+}
+
+.index-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 10px;
+  width: 100%;
+  height: 36px;
+  padding-right: 12px;
+  text-align: left;
+  color: var(--mu-muted);
+  transition: color 150ms, background 150ms;
+}
+
+.index-row:hover {
+  color: var(--mu-ink);
+}
+
+.index-row[aria-current="true"] {
+  color: var(--mu-ink);
+  background: color-mix(in srgb, var(--mu-wood) 22%, transparent);
+}
+
+/* ── the picture discs ───────────────────────────────────────────────────────── */
+
+.discs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 30px 24px;
+}
+
+.disc-link {
+  display: block;
+}
+
+.disc {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1.5px solid var(--mu-ink);
+  box-shadow: 3px 4px 0 var(--mu-shadow);
+  background: var(--mu-vinyl);
+  transition: transform 220ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.disc-link:hover .disc,
+.disc-link:focus-visible .disc {
+  transform: translateY(-4px);
+}
+
+.disc-spin {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  animation: tt-spin 2.6s linear infinite;
+  animation-play-state: paused;
+}
+
+.disc-link:hover .disc-spin,
+.disc-link:focus-visible .disc-spin {
+  animation-play-state: running;
+}
+
+/* the grooves pressed over the photo, and the black run-out at the rim */
+.disc-grooves {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, transparent 0 3px, rgba(0, 0, 0, 0.13) 3px 3.7px);
+  box-shadow:
+    inset 0 0 0 5px rgba(13, 13, 16, 0.85),
+    inset 0 0 0 6px rgba(255, 255, 255, 0.15);
+}
+
+.disc-label {
+  position: absolute;
+  inset: 41%;
+  border-radius: 50%;
+  background: #f3ead6;
+  border: 1.5px solid #0d0d10;
+}
+
+.disc-label::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: #0d0d10;
+}
+
+.disc-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(
+    from 30deg,
+    transparent 0 6%,
+    rgba(255, 255, 255, 0.16) 10%,
+    transparent 16% 50%,
+    rgba(255, 255, 255, 0.12) 58%,
+    transparent 64%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tt-record,
+  .disc-spin {
+    animation: none;
+  }
+  .tt-arm,
+  .crate-sleeve,
+  .crate-lift,
+  .crate-record {
+    transition: none;
+  }
+}
