@@ -1,6 +1,15 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { RefreshCcw } from 'lucide-react';
+import { clack, ding } from '@/lib/site-sound';
+import './typewriter.css';
+
+// The typing test as a typewriter. The words are rolled into the machine on a sheet of paper, faint
+// until you strike them; the carriage carries the sheet left a letter at a time so each one lands
+// under the type guide, and at the end of a line the bell rings and the carriage runs back. When
+// the time is up the sheet comes out with the score typed at the bottom.
 
 const WORDS = [
   'the', 'be', 'to', 'of', 'and', 'in', 'it', 'for', 'not', 'on', 'with', 'as', 'you', 'do', 'at',
@@ -52,34 +61,176 @@ const WORDS = [
 const TIME_OPTIONS = [15, 30, 60] as const;
 type TimeOpt = (typeof TIME_OPTIONS)[number];
 const ROHAN_WPM = 115;
-const LINE_H = 32; // px — must match leading-8
+const LINE = 30; // characters to a line of the sheet
+const MARGIN = 3; // characters of paper either side of a line
+const LINE_EM = 2; // must match the sheet's line-height
+const EXTRA = 8; // letters you can type past the end of a word
+
+const KEY_ROWS = [
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+  ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+] as const;
 
 function pick(n: number): string[] {
   return Array.from({ length: n }, () => WORDS[Math.floor(Math.random() * WORDS.length)]);
 }
 
+// Whole words onto lines of at most LINE characters, as the bell would have you break them.
+function layoutLines(words: string[]): { lines: number[][]; lineOf: number[] } {
+  const lines: number[][] = [];
+  const lineOf: number[] = [];
+  let cur: number[] = [];
+  let len = 0;
+  words.forEach((w, i) => {
+    const need = cur.length ? len + 1 + w.length : w.length;
+    if (cur.length && need > LINE) {
+      lines.push(cur);
+      cur = [];
+      len = 0;
+    }
+    len = cur.length ? len + 1 + w.length : w.length;
+    cur.push(i);
+    lineOf[i] = lines.length;
+  });
+  if (cur.length) lines.push(cur);
+  return { lines, lineOf };
+}
+
+// A typewriter's letters never quite line up: each struck one sits a touch high or low, a touch
+// light or dark, the same way every time it is drawn.
+function inkOf(word: number, k: number): React.CSSProperties {
+  let h = Math.imul(word * 131 + k * 17 + 7, 2654435761) >>> 0;
+  const a = (h & 1023) / 1023;
+  h = Math.imul(h ^ (h >>> 13), 2246822519) >>> 0;
+  const b = (h & 1023) / 1023;
+  return { position: 'relative', top: `${((a - 0.5) * 1.3).toFixed(2)}px`, opacity: 0.78 + b * 0.22 };
+}
+
+type Mode = 'done' | 'current' | 'todo';
+
+const Word = memo(function Word({
+  index,
+  target,
+  typed,
+  mode,
+}: {
+  index: number;
+  target: string;
+  typed: string;
+  mode: Mode;
+}) {
+  if (mode === 'todo') return <span className="tw-guide-text">{target}</span>;
+
+  const len = Math.max(target.length, typed.length);
+  const letters = [];
+  for (let k = 0; k < len; k++) {
+    const t = target[k];
+    const u = typed[k];
+    const caret = mode === 'current' && k === typed.length;
+    const cls = [
+      u === undefined ? 'tw-guide-text' : u === t ? '' : 'tw-miss',
+      caret ? 'tw-caret' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    letters.push(
+      <span key={k} className={cls || undefined} style={u === undefined ? undefined : inkOf(index, k)}>
+        {mode === 'current' && k === typed.length - 1 ? <span className="tw-strike">{u}</span> : u ?? t}
+      </span>
+    );
+  }
+  const wrong = mode === 'done' && typed !== target;
+  return (
+    <span className={wrong ? 'tw-wrong' : undefined}>
+      {letters}
+      {mode === 'current' && typed.length >= target.length ? <span className="tw-caret-end" /> : null}
+    </span>
+  );
+});
+
+function useWide(): boolean {
+  const [wide, setWide] = useState(true);
+  useEffect(() => {
+    const m = window.matchMedia('(min-width: 640px)');
+    const sync = () => setWide(m.matches);
+    sync();
+    m.addEventListener('change', sync);
+    return () => m.removeEventListener('change', sync);
+  }, []);
+  return wide;
+}
+
+function Machine({ activeKey }: { activeKey: string }) {
+  return (
+    <svg className="tw-body tw-type" viewBox="0 0 480 196" aria-hidden>
+      <path className="tw-body-shell" d="M52 2 L428 2 L468 178 Q470 192 456 192 L24 192 Q10 192 12 178 Z" />
+      <path className="tw-body-trim" d="M60 12 L420 12" />
+      <rect className="tw-plate" x="206" y="20" width="68" height="16" rx="3" />
+      <text x="240" y="32" textAnchor="middle" className="tw-hand" style={{ fontSize: 12, fill: '#24232e' }}>
+        rohan
+      </text>
+      {KEY_ROWS.map((row, ri) => {
+        const y = 62 + ri * 36;
+        const x0 = 240 - ((row.length - 1) * 36) / 2 + (ri === 1 ? 4 : ri === 2 ? 8 : 0);
+        return row.map((k, i) => (
+          <g key={k} className={`tw-key ${activeKey === k ? 'tw-key-down' : ''}`}>
+            <g>
+              <circle cx={x0 + i * 36} cy={y} r={14} />
+              <text x={x0 + i * 36} y={y + 4} textAnchor="middle">
+                {k}
+              </text>
+            </g>
+          </g>
+        ));
+      })}
+      <g className={`tw-key ${activeKey === ' ' ? 'tw-key-down' : ''}`}>
+        <g>
+          <rect x="150" y="160" width="180" height="16" rx="8" fill="var(--tw-key)" stroke="var(--tw-line)" strokeWidth="1.3" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
 type Phase = 'idle' | 'running' | 'done';
 
 export default function TypingTest() {
-  const [timeOpt, setTimeOpt]   = useState<TimeOpt>(15);
+  const [timeOpt, setTimeOpt] = useState<TimeOpt>(15);
   const [timeLeft, setTimeLeft] = useState<number>(15);
-  const [words, setWords]       = useState<string[]>(() => pick(200));
-  const [wordIdx, setWordIdx]   = useState(0);
-  const [typed, setTyped]       = useState('');
-  const [correct, setCorrect]   = useState<boolean[]>([]);   // per-word result
-  const [chars, setChars]       = useState({ ok: 0, bad: 0 });
-  const [phase, setPhase]       = useState<Phase>('idle');
+  const [words, setWords] = useState<string[]>([]);
+  const [wordIdx, setWordIdx] = useState(0);
+  const [typed, setTyped] = useState('');
+  const [typedWords, setTypedWords] = useState<string[]>([]);
+  const [chars, setChars] = useState({ ok: 0, bad: 0 });
+  const [phase, setPhase] = useState<Phase>('idle');
   const [capsLock, setCapsLock] = useState(false);
-  const [slideY, setSlideY]     = useState(0);
   const [activeKey, setActiveKey] = useState('');
+  const [typing, setTyping] = useState(false);
+  const [returning, setReturning] = useState(false);
+  const [bell, setBell] = useState(0);
 
-  const inputRef    = useRef<HTMLInputElement>(null);
-  const timerRef    = useRef<number | null>(null);
-  const wordRefs    = useRef<(HTMLSpanElement | null)[]>([]);
-  const timeOptRef  = useRef<TimeOpt>(15);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<number | null>(null);
+  const timeOptRef = useRef<TimeOpt>(15);
   const keyTimerRef = useRef<number | null>(null);
+  const typingTimerRef = useRef<number | null>(null);
+  const lastLine = useRef(0);
+  const wide = useWide();
 
-  useEffect(() => { timeOptRef.current = timeOpt; }, [timeOpt]);
+  const { lines, lineOf } = useMemo(() => layoutLines(words), [words]);
+  const line = lineOf[wordIdx] ?? 0;
+
+  // how far along the line the next letter falls, counting the words already struck at the
+  // length they were typed
+  const col = useMemo(() => {
+    let c = 0;
+    for (const j of lines[line] ?? []) {
+      if (j >= wordIdx) break;
+      c += Math.max(words[j].length, (typedWords[j] ?? '').length) + 1;
+    }
+    return c + typed.length;
+  }, [lines, line, wordIdx, words, typedWords, typed.length]);
 
   const killTimer = useCallback(() => {
     if (timerRef.current !== null) {
@@ -88,36 +239,73 @@ export default function TypingTest() {
     }
   }, []);
 
-  const restart = useCallback(() => {
-    killTimer();
-    wordRefs.current = [];
-    setWords(pick(200));
-    setWordIdx(0);
-    setTyped('');
-    setCorrect([]);
-    setChars({ ok: 0, bad: 0 });
-    setTimeLeft(timeOptRef.current);
-    setPhase('idle');
-    setSlideY(0);
-    requestAnimationFrame(() => inputRef.current?.focus());
-  }, [killTimer]);
+  const reset = useCallback(
+    (t: TimeOpt) => {
+      killTimer();
+      setWords(pick(200));
+      setWordIdx(0);
+      setTyped('');
+      setTypedWords([]);
+      setChars({ ok: 0, bad: 0 });
+      setTimeLeft(t);
+      setPhase('idle');
+      requestAnimationFrame(() => inputRef.current?.focus());
+    },
+    [killTimer]
+  );
+
+  const restart = useCallback(() => reset(timeOptRef.current), [reset]);
+
+  const switchTime = (t: TimeOpt) => {
+    timeOptRef.current = t;
+    setTimeOpt(t);
+    reset(t);
+  };
 
   useEffect(() => {
+    // the words are picked in the browser, so the page the server sends and the one that
+    // hydrates agree
+    setWords(pick(200));
     inputRef.current?.focus();
     return killTimer;
   }, [killTimer]);
 
-  // Slide words up as active word moves to a new row
+  // a fresh sheet is ready to type on straight away
   useEffect(() => {
-    const el = wordRefs.current[wordIdx];
-    if (!el) return;
-    setSlideY(Math.max(0, el.offsetTop - LINE_H));
-  }, [wordIdx]);
+    if (phase === 'idle') inputRef.current?.focus();
+  }, [phase]);
+
+  // at the end of a line the bell rings and the carriage runs back
+  useEffect(() => {
+    const prev = lastLine.current;
+    lastLine.current = line;
+    if (line <= prev) {
+      setReturning(false);
+      return;
+    }
+    setReturning(true);
+    setBell((b) => b + 1);
+    ding();
+    const t = window.setTimeout(() => setReturning(false), 420);
+    return () => window.clearTimeout(t);
+  }, [line]);
+
+  // with the sheet out of the machine, tab still starts again
+  useEffect(() => {
+    if (phase !== 'done') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      e.preventDefault();
+      restart();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [phase, restart]);
 
   const startTimer = useCallback(() => {
     if (timerRef.current !== null) return;
     timerRef.current = window.setInterval(() => {
-      setTimeLeft(t => {
+      setTimeLeft((t) => {
         if (t <= 1) {
           clearInterval(timerRef.current!);
           timerRef.current = null;
@@ -129,91 +317,101 @@ export default function TypingTest() {
     }, 1000);
   }, []);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (phase === 'done') return;
-    const val = e.target.value;
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (phase === 'done') return;
+      const val = e.target.value;
 
-    if (phase === 'idle' && val.length > 0) {
-      setPhase('running');
-      startTimer();
-    }
-
-    if (val.endsWith(' ')) {
-      const word = val.trimEnd();
-      if (!word) { setTyped(''); return; }
-      const target = words[wordIdx];
-      const isCorrect = word === target;
-      let ok = 1, bad = 0; // 1 = the space
-      const len = Math.max(word.length, target.length);
-      for (let i = 0; i < len; i++) {
-        if (i < word.length && i < target.length && word[i] === target[i]) ok++;
-        else bad++;
+      if (phase === 'idle' && val.length > 0) {
+        setPhase('running');
+        startTimer();
       }
-      setCorrect(r => [...r, isCorrect]);
-      setChars(s => ({ ok: s.ok + ok, bad: s.bad + bad }));
-      setWordIdx(i => i + 1);
-      setTyped('');
-    } else {
-      setTyped(val);
-    }
-  }, [phase, words, wordIdx, startTimer]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    setCapsLock(e.getModifierState('CapsLock'));
-    if (e.key === 'Tab') { e.preventDefault(); restart(); return; }
-    const k = e.key === ' ' ? ' ' : e.key.length === 1 ? e.key.toLowerCase() : '';
-    if (k) {
-      setActiveKey(k);
-      if (keyTimerRef.current) clearTimeout(keyTimerRef.current);
-      keyTimerRef.current = window.setTimeout(() => setActiveKey(''), 130);
-    }
-  }, [restart]);
+      if (val.endsWith(' ')) {
+        const word = val.trimEnd();
+        if (!word) {
+          setTyped('');
+          return;
+        }
+        const target = words[wordIdx] ?? '';
+        let ok = 1; // the space
+        let bad = 0;
+        const len = Math.max(word.length, target.length);
+        for (let i = 0; i < len; i++) {
+          if (i < word.length && i < target.length && word[i] === target[i]) ok++;
+          else bad++;
+        }
+        setTypedWords((r) => [...r, word]);
+        setChars((s) => ({ ok: s.ok + ok, bad: s.bad + bad }));
+        setWordIdx((i) => i + 1);
+        setTyped('');
+      } else {
+        setTyped(val.slice(0, (words[wordIdx]?.length ?? 0) + EXTRA));
+      }
+    },
+    [phase, words, wordIdx, startTimer]
+  );
 
-  const switchTime = (t: TimeOpt) => {
-    timeOptRef.current = t;
-    setTimeOpt(t);
-    killTimer();
-    wordRefs.current = [];
-    setWords(pick(200));
-    setWordIdx(0);
-    setTyped('');
-    setCorrect([]);
-    setChars({ ok: 0, bad: 0 });
-    setTimeLeft(t);
-    setPhase('idle');
-    setSlideY(0);
-    requestAnimationFrame(() => inputRef.current?.focus());
-  };
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      setCapsLock(e.getModifierState('CapsLock'));
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        restart();
+        return;
+      }
+      const k = e.key === ' ' ? ' ' : e.key.length === 1 ? e.key.toLowerCase() : '';
+      if (k || e.key === 'Backspace') clack(k === ' ' ? 'space' : 'key');
+      if (k) {
+        setActiveKey(k);
+        if (keyTimerRef.current) clearTimeout(keyTimerRef.current);
+        keyTimerRef.current = window.setTimeout(() => setActiveKey(''), 130);
+      }
+      // the caret holds still while you type and blinks again when you stop
+      setTyping(true);
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+      typingTimerRef.current = window.setTimeout(() => setTyping(false), 600);
+    },
+    [restart]
+  );
 
-  const elapsed      = timeOpt - timeLeft;
-  const correctWords = correct.filter(Boolean).length;
-  const totalChars   = chars.ok + chars.bad;
-  const wpm      = phase === 'done' && elapsed > 0 ? Math.round((correctWords / elapsed) * 60) : 0;
-  const rawWpm   = phase === 'done' && elapsed > 0 ? Math.round((wordIdx / elapsed) * 60) : 0;
+  const elapsed = timeOpt - timeLeft;
+  const correctWords = typedWords.filter((w, i) => w === words[i]).length;
+  const totalChars = chars.ok + chars.bad;
+  const wpm = phase === 'done' && elapsed > 0 ? Math.round((correctWords / elapsed) * 60) : 0;
+  const rawWpm = phase === 'done' && elapsed > 0 ? Math.round((wordIdx / elapsed) * 60) : 0;
   const accuracy = totalChars > 0 ? Math.round((chars.ok / totalChars) * 100) : 100;
-  const liveWpm  = phase === 'running' && elapsed > 1
-    ? Math.round((correct.filter(Boolean).length / elapsed) * 60) : 0;
+  const liveWpm = phase === 'running' && elapsed > 1 ? Math.round((correctWords / elapsed) * 60) : 0;
+
+  const modeOf = (i: number): Mode => (i < wordIdx ? 'done' : i === wordIdx ? 'current' : 'todo');
+  const shift = wide ? -(MARGIN + col) : -(LINE / 2 + MARGIN);
+
+  const verdict =
+    wpm > ROHAN_WPM
+      ? `${wpm - ROHAN_WPM} faster than rohan. well typed.`
+      : wpm === ROHAN_WPM
+        ? 'dead level with rohan.'
+        : `${ROHAN_WPM - wpm} short of rohan's ${ROHAN_WPM}.`;
 
   return (
-    <div className="max-w-2xl">
-      <div className="flex items-baseline justify-between mb-8">
+    <div className="tw max-w-2xl">
+      <div className="mb-8 flex items-baseline justify-between">
         <h2 className="text-lg font-medium dark:text-paper">Typing</h2>
-        <span className="text-xs text-zinc-400 dark:text-neutral-400">
-          my best: {ROHAN_WPM} wpm
-        </span>
+        <span className="text-xs text-zinc-400 dark:text-neutral-400">my best: {ROHAN_WPM} wpm</span>
       </div>
 
-      {phase !== 'done' && (
+      {phase !== 'done' ? (
         <>
-          {/* Controls */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex gap-4">
-              {TIME_OPTIONS.map(t => (
-                <button key={t} onClick={() => switchTime(t)}
+              {TIME_OPTIONS.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => switchTime(t)}
                   className={`text-sm transition-colors ${
                     timeOpt === t
-                      ? 'text-zinc-900 dark:text-paper font-medium'
-                      : 'text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'
+                      ? 'font-medium text-zinc-900 dark:text-paper'
+                      : 'text-zinc-400 hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   }`}
                 >
                   {t}s
@@ -221,145 +419,64 @@ export default function TypingTest() {
               ))}
             </div>
             <div className="flex items-center gap-3 text-sm tabular-nums">
-              {liveWpm > 0 && (
-                <span className="text-zinc-400 dark:text-neutral-400">{liveWpm}</span>
-              )}
-              <span className={`font-medium ${
-                phase === 'running' && timeLeft <= 5
-                  ? 'text-red-500'
-                  : 'text-zinc-900 dark:text-paper'
-              }`}>
+              {liveWpm > 0 && <span className="text-zinc-400 dark:text-neutral-400">{liveWpm} wpm</span>}
+              <span
+                className={`font-medium ${
+                  phase === 'running' && timeLeft <= 5 ? 'text-red-500' : 'text-zinc-900 dark:text-paper'
+                }`}
+              >
                 {timeLeft}s
               </span>
               <button
                 onClick={restart}
-                className="text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300 transition-colors"
+                className="text-zinc-400 transition-colors hover:text-zinc-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                 aria-label="restart"
               >
-                <RefreshCcw className="w-3.5 h-3.5" />
+                <RefreshCcw className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Word display — 3 rows, slides up as you progress */}
           <div
-            className="relative overflow-hidden cursor-text select-none mb-3"
-            style={{ height: `${LINE_H * 3}px` }}
+            className={`tw-stage tw-type ${typing ? 'tw-typing' : ''}`}
             onClick={() => inputRef.current?.focus()}
+            aria-hidden
           >
             <div
-              className="font-mono text-sm leading-8 flex flex-wrap gap-x-2"
-              style={{
-                transform: `translateY(-${slideY}px)`,
-                transition: 'transform 0.15s ease',
-                willChange: 'transform',
-              }}
+              className={`tw-sheet ${returning ? 'tw-returning' : ''}`}
+              style={{ transform: `translate(${shift}ch, ${-line * LINE_EM}em)` }}
             >
-              {words.map((word, wi) => {
-                const isCurrent = wi === wordIdx;
-                const isDone    = wi < wordIdx;
-                const isOk      = correct[wi];
-
-                return (
-                  <span
-                    key={wi}
-                    ref={el => { wordRefs.current[wi] = el; }}
-                    className={
-                      isDone
-                        ? isOk
-                          ? 'text-zinc-400 dark:text-neutral-400'
-                          : 'text-red-400 dark:text-red-500'
-                        : isCurrent
-                          ? 'text-zinc-900 dark:text-neutral-100'
-                          : 'text-zinc-300 dark:text-neutral-500'
-                    }
-                  >
-                    {isCurrent && phase !== 'idle'
-                      ? (
-                          <>
-                            {word.split('').map((ch, ci) => {
-                              const t = typed[ci];
-                              const isCursor = ci === typed.length;
-                              return (
-                                <span
-                                  key={ci}
-                                  className={[
-                                    isCursor ? 'border-l-2 border-zinc-800 dark:border-neutral-200' : '',
-                                    t === undefined
-                                      ? 'text-zinc-400 dark:text-neutral-400'
-                                      : t === ch
-                                        ? 'text-zinc-900 dark:text-neutral-100'
-                                        : 'text-red-500 dark:text-red-400',
-                                  ].filter(Boolean).join(' ')}
-                                >
-                                  {ch}
-                                </span>
-                              );
-                            })}
-                            {typed.length >= word.length && (
-                              <span className="border-r-2 border-zinc-800 dark:border-neutral-200 inline-block w-0 h-[1em] align-baseline" />
-                            )}
-                          </>
-                        )
-                      : word
-                    }
-                  </span>
-                );
-              })}
+              {lines.map((ws, li) => (
+                <div key={li}>
+                  {ws.map((i, n) => (
+                    <React.Fragment key={i}>
+                      {n > 0 ? ' ' : null}
+                      <Word index={i} target={words[i]} typed={typedWords[i] ?? (i === wordIdx ? typed : '')} mode={modeOf(i)} />
+                    </React.Fragment>
+                  ))}
+                </div>
+              ))}
             </div>
-
-            {phase === 'idle' && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <p className="text-xs text-zinc-400 dark:text-neutral-400">
-                  start typing to begin
-                </p>
-              </div>
-            )}
+            {wide ? <span className="tw-point" /> : null}
+            <div className="tw-roller" />
+            {bell > 0 ? (
+              <span key={bell} className="tw-ding tw-hand">
+                ding!
+              </span>
+            ) : null}
+            {phase === 'idle' ? (
+              <p className="absolute left-0 right-0 top-3 text-center font-sans text-xs text-zinc-400 dark:text-neutral-400">
+                start typing to begin
+              </p>
+            ) : null}
           </div>
 
-          {capsLock && (
-            <p className="text-xs text-amber-500 mb-2">caps lock is on</p>
-          )}
-          <p className="text-xs text-zinc-400 dark:text-neutral-400 mb-6">
-            tab: reset · space: next word
+          <Machine activeKey={activeKey} />
+
+          <p className="mt-4 text-center text-xs text-zinc-400 dark:text-neutral-400">
+            {capsLock ? <span className="text-amber-500">caps lock is on · </span> : null}
+            tab: start over · space: next word
           </p>
-
-          {/* Keyboard */}
-          <div className="select-none" onClick={() => inputRef.current?.focus()}>
-            {([
-              ['q','w','e','r','t','y','u','i','o','p'],
-              ['a','s','d','f','g','h','j','k','l'],
-              ['z','x','c','v','b','n','m'],
-            ] as const).map((row, ri) => (
-              <div
-                key={ri}
-                className="flex justify-center gap-1 mb-1"
-                style={{ paddingLeft: ['0rem','0.9rem','1.65rem'][ri] }}
-              >
-                {row.map(key => (
-                  <div
-                    key={key}
-                    className={`w-8 sm:w-9 h-8 sm:h-9 flex items-center justify-center rounded font-mono text-xs transition-all duration-75 ${
-                      activeKey === key
-                        ? 'bg-zinc-800 dark:bg-neutral-100 text-white dark:text-neutral-900 scale-95 shadow-sm'
-                        : 'bg-zinc-100 dark:bg-neutral-800 text-zinc-500 dark:text-neutral-400'
-                    }`}
-                  >
-                    {key}
-                  </div>
-                ))}
-              </div>
-            ))}
-            <div className="flex justify-center mt-1">
-              <div
-                className={`h-8 sm:h-9 w-44 sm:w-56 rounded font-mono text-xs transition-all duration-75 ${
-                  activeKey === ' '
-                    ? 'bg-zinc-800 dark:bg-neutral-100 scale-95 shadow-sm'
-                    : 'bg-zinc-100 dark:bg-neutral-800'
-                }`}
-              />
-            </div>
-          </div>
 
           <input
             ref={inputRef}
@@ -374,40 +491,44 @@ export default function TypingTest() {
             aria-label="typing input"
           />
         </>
-      )}
-
-      {/* Results */}
-      {phase === 'done' && (
+      ) : (
         <div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-            {[
-              { label: 'wpm',  val: `${wpm}`,  color: '' },
-              { label: 'raw',  val: `${rawWpm}`, color: '' },
-              { label: 'acc',  val: `${accuracy}%`, color: '' },
-              {
-                label: 'vs me',
-                val: `${wpm - ROHAN_WPM >= 0 ? '+' : ''}${wpm - ROHAN_WPM}`,
-                color: wpm >= ROHAN_WPM ? 'text-green-500' : 'text-red-500',
-              },
-            ].map(({ label, val, color }) => (
-              <div key={label} className="border border-zinc-100 dark:border-neutral-800 rounded-lg p-4">
-                <p className="text-xs uppercase tracking-wider text-zinc-400 dark:text-neutral-400 mb-2">
-                  {label}
-                </p>
-                <p className={`text-2xl font-medium tabular-nums ${color || 'text-zinc-900 dark:text-paper'}`}>
-                  {val}
-                </p>
+          <motion.div
+            className="tw-result tw-type"
+            initial={{ y: 90, opacity: 0, rotate: 0 }}
+            animate={{ y: 0, opacity: 1, rotate: -0.6 }}
+            transition={{ type: 'spring', stiffness: 110, damping: 17 }}
+          >
+            {lines.slice(0, line + 1).map((ws, li) => (
+              <div key={li}>
+                {ws
+                  .filter((i) => i < wordIdx)
+                  .map((i, n) => (
+                    <React.Fragment key={i}>
+                      {n > 0 ? ' ' : null}
+                      <Word index={i} target={words[i]} typed={typedWords[i]} mode="done" />
+                    </React.Fragment>
+                  ))}
               </div>
             ))}
-          </div>
+            <div className="tw-rule" />
+            <p>
+              {wpm} wpm · raw {rawWpm} · {accuracy}% accurate
+            </p>
+            <p>{verdict}</p>
+            <div className="tw-stamp">
+              {wpm >= ROHAN_WPM ? 'FASTER THAN ROHAN' : `${wpm} WPM`}
+              <small>{timeOpt} second test</small>
+            </div>
+          </motion.div>
 
-          <div className="flex flex-col items-center gap-2">
+          <div className="mt-6 flex flex-col items-center gap-2">
             <button
               onClick={restart}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-zinc-200 dark:border-neutral-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-neutral-800/60 transition-colors text-zinc-700 dark:text-neutral-300"
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800/60"
             >
-              <RefreshCcw className="w-3.5 h-3.5" />
-              Try again
+              <RefreshCcw className="h-3.5 w-3.5" />
+              Roll in a fresh sheet
             </button>
             <p className="text-xs text-zinc-400 dark:text-neutral-400">or press tab</p>
           </div>

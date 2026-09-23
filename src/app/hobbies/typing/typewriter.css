@@ -1,0 +1,335 @@
+/* The typewriter: a red machine in ink on the page's paper, with a sheet of paper rolled into it.
+   In dark mode the sheet goes dark and the ink goes pale, as the rest of the site does. */
+.tw {
+  --tw-ink: #24232e;
+  --tw-line: #24232e;
+  --tw-paper: #fffdf7;
+  --tw-guide: #c2baad;
+  --tw-red: #c8473f;
+  --tw-body: #c8473f;
+  --tw-body-edge: #a3382f;
+  --tw-key: #fffdf7;
+  --tw-key-down: #e8c84a;
+  --tw-roller: #3a3945;
+  --tw-muted: #6b6b75;
+  --tw-shadow: rgba(36, 35, 46, 0.14);
+}
+
+.dark .tw {
+  --tw-ink: #ece8e0;
+  --tw-line: #d8d3c9;
+  --tw-paper: #1b1b1f;
+  --tw-guide: #55545d;
+  --tw-red: #e2705f;
+  --tw-body: #a8453c;
+  --tw-body-edge: #83332c;
+  --tw-key: #e6e0d4;
+  --tw-key-down: #c9ae4a;
+  --tw-roller: #2a2a31;
+  --tw-muted: #a3a3a3;
+  --tw-shadow: rgba(0, 0, 0, 0.45);
+}
+
+.tw-type {
+  font-family: var(--font-typewriter), "Courier New", Courier, monospace;
+}
+
+.tw-hand {
+  font-family: "Bradley Hand", "Segoe Script", "Chalkboard", "Comic Sans MS", cursive;
+}
+
+/* ── the sheet in the carriage ───────────────────────────────────────────────── */
+
+/* Four lines of the sheet show above the roller: two already typed, the one being typed and the
+   next. The paper fades out at the top and at the sides as the carriage carries it off. */
+.tw-stage {
+  position: relative;
+  height: 11em;
+  font-size: 16px;
+  overflow: hidden;
+  cursor: text;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2.6em), linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, transparent 0, #000 2.6em), linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-composite: intersect;
+}
+
+@media (max-width: 639px) {
+  .tw-stage {
+    font-size: 13.5px;
+  }
+}
+
+.tw-sheet {
+  position: absolute;
+  top: 2.5em;
+  left: 50%;
+  width: 36ch;
+  min-height: 60em;
+  padding: 3em 3ch 0;
+  line-height: 2em;
+  white-space: pre;
+  color: var(--tw-ink);
+  background: var(--tw-paper);
+  border: 1.5px solid var(--tw-line);
+  border-bottom: 0;
+  box-shadow: 4px 0 0 var(--tw-shadow);
+  transition: transform 90ms ease-out;
+  will-change: transform;
+}
+
+/* the carriage running back to the start of the next line */
+.tw-returning {
+  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tw-guide-text {
+  color: var(--tw-guide);
+}
+
+.tw-wrong {
+  text-decoration: line-through;
+  text-decoration-color: var(--tw-red);
+  text-decoration-thickness: 1.5px;
+}
+
+.tw-miss {
+  color: var(--tw-red);
+}
+
+/* each letter lands with a little thump of ink */
+.tw-strike {
+  display: inline-block;
+  animation: tw-strike 110ms ease-out;
+}
+
+@keyframes tw-strike {
+  from {
+    transform: scale(1.3);
+    opacity: 0.4;
+  }
+}
+
+.tw-caret {
+  box-shadow: inset 2px 0 0 var(--tw-red);
+  animation: tw-blink 1s steps(1) infinite;
+}
+
+.tw-caret-end {
+  display: inline-block;
+  width: 0;
+  height: 1.1em;
+  vertical-align: -0.2em;
+  box-shadow: 0 0 0 1px var(--tw-red);
+  animation: tw-blink 1s steps(1) infinite;
+}
+
+.tw-typing .tw-caret,
+.tw-typing .tw-caret-end {
+  animation: none;
+}
+
+@keyframes tw-blink {
+  50% {
+    box-shadow: none;
+  }
+}
+
+/* the type guide: where the letters strike, pointing up at the next one */
+.tw-point {
+  position: absolute;
+  top: 7.35em;
+  left: calc(50% + 0.5ch);
+  width: 0;
+  height: 0;
+  margin-left: -5px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 7px solid var(--tw-red);
+}
+
+.tw-roller {
+  position: absolute;
+  z-index: 1;
+  left: 5%;
+  right: 5%;
+  bottom: 0;
+  height: 1.45em;
+  background: var(--tw-roller);
+  border: 1.5px solid var(--tw-line);
+  border-radius: 999px;
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.12);
+}
+
+.tw-roller::before,
+.tw-roller::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 1.6em;
+  height: 1.6em;
+  margin-top: -0.8em;
+  border-radius: 50%;
+  background: var(--tw-roller);
+  border: 1.5px solid var(--tw-line);
+}
+
+.tw-roller::before {
+  left: -0.9em;
+}
+
+.tw-roller::after {
+  right: -0.9em;
+}
+
+.tw-ding {
+  position: absolute;
+  z-index: 2;
+  right: 7%;
+  top: 4.2em;
+  color: var(--tw-red);
+  font-size: 18px;
+  pointer-events: none;
+  animation: tw-ding 1s ease-out forwards;
+}
+
+@keyframes tw-ding {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) rotate(-8deg) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0) rotate(-8deg) scale(1.08);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) rotate(-8deg) scale(1);
+  }
+}
+
+/* ── the machine ─────────────────────────────────────────────────────────────── */
+
+.tw-body {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: -2px auto 0;
+  overflow: visible;
+}
+
+.tw-body-shell {
+  fill: var(--tw-body);
+  stroke: var(--tw-line);
+  stroke-width: 1.6;
+}
+
+.tw-body-trim {
+  fill: none;
+  stroke: var(--tw-body-edge);
+  stroke-width: 3;
+}
+
+.tw-key circle {
+  fill: var(--tw-key);
+  stroke: var(--tw-line);
+  stroke-width: 1.3;
+  transition: transform 60ms ease-out;
+}
+
+.tw-key text {
+  fill: #24232e;
+  font-size: 11px;
+}
+
+.tw-key g {
+  transition: transform 60ms ease-out;
+}
+
+.tw-key-down g {
+  transform: translateY(2.5px);
+}
+
+.tw-key-down circle {
+  fill: var(--tw-key-down);
+}
+
+.tw-plate {
+  fill: var(--tw-key);
+  stroke: var(--tw-line);
+  stroke-width: 1.1;
+}
+
+/* ── the page pulled out at the end ──────────────────────────────────────────── */
+
+.tw-result {
+  position: relative;
+  margin: 0 auto;
+  max-width: 34rem;
+  padding: 2.2rem 2.4rem 4.6rem;
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--tw-ink);
+  background: var(--tw-paper);
+  border: 1.5px solid var(--tw-line);
+  box-shadow: 5px 6px 0 var(--tw-shadow);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 639px) {
+  .tw-result {
+    padding: 1.6rem 1.3rem 4.4rem;
+    font-size: 13.5px;
+  }
+}
+
+.tw-rule {
+  margin: 1.2rem 0 1rem;
+  border-top: 1.5px dashed var(--tw-guide);
+}
+
+.tw-stamp {
+  position: absolute;
+  right: 1.4rem;
+  bottom: 1.2rem;
+  padding: 0.25rem 0.7rem 0.2rem;
+  color: var(--tw-red);
+  border: 2.5px solid var(--tw-red);
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-align: center;
+  transform: rotate(-9deg);
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+
+.dark .tw-stamp {
+  mix-blend-mode: normal;
+}
+
+.tw-stamp small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw-sheet,
+  .tw-returning {
+    transition: none;
+  }
+  .tw-strike,
+  .tw-ding,
+  .tw-caret,
+  .tw-caret-end {
+    animation: none;
+  }
+}
