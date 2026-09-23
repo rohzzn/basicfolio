@@ -22,6 +22,10 @@ import { plip } from '@/lib/site-sound';
 // message not yet shown, newest first; no message comes round again until every one has had its
 // turn, and each visitor's place in that round is remembered from one visit to the next.
 //
+// On a fresh load the channel starts dry and the water pours in from the top, running ahead down
+// the middle with a lip of foam, and the boats and leaves appear as it reaches them. Going from
+// page to page never remounts the stream, so it only fills when the page is loaded or refreshed.
+//
 // The canvas takes no pointer events. It reads the pointer off the window, so everything under
 // and around it stays exactly as clickable as it was.
 
@@ -105,6 +109,7 @@ const V0 = 38; // px/s down the middle of the stream
 const DOT = 7; // halftone cell
 const FINGER = 15; // radius of the dimple the cursor makes
 const PUSH_LIFE = 0.8;
+const FILL = 2.6; // seconds for the water to run from the top of the channel to the bottom
 const TRAIL_DT = 0.07; // how often a speck notes where it is
 const TRAIL_N = 26; // and how many of those it keeps
 const INTERACTIVE = 'a, button, input, textarea, select, label, summary, [role="button"], [contenteditable="true"]';
@@ -280,6 +285,8 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
   let font = 'ui-sans-serif, system-ui, sans-serif';
   let mainEl: HTMLElement | null = null;
   let pointing = false;
+  // how far the first water has run, 0 dry to 1 full; only a fresh load starts dry
+  let fill = still ? 1 : 0;
   // the boat the cursor is at: its note shows while the cursor stays near it or on the note
   let hover: Floater | null = null;
   // the boat telling its message on its own, how long it has been telling, and for how long
@@ -1053,6 +1060,10 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       }
     }
 
+    if (fill < 1) {
+      fill = Math.min(1, fill + dt / FILL);
+      return;
+    }
     for (const f of floaters) stepFloater(f, dt);
     tell(dt);
     // boats nudge each other apart rather than sailing through one another
@@ -1672,6 +1683,93 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     }
   }
 
+  // The first water's leading edge: how far down it has run at each x, further down the middle of
+  // the stream than at the banks, with a ripple along it.
+  function frontAt(x: number, F: number) {
+    const u = clamp((x - centerX(F)) / halfW(F), -1.3, 1.3);
+    return F + 46 * (1 - u * u) + Math.sin(x * 0.06 + time * 9) * 3 + Math.sin(x * 0.023 - time * 5) * 4;
+  }
+  function frontPath(F: number, below: boolean) {
+    const p = new Path2D();
+    const pts: Pt[] = [];
+    for (let x = -10; x <= W + 10; x += 6) pts.push([x, frontAt(x, F)]);
+    p.moveTo(-10, below ? H + 20 : -20);
+    pts.forEach(([x, y]) => p.lineTo(x, y));
+    p.lineTo(W + 10, below ? H + 20 : -20);
+    p.closePath();
+    return { p, pts };
+  }
+
+  // A dry bed below the running water: sand with a faint grain, and a wet sheen running just ahead
+  // of the edge; then the edge itself, a lip of foam with spray.
+  // the same jittered line as poly, left open: the water's edge runs across the stream, it does not close
+  function edgeLine(pts: Pt[], amp: number, seed: number, tick: number) {
+    c.beginPath();
+    pts.forEach(([x, y], i) => {
+      const jx = x + (hash(seed, i, tick) - 0.5) * amp;
+      const jy = y + (hash(seed, i + 30, tick) - 0.5) * amp;
+      if (i) c.lineTo(jx, jy);
+      else c.moveTo(jx, jy);
+    });
+  }
+
+  function drawFilling(tick: number, F: number) {
+    const dry = frontPath(F, true);
+    c.save();
+    c.clip(waterPath);
+    c.clip(dry.p);
+    c.fillStyle = pal.sand;
+    c.fillRect(0, 0, W, H);
+    c.fillStyle = pal.hatch;
+    c.globalAlpha = pal.hatchAlpha * 0.5;
+    c.beginPath();
+    for (let i = 0; i < dotX.length; i += 2) {
+      const y = dotY[i];
+      if (y < F - 60) continue;
+      const r = 0.6 + hash(i, 7) * 0.7;
+      c.moveTo(dotX[i] + r, y);
+      c.arc(dotX[i], y, r, 0, TAU);
+    }
+    c.fill();
+    // the sheen: the thin film that runs a hand's width ahead of the water
+    c.globalAlpha = 0.45;
+    c.fillStyle = pal.water;
+    c.beginPath();
+    dry.pts.forEach(([x, y], i) => (i ? c.lineTo(x, y) : c.moveTo(x, y)));
+    for (let i = dry.pts.length - 1; i >= 0; i--) c.lineTo(dry.pts[i][0], dry.pts[i][1] + 12 + Math.sin(i * 0.9 + time * 6) * 3);
+    c.closePath();
+    c.fill();
+    c.restore();
+
+    c.save();
+    c.clip(waterPath);
+    c.strokeStyle = pal.deep;
+    c.lineWidth = 1.2;
+    c.globalAlpha = 0.45;
+    edgeLine(dry.pts.map(([x, y]) => [x, y + 3]), 1.2, 1300, tick);
+    c.stroke();
+    c.strokeStyle = pal.glint;
+    c.lineWidth = 2.6;
+    c.globalAlpha = pal.glintAlpha;
+    edgeLine(dry.pts, 1.4, 1301, tick);
+    c.stroke();
+    c.lineWidth = 1.4;
+    c.globalAlpha = pal.glintAlpha * 0.7;
+    edgeLine(dry.pts.map(([x, y], i) => [x, y - 6 - Math.abs(Math.sin(i * 0.7 + time * 4)) * 4]), 1.6, 1302, tick);
+    c.stroke();
+    // spray thrown up off the lip
+    c.fillStyle = pal.glint;
+    for (let i = 0; i < dry.pts.length; i += 3) {
+      if (hash(i, tick, 11) > 0.35) continue;
+      const [x, y] = dry.pts[i];
+      c.globalAlpha = 0.9;
+      c.beginPath();
+      c.arc(x + (hash(i, tick, 12) - 0.5) * 6, y - 4 - hash(i, tick, 13) * 9, 1 + hash(i, tick, 14) * 1.4, 0, TAU);
+      c.fill();
+    }
+    c.restore();
+  }
+
   function render() {
     if (!live) return;
     const tick = Math.floor(time * BOIL);
@@ -1679,7 +1777,14 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     c.clearRect(0, 0, W, H);
     c.lineCap = 'round';
     c.lineJoin = 'round';
+    // while the water is still running in, everything wet is drawn only above its edge
+    const filling = fill < 1;
+    const F = filling ? -60 + (H + 130) * (1 - Math.pow(1 - fill, 1.7)) : H + 200;
     if (under) c.drawImage(under, 0, 0, W, H);
+    if (filling) {
+      c.save();
+      c.clip(frontPath(F, false).p);
+    }
     drawDots();
     c.save();
     c.clip(waterPath);
@@ -1688,7 +1793,15 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
     drawRipples(tick);
     drawShadows();
     c.restore();
+    if (filling) {
+      c.restore();
+      drawFilling(tick, F);
+    }
     if (over) c.drawImage(over, 0, 0, W, H);
+    if (filling) {
+      c.save();
+      c.clip(frontPath(F, false).p);
+    }
     stones.forEach((s, i) => bow(s, s.r, tick, 700 + i * 3, 1));
     drawFinger(tick);
     for (const f of floaters) {
@@ -1697,6 +1810,7 @@ function runStream(canvas: HTMLCanvasElement, startDark: boolean, still: boolean
       else drawLeaf(f, tick);
     }
     drawDrops();
+    if (filling) c.restore();
     if (still) {
       // nothing moves: the note follows the cursor and taps straight away
       trackHover();

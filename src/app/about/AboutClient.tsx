@@ -84,8 +84,7 @@ function ProseGitHubCalendar({ isDark, data }: { isDark: boolean; data: Calendar
 
   return (
     <div ref={wrapRef} className="mb-3 w-full min-w-0">
-      <div className="reveal-sweep">
-        <ActivityCalendar
+      <ActivityCalendar
           data={nineMonthsOf(data)}
           colorScheme={isDark ? 'dark' : 'light'}
           theme={{
@@ -100,7 +99,6 @@ function ProseGitHubCalendar({ isDark, data }: { isDark: boolean; data: Calendar
           hideTotalCount
           showWeekdayLabels={false}
         />
-      </div>
     </div>
   );
 }

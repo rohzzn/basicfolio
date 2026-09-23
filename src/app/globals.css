@@ -397,15 +397,6 @@ html.e-reader-mode pre {
    `animation-timeline` skip that block and simply get the finished state.
    ─────────────────────────────────────────────────────────────────── */
 
-@keyframes sweep-in {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
 @keyframes draw-down {
   from {
     clip-path: inset(0 0 100% 0);
@@ -427,11 +418,6 @@ html.e-reader-mode pre {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* The contributions calendar fills left to right. */
-  .reveal-sweep {
-    animation: sweep-in 900ms cubic-bezier(0.32, 0.72, 0, 1) both;
-  }
-
   /* The Gantt draws itself downward. */
   .timeline-chart {
     animation: draw-down 1100ms cubic-bezier(0.32, 0.72, 0, 1) both;
