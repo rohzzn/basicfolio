@@ -1,12 +1,8 @@
 import AboutClient from './AboutClient';
 import { fetchGitHubCalendar } from '@/lib/github-calendar';
-import { fetchLanguageCalendar } from '@/lib/github-languages';
 
 export default async function AboutPage() {
-  const [calendarData, languageCalendar] = await Promise.all([
-    fetchGitHubCalendar('rohzzn'),
-    fetchLanguageCalendar(),
-  ]);
+  const calendarData = await fetchGitHubCalendar('rohzzn');
 
-  return <AboutClient calendarData={calendarData} languageCalendar={languageCalendar} />;
+  return <AboutClient calendarData={calendarData} />;
 }

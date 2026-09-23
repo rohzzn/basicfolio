@@ -18,12 +18,6 @@ const EReaderEasterEgg = dynamic(() => import('./EReaderEasterEgg'), { ssr: fals
 // so the canvas arriving a moment later moves nothing.
 const WaterStream = dynamic(() => import('./WaterStream'), { ssr: false });
 
-// The socials beside the status, as a single letter each rather than a logo.
-const SOCIALS = [
-  { label: 'Instagram', text: 'G.', href: 'https://instagram.com/rohzzn' },
-  { label: 'X', text: 'X.', href: 'https://x.com/rohzzn' },
-];
-
 interface NavLinkProps {
   href: string;
   children: React.ReactNode;
@@ -413,9 +407,7 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
           </nav>
 
           <div className="p-4 sm:p-5 lg:p-6 border-t border-zinc-200 dark:border-neutral-800 flex-shrink-0">
-            {/* The status on the left and the socials on the right, whether or not the status has
-                come back yet. */}
-            <div className="flex w-full items-center justify-between gap-3">
+            <div className="flex w-full items-center gap-3">
               <div className="flex min-w-0 items-center gap-2">
                 {isLoading ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-400" aria-label="Loading status" />
@@ -435,21 +427,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
                     </span>
                   </>
                 )}
-              </div>
-              <div className="flex shrink-0 items-center gap-3.5">
-                {SOCIALS.map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Rohan on ${s.label}`}
-                    title={s.label}
-                    className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-neutral-400 dark:hover:text-paper"
-                  >
-                    {s.text}
-                  </a>
-                ))}
               </div>
             </div>
             {!isLoading && !error && lanyardData && (
