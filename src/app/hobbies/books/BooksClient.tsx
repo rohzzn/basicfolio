@@ -46,7 +46,8 @@ function spineOf(book: Book, last: boolean): Spine {
   return {
     book,
     width: Math.round(26 + Math.min(12, book.title.length * 0.3) + hashOf(book.id + 'w') * 6),
-    height: Math.round(148 + h * 42),
+    // tall enough for the whole title, as a book with a long title is
+    height: Math.round(Math.min(232, Math.max(148 + h * 42, book.shortTitle.length * 7.2 + 48))),
     color: SPINE_COLORS[Math.floor(hashOf(book.id + 'c') * SPINE_COLORS.length)],
     lean: last && h > 0.45,
   };
@@ -149,14 +150,6 @@ function OpenBook({ book, onClose }: { book: Book; onClose: () => void }) {
                 <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-neutral-300">{book.review}</p>
               </div>
             </div>
-            <a
-              href={`https://openlibrary.org/isbn/${book.isbn}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-block text-xs text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-800 hover:underline dark:text-neutral-400 dark:hover:text-neutral-200"
-            >
-              Open Library ↗
-            </a>
           </motion.div>
           <motion.div
             initial={{ rotateY: -80, opacity: 0 }}
@@ -237,8 +230,8 @@ function Shelf({
                         <span className="shelf-band" style={{ top: 10, background: ink }} />
                         <span className="shelf-band" style={{ bottom: 12, background: ink }} />
                         <span
-                          className="absolute inset-x-0 top-5 mx-auto block overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-medium leading-none"
-                          style={{ writingMode: 'vertical-rl', maxHeight: s.height - 44 }}
+                          className="absolute left-1/2 top-5 -translate-x-1/2 overflow-hidden text-ellipsis whitespace-nowrap text-[12px] font-semibold leading-none tracking-[0.02em]"
+                          style={{ writingMode: 'vertical-rl', maxHeight: s.height - 36 }}
                         >
                           {s.book.shortTitle}
                         </span>
@@ -306,10 +299,6 @@ export default function BooksClient() {
           );
         })}
       </div>
-
-      <p className="mt-10 text-xs text-zinc-500 dark:text-neutral-400">
-        {books.length} books · pull one out
-      </p>
     </div>
   );
 }
