@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Command } from 'cmdk';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import './CommandPalette.css';
 import {
   Search,
@@ -172,21 +172,15 @@ const itemClassName =
 export default function CommandPalette({ links = defaultLinks }: CommandPaletteProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
   const [inputValue, setInputValue] = useState('');
   const [pages, setPages] = useState<PalettePage[]>([]);
   const [recentCommands, setRecentCommands] = useState<RecentCommand[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const currentPage = pages[pages.length - 1] ?? null;
   const isSearching = inputValue.trim().length > 0;
 
   const allItems = useMemo(() => [...links], [links]);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -262,11 +256,6 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
     }
   }, [open, currentPage]);
 
-  const isMac = useMemo(() => {
-    if (typeof window === 'undefined' || !isMounted) return false;
-    return navigator.platform.toLowerCase().includes('mac');
-  }, [isMounted]);
-
   const navigateToItem = useCallback(
     (item: PaletteItem) => {
       const commandType = item.href ? 'link' : 'action';
@@ -337,27 +326,6 @@ export default function CommandPalette({ links = defaultLinks }: CommandPaletteP
 
   return (
     <>
-      {pathname !== '/guestbook' && (
-        <kbd
-          className="fixed right-4 top-4 hidden h-6 items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 font-mono text-xs text-zinc-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 md:flex"
-          onClick={() => setOpen(true)}
-        >
-          {!isMounted ? (
-            <>
-              <span className="text-xs">⌘</span>K
-            </>
-          ) : isMac ? (
-            <>
-              <span className="text-xs">⌘</span>K
-            </>
-          ) : (
-            <>
-              <span className="text-xs">Ctrl</span>K
-            </>
-          )}
-        </kbd>
-      )}
-
       {open && (
         <div
           className="fixed inset-0 bg-zinc-900/40 backdrop-blur-md z-[9999]"
