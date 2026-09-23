@@ -33,11 +33,4 @@ export interface ActivitiesPayload {
   errors: { hevy?: string };
 }
 
-export type CombinedActivity = {
-  id: string;
-  type: 'gym';
-  date: string;
-  gymWorkout: HevyWorkout;
-};
-
 export type StatsPeriod = 'week' | 'month' | 'all';

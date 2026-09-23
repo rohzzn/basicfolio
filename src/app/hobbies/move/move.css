@@ -1,0 +1,80 @@
+/* The Move page's paper and ink: cream sheets with ink edges, red halftone for work done, blue
+   rules; the same drawings in chalk on dark paper in dark mode. */
+.move {
+  --move-ink: #24232e;
+  --move-paper: #fffdf7;
+  --move-dot: #c8473f;
+  --move-rule: #dce4ed;
+  --move-margin: #eab0aa;
+  --move-muted: #6b6b75;
+}
+
+.dark .move {
+  --move-ink: #d8d3c9;
+  --move-paper: #1b1b1f;
+  --move-dot: #e07a6c;
+  --move-rule: #2d3037;
+  --move-margin: #6a3f3a;
+  --move-muted: #9a9aa3;
+}
+
+.move-hand {
+  font-family: "Bradley Hand", "Segoe Script", "Chalkboard", "Comic Sans MS", cursive;
+}
+
+.move-sheet {
+  background: var(--move-paper);
+  border: 1.5px solid var(--move-ink);
+  border-radius: 10px;
+}
+
+.move-sheet-head {
+  background: #c8473f;
+  border-bottom: 1.5px solid var(--move-ink);
+}
+
+.dark .move-sheet-head {
+  background: #9c3f38;
+}
+
+/* notebook paper: a red margin line and a blue rule under every 24px line of writing */
+.move-ruled {
+  background-image:
+    linear-gradient(to right, transparent 24px, var(--move-margin) 24px, var(--move-margin) 25px, transparent 25px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 23px, var(--move-rule) 23px, var(--move-rule) 24px);
+  background-position: 0 0, 0 14px;
+}
+
+/* a PR, circled in red pen */
+.move-pr {
+  border: 1.5px solid #c8473f;
+  border-radius: 999px;
+  padding: 0 6px;
+  margin: 0 -2px;
+  transform: rotate(-2deg);
+  display: inline-block;
+  line-height: 20px;
+}
+
+/* a halftone bar for the muscle list */
+.move-bar {
+  display: block;
+  border: 1px solid var(--move-ink);
+  border-radius: 2px;
+  background: radial-gradient(circle, var(--move-dot) 1.1px, transparent 1.4px) 0 0 / 5px 5px, var(--move-paper);
+  transition: width 400ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.move-cal-selected {
+  outline: 2px solid var(--move-ink);
+  outline-offset: -1px;
+}
+
+.move-cal-today {
+  outline: 1.5px dashed var(--move-muted);
+  outline-offset: -2px;
+}
+
+.dark .move-stamp {
+  filter: brightness(0.85);
+}
