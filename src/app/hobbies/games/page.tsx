@@ -4,113 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Profile from './Profile';
 import Image from '@/components/SiteImage';
 import { X } from 'lucide-react';
-import { cs2Items, valorantItems, type CS2Item, type ValorantItem } from '@/data/inventory';
-
-// ── Inventory section ─────────────────────────────────────────────────────────
-
-const RARITY_ORDER: Record<string, number> = {
-  Extraordinary: 0, Covert: 1, Classified: 2, Restricted: 3,
-  'Mil-Spec': 4, Industrial: 5, Consumer: 6, Superior: 2,
-};
-
-function InventoryCard({ item }: { item: CS2Item }) {
-  if (!item.image) return null;
-  return (
-    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-neutral-800 bg-zinc-50 dark:bg-neutral-900 cursor-default group">
-      <div className="relative w-full aspect-[4/3]">
-        {item.condition && (
-          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-neutral-400">
-            {item.condition}
-          </div>
-        )}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.image}
-          alt={`${item.name} | ${item.skin}`}
-          className="absolute inset-0 w-full h-full object-contain p-2 transition-transform duration-200 group-hover:scale-105"
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-        />
-      </div>
-      <div className="h-[2px] w-full" style={{ background: item.rarityColor }} />
-      <div className="px-2 py-1.5">
-        <p className="text-[10px] font-medium leading-tight line-clamp-1" style={{ color: item.rarityColor }}>
-          {item.skin}
-        </p>
-        <p className="text-[9px] text-zinc-400 dark:text-neutral-400 mt-0.5 line-clamp-1">
-          {item.name}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function ValorantInventoryCard({ item }: { item: ValorantItem }) {
-  return (
-    <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-neutral-800 bg-zinc-50 dark:bg-neutral-900 cursor-default group">
-      <div className="relative w-full aspect-[4/3]">
-        {item.isAlt && (
-          <div className="absolute top-1.5 right-1.5 z-10 text-[9px] tabular-nums px-1 py-0.5 rounded font-medium text-zinc-400 dark:text-neutral-400">
-            ✦
-          </div>
-        )}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.image}
-          alt={`${item.name} ${item.weapon}`}
-          className="absolute inset-0 w-full h-full object-contain p-2 transition-transform duration-200 group-hover:scale-105"
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-        />
-      </div>
-      <div className="h-[2px] w-full" style={{ background: item.tierColor }} />
-      <div className="px-2 py-1.5">
-        <p className="text-[10px] font-medium leading-tight line-clamp-1" style={{ color: item.tierColor }}>
-          {item.name}
-        </p>
-        <p className="text-[9px] text-zinc-400 dark:text-neutral-400 mt-0.5 line-clamp-1">
-          {item.weapon}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function InventoryRow() {
-  const [game, setGame] = useState<'cs2' | 'valorant'>('cs2');
-  const sortedCS2 = [...cs2Items]
-    .filter(i => i.image)
-    .sort((a, b) => (RARITY_ORDER[a.rarityName] ?? 9) - (RARITY_ORDER[b.rarityName] ?? 9));
-
-  return (
-    <section className="mb-8">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xs font-medium text-zinc-500 dark:text-neutral-400 uppercase tracking-wider">Inventory</h3>
-        <div className="flex gap-3">
-          {(['cs2', 'valorant'] as const).map(g => (
-            <button key={g} onClick={() => setGame(g)}
-              className={`text-xs uppercase tracking-wide transition-colors ${game === g
-                ? 'text-zinc-900 dark:text-paper font-medium'
-                : 'text-zinc-400 dark:text-neutral-400 hover:text-zinc-700 dark:hover:text-neutral-300'}`}>
-              {g === 'cs2' ? 'CS2' : 'Valorant'}
-            </button>
-          ))}
-        </div>
-      </div>
-      {game === 'cs2' ? (
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-          {sortedCS2.map(item => <InventoryCard key={item.id} item={item} />)}
-        </div>
-      ) : (
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-          {valorantItems.map(item => <ValorantInventoryCard key={item.id} item={item} />)}
-        </div>
-      )}
-    </section>
-  );
-}
+import { MANUAL_GAMES, type ManualGame } from '@/data/manual-games';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -139,6 +33,7 @@ interface UnifiedClip {
   videoUrl: string;
   duration: number;
   createdTimestamp: number;
+  views: number;
 }
 
 interface AllstarClipRaw {
@@ -152,40 +47,6 @@ interface AllstarClipRaw {
   duration: number;
   source: 'allstar';
 }
-
-// ── Manual games (non-Steam, shown alongside Steam library) ───────────────────
-
-interface ManualGame {
-  id: string;
-  name: string;
-  playtime_forever: number; // minutes
-  logoUrl: string;
-  storeUrl: string;
-}
-
-const MANUAL_GAMES: ManualGame[] = [
-  {
-    id: 'valorant',
-    name: 'Valorant',
-    playtime_forever: 2430 * 60,
-    logoUrl: '/images/games/valorantlogo.png',
-    storeUrl: 'https://playvalorant.com',
-  },
-  {
-    id: 'fortnite',
-    name: 'Fortnite',
-    playtime_forever: 1839 * 60,
-    logoUrl: '/images/games/fortnitelogo.png',
-    storeUrl: 'https://www.epicgames.com/fortnite',
-  },
-  {
-    id: 'minecraft',
-    name: 'Minecraft',
-    playtime_forever: 439 * 60,
-    logoUrl: '/images/games/minecraftlogo.png',
-    storeUrl: 'https://www.minecraft.net',
-  },
-];
 
 // ── Static data ────────────────────────────────────────────────────────────────
 
@@ -211,7 +72,7 @@ const FILTERS = [
   { id: '5k', label: 'Ace' },
 ];
 
-const CLIPS_SESSION_KEY = 'games:allstar-clips:v1';
+const CLIPS_SESSION_KEY = 'games:allstar-clips:v2';
 const CLIPS_SESSION_TTL_MS = 60 * 60 * 1000;
 
 function readSessionClips(): UnifiedClip[] | null {
@@ -265,7 +126,13 @@ function allstarToUnified(clip: AllstarClipRaw): UnifiedClip {
     videoUrl: clip.videoUrl || '',
     duration: clip.duration,
     createdTimestamp: clip.createdTimestamp,
+    views: clip.views ?? 0,
   };
+}
+
+// Most viewed first; clips with the same views stay newest first
+function byPopularity(a: UnifiedClip, b: UnifiedClip) {
+  return b.views - a.views || b.createdTimestamp - a.createdTimestamp;
 }
 
 // ── Game list item ─────────────────────────────────────────────────────────────
@@ -330,6 +197,7 @@ function ClipModal({ clip, onClose }: { clip: UnifiedClip; onClose: () => void }
           {clip.videoUrl ? (
             <video
               src={clip.videoUrl}
+              ref={el => { if (el) el.volume = 0.4; }}
               controls
               autoPlay
               playsInline
@@ -399,7 +267,11 @@ export default function Games() {
       .then(r => r.json())
       .catch(() => ({ clips: [] }))
       .then(data => {
-        const allstar = (data.clips ?? []).map(allstarToUnified);
+        // Allstar sometimes lists a clip with no video behind it; skip those
+        const allstar = (data.clips ?? [])
+          .map(allstarToUnified)
+          .filter((c: UnifiedClip) => c.videoUrl)
+          .sort(byPopularity);
         if (allstar.length) {
           setClips(allstar);
           writeSessionClips(allstar);
@@ -418,13 +290,17 @@ export default function Games() {
     .filter(g => g.playtime_2weeks && g.playtime_2weeks > 0)
     .slice(0, 3);
 
-  // Merge Steam games with manual games, sort by total playtime, show all
+  // Merge Steam games with manual games, sort by total playtime, show all.
+  // A manual entry for a game that's also on Steam replaces the Steam one.
+  const manualSteamIds = new Set(MANUAL_GAMES.map(g => g.steamAppId));
   type AnyGame =
     | { kind: 'steam'; game: SteamGame }
     | { kind: 'manual'; game: ManualGame };
 
   const allGamesMerged: AnyGame[] = [
-    ...ownedGames.map(g => ({ kind: 'steam' as const, game: g })),
+    ...ownedGames
+      .filter(g => !manualSteamIds.has(g.appid))
+      .map(g => ({ kind: 'steam' as const, game: g })),
     ...MANUAL_GAMES.map(g => ({ kind: 'manual' as const, game: g })),
   ]
     .filter(entry => entry.game.playtime_forever >= 120) // at least 2 hours
@@ -455,9 +331,6 @@ export default function Games() {
           <Profile profile={profile} />
         </section>
       )}
-
-      {/* Inventory row */}
-      <InventoryRow />
 
       {/* 50/50 split: Left = games + tournaments, Right = clips */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">

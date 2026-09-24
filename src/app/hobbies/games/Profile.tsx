@@ -37,7 +37,7 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
               rel="noopener noreferrer"
               className="text-sm text-zinc-500 dark:text-neutral-400 hover:text-zinc-900 dark:hover:text-paper transition-colors"
             >
-              Steam ↗
+              Steam
             </a>
             <span className="text-zinc-300 dark:text-neutral-500">·</span>
             <a
@@ -46,7 +46,7 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
               rel="noopener noreferrer"
               className="text-sm text-zinc-500 dark:text-neutral-400 hover:text-zinc-900 dark:hover:text-paper transition-colors"
             >
-              Config ↗
+              Config
             </a>
           </div>
         </div>
