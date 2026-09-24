@@ -84,3 +84,18 @@ export const books: Book[] = [
   { id: '4-hour-workweek', title: 'The 4-Hour Workweek', shortTitle: '4-Hour Workweek', review: 'Rethinking productivity and lifestyle design.', score: 4, isbn: '9780307465351', category: 'productivity' },
   { id: 'sapiens', title: 'Sapiens', shortTitle: 'Sapiens', review: "A sweeping overview of our species' journey.", score: 5, isbn: '9780062316097', category: 'science' },
 ];
+
+export function marqueeQuotes(allBooks: Book[], data: BookQuotesData): string[] {
+  const shortByTitle = new Map(allBooks.map(b => [b.title, b.shortTitle]));
+  const lines: string[] = [];
+
+  for (const entry of data.books) {
+    const short = shortByTitle.get(entry.book_name);
+    if (!short) continue;
+    for (const quote of entry.quotes) {
+      lines.push(`${quote} - ${short}`);
+    }
+  }
+
+  return lines;
+}

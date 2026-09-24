@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from '@/components/SiteImage';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -9,296 +9,279 @@ import {
   books,
   BOOK_CATEGORY_LABELS,
   bookCoverSources,
+  marqueeQuotes,
   type Book,
-  type BookCategory,
   type BookQuotesData,
 } from '@/data/books';
 import './books.css';
 
-// The books stand on hand-drawn shelves, one group per category with a hand-lettered label under
-// it, packed onto as many shelves as the page is wide enough for. Hovering a spine lifts it a
-// little off the shelf; clicking pulls it out and it falls open underneath, the review on the left
-// page and the book's takeaways on the right.
-
-const HAND = '"Bradley Hand", "Segoe Script", "Chalkboard", "Comic Sans MS", cursive';
-const SPINE_COLORS = ['#c8473f', '#2b5fb8', '#e8c84a', '#518e9d', '#91906a', '#7a5c8e', '#e4a05c', '#3a3945', '#d98c7a', '#6f8f4f'];
-const SPINE_GAP = 2;
-const GROUP_GAP = 32;
-const LIFT = 14; // room above the tallest spine for one to lift into
-
-function hashOf(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
-  return (h >>> 0) / 4294967296;
-}
-
-function inkOn(hex: string): string {
-  const n = parseInt(hex.slice(1), 16);
-  const lum = (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
-  return lum > 0.6 ? '#24232e' : '#fffdf7';
-}
-
-type Spine = { book: Book; width: number; height: number; color: string; lean: boolean };
-type Group = { category: BookCategory; label: string; spines: Spine[]; width: number };
-
-function spineOf(book: Book, last: boolean): Spine {
-  const h = hashOf(book.id);
-  return {
-    book,
-    width: Math.round(26 + Math.min(12, book.title.length * 0.3) + hashOf(book.id + 'w') * 6),
-    // tall enough for the whole title, as a book with a long title is
-    height: Math.round(Math.min(232, Math.max(148 + h * 42, book.shortTitle.length * 7.2 + 48))),
-    color: SPINE_COLORS[Math.floor(hashOf(book.id + 'c') * SPINE_COLORS.length)],
-    lean: last && h > 0.45,
-  };
-}
-
-function buildGroups(): Group[] {
-  const byCategory = new Map<BookCategory, Book[]>();
-  for (const b of books) byCategory.set(b.category, [...(byCategory.get(b.category) ?? []), b]);
-  return [...byCategory.entries()]
-    .map(([category, list]) => {
-      const sorted = [...list].sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
-      const spines = sorted.map((b, i) => spineOf(b, i === sorted.length - 1));
-      const label = BOOK_CATEGORY_LABELS[category];
-      const spinesW = spines.reduce((s, x) => s + x.width, 0) + (spines.length - 1) * SPINE_GAP + 10;
-      return { category, label, spines, width: Math.max(spinesW, label.length * 9 + 10) };
-    })
-    .sort((a, b) => b.spines.length - a.spines.length || a.label.localeCompare(b.label));
-}
-
-// Greedy packing: as many whole categories on a shelf as fit its width.
-function packShelves(groups: Group[], width: number): Group[][] {
-  if (width <= 0) return groups.map((g) => [g]);
-  const rows: Group[][] = [];
-  let row: Group[] = [];
-  let used = 0;
-  for (const g of groups) {
-    const need = row.length ? used + GROUP_GAP + g.width : g.width;
-    if (row.length && need > width) {
-      rows.push(row);
-      row = [g];
-      used = g.width;
-    } else {
-      row.push(g);
-      used = need;
-    }
-  }
-  if (row.length) rows.push(row);
-  return rows;
-}
-
-function Stars({ score }: { score: number }) {
+function StarRow({ score, className = '' }: { score: number; className?: string }) {
   return (
-    <span className="text-[13px] tracking-[0.1em] text-amber-500 dark:text-amber-400" aria-label={`${score} out of 5`}>
-      {'★'.repeat(score)}
-      <span className="text-zinc-300 dark:text-neutral-600">{'★'.repeat(5 - score)}</span>
-    </span>
+    <div className={`flex items-center gap-0.5 ${className}`} aria-label={`${score} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span
+          key={i}
+          className={`text-[11px] leading-none ${i < score ? 'text-amber-400' : 'text-zinc-300 dark:text-neutral-500'}`}
+        >
+          ★
+        </span>
+      ))}
+    </div>
   );
 }
 
-function Cover({ book }: { book: Book }) {
-  const sources = useMemo(() => bookCoverSources(book.isbn), [book.isbn]);
-  const [i, setI] = useState(0);
-  useEffect(() => setI(0), [book.isbn]);
-  const src = sources[i];
+function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+const MARQUEE_SECONDS_PER_LINE = 5.5;
+
+function QuoteMarquee({ quotes }: { quotes: string[] }) {
+  const [items, setItems] = useState<string[] | null>(null);
+  const [delay, setDelay] = useState('0s');
+  const [duration, setDuration] = useState('200s');
+
+  useEffect(() => {
+    const shuffled = shuffle(quotes);
+    const totalDuration = Math.max(300, quotes.length * MARQUEE_SECONDS_PER_LINE);
+    setItems([...shuffled, ...shuffled]);
+    setDelay(`-${Math.random() * totalDuration}s`);
+    setDuration(`${totalDuration}s`);
+  }, [quotes]);
+
+  if (!items) {
+    return <div className="mb-6 h-[52px]" aria-hidden />;
+  }
+
   return (
-    <div className="shelf-cover relative aspect-[2/3] w-24 shrink-0 overflow-hidden sm:w-28">
-      {src ? (
-        <Image key={src} src={src} alt={book.title} fill sizes="112px" className="object-cover" onError={() => setI((n) => n + 1)} />
-      ) : (
-        <div className="absolute inset-0 flex items-center justify-center p-2 text-center text-[11px] font-medium leading-snug">
+    <div
+      className="relative mb-6 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50/90 py-3.5 dark:border-neutral-800 dark:bg-neutral-900/50"
+      aria-hidden
+    >
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-zinc-50/98 to-transparent dark:from-neutral-950/98" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-zinc-50/98 to-transparent dark:from-neutral-950/98" />
+      <div
+        className="books-marquee-track"
+        style={{ animationDelay: delay, ['--marquee-duration' as string]: duration }}
+      >
+        {items.map((line, i) => (
+          <span
+            key={`${line}-${i}`}
+            className={`mx-10 shrink-0 text-sm leading-relaxed text-zinc-600 dark:text-neutral-300 ${i >= items.length / 2 ? 'books-marquee-duplicate' : ''}`}
+          >
+            {line}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BookCoverImage({
+  book,
+  priority = false,
+  className = '',
+  hoverZoom = false,
+}: {
+  book: Book;
+  priority?: boolean;
+  className?: string;
+  hoverZoom?: boolean;
+}) {
+  const sources = useMemo(() => bookCoverSources(book.isbn), [book.isbn]);
+  const [sourceIndex, setSourceIndex] = useState(0);
+
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [book.isbn]);
+
+  const exhausted = sourceIndex >= sources.length;
+  const src = sources[sourceIndex];
+
+  return (
+    <div className={`relative aspect-[2/3] overflow-hidden bg-zinc-200 dark:bg-neutral-800 ${className}`}>
+      {exhausted ? (
+        <div className="absolute inset-0 flex items-center justify-center p-2 text-center text-[10px] font-medium leading-snug text-zinc-500 dark:text-neutral-400">
           {book.title}
         </div>
+      ) : (
+        <Image
+          key={src}
+          src={src}
+          alt={book.title}
+          fill
+          priority={priority}
+          className={`object-cover${hoverZoom ? ' transition-transform duration-500 ease-out group-hover:scale-[1.04]' : ''}`}
+          onError={() => setSourceIndex((i) => i + 1)}
+        />
       )}
     </div>
   );
 }
 
-const takeawaysByTitle = new Map(
-  (bookQuotesData as BookQuotesData).books.map((b) => [b.book_name, b.quotes])
-);
+function BookCover({
+  book,
+  priority = false,
+  className = '',
+}: {
+  book: Book;
+  priority?: boolean;
+  className?: string;
+}) {
+  return <BookCoverImage book={book} priority={priority} className={className} hoverZoom />;
+}
 
-// The book, fallen open: the review on the left page, its takeaways on the right.
-function OpenBook({ book, onClose }: { book: Book; onClose: () => void }) {
-  const takeaways = (takeawaysByTitle.get(book.title) ?? []).slice(0, 5);
+function BookDetailModal({ book, onClose }: { book: Book; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [onClose]);
+
   return (
     <motion.div
-      key={book.id}
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
-      className="overflow-hidden"
+      className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="relative pb-2 pt-5 [perspective:1400px]" role="region" aria-label={book.title}>
-        <div className="flex flex-col sm:flex-row">
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.05 }}
-            className="shelf-page shelf-page-left flex-1 p-5"
-          >
-            <div className="flex gap-4">
-              <Cover book={book} />
-              <div className="min-w-0">
-                <p className="text-xs text-zinc-500 dark:text-neutral-400">{BOOK_CATEGORY_LABELS[book.category]}</p>
-                <h3 className="mt-0.5 text-base font-medium leading-snug text-zinc-900 dark:text-paper">{book.title}</h3>
-                <div className="mt-1.5">
-                  <Stars score={book.score} />
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-neutral-300">{book.review}</p>
-              </div>
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        aria-label="Close"
+        onClick={onClose}
+      />
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="book-detail-title"
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-xl border border-zinc-200 bg-[#faf8f5] shadow-2xl dark:border-neutral-700 dark:bg-neutral-900"
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+      >
+        <div className="flex min-h-[280px] sm:min-h-[320px]">
+          <div className="hidden w-[38%] shrink-0 border-r border-zinc-200/80 bg-zinc-100/60 p-4 dark:border-neutral-700 dark:bg-neutral-800/50 sm:flex sm:flex-col sm:justify-between">
+            <BookCoverImage book={book} className="mx-auto w-full max-w-[140px] rounded shadow-md ring-1 ring-black/5" />
+            <StarRow score={book.score} className="mt-4 justify-center" />
+          </div>
+
+          <div className="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
+            <div className="mb-3 flex items-start justify-between gap-3 sm:hidden">
+              <StarRow score={book.score} />
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-200/80 hover:text-zinc-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-          </motion.div>
-          <motion.div
-            initial={{ rotateY: -80, opacity: 0 }}
-            animate={{ rotateY: 0, opacity: 1 }}
-            transition={{ duration: 0.45, delay: 0.08, ease: [0.32, 0.72, 0, 1] }}
-            style={{ transformOrigin: 'left center' }}
-            className="shelf-page shelf-page-right shelf-ruled flex-1 px-5 pb-5 pt-4"
-          >
-            <p className="mb-1 text-[15px] text-zinc-500 dark:text-neutral-400" style={{ fontFamily: HAND }}>
-              Takeaways
+
+            <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-neutral-400">
+              {BOOK_CATEGORY_LABELS[book.category]}
             </p>
-            {takeaways.length ? (
-              <ul className="space-y-0">
-                {takeaways.map((t) => (
-                  <li key={t} className="text-sm leading-6 text-zinc-700 dark:text-neutral-300">
-                    <span className="mr-1.5 text-zinc-400 dark:text-neutral-500">-</span>
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm leading-6 text-zinc-500 dark:text-neutral-400">No notes on this one yet.</p>
-            )}
-          </motion.div>
+            <h3
+              id="book-detail-title"
+              className="font-serif text-lg font-medium leading-snug text-zinc-900 dark:text-paper"
+            >
+              {book.title}
+            </h3>
+            <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-neutral-300">
+              {book.review}
+            </p>
+            <div className="mt-5 flex items-center justify-between gap-3 border-t border-zinc-200/80 pt-4 dark:border-neutral-700">
+              <StarRow score={book.score} className="hidden sm:flex" />
+              <a
+                href={`https://openlibrary.org/isbn/${book.isbn}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-800 hover:underline dark:hover:text-neutral-200"
+              >
+                Open Library ↗
+              </a>
+            </div>
+          </div>
         </div>
+
         <button
           type="button"
           onClick={onClose}
-          aria-label="Put the book back"
-          className="absolute right-2 top-7 rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+          className="absolute right-3 top-3 hidden rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-200/80 hover:text-zinc-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 sm:block"
+          aria-label="Close"
         >
           <X className="h-4 w-4" />
         </button>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
 
-function Shelf({
-  row,
-  openId,
-  onPick,
-}: {
-  row: Group[];
-  openId: string | null;
-  onPick: (b: Book) => void;
-}) {
-  const tallest = Math.max(...row.flatMap((g) => g.spines.map((s) => s.height)));
-  return (
-    <div className="relative">
-      <div className="flex items-end" style={{ gap: GROUP_GAP }}>
-        {row.map((g) => (
-          <div key={g.category} className="flex shrink-0 flex-col" style={{ width: g.width }}>
-            <div className="flex items-end" style={{ height: tallest + LIFT, gap: SPINE_GAP }}>
-              {g.spines.map((s) => {
-                const open = s.book.id === openId;
-                const ink = inkOn(s.color);
-                return (
-                  <button
-                    key={s.book.id}
-                    type="button"
-                    onClick={() => onPick(s.book)}
-                    aria-expanded={open}
-                    aria-label={`${s.book.title}, ${s.book.score} out of 5`}
-                    title={s.book.title}
-                    className={`shelf-spine group relative shrink-0 ${open ? 'shelf-spine-out' : ''}`}
-                    style={{
-                      width: s.width,
-                      height: s.height,
-                      background: open ? 'transparent' : s.color,
-                      color: ink,
-                      transform: s.lean && !open ? 'rotate(4deg)' : undefined,
-                      transformOrigin: 'bottom left',
-                    }}
-                  >
-                    {open ? null : (
-                      <>
-                        <span className="shelf-band" style={{ top: 10, background: ink }} />
-                        <span className="shelf-band" style={{ bottom: 12, background: ink }} />
-                        <span
-                          className="absolute left-1/2 top-5 -translate-x-1/2 overflow-hidden text-ellipsis whitespace-nowrap text-[12px] font-semibold leading-none tracking-[0.02em]"
-                          style={{ writingMode: 'vertical-rl', maxHeight: s.height - 36 }}
-                        >
-                          {s.book.shortTitle}
-                        </span>
-                      </>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="h-3" />
-            <p className="mt-2 text-[15px] leading-none text-zinc-500 dark:text-neutral-400" style={{ fontFamily: HAND }}>
-              {g.label}
-            </p>
-          </div>
-        ))}
-      </div>
-      {/* the plank */}
-      <div className="shelf-plank absolute left-0 right-0" style={{ top: tallest + LIFT, height: 12 }} />
-    </div>
-  );
-}
-
 export default function BooksClient() {
-  const groups = useMemo(buildGroups, []);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
-  const [open, setOpen] = useState<Book | null>(null);
+  const [selected, setSelected] = useState<Book | null>(null);
 
-  useLayoutEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const sync = () => setWidth(el.clientWidth);
-    sync();
-    const ro = new ResizeObserver(sync);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  const quotes = useMemo(
+    () => marqueeQuotes(books, bookQuotesData as BookQuotesData),
+    [],
+  );
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(null);
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
+  const displayed = useMemo(
+    () => [...books].sort((a, b) => b.score - a.score || a.title.localeCompare(b.title)),
+    []
+  );
 
-  const rows = useMemo(() => packShelves(groups, width), [groups, width]);
-  const pick = useCallback((b: Book) => setOpen((cur) => (cur?.id === b.id ? null : b)), []);
-  const close = useCallback(() => setOpen(null), []);
+  const closeModal = useCallback(() => setSelected(null), []);
 
   return (
     <div className="w-full min-w-0 max-w-[75ch]">
-      <header className="mb-8">
+      <header className="mb-5">
         <h2 className="text-lg font-medium dark:text-paper">Books</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">A few books I&apos;ve read</p>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">
+          A few books I&apos;ve read
+        </p>
       </header>
 
-      <div ref={wrapRef} className="shelves space-y-12">
-        {rows.map((row) => {
-          const here = open && row.some((g) => g.spines.some((s) => s.book.id === open.id));
-          return (
-            <div key={row.map((g) => g.category).join('-')}>
-              <Shelf row={row} openId={open?.id ?? null} onPick={pick} />
-              <AnimatePresence initial={false}>{here && open ? <OpenBook key={open.id} book={open} onClose={close} /> : null}</AnimatePresence>
+      {quotes.length > 0 ? <QuoteMarquee quotes={quotes} /> : null}
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 sm:gap-4">
+        {displayed.map((book, i) => (
+          <button
+            key={book.id}
+            type="button"
+            onClick={() => setSelected(book)}
+            className="group relative overflow-hidden rounded-lg text-left ring-1 ring-zinc-100 transition-shadow hover:shadow-lg dark:ring-neutral-800"
+          >
+            <BookCover book={book} priority={i < 8} />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-2.5 pt-8 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+              <StarRow score={book.score} className="mb-1 [&_span]:text-amber-300" />
+              <p className="line-clamp-2 text-[11px] font-medium leading-snug text-white">
+                {book.title}
+              </p>
             </div>
-          );
-        })}
+          </button>
+        ))}
       </div>
+
+      <p className="mt-6 text-xs text-zinc-400 dark:text-neutral-400">
+        {displayed.length} books · tap for notes
+      </p>
+
+      <AnimatePresence>
+        {selected ? <BookDetailModal book={selected} onClose={closeModal} /> : null}
+      </AnimatePresence>
     </div>
   );
 }
