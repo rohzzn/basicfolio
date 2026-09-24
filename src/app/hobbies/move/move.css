@@ -18,10 +18,6 @@
   --move-muted: #9a9aa3;
 }
 
-.move-hand {
-  font-family: "Bradley Hand", "Segoe Script", "Chalkboard", "Comic Sans MS", cursive;
-}
-
 .move-sheet {
   background: var(--move-paper);
   border: 1.5px solid var(--move-ink);

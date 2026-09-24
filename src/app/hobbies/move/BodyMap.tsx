@@ -85,7 +85,7 @@ function Figure({ cx, shapes, fillOf, active, setActive, label }: {
       {shapes.map((s) => (
         <ShapeEl key={s.m + ('d' in s ? s.d : s.e.join())} s={s} fill={fillOf(s.m)} active={active === s.m} onEnter={() => setActive(s.m)} />
       ))}
-      <text x={0} y={280} textAnchor="middle" className="move-hand" fontSize={14} fill="var(--move-muted)">
+      <text x={0} y={280} textAnchor="middle" fontSize={14} fill="var(--move-muted)">
         {label}
       </text>
     </g>

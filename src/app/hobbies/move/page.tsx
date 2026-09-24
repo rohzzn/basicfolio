@@ -43,7 +43,7 @@ function fmtMinutes(min: number) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h3 className="move-hand mb-4 text-[19px] leading-none text-zinc-500 dark:text-neutral-400">{title}</h3>
+      <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-neutral-400">{title}</h3>
       {children}
     </section>
   );

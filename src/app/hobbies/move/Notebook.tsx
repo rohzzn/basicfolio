@@ -6,8 +6,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { KIND_LABEL, type NotePage } from '@/lib/move-model';
 import { KIND_COLOR } from './StampCalendar';
 
-// One session as a page from a lifting notebook: the day at the top, each exercise in
-// handwriting, identical sets written once with a tally beside them, and a set heavier than
+// One session as a page from a lifting notebook: the day at the top, each exercise on its
+// own line, identical sets written once with a tally beside them, and a set heavier than
 // anything before it circled in red. The arrows flip the pages.
 
 function Tally({ n }: { n: number }) {
@@ -47,7 +47,7 @@ export default function Notebook({
           animate={{ opacity: 1, x: 0, rotate: 0 }}
           exit={{ opacity: 0, x: dir * -18, rotate: dir * -0.6 }}
           transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
-          className="move-hand flex-1 pb-2 pl-9 pr-4 pt-[14px]"
+          className="flex-1 pb-2 pl-9 pr-4 pt-[14px]"
         >
           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
             <p className="whitespace-nowrap text-[17px] leading-6 text-zinc-900 dark:text-paper">{date}</p>
