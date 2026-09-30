@@ -2,6 +2,8 @@
 
 import Image from '@/components/SiteImage';
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { PEAK_CLIPS } from '@/data/peak';
+import PeakGrid from './PeakGrid';
 
 interface MediaEntry {
   posterImageUrl: string | null;
@@ -54,6 +56,7 @@ interface MediaYearGroup {
 }
 
 type MediaTypeId = 'movies' | 'shows' | 'anime';
+type TabId = MediaTypeId | 'peak';
 type SortOptionId = 'newest' | 'oldest' | 'highest-rated' | 'lowest-rated';
 
 const MAL_USERNAME = 'rohzzn';
@@ -122,11 +125,14 @@ const PosterSkeleton: React.FC = () => (
   </div>
 );
 
-const mediaTypeFilters: Array<{ id: MediaTypeId; label: string }> = [
+const tabs: Array<{ id: TabId; label: string }> = [
   { id: 'movies', label: 'Movies' },
   { id: 'shows', label: 'TV Shows' },
   { id: 'anime', label: 'Anime' },
+  { id: 'peak', label: 'Peak' },
 ];
+
+const NO_ENTRIES: MediaEntry[] = [];
 
 const mediaLabels: Record<MediaTypeId, string> = {
   movies: 'Movies',
@@ -328,7 +334,7 @@ const WatchlistPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeMediaType, setActiveMediaType] = useState<MediaTypeId>('movies');
+  const [activeTab, setActiveTab] = useState<TabId>('movies');
   const [sortOption, setSortOption] = useState<SortOptionId>('newest');
 
   useEffect(() => {
@@ -383,12 +389,24 @@ const WatchlistPage: React.FC = () => {
     [anime, normalizedSearch]
   );
 
+  const filteredPeak = useMemo(
+    () =>
+      PEAK_CLIPS.filter(
+        (clip) =>
+          !normalizedSearch ||
+          `${clip.from} ${clip.moment}`.toLowerCase().includes(normalizedSearch)
+      ),
+    [normalizedSearch]
+  );
+
   const activeEntries =
-    activeMediaType === 'movies'
+    activeTab === 'movies'
       ? filteredMovies
-      : activeMediaType === 'shows'
+      : activeTab === 'shows'
         ? filteredShows
-        : filteredAnime;
+        : activeTab === 'anime'
+          ? filteredAnime
+          : NO_ENTRIES;
   const sortedActiveEntries = useMemo(
     () => sortMediaEntries(activeEntries, sortOption),
     [activeEntries, sortOption]
@@ -408,10 +426,11 @@ const WatchlistPage: React.FC = () => {
     [sortedActiveEntries, sortOption]
   );
 
-  const counts = {
+  const counts: Record<TabId, number> = {
     movies: (catalog?.movies ?? []).length,
     shows: (catalog?.shows ?? []).length,
     anime: (catalog?.anime ?? []).length,
+    peak: PEAK_CLIPS.length,
   };
 
   return (
@@ -429,8 +448,8 @@ const WatchlistPage: React.FC = () => {
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-x-4 gap-y-2" role="tablist" aria-label="Media type">
-          {mediaTypeFilters.map((filter) => {
-            const isActive = activeMediaType === filter.id;
+          {tabs.map((filter) => {
+            const isActive = activeTab === filter.id;
             return (
               <button
                 key={filter.id}
@@ -438,7 +457,7 @@ const WatchlistPage: React.FC = () => {
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => {
-                  setActiveMediaType(filter.id);
+                  setActiveTab(filter.id);
                   setSearchTerm("");
                 }}
                 className={`text-sm capitalize transition-colors ${
@@ -456,7 +475,7 @@ const WatchlistPage: React.FC = () => {
           })}
         </div>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-2">
+        <div className={`${activeTab === 'peak' ? 'hidden' : 'flex'} flex-wrap gap-x-4 gap-y-2`}>
           <button
             type="button"
             onClick={() => setSortOption(sortOption === "newest" ? "oldest" : "newest")}
@@ -484,13 +503,15 @@ const WatchlistPage: React.FC = () => {
         </div>
       </div>
 
-      {error ? (
+      {activeTab === 'peak' ? (
+        <PeakGrid clips={filteredPeak} />
+      ) : error ? (
         <p className="py-16 text-sm text-zinc-500 dark:text-neutral-400">{error}</p>
       ) : (
         <MediaGrid
           groups={activeGroups}
           isLoading={isLoading}
-          emptyLabel={`No ${mediaLabels[activeMediaType].toLowerCase()} match those filters.`}
+          emptyLabel={`No ${mediaLabels[activeTab].toLowerCase()} match those filters.`}
         />
       )}
     </div>
