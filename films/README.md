@@ -46,6 +46,12 @@ node films/render.mjs films/cursors.html --only 0,24,47 --ar 4:3 --width 720
 
 Opening `films/<slug>.html` in a browser gives the skill's own player: scrub, play, export.
 
+## Footage instead of a film
+
+Captain Claw's card and its post open on real gameplay instead of a drawing: loops cut from the
+captures behind the game's trailer, 960×720, no text, no sound. They have no `<slug>.html` here; their
+manifest entries carry `"footage": true`, and the build keeps those entries exactly as they are.
+
 ## Writing a film
 
 A film is one file. It picks a look and a palette, defines its puppets and scenes, and calls

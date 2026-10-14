@@ -50,10 +50,11 @@
   "captain-claw": {
     "src": "/projects/films/captain-claw.mp4",
     "poster": "/projects/films/captain-claw.webp",
-    "duration": 5.167,
+    "duration": 11,
     "width": 960,
     "height": 720,
-    "v": "52d8bc51"
+    "v": "a64bc476",
+    "footage": true
   },
   "catan-online": {
     "src": "/projects/films/catan-online.mp4",

@@ -5,7 +5,6 @@ import * as Game from './game';
 import * as Other from './other';
 
 const REGISTRY: Record<string, React.ComponentType> = {
-  uidna: App.UidnaDetail,
   cursors: App.CursorsDetail,
   argus: App.ArgusDetail,
   'world-clock': App.WorldClockDetail,
@@ -43,7 +42,6 @@ const REGISTRY: Record<string, React.ComponentType> = {
   'portfolio-v2': Web.PortfolioV2Detail,
   'portfolio-v1': Web.PortfolioV1Detail,
 
-  'captain-claw': Game.CaptainClawDetail,
   'dock-poker': Game.DockPokerDetail,
   'catan-online': Game.CatanOnlineDetail,
   wordle: Game.WordleDetail,

@@ -34,10 +34,11 @@
   "captain-claw": {
     "src": "/writing/films/captain-claw.mp4",
     "poster": "/writing/films/captain-claw.webp",
-    "duration": 5.083,
+    "duration": 12.542,
     "width": 960,
     "height": 720,
-    "v": "47bfe44f"
+    "v": "1f17ee58",
+    "footage": true
   },
   "catan-coop": {
     "src": "/writing/films/catan-coop.mp4",

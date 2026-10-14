@@ -13,7 +13,7 @@ export const posts: Post[] = [
     slug: 'captain-claw',
     title: 'Captain Claw, Back in a Browser Tab',
     description:
-      'Porting the 1997 pirate platformer to WebAssembly, then giving it rooms: an archive with no sound in it, a crash that was not the MacBook, lifting and throwing, a lobby lettered from the original art, and a trailer cut from real play.',
+      'Captain Claw was my favourite game as a kid. I turned it into a browser game you can play at captainclaw.lol, then added online multiplayer so friends can play it together.',
     date: '2026-10-14',
     displayDate: 'Oct 2026',
     category: 'tech',

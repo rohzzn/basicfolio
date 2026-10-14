@@ -126,8 +126,9 @@ try {
 }
 for (const g of GROUPS) {
   const m = manifests.get(g);
-  // keep only the films this group still has a source file for
-  const live = Object.keys(m).filter(k => all.includes(g.prefix + k)).sort();
+  // keep only the films this group still has a source file for, and footage: cards cut from real
+  // captures instead of drawn here (see README), which have no source file and are kept as they are
+  const live = Object.keys(m).filter(k => all.includes(g.prefix + k) || m[k].footage).sort();
   if (live.length === 0) continue;
   writeFileSync(manifestPath(g), JSON.stringify(Object.fromEntries(live.map(k => [k, m[k]])), null, 2) + '\n');
   console.log(`${g.dir}: ${live.length} films -> ${path.relative(root, manifestPath(g))}`);
