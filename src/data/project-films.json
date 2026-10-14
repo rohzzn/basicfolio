@@ -47,6 +47,14 @@
     "height": 720,
     "v": "813d4ba2"
   },
+  "captain-claw": {
+    "src": "/projects/films/captain-claw.mp4",
+    "poster": "/projects/films/captain-claw.webp",
+    "duration": 5.167,
+    "width": 960,
+    "height": 720,
+    "v": "52d8bc51"
+  },
   "catan-online": {
     "src": "/projects/films/catan-online.mp4",
     "poster": "/projects/films/catan-online.webp",
@@ -366,6 +374,14 @@
     "width": 960,
     "height": 720,
     "v": "080c986d"
+  },
+  "uidna": {
+    "src": "/projects/films/uidna.mp4",
+    "poster": "/projects/films/uidna.webp",
+    "duration": 5.083,
+    "width": 960,
+    "height": 720,
+    "v": "74afb95d"
   },
   "wordle": {
     "src": "/projects/films/wordle.mp4",

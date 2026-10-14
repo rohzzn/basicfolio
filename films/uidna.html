@@ -1,0 +1,157 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>uidna</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: UI DNA, an MCP server and CLI that reverse-engineers an interface into a document and rebuilds it.
+// Look: ink lines over light graphite hatching on a cool cream; the README's blue, green and orange.
+// Anchor: the page. Signature: the page's own blocks come apart and twist into a double helix, every
+// rung one block, then zip back into the rebuild, and the rebuild's heading is the name.
+// t     dur   scene    what changes                                                            kit
+// 0.0   1.7   scan     a scan line runs down a page; dimension lines, swatches and a           browser, guides
+//                      placeholder cross appear on what it has passed
+// 1.7   1.6   helix    the blocks lift off into rungs and the two strands turn                 strokeOn
+// 3.3   1.8   rebuild  the rungs fly back into a new page, a dashed ghost of the original      writeOn, checkMark
+//                      settles over it, the heading is written "ui dna", a green check
+
+const PAL_DNA = makePalette({
+  paper: '#f1eee6', paperBand: null, ink: '#1d2433', night: '#151a26', chalk: '#f1eee6', chalkDim: '#8a8f9c', guide: 'rgba(47,91,234,.45)',
+  fills: ['#2f5bea', '#1f9d6a', '#d98a1f', '#dfe6fb', '#e7e2d3', '#c7432f'], shade: '#3b4252', light: '#ffffff', blush: '#d98a1f',
+  accents: ['#2f5bea', '#1f9d6a', '#d98a1f', '#c7432f'], inks: ['#1d2433', '#2f5bea'], finish: 'pencil',
+}, 'pencilMinimal');
+const BLUE = () => PAL.fills[0], GREEN = () => PAL.fills[1], ORANGE = () => PAL.fills[2];
+const T = i => i / FPS_DRAW;
+const WX = 250, WY = 150, WW = 940, WH = 720, BX = WX, BY = WY + 60, BW = WW, BH = WH - 60;
+
+// the page, as blocks: [x, y, w, h, fill, kind]
+const BLOCKS = [
+  [BX + 54, BY + 38, 150, 30, 'ink', 'bar'],          // logo + name
+  [BX + BW - 196, BY + 26, 140, 52, 'blue', 'btn'],   // nav button
+  [BX + 60, BY + 132, 500, 40, 'ink', 'bar'],         // heading
+  [BX + 60, BY + 192, 380, 40, 'ink', 'bar'],         // heading, second line
+  [BX + 60, BY + 262, 420, 18, 'dim', 'bar'],         // sub
+  [BX + 60, BY + 318, 190, 64, 'blue', 'btn'],        // primary
+  [BX + 270, BY + 318, 190, 64, 'none', 'btn'],       // secondary
+  [BX + BW - 340, BY + 120, 280, 262, 'orange', 'img'], // illustration (not authorized: a placeholder)
+  [BX + 60, BY + 440, 254, 166, 'card', 'card'],
+  [BX + 343, BY + 440, 254, 166, 'card', 'card'],
+  [BX + 626, BY + 440, 254, 166, 'card', 'card'],
+];
+const fillOf = f => ({ ink: PAL.ink, blue: BLUE(), orange: tint(ORANGE(), .35), card: PAL.fills[3], dim: alpha(PAL.ink, .35), none: PAL.light })[f];
+
+function bg(c) { paper(c); }
+function frame(c, seed, o = {}) { return browser(c, WX, WY, WW, WH, seed, { barFill: o.bar || PAL.fills[4], tex: false }); }
+function block(c, b, k, o = {}) {
+  const [x, y, w, h, f, kind] = b;
+  if (kind === 'bar') { textBar(c, x, y + h / 2, w, fillOf(f), h); return; }
+  if (kind === 'img') {
+    draw(c, RR(x, y, w, h, 14), fillOf(f), 200 + k, { lw: 5, texo: { color: ORANGE(), alpha: .35 } });
+    if (o.cross) { crossMark(c, x + w / 2, y + h / 2, 70, 210 + k, { lw: 6, color: ORANGE() }); }
+    return;
+  }
+  draw(c, RR(x, y, w, h, kind === 'btn' ? h / 2 : 18), fillOf(f), 220 + k, { lw: 5, tex: kind === 'card' });
+  if (kind === 'card') { textBar(c, x + 26, y + 46, w * .55, alpha(PAL.ink, .7), 16); textBar(c, x + 26, y + 92, w * .75, alpha(PAL.ink, .3), 11); textBar(c, x + 26, y + 120, w * .6, alpha(PAL.ink, .3), 11); }
+  if (kind === 'btn' && f === 'none') textBar(c, x + w * .25, y + h / 2, w * .5, alpha(PAL.ink, .55), 12);
+  if (kind === 'btn' && f === 'blue') textBar(c, x + w * .25, y + h / 2, w * .5, alpha(PAL.light, .85), 12);
+}
+
+// 1. the scan: a line runs down the page and leaves its measurements behind it
+function sceneScan(c, tau, i) {
+  bg(c); frame(c, 10);
+  const scanY = lerp(BY - 10, BY + BH, sm(.15, 1.45, tau, easeIO));
+  BLOCKS.forEach((b, k) => block(c, b, k, { cross: scanY > b[1] + b[3] }));
+  const passed = b => scanY > b[1] + b[3];
+  // dimension line over the heading
+  const hd = BLOCKS[2];
+  if (passed(hd)) {
+    const p = sm(0, .2, tau - (.15 + (hd[1] + hd[3] - BY) / BH * 1.3), easeOut), y = hd[1] - 22;
+    strokeOn(c, [[hd[0], y], [hd[0] + hd[2], y]], p, 300, { raw: true, lw: 4, color: BLUE() });
+    if (p > .9) for (const x of [hd[0], hd[0] + hd[2]]) stroke(c, [[x, y - 14], [x, y + 14]], 301 + x, { raw: true, lw: 4, color: BLUE() });
+  }
+  // swatches pulled off the buttons
+  for (const k of [1, 5]) { const b = BLOCKS[k]; if (passed(b)) { const cx = b[0] + b[2] + 40, cy = b[1] + b[3] / 2; draw(c, CI(cx, cy, 20), BLUE(), 310 + k, { lw: 4, tex: false }); stroke(c, ellPts(cx, cy, 32, 32, 0, 30), 312 + k, { raw: true, close: true, lw: 3.4, color: GREEN() }); } }
+  // the cards are found to be one component: dashed outlines
+  BLOCKS.slice(8).forEach((b, k) => { if (passed(b)) stroke(c, rrPts(b[0] - 12, b[1] - 12, b[2] + 24, b[3] + 24, 22), 320 + k, { raw: true, close: true, lw: 4, color: GREEN(), dash: [16, 12] }); });
+  // the scan line
+  if (tau < 1.5) {
+    c.save(); c.beginPath(); c.rect(BX, BY, BW, BH); c.clip();
+    c.fillStyle = alpha(BLUE(), .12); c.fillRect(BX, scanY - 70, BW, 70);
+    c.restore();
+    stroke(c, [[BX - 30, scanY], [BX + BW + 30, scanY]], 330, { raw: true, lw: 6, color: BLUE() });
+    dot(c, BX - 30, scanY, 10, BLUE()); dot(c, BX + BW + 30, scanY, 10, BLUE());
+  }
+}
+
+// the helix: rung k sits at x, its ends on the two strands
+const RUNGS = BLOCKS.length, HX0 = 190, HX1 = W - 190, AMP = 210;
+const rungX = k => lerp(HX0, HX1, k / (RUNGS - 1));
+const strandY = (x, ph, s) => CY + s * AMP * Math.sin((x - HX0) / (HX1 - HX0) * TAU * 1.6 + ph);
+const depth = (x, ph) => Math.cos((x - HX0) / (HX1 - HX0) * TAU * 1.6 + ph);
+function helix(c, ph, p, seed) {
+  const strand = s => { const pts = []; for (let x = HX0 - 40; x <= HX1 + 40; x += 18) pts.push([x, strandY(x, ph, s)]); return pts; };
+  // rungs first, back ones lighter; then the strands over them
+  BLOCKS.forEach((b, k) => {
+    const x = rungX(k), y0 = strandY(x, ph, 1), y1 = strandY(x, ph, -1), d = depth(x, ph);
+    const col = b[4] === 'none' ? PAL.shade : b[4] === 'card' ? GREEN() : b[4] === 'dim' ? PAL.shade : b[4] === 'orange' ? ORANGE() : b[4] === 'ink' ? PAL.ink : BLUE();
+    c.save(); c.globalAlpha = d > 0 ? 1 : .45;
+    const top = Math.min(y0, y1), h = Math.abs(y1 - y0);
+    if (h > 8) draw(c, RR(x - 15, top, 30, h, 15), col, seed + k, { lw: 4, tex: false });
+    c.restore();
+  });
+  strokeOn(c, strand(1), p, seed + 40, { raw: true, lw: 9, color: BLUE() });
+  strokeOn(c, strand(-1), p, seed + 41, { raw: true, lw: 9, color: GREEN() });
+}
+// a block flying between its place on the page and its rung on the helix (u 0 page .. 1 rung)
+function flying(c, b, k, u, ph) {
+  const x = rungX(k), y0 = strandY(x, ph, 1), y1 = strandY(x, ph, -1), top = Math.min(y0, y1), h = Math.max(30, Math.abs(y1 - y0));
+  const e = easeIO(clamp(u, 0, 1)), r = [lerp(b[0], x - 15, e), lerp(b[1], top, e), lerp(b[2], 30, e), lerp(b[3], h, e)];
+  const col = fillOf(b[4] === 'none' ? 'card' : b[4]);
+  draw(c, RR(r[0], r[1], r[2], r[3], Math.min(15, r[2] / 2, r[3] / 2)), col, 400 + k, { lw: 4, tex: false });
+}
+
+// 2. the blocks lift off and become the rungs; the strands draw themselves and turn
+function sceneHelix(c, tau, i) {
+  bg(c);
+  const ph = T(i) * 2.4, out = sm(0, .55, tau, t => t);
+  if (out < 1) { c.save(); c.globalAlpha = 1 - out; frame(c, 10); c.restore(); }
+  if (out < 1) BLOCKS.forEach((b, k) => flying(c, b, k, sm(k * .03, .45 + k * .03, tau, t => t), ph));
+  else helix(c, ph, 1, 500);
+  if (out < 1) helix(c, ph, sm(.25, .7, tau, easeOut), 500);
+}
+
+// 3. the rungs fly back into a new page; the original settles over it as a dashed ghost; the heading is the name
+function sceneRebuild(c, tau, i) {
+  bg(c);
+  const ph = T(i) * 2.4, back = sm(0, .5, tau, t => t);
+  if (back < 1) {
+    helix(c, ph, 1 - sm(0, .45, tau, easeIO), 500);
+    BLOCKS.forEach((b, k) => flying(c, b, k, 1 - sm(k * .025, .38 + k * .025, tau, t => t), ph));
+    return;
+  }
+  frame(c, 12, { bar: tint(GREEN(), .65) });
+  BLOCKS.forEach((b, k) => { if (k !== 2 && k !== 3) block(c, b, k, { cross: true }); });
+  // the original, as a dashed ghost, settling over the rebuild
+  const g = sm(.5, .95, tau, easeOut), off = lerp(46, 0, g);
+  c.save(); c.globalAlpha = lerp(.0, .8, sm(.5, .7, tau, t => t)) * (1 - sm(1.25, 1.6, tau, t => t) * .6);
+  stroke(c, rrPts(WX + off, WY + off, WW, WH, 22), 600, { raw: true, close: true, lw: 4, color: BLUE(), dash: [18, 12] });
+  c.restore();
+  // the heading is written
+  writeOn(c, 'ui dna', BLOCKS[2][0] + 6, BY + 214, sm(.6, 1.35, tau, t => t), { size: 168, align: 'left', ink: PAL.ink, ink2: BLUE(), pen: GREEN() });
+  // and checked
+  if (tau > 1.3) { const cx = WX + WW - 40, cy = WY - 6, s = easeBack(sm(1.3, 1.5, tau, t => t)); draw(c, CI(cx, cy, 62 * s), GREEN(), 610, { lw: 5, tex: false }); checkMark(c, cx, cy + 4, 30, sm(1.42, 1.62, tau, t => t), 611, { color: PAL.light, lw: 9 }); }
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_DNA, poster: 2.5, crf: 26,
+  beats: [
+    { name: 'scan', dur: 1.7, fn: sceneScan },
+    { name: 'helix', dur: 1.6, fn: sceneHelix },
+    { name: 'rebuild', dur: 1.8, fn: sceneRebuild },
+  ],
+});
+</script>

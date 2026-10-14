@@ -351,3 +351,123 @@ export function GreedIslandDexDetail() {
     </div>
   );
 }
+
+// ── Captain Claw: the key map under your fingers, and a room handed out the way the relay does ──
+
+const CLAW_KEYS: Record<string, string> = {
+  W: 'Climb up, look up (hold)',
+  A: 'Walk left',
+  S: 'Crouch, climb down, look down (hold)',
+  D: 'Walk right',
+  Space: 'Jump, hold for a higher one',
+  J: 'Attack: sword or punch',
+  K: 'Fire: pistol, magic, dynamite',
+  L: 'Next weapon',
+  Z: 'Pick up, throw: kegs and soldiers',
+};
+// the relay's alphabet: no I, L, O, 0 or 1 to misread, and no X or Z, since the menu lettering has neither
+const CLAW_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWY23456789';
+const CLAW_COLORS = ['#ff6f6f', '#7dff7a', '#ffd84a', '#c98bff', '#6ff2ff', '#ffa04d', '#ff8ad2', '#d9d9d9'];
+const clawName = () => `Pirate ${10 + Math.floor(Math.random() * 90)}`;
+
+function ClawKey({ k, on, wide, onPress }: { k: string; on: boolean; wide?: boolean; onPress: (k: string) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onPress(k)}
+      className={`flex h-8 items-center justify-center rounded-md border font-mono text-[11px] font-semibold transition-colors ${wide ? 'w-[6.5rem]' : 'w-8'} ${
+        on
+          ? 'border-amber-500 bg-amber-400 text-zinc-900'
+          : 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800'
+      }`}
+    >
+      {k}
+    </button>
+  );
+}
+
+export function CaptainClawDetail() {
+  const [key, setKey] = useState('J');
+  const [code, setCode] = useState<string | null>(null);
+  const [size, setSize] = useState(4);
+  const [crew, setCrew] = useState<string[]>([]);
+  const [note, setNote] = useState('');
+
+  const press = (k: string) => setKey(k);
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const k = e.key === ' ' ? 'Space' : e.key.toUpperCase();
+    if (!(k in CLAW_KEYS)) return;
+    e.preventDefault();
+    setKey(k);
+  };
+  const create = () => {
+    let c = '';
+    for (let i = 0; i < 6; i++) c += CLAW_CODE_ALPHABET[Math.floor(Math.random() * CLAW_CODE_ALPHABET.length)];
+    setCode(c);
+    setCrew(['You']);
+    setNote('Share the code. Everyone who types it lands in the same level.');
+  };
+  const join = () => {
+    const name = clawName();
+    if (crew.length >= size) { setNote(`The room is full: ${name} was turned away.`); return; }
+    setCrew((c) => [...c, name]);
+    setNote(`${name} joined the crew.`);
+  };
+  const leave = () => { setCode(null); setCrew([]); setNote(''); };
+
+  return (
+    <div className="flex h-full gap-5 p-5 outline-none" tabIndex={0} onKeyDown={onKeyDown} aria-label="Captain Claw controls and multiplayer room">
+      <div className="hidden w-[13.5rem] shrink-0 flex-col sm:flex">
+        <span className="mb-2 text-[10px] uppercase tracking-wide text-zinc-400 dark:text-neutral-500">Press a key</span>
+        <div className="flex flex-col items-start gap-1.5">
+          <div className="flex gap-1.5"><span className="w-8" /><ClawKey k="W" on={key === 'W'} onPress={press} /></div>
+          <div className="flex gap-1.5">{['A', 'S', 'D'].map((k) => <ClawKey key={k} k={k} on={key === k} onPress={press} />)}</div>
+          <ClawKey k="Space" wide on={key === 'Space'} onPress={press} />
+          <div className="mt-2 flex gap-1.5">{['J', 'K', 'L', 'Z'].map((k) => <ClawKey key={k} k={k} on={key === k} onPress={press} />)}</div>
+        </div>
+        <p className="mt-3 min-h-[2.5rem] text-xs text-zinc-700 dark:text-neutral-300">{CLAW_KEYS[key]}</p>
+        <p className="mt-auto text-[10px] leading-relaxed text-zinc-400 dark:text-neutral-500">Nothing uses Ctrl or Alt, so the browser never takes the key. The arrow keys work too.</p>
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="mb-2 text-[10px] uppercase tracking-wide text-zinc-400 dark:text-neutral-500">Sail together</span>
+        {code ? (
+          <>
+            <div className="mb-2 flex gap-1">
+              {code.split('').map((ch, i) => (
+                <span key={i} className="flex h-8 w-7 items-center justify-center rounded border border-amber-500/60 bg-amber-50 font-mono text-sm font-bold text-amber-800 dark:bg-amber-900/20 dark:text-amber-300">{ch}</span>
+              ))}
+            </div>
+            <span className="mb-1.5 text-[11px] text-zinc-500 dark:text-neutral-400">{crew.length} of {size} aboard · shared world</span>
+            <div className="min-h-0 flex-1 space-y-1 overflow-hidden">
+              {crew.map((n, i) => (
+                <div key={`${n}-${i}`} className="flex items-center gap-2 text-xs text-zinc-700 dark:text-neutral-300">
+                  <span className="h-2 w-2 rounded-sm" style={{ background: CLAW_COLORS[i % CLAW_COLORS.length] }} />
+                  {n}{i === 0 ? <span className="text-zinc-400 dark:text-neutral-500"> (host)</span> : null}
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 flex gap-1.5">
+              <button type="button" onClick={join} className="rounded-md bg-zinc-900 px-2.5 py-1 text-[11px] text-white hover:opacity-85 dark:bg-neutral-100 dark:text-neutral-900">A pirate joins</button>
+              <button type="button" onClick={leave} className="rounded-md border border-zinc-200 px-2.5 py-1 text-[11px] text-zinc-600 hover:bg-zinc-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800">Leave room</button>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-1 flex-col">
+            <div className="mb-3 flex items-center gap-2">
+              <button type="button" onClick={create} className="rounded-md bg-zinc-900 px-2.5 py-1 text-[11px] text-white hover:opacity-85 dark:bg-neutral-100 dark:text-neutral-900">Create room</button>
+              <span className="text-[11px] text-zinc-500 dark:text-neutral-400">for</span>
+              <div className="flex overflow-hidden rounded-md border border-zinc-200 dark:border-neutral-700">
+                {[2, 4, 6, 8].map((n) => (
+                  <button key={n} type="button" onClick={() => setSize(n)} className={`px-2 py-1 text-[11px] ${size === n ? 'bg-zinc-100 font-semibold text-zinc-900 dark:bg-neutral-800 dark:text-paper' : 'text-zinc-500 hover:bg-zinc-50 dark:text-neutral-400 dark:hover:bg-neutral-800/60'}`}>{n}</button>
+                ))}
+              </div>
+            </div>
+            <p className="text-xs leading-relaxed text-zinc-500 dark:text-neutral-400">A small Node relay hands out a six-character code. Everyone who types it plays the same level, each Claw in their own colour, and kills and treasure count for the whole crew.</p>
+          </div>
+        )}
+        <p className="mt-2 min-h-[1rem] text-[11px] text-zinc-500 dark:text-neutral-400">{note}</p>
+      </div>
+    </div>
+  );
+}

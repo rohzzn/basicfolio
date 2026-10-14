@@ -39,6 +39,48 @@ export const projects: Project[] = [
       "Two people, two time zones, and the same sum done a hundred times. Nine and a half hours, forward or back, and does that mean they are asleep, about to be, or already three hours into their day. Same Sky answers it before you have finished asking.\n\nOpen it and you are looking at both of your skies at once, meeting at a horizon in the middle. Their half is the light where they are and yours is the light where you are, and the colours are not decoration: they come from the real position of the sun at each of your coordinates, worked out on the phone from published astronomy with no network involved. Their half is genuinely dawn while yours is genuinely dusk. The moon between the two halves is tonight's moon at its real phase, which is the same one you are both under.\n\nBoth clocks, that moon and the hours you overlap sit on the Home Screen. On the Lock Screen their time sits beside the date with a ring showing how far through their day they are, and it works in StandBy and offline too. Days is a journal the two of you keep together, one photo a day each, no streak to break. There is a call window showing how much of today's overlap is left, countdowns to the next time you are together, and one tap to point at the moon and say you are thinking of them. Nothing the app sends lands while the person receiving it is asleep: it waits for their morning.\n\nThere is no server, which is architecture rather than a slogan. Your pair, your countdowns and your journal live on the phone, the astronomy is computed there, and pairing creates a shared record zone inside your own iCloud that nobody else can read. Sign in with Apple is the only sign in offered and it is optional. No analytics package, no attribution SDK, no ad network.\n\nComing soon on the App Store. iPhone, iOS 26 or later, free, all of it.",
   },
   {
+    slug: 'uidna',
+    year: 2026,
+    title: 'UI DNA',
+    description: 'Reverse-engineer an interface into code you own',
+    tech: ['TypeScript', 'Node.js', 'Playwright', 'MCP', 'Zod', 'React', 'Tailwind CSS', 'Vite'],
+    category: 'application',
+    links: [
+      { label: 'GitHub', url: 'https://github.com/rohzzn/uidna' },
+      { label: 'npm', url: 'https://www.npmjs.com/package/@rohzzn/uidna' },
+    ],
+    image: '/projects/films/uidna.webp',
+    packageType: 'npm',
+    install: 'npm install -g @rohzzn/uidna',
+    commands: [
+      { cmd: 'uidna setup', desc: 'Register the MCP server in Claude Code, Codex and Cursor' },
+      { cmd: 'uidna reconstruct <url> <outDir>', desc: 'The whole loop: capture, explore, generate, verify, report' },
+      { cmd: 'uidna scan <url> --crawl', desc: 'Capture every page of a site at every viewport' },
+      { cmd: 'uidna explore <scan>', desc: 'Safe interactions, or --policy forms with synthetic values' },
+      { cmd: 'uidna tokens <scan>', desc: 'Token clusters with their member values and sample counts' },
+      { cmd: 'uidna generate <scan> <outDir>', desc: 'The React project, installed and built' },
+      { cmd: 'uidna verify <scan> <outDir>', desc: 'The DiffReport for this attempt, with regressions' },
+      { cmd: 'uidna doctor', desc: 'Check the browser, the CDP port and the registration' },
+    ],
+    longDescription:
+      "See an interface you like, understand how it is built down to the token, the component and the state transition, then rebuild it as code you own and prove the rebuild matches. UI DNA is an MCP server and a CLI that gives a coding agent the instruments for that loop. It is to interfaces what REA is to binaries.\n\nThe rule it is built around: the agent is the brain and UI DNA is the instrument. It makes no model calls and needs no API keys. It drives a real Chromium, or attaches to your own Chrome over the DevTools Protocol, and records the DOM, computed styles, boxes, the accessibility tree, fonts and assets at every viewport. Then it explores the page the safe way: hover, focus, Escape, menus, tabs and accordions, every action snapshotted, diffed and reverted, nothing submitted and no link followed off the site. What comes out is a UI DNA document in which every value carries where it came from: measured, observed, inferred, or unknown with a reason. Only the agent can write inferred, and its reading is stored beside the measurement, never over it.\n\nFrom that document it generates a React, TypeScript, Tailwind and Vite project with the tokens as CSS variables, the repeated structures as components, the observed transitions as state and a Playwright suite that replays them. Then it checks the rebuild against the original with a pixel diff, SSIM, geometry, computed styles and a replay of every recorded transition, and reports one finding per concrete difference instead of a single blended score. On the reference page the rebuild replays 73 of 73 transitions and differs from the original in under one percent of its pixels at all three widths.\n\nVersion 0.2.0 crawls whole sites, explores forms with synthetic values while every submission is blocked, and turns captured JSON into typed mocks. Twelve tools, identical over MCP and the CLI, one evidence envelope for every result, and the document schema published on its own as @rohzzn/uidna-schema so other tools can read it. MIT licensed.",
+  },
+  {
+    slug: 'captain-claw',
+    year: 2026,
+    title: 'Captain Claw',
+    description: 'The 1997 pirate classic, in your browser',
+    tech: ['C++', 'SDL2', 'Emscripten', 'WebAssembly', 'Box2D', 'Node.js', 'WebSocket', 'Playwright'],
+    category: 'game',
+    links: [
+      { label: 'Play', url: 'https://captainclaw.lol' },
+      { label: 'Donate', url: 'https://donate.rohan.run' },
+    ],
+    image: '/projects/films/captain-claw.webp',
+    longDescription:
+      "Captain Claw is Monolith's 1997 pirate platformer, and OpenClaw is an open-source C++ and SDL2 reimplementation of its engine. This is OpenClaw compiled to WebAssembly with Emscripten, so the whole game runs in a browser tab at captainclaw.lol. No download, no installer: WASD to move, Space to jump, J for the sword, K for the pistol, or the original arrow keys if your hands remember them.\n\nGetting it to run was mostly the parts nobody had finished for the web. The CD rip's CLAW.REZ has no sound effects in it, so one tool unpacks the InstallShield cabinet without running the installer and another merges the 1,151 original WAV files back in. The real SDL2_mixer port replaces the stubbed audio, the music is MIDI played by a TinySoundFont synthesizer in the page, the death and teleport fades are drawn over a frozen frame so WebGL never flashes black, and the picture scales by whole pixels so the art does not shimmer on a Retina screen. The first build died on a MacBook with \"memory access out of bounds\": elevators were holding on to the physics bodies of enemies that had already been killed while riding them. On the desktop that is silent corruption. In WebAssembly it is a hard stop.\n\nThen it grew past a port. A small Node relay hands out six-letter room codes and up to eight players share a level, each Claw in their own colour with a name tag, with kills and treasure counting for everyone. The codes never contain an X or a Z, because the multiplayer menu is lettered with glyphs cut at load time from the original menu art, and the 1997 lettering has neither. Lifting and throwing powder kegs and soldiers, which the original had and OpenClaw never implemented, works with Claw's own animations. Every menu option works, saves stay in the browser per player, custom levels load from a file, and PLEASE DONATE sits on the main menu in the same gold lettering.\n\nIt is served from a Mac at home, with the relay behind the same domain. Before an update goes out, a Playwright suite plays the game in Chromium and Firefox: 29 single-player checks, two browsers in one room, lift and throw, every menu page. There is a 45 second trailer cut from real captures only, thirteen gameplay shots from thirteen different levels.",
+  },
+  {
     slug: 'cursors',
     year: 2026,
     title: 'Cursors',
