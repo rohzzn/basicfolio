@@ -1,0 +1,113 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-captain-claw</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Captain Claw, Back in a Browser Tab - a 1997 CD-ROM game ported to WebAssembly, then given rooms.
+// Look: ink on a midnight navy, parchment lines, gold and red. Anchor: the disc.
+// Signature: the CD spins down into a browser tab and becomes its favicon; the post signs off on the tab.
+// t     dur   scene  what changes                                                            kit
+// 0.0   1.7   disc   a CD-ROM spins, its sheen turning; it shrinks and drops into the tab     browser, arcs
+// 1.7   1.6   code   six tiles flip in one at a time, B6V5HK, and two crews ring in           RR, ringsOut
+// 3.3   1.8   tab    the tab, close: the disc turns as its favicon and the tab is titled       writeOn
+
+const PAL_PCC = makePalette({
+  paper: '#101632', paperBand: null, ink: '#f1e3c2', night: '#0a0f24', chalk: '#f1e3c2', chalkDim: '#7c86b0', guide: 'rgba(241,227,194,.35)',
+  fills: ['#1c2550', '#f2c14e', '#d2463a', '#5fb3c9', '#2a3566', '#f1e3c2'], shade: '#2a3566', light: '#f1e3c2', blush: '#d2463a',
+  accents: ['#f2c14e', '#d2463a', '#5fb3c9', '#f1e3c2'], inks: ['#f1e3c2', '#f2c14e'], finish: 'screen',
+}, 'blueprintNight');
+const GOLD = () => PAL.fills[1], RED = () => PAL.fills[2], TEAL = () => PAL.fills[3];
+const T = i => i / FPS_DRAW;
+
+function room(c) {
+  paper(c);
+  c.save(); c.globalAlpha = .5;
+  for (let k = 0; k < 40; k++) { const r = rng(900 + k); dot(c, r() * W, r() * H, 1.5 + r() * 2.5, PAL.chalkDim); }
+  c.restore();
+}
+// the disc: silver rings, a sheen that turns, the hub
+function disc(c, x, y, R, rot, seed) {
+  draw(c, CI(x, y, R), '#c9cbd6', seed, { lw: 6, tex: false });
+  c.save(); c.translate(x, y); c.rotate(rot);
+  const bands = [[TEAL(), .2], [GOLD(), 1.4], [RED(), 2.3], [TEAL(), 3.6], [GOLD(), 4.7]];
+  for (const [col, a] of bands) { c.fillStyle = alpha(col, .55); c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, R * .96, a, a + .42); c.closePath(); c.fill(); }
+  c.restore();
+  for (const k of [.88, .74, .6]) stroke(c, ellPts(x, y, R * k, R * k, 0, 48), seed + 10 * k | 0, { raw: true, close: true, lw: 2.2, color: alpha('#7d8095', .7) });
+  draw(c, CI(x, y, R * .3), '#e6e7ee', seed + 20, { lw: 4, tex: false });
+  draw(c, CI(x, y, R * .12), PAL.paper, seed + 21, { lw: 4, tex: false });
+}
+// a browser seen from its tab strip: the active tab is [tx, ty, tw, th]
+function tabStrip(c, y, tw, seed, o = {}) {
+  const tx = o.tx ?? 120, th = o.th ?? 150;
+  c.fillStyle = PAL.fills[0]; c.fillRect(0, y - 40, W, H - y + 40);
+  stroke(c, [[-10, y + th], [W + 10, y + th]], seed, { raw: true, lw: 5 });
+  const tab = PG([[tx - 30, y + th], [tx, y + 18], [tx + 24, y], [tx + tw - 24, y], [tx + tw, y + 18], [tx + tw + 30, y + th]]);
+  draw(c, tab, PAL.fills[4], seed + 1, { lw: 6, tex: false });
+  c.fillStyle = PAL.fills[4]; c.fillRect(tx - 24, y + th - 6, tw + 48, 14);
+  // the page below the tab, and its address bar
+  c.fillStyle = PAL.night; c.fillRect(0, y + th + 4, W, H);
+  draw(c, RR(tx + 60, y + th + 40, W - tx - 200, 70, 35), PAL.fills[0], seed + 2, { lw: 4, tex: false });
+  textBar(c, tx + 110, y + th + 75, 340, alpha(PAL.ink, .45), 14);
+  return [tx, y, tw, th];
+}
+
+// 1. the disc spins, then drops into the tab
+function sceneDisc(c, tau, i) {
+  room(c);
+  const t = T(i), drop = sm(.95, 1.6, tau, easeIO);
+  const strip = 120 + lerp(700, 0, sm(.7, 1.15, tau, easeOut));
+  if (tau > .7) tabStrip(c, strip, 620, 50);
+  const x = lerp(CX, 120 + 92, drop), y = lerp(CY - 30, strip + 86, drop), R = lerp(330, 46, drop);
+  disc(c, x, y, R, t * 3.2, 10);
+  if (tau < .9) for (let s = 0; s < 3; s++) sparkle(c, CX + [-360, 330, 300][s], CY + [-260, -200, 230][s], 26 + s * 6, s % 2 ? RED() : GOLD(), t * 3 + s);
+}
+
+// 2. the room code flips in, a letter at a time; the second crew rings in
+const CODE = 'B6V5HK';
+function sceneCode(c, tau, i) {
+  const t = T(i);
+  room(c);
+  const tw = 172, gap = 22, x0 = CX - (CODE.length * tw + (CODE.length - 1) * gap) / 2, y = CY - 150;
+  [...CODE].forEach((ch, k) => {
+    const p = sm(k * .14, .16 + k * .14, tau, easeOut); if (p <= 0) return;
+    const x = x0 + k * (tw + gap);
+    c.save(); c.translate(x + tw / 2, y + 115); c.scale(1, Math.max(.04, p));
+    draw(c, RR(-tw / 2, -115, tw, 230, 24), p < 1 ? PAL.fills[4] : GOLD(), 200 + k, { lw: 6, tex: false });
+    if (p > .5) hand(c, ch, 0, 58, { size: 170, ink: PAL.paper, ink2: RED(), weight: 'bold' });
+    c.restore();
+  });
+  // two crews: one waiting, the second arriving once the code is complete
+  const ready = CODE.length * .14 + .1;
+  const crew = (cx, col, seed, p) => { if (p <= 0) return; const s = easeBack(p); draw(c, CI(cx, CY + 230, 44 * s), col, seed, { lw: 5, tex: false }); stroke(c, [[cx - 60 * s, CY + 320], [cx + 60 * s, CY + 320]], seed + 1, { raw: true, lw: 10, color: alpha(col, .6) }); };
+  crew(CX - 150, GOLD(), 300, sm(0, .25, tau, t => t));
+  crew(CX + 150, RED(), 310, sm(ready, ready + .2, tau, t => t));
+  if (tau > ready) { ringsOut(c, CX + 150, CY + 230, tau - ready, { every: .25, t1: .6, speed: 360, colors: [RED(), GOLD()], width: 5, seed: 320, max: 260 }); stroke(c, [[CX - 96, CY + 230], [lerp(CX - 96, CX + 96, sm(ready + .15, ready + .45, tau, easeOut)), CY + 230]], 330, { raw: true, lw: 5, color: PAL.ink, dash: [14, 12] }); }
+}
+
+// 3. close on the tab: the disc turns as its favicon and the tab is titled
+function sceneTab(c, tau, i) {
+  const t = T(i);
+  room(c);
+  const [tx, ty, tw, th] = tabStrip(c, 300, 1120, 60, { tx: 150, th: 190 });
+  disc(c, tx + 104, ty + th / 2 + 6, 62, t * 2.2, 70);
+  crossMark(c, tx + tw - 60, ty + th / 2 + 4, 20, 80, { lw: 6, color: alpha(PAL.ink, .6) });
+  writeOn(c, 'back in a tab', tx + 196, ty + th / 2 + 44, sm(.2, 1.15, tau, t => t), { size: 124, align: 'left', ink: PAL.ink, ink2: GOLD(), pen: RED() });
+  // the page under it: a play button waiting
+  const s = easeBack(sm(1.0, 1.25, tau, t => t));
+  if (s > 0) { c.save(); c.translate(CX, ty + th + 330); c.scale(s, s); draw(c, RR(-150, -62, 300, 124, 30), GOLD(), 90, { lw: 6, tex: false }); c.fillStyle = PAL.night; c.beginPath(); c.moveTo(-24, -36); c.lineTo(40, 0); c.lineTo(-24, 36); c.closePath(); c.fill(); c.restore(); }
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_PCC, poster: 2.9, crf: 26,
+  beats: [
+    { name: 'disc', dur: 1.7, fn: sceneDisc },
+    { name: 'code', dur: 1.6, fn: sceneCode },
+    { name: 'tab', dur: 1.8, fn: sceneTab },
+  ],
+});
+</script>

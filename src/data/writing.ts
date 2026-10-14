@@ -10,6 +10,15 @@ export type Post = {
 
 export const posts: Post[] = [
   {
+    slug: 'captain-claw',
+    title: 'Captain Claw, Back in a Browser Tab',
+    description:
+      'Porting the 1997 pirate platformer to WebAssembly, then giving it rooms: an archive with no sound in it, a crash that was not the MacBook, lifting and throwing, a lobby lettered from the original art, and a trailer cut from real play.',
+    date: '2026-10-14',
+    displayDate: 'Oct 2026',
+    category: 'tech',
+  },
+  {
     slug: 'nobody-said-he-was-wrong',
     title: 'Nobody Said He Was Wrong',
     description:
