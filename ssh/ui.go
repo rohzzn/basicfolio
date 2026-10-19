@@ -204,6 +204,16 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	// letters that reach us in one read (a held s, a fast w w s s) come as one message; take them
+	// one at a time. A paste stays whole.
+	if msg.Type == tea.KeyRunes && len(msg.Runes) > 1 && !msg.Paste {
+		var cmds []tea.Cmd
+		for _, r := range msg.Runes {
+			_, cmd := m.key(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{r}, Alt: msg.Alt})
+			cmds = append(cmds, cmd)
+		}
+		return m, tea.Batch(cmds...)
+	}
 	k := msg.String()
 	if k == "ctrl+c" {
 		return m, tea.Quit
@@ -239,6 +249,7 @@ func (m *model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.refresh()
 		return m, tea.Tick(3*time.Second, func(time.Time) tea.Msg { return pulledMsg{} })
 	}
+	k = wasd(k) // W A S D steer exactly like the arrows, everywhere a letter is not being typed
 	listingProjects := m.page == pageProjects && !m.open && !m.room
 	switch k {
 	case "q":
@@ -473,10 +484,15 @@ func (m *model) statusBar() string {
 	mode, hints, right := m.statusParts()
 	left := st.mode.Render(mode)
 	r := right + st.bar.Render("  ")
-	if gap := m.w - lipgloss.Width(left) - lipgloss.Width(r) - 2; lipgloss.Width(hints) <= gap {
-		left += st.barDim.Render("  " + hints)
+	// in a narrow terminal the last hints go first, so the arrows always stay
+	gap := m.w - lipgloss.Width(left) - lipgloss.Width(r) - 4 // two before the hints, two after
+	for hs := strings.Split(hints, "   "); len(hs) > 0; hs = hs[:len(hs)-1] {
+		if h := strings.Join(hs, "   "); lipgloss.Width(h) <= gap {
+			left += st.barDim.Render("  " + h)
+			break
+		}
 	}
-	gap := m.w - lipgloss.Width(left) - lipgloss.Width(r)
+	gap = m.w - lipgloss.Width(left) - lipgloss.Width(r)
 	if gap < 1 {
 		return left + st.bar.Render(strings.Repeat(" ", max(0, m.w-lipgloss.Width(left))))
 	}
@@ -494,38 +510,38 @@ func (m *model) statusParts() (mode, hints, right string) {
 		if !m.snap.RoomChecked.IsZero() {
 			checked = st.barDim.Render("checked " + since(m.snap.RoomChecked))
 		}
-		return "SERVER ROOM", "↑↓ look around   esc leave quietly", checked
+		return "SERVER ROOM", "↑↓ ws look around   esc leave quietly", checked
 	}
 	switch m.page {
 	case pageProjects:
 		if m.open {
-			return "PROJECT", "esc back   ↑↓ scroll   1-5 pages", pct
+			return "PROJECT", "esc back   ↑↓ ws scroll   ←→ ad pages", pct
 		}
 		n := len(m.projects())
 		pos := "none"
 		if n > 0 {
 			pos = fmt.Sprintf("%d of %d", m.pcur+1, n)
 		}
-		return "PROJECTS", "↑↓ choose   tab filter   / search   enter more", st.barDim.Render(pos)
+		return "PROJECTS", "↑↓ ws choose   ←→ ad pages   tab filter   / search   enter open", st.barDim.Render(pos)
 	case pageWriting:
 		if m.open {
-			return "READING", "↑↓ scroll   n next   p previous   esc back", pct
+			return "READING", "↑↓ ws scroll   n next   p previous   esc back", pct
 		}
-		return "WRITING", "↑↓ choose   enter read   1-5 pages", st.barDim.Render(fmt.Sprintf("%d of %d", m.wcur+1, len(site.Writing)))
+		return "WRITING", "↑↓ ws choose   ←→ ad pages   enter read", st.barDim.Render(fmt.Sprintf("%d of %d", m.wcur+1, len(site.Writing)))
 	case pageHobbies:
-		return "HOBBIES", "1-5 pages   ↑↓ scroll   r refresh", st.barGreen.Render("●") + st.bar.Render(" live") + st.barDim.Render("   │   updated "+since(m.snap.Updated))
+		return "HOBBIES", "↑↓ ws scroll   ←→ ad pages   r refresh", st.barGreen.Render("●") + st.bar.Render(" live") + st.barDim.Render("   │   updated "+since(m.snap.Updated))
 	case pageLinks:
 		if m.note != "" && time.Now().Before(m.noteUntil) {
-			return "LINKS", "↑↓ choose   c copy   1-5 pages", st.barGreen.Render("✓ ") + st.bar.Render(m.note)
+			return "LINKS", "↑↓ ws choose   ←→ ad pages   c copy", st.barGreen.Render("✓ ") + st.bar.Render(m.note)
 		}
 		url := m.selectedLink()
-		return "LINKS", "↑↓ choose   c copy   1-5 pages", ansi.SetHyperlink(url) + st.barAccent.Render(short(url)) + ansi.ResetHyperlink()
+		return "LINKS", "↑↓ ws choose   ←→ ad pages   c copy", ansi.SetHyperlink(url) + st.barAccent.Render(short(url)) + ansi.ResetHyperlink()
 	}
 	right = st.barDim.Render(time.Now().In(cincinnati).Format("3:04 PM") + " in Cincinnati")
 	if p := m.presence(true); p != "" {
 		right = p + st.barDim.Render("   │   ") + right
 	}
-	return "HOME", "1-5 pages   r refresh   q quit", right
+	return "HOME", "←→ ad pages   ↑↓ ws scroll   q quit", right
 }
 
 // ── the front door ──
@@ -1157,6 +1173,21 @@ type codeKey struct {
 	p page // the page the visitor was on when this key went in
 }
 
+// wasd turns W A S D into the arrow they stand for.
+func wasd(k string) string {
+	switch k {
+	case "w":
+		return "up"
+	case "a":
+		return "left"
+	case "s":
+		return "down"
+	case "d":
+		return "right"
+	}
+	return k
+}
+
 // konami notes a key and says whether it finished the Konami code. The arrows in it have already
 // moved things by the time it completes, so the room opens on the page the code began on.
 func (m *model) konami(k string) bool {
@@ -1168,7 +1199,11 @@ func (m *model) konami(k string) bool {
 		return false
 	}
 	for i, c := range m.code {
-		if c.k != konamiCode[i] {
+		k := c.k
+		if i < 8 {
+			k = wasd(k) // the arrows can be typed as W A S D too; the b and a stay letters
+		}
+		if k != konamiCode[i] {
 			return false
 		}
 	}

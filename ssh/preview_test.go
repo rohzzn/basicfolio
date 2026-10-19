@@ -87,6 +87,9 @@ func TestScreens(t *testing.T) {
 		keys("tab", "tab", "tab")
 		shot("projects, games")
 		keys("tab", "tab", "/", "c", "l", "a", "w", "enter")
+		if m.query != "claw" || m.page != pageProjects {
+			t.Errorf("%dx%d: the search box should take w a s d as letters (query %q)", w, h, m.query)
+		}
 		shot("projects, search")
 		keys("esc", "down", "down", "enter")
 		shot("project open")
@@ -116,5 +119,29 @@ func TestScreens(t *testing.T) {
 		if m.room || m.page != pageLinks {
 			t.Errorf("%dx%d: esc should leave the room back to Links", w, h)
 		}
+
+		// W A S D steer exactly like the arrows
+		keys("1", "d")
+		if m.page != pageProjects {
+			t.Errorf("%dx%d: d should go to the next page, got %v", w, h, m.page)
+		}
+		was := m.pcur
+		keys("s", "s", "w")
+		if m.pcur != was+1 {
+			t.Errorf("%dx%d: s s w should move one project down, from %d to %d", w, h, was, m.pcur)
+		}
+		keys("a")
+		if m.page != pageHome {
+			t.Errorf("%dx%d: a should go to the previous page, got %v", w, h, m.page)
+		}
+		keys("w", "w", "s", "s", "a", "d", "a", "d", "b", "a")
+		if !m.room || m.page != pageHome {
+			t.Errorf("%dx%d: the Konami code in W A S D should open the room over Home (room %v, page %v)", w, h, m.room, m.page)
+		}
+		keys("esc", "wwssadadba") // the same, arriving in one read
+		if !m.room || m.page != pageHome {
+			t.Errorf("%dx%d: W A S D keys that arrive together should still count one by one", w, h)
+		}
+		keys("esc")
 	}
 }
