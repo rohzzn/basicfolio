@@ -30,13 +30,14 @@ func TestScreens(t *testing.T) {
 	if os.Getenv("PLAYING") != "" {
 		live.mu.Lock()
 		live.snap.Track = &Track{Name: "A song", Artists: "An artist", Progress: 100 * time.Second, Duration: 210 * time.Second, At: time.Now()}
+		live.snap.Discord = &Discord{Status: "online", Activity: "Playing VALORANT"}
 		live.snap.Updated = time.Now()
 		live.mu.Unlock()
 	}
 
 	for _, size := range [][2]int{{100, 32}, {80, 24}} {
 		w, h := size[0], size[1]
-		m := newModelWith(lipgloss.NewRenderer(io.Discard), live, func() int64 { return 2 }, io.Discard, w, h)
+		m := newModelWith(lipgloss.NewRenderer(io.Discard), live, io.Discard, w, h)
 		keys := func(ks ...string) {
 			for _, k := range ks {
 				var msg tea.KeyMsg

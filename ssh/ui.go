@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"sort"
 	"strings"
 	"time"
 
@@ -92,13 +93,12 @@ func newStyles(r *lipgloss.Renderer) styles {
 }
 
 type model struct {
-	st     styles
-	live   *Live
-	online func() int64
-	out    io.Writer // the session, for copying a link to the visitor's clipboard
-	snap   Snapshot
-	w, h   int
-	cw     int // content width
+	st   styles
+	live *Live
+	out  io.Writer // the session, for copying a link to the visitor's clipboard
+	snap Snapshot
+	w, h int
+	cw   int // content width
 
 	splash bool
 	page   page
@@ -122,13 +122,13 @@ type pulledMsg struct{}
 
 func tick() tea.Cmd { return tea.Tick(5*time.Second, func(time.Time) tea.Msg { return tickMsg{} }) }
 
-func newModel(s ssh.Session, live *Live, online func() int64) *model {
+func newModel(s ssh.Session, live *Live) *model {
 	pty, _, _ := s.Pty()
 	w, h := pty.Window.Width, pty.Window.Height
 	if w == 0 || h == 0 { // a client that has not said how big it is yet
 		w, h = 80, 24
 	}
-	return newModelWith(sessionRenderer(s), live, online, s, w, h)
+	return newModelWith(sessionRenderer(s), live, s, w, h)
 }
 
 // sessionRenderer styles for the visitor's terminal. It is wish's MakeRenderer without its
@@ -155,8 +155,8 @@ func (e sshEnviron) Getenv(k string) string {
 	return ""
 }
 
-func newModelWith(r *lipgloss.Renderer, live *Live, online func() int64, out io.Writer, w, h int) *model {
-	m := &model{st: newStyles(r), live: live, online: online, out: out, snap: live.Snapshot(), vp: viewport.New(0, 0), splash: true}
+func newModelWith(r *lipgloss.Renderer, live *Live, out io.Writer, w, h int) *model {
+	m := &model{st: newStyles(r), live: live, out: out, snap: live.Snapshot(), vp: viewport.New(0, 0), splash: true}
 	m.vp.MouseWheelEnabled = true
 	m.resize(w, h)
 	return m
@@ -492,11 +492,43 @@ func (m *model) statusParts() (mode, hints, right string) {
 		url := m.selectedLink()
 		return "LINKS", "↑↓ choose   c copy   1-5 pages", ansi.SetHyperlink(url) + st.barAccent.Render(short(url)) + ansi.ResetHyperlink()
 	}
-	here := st.barGreen.Render("●") + st.bar.Render(fmt.Sprintf(" %d here now", m.online()))
-	return "HOME", "1-5 pages   ↑↓ scroll   r refresh   q quit", here + st.barDim.Render("   │   "+time.Now().In(cincinnati).Format("3:04 PM")+" in Cincinnati")
+	right = st.barDim.Render(time.Now().In(cincinnati).Format("3:04 PM") + " in Cincinnati")
+	if p := m.presence(true); p != "" {
+		right = p + st.barDim.Render("   │   ") + right
+	}
+	return "HOME", "1-5 pages   r refresh   q quit", right
 }
 
 // ── the front door ──
+
+var discordColors = map[string]string{"online": "#22C55E", "idle": "#F59E0B", "dnd": "#EF4444", "offline": "#6B7280"}
+var discordWords = map[string]string{"online": "online", "idle": "idle", "dnd": "do not disturb", "offline": "offline"}
+
+// presence is the Discord dot in its colour, the status in words and what he is doing. Empty until
+// Lanyard has answered once, rather than a guess.
+func (m *model) presence(onBar bool) string {
+	d := m.snap.Discord
+	if d == nil {
+		return ""
+	}
+	base, dim := m.st.text, m.st.dim
+	if onBar {
+		base, dim = m.st.bar, m.st.barDim
+	}
+	col, ok := discordColors[d.Status]
+	if !ok {
+		col = discordColors["offline"]
+	}
+	word, ok := discordWords[d.Status]
+	if !ok {
+		word = d.Status
+	}
+	s := base.Foreground(lipgloss.Color(col)).Render("●") + base.Render(" "+word)
+	if d.Activity != "" {
+		s += dim.Render(" · ") + base.Render(trunc(d.Activity, 40))
+	}
+	return s
+}
 
 func (m *model) splashView() string {
 	st := m.st
@@ -508,8 +540,11 @@ func (m *model) splashView() string {
 	} else {
 		block = append(block, st.bold.Render("rohan"))
 	}
-	here := st.green.Render("●") + fmt.Sprintf(" %d here now", m.online())
-	block = append(block, "", "", here+"      "+m.listening(m.w-lipgloss.Width(here)-12), "", "", "")
+	status := m.listening(m.w - 8)
+	if p := m.presence(false); p != "" {
+		status = p + "      " + m.listening(m.w-lipgloss.Width(p)-12)
+	}
+	block = append(block, "", "", status, "", "", "")
 	block = append(block, st.bold.Render("press any key to come in")+" "+st.cursor.Render(" "))
 
 	var out []string
@@ -875,6 +910,9 @@ func (m *model) withGutter(view string) string {
 
 // ── Hobbies ──
 
+// Five of each, newest first.
+const hobbyCount = 5
+
 func (m *model) hobbiesView() string {
 	st, cw := m.st, m.cw
 	s := m.snap
@@ -887,53 +925,70 @@ func (m *model) hobbiesView() string {
 	head := func(title, note string) string { return st.bold.Render(title) + st.dim.Render("  "+note) }
 
 	var left []string
-	left = append(left, head("Games", "last two weeks on Steam"))
-	if len(s.Games) == 0 {
+	left = append(left, head("Games", "last played on Steam"))
+	recent := s.Recent[:min(hobbyCount, len(s.Recent))]
+	most := 0
+	for _, g := range recent {
+		most = max(most, g.Minutes)
+	}
+	if len(recent) == 0 {
 		left = append(left, st.dim.Render("nothing lately"))
 	}
-	for i, g := range s.Games {
-		if i == 6 || g.Minutes < 6 {
-			break
+	for _, g := range recent {
+		// the bar and the number are the last two weeks; a game not played in them shows its date
+		label := g.LastPlayed.In(cincinnati).Format("Jan 2")
+		switch {
+		case g.Minutes >= 6:
+			label = hours(g.Minutes)
+		case g.Minutes > 0:
+			label = fmt.Sprintf("%d min", g.Minutes)
 		}
-		h := hours(g.Minutes)
 		bw := lw - 18 - 1 - 7
-		bar := blocks(float64(g.Minutes)/float64(s.Games[0].Minutes), bw)
-		left = append(left, fit(trunc(g.Name, 17), 18)+fit(st.blue.Render(bar), bw+1)+fmt.Sprintf("%7s", h))
+		bar := ""
+		if most > 0 {
+			bar = blocks(float64(g.Minutes)/float64(most), bw)
+		}
+		left = append(left, fit(trunc(g.Name, 17), 18)+fit(st.blue.Render(bar), bw+1)+st.dim.Render(fmt.Sprintf("%7s", label)))
 	}
+
 	left = append(left, "", head("Films", "newest I've rated"))
 	for i, f := range s.Films {
-		if i == 8 {
+		if i == hobbyCount {
 			break
 		}
 		left = append(left, spread(trunc(f.Title, lw-8), st.gold.Render(stars(f.Rating)), lw))
 	}
 
-	var right []string
-	var watching []string
-	for _, a := range s.Anime {
-		if a.Status == "watching" {
-			watching = append(watching, a.Title)
-		}
-	}
-	if len(watching) > 0 {
-		right = append(right, head("Anime", "watching"))
-		for _, t := range watching {
-			right = append(right, trunc(t, rw))
-		}
-		right = append(right, "")
-	}
 	if len(s.Workouts) > 0 {
-		right = append(right, head("Gym", "latest on Hevy"))
+		left = append(left, "", head("Gym", "last workouts on Hevy"))
 		for i, wk := range s.Workouts {
-			if i == 3 {
+			if i == hobbyCount {
 				break
 			}
-			right = append(right, spread(trunc(wk.Title, rw-18), st.dim.Render(fmt.Sprintf("%s · %d min", wk.Start.Format("Jan 2"), int(wk.Duration.Minutes()))), rw))
+			left = append(left, spread(trunc(wk.Title, lw-18), st.dim.Render(fmt.Sprintf("%s · %d min", wk.Start.Format("Jan 2"), int(wk.Duration.Minutes()))), lw))
+		}
+	}
+
+	var right []string
+	if anime := latestAnime(s.Anime); len(anime) > 0 {
+		right = append(right, head("Anime", "watching, then the latest finished"))
+		for _, a := range anime {
+			label := "finished"
+			switch {
+			case a.Status == "watching":
+				label = st.gold.Render("watching")
+			case a.Score > 0:
+				label = st.dim.Render(fmt.Sprintf("%d/10", a.Score))
+			default:
+				label = st.dim.Render(label)
+			}
+			right = append(right, spread(trunc(a.Title, rw-11), label, rw))
 		}
 		right = append(right, "")
 	}
-	right = append(right, head("Books", "favourites"))
-	for _, b := range site.Books {
+	right = append(right, head("Books", "the latest five"))
+	for i := len(site.Books) - 1; i >= 0 && i >= len(site.Books)-hobbyCount; i-- {
+		b := site.Books[i]
 		dots := st.accent.Render(strings.Repeat("●", b.Score)) + st.faint.Render(strings.Repeat("●", max(0, 5-b.Score)))
 		right = append(right, spread(trunc(b.Title, rw-7), dots, rw))
 		if b.Review != "" {
@@ -945,6 +1000,32 @@ func (m *model) hobbiesView() string {
 		return strings.Join(left, "\n") + "\n\n" + strings.Join(right, "\n")
 	}
 	return joinCols([]string{strings.Join(left, "\n"), strings.Join(right, "\n")}, []int{lw, rw}, 5)
+}
+
+// latestAnime is what is being watched, then the most recently finished, five in all. Without the
+// dates the site's API sends once it is deployed, the finished ones fall back to the best scored.
+func latestAnime(all []Anime) []Anime {
+	var watching, done []Anime
+	for _, a := range all {
+		switch a.Status {
+		case "watching":
+			watching = append(watching, a)
+		case "watched", "completed":
+			done = append(done, a)
+		}
+	}
+	newest := func(xs []Anime) func(i, j int) bool {
+		return func(i, j int) bool {
+			if !xs[i].Updated.Equal(xs[j].Updated) {
+				return xs[i].Updated.After(xs[j].Updated)
+			}
+			return xs[i].Score > xs[j].Score
+		}
+	}
+	sort.SliceStable(watching, newest(watching))
+	sort.SliceStable(done, newest(done))
+	out := append(watching, done...)
+	return out[:min(hobbyCount, len(out))]
 }
 
 // ── Links ──

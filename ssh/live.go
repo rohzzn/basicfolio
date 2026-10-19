@@ -24,12 +24,23 @@ type Live struct {
 
 type Snapshot struct {
 	Updated  time.Time
+	Discord  *Discord
 	Track    *Track
-	Games    []Game
+	Games    []Game // most played in the last two weeks first
+	Recent   []Game // most recently played first
 	Films    []Film
 	Anime    []Anime
 	Workouts []Workout
 }
+
+// Discord is the presence Discord shows: online, idle, dnd or offline, and what he is doing.
+type Discord struct {
+	Status   string
+	Activity string // "Playing VALORANT", a custom status, or empty
+}
+
+// discordID is the account whose presence Lanyard mirrors; the site's sidebar reads the same one.
+const discordID = "407922731645009932"
 
 type Track struct {
 	Name, Artists, URL string
@@ -47,8 +58,9 @@ func (t *Track) Elapsed() time.Duration {
 }
 
 type Game struct {
-	Name    string
-	Minutes int // in the last two weeks
+	Name       string
+	Minutes    int // in the last two weeks
+	LastPlayed time.Time
 }
 type Film struct {
 	Title  string
@@ -56,8 +68,9 @@ type Film struct {
 	Rating float64 // out of 5
 }
 type Anime struct {
-	Title, Status string
+	Title, Status string // status: watching, watched, plan_to_watch, dropped
 	Score         int
+	Updated       time.Time // zero until the site's API sends updatedAt
 }
 type Workout struct {
 	Title    string
@@ -144,20 +157,27 @@ func (l *Live) Pull() {
 		var r struct {
 			Response struct {
 				Games []struct {
-					Name   string `json:"name"`
-					TwoWks int    `json:"playtime_2weeks"`
+					Name     string `json:"name"`
+					TwoWks   int    `json:"playtime_2weeks"`
+					LastUnix int64  `json:"rtime_last_played"`
 				} `json:"games"`
 			} `json:"response"`
 		}
 		if l.get("/api/steam/games", &r) == nil {
-			var games []Game
+			var games, recent []Game
 			for _, g := range r.Response.Games {
+				x := Game{Name: g.Name, Minutes: g.TwoWks}
+				if g.LastUnix > 0 {
+					x.LastPlayed = time.Unix(g.LastUnix, 0)
+					recent = append(recent, x)
+				}
 				if g.TwoWks > 0 {
-					games = append(games, Game{Name: g.Name, Minutes: g.TwoWks})
+					games = append(games, x)
 				}
 			}
 			sort.Slice(games, func(i, j int) bool { return games[i].Minutes > games[j].Minutes })
-			set(func() { next.Games = games })
+			sort.Slice(recent, func(i, j int) bool { return recent[i].LastPlayed.After(recent[j].LastPlayed) })
+			set(func() { next.Games, next.Recent = games, recent })
 		}
 	})
 	run(func() {
@@ -183,9 +203,10 @@ func (l *Live) Pull() {
 	run(func() {
 		var r struct {
 			List []struct {
-				Title  string `json:"title"`
-				Status string `json:"status"`
-				Score  *int   `json:"score"`
+				Title     string     `json:"title"`
+				Status    string     `json:"status"`
+				Score     *int       `json:"score"`
+				UpdatedAt *time.Time `json:"updatedAt"`
 			} `json:"animeList"`
 		}
 		if l.get("/api/myanimelist", &r) == nil {
@@ -195,9 +216,45 @@ func (l *Live) Pull() {
 				if a.Score != nil {
 					x.Score = *a.Score
 				}
+				if a.UpdatedAt != nil {
+					x.Updated = *a.UpdatedAt
+				}
 				anime = append(anime, x)
 			}
 			set(func() { next.Anime = anime })
+		}
+	})
+	run(func() {
+		var r struct {
+			Data struct {
+				Status     string `json:"discord_status"`
+				Activities []struct {
+					Type  int    `json:"type"`
+					Name  string `json:"name"`
+					State string `json:"state"`
+				} `json:"activities"`
+			} `json:"data"`
+		}
+		if l.getURL("https://api.lanyard.rest/v1/users/"+discordID, &r) == nil && r.Data.Status != "" {
+			d := &Discord{Status: r.Data.Status}
+			verbs := map[int]string{0: "Playing", 1: "Streaming", 2: "Listening to", 3: "Watching", 5: "Competing in"}
+			custom := ""
+			for _, a := range r.Data.Activities {
+				if a.Name == "Spotify" {
+					continue // the song has its own line
+				}
+				if a.Type == 4 {
+					custom = a.State
+					continue
+				}
+				if v, ok := verbs[a.Type]; ok && d.Activity == "" {
+					d.Activity = v + " " + a.Name
+				}
+			}
+			if d.Activity == "" {
+				d.Activity = custom
+			}
+			set(func() { next.Discord = d })
 		}
 	})
 	run(func() {
@@ -226,8 +283,11 @@ func (l *Live) Pull() {
 	l.mu.Unlock()
 }
 
-func (l *Live) get(path string, into any) error {
-	req, err := http.NewRequest(http.MethodGet, l.base+path, nil)
+func (l *Live) get(path string, into any) error { return l.getURL(l.base+path, into) }
+
+func (l *Live) getURL(url string, into any) error {
+	path := url
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
