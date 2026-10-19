@@ -1,0 +1,30 @@
+{{define "layout"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}}</title>
+<meta name="description" content="Everything Rohan runs on a MacBook Air at home, and whether it's up.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="{{.CSS}}">
+<script src="{{.JS}}" defer></script>
+</head>
+<body>
+<div class="wrap" id="live">
+<header class="top">
+<nav aria-label="Pages">
+<span class="brand">home.rohan.my</span>
+{{range .Nav}}<a href="{{.Href}}"{{if .Current}} aria-current="page"{{end}}>{{.Name}}</a>
+{{end}}</nav>
+<span class="status"><span class="dot {{if eq .Up .Total}}ok{{else}}down{{end}}" aria-hidden="true"></span>{{.Up}} of {{.Total}} up</span>
+</header>
+<main>
+{{template "body" .Data}}
+</main>
+</div>
+</body>
+</html>
+{{end}}

@@ -1,0 +1,29 @@
+{{define "body"}}
+{{if .Known}}
+<section class="hero">
+<span class="muted">Docker</span>
+<h1>{{.Headline}}</h1>
+{{if .Sub}}<p class="muted">{{.Sub}}</p>{{end}}
+</section>
+
+{{range .Groups}}
+<section class="list">
+<div class="list-head"><span class="group"><h2>{{.Title}}</h2>{{if .About}}<span class="muted">{{.About}}</span>{{end}}</span><span class="mono muted small">{{.Total}}</span></div>
+{{range .Rows}}
+<div class="row containers">
+<span class="dot ok" aria-hidden="true"></span>
+<span class="name">{{.Role}}</span>
+<span class="num muted">{{.CPU}}</span>
+<span class="memory"><span class="track short"><span class="fill" style="width: {{.Pct}}%"></span></span><span class="num">{{.Mem}}</span></span>
+</div>
+{{end}}
+</section>
+{{end}}
+{{else}}
+<section class="hero">
+<span class="muted">Docker</span>
+<h1>Docker isn't answering.</h1>
+<p class="muted">The containers can't be read right now. If Docker Desktop stopped, the Mac's DNS stopped with it.</p>
+</section>
+{{end}}
+{{end}}

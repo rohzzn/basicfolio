@@ -1,0 +1,37 @@
+{{define "body"}}
+{{if .Known}}
+<section class="hero">
+<span class="muted">The machine under the desk</span>
+<h1>{{.Model}}.</h1>
+<p class="muted">{{.Specs}}</p>
+</section>
+
+<section class="meters">
+{{range .Meters}}
+<div class="meter">
+<div class="meter-top"><span class="name">{{.Label}}</span><span class="mono">{{.Value}}</span></div>
+<div class="track"><div class="fill" style="width: {{.Pct}}%"></div></div>
+{{if .Note}}<span class="muted small">{{.Note}}</span>{{end}}
+</div>
+{{end}}
+</section>
+
+<section class="list">
+<div class="list-head"><h2>What it runs</h2><span class="mono muted small">{{.Counts}}</span></div>
+{{range .Projects}}
+<div class="row projects">
+<span class="dot {{if .OK}}ok{{else}}down{{end}}" aria-hidden="true"></span>
+<span class="name">{{.Name}}</span>
+<span class="about">{{.About}}</span>
+<span class="num answer{{if not .OK}} bad{{end}}">{{.State}}</span>
+</div>
+{{end}}
+</section>
+{{else}}
+<section class="hero">
+<span class="muted">The machine under the desk</span>
+<h1>Reading the Mac…</h1>
+<p class="muted">The first reading takes a few seconds after a restart.</p>
+</section>
+{{end}}
+{{end}}

@@ -1,0 +1,24 @@
+{{define "body"}}
+<section class="hero">
+<span class="muted">Network</span>
+<h1>Six tunnels out, one door in.</h1>
+<p class="muted">The Mac dials out to Cloudflare, and visits come back down those tunnels, so nothing on the home network is open to the internet. The one door is ssh.</p>
+</section>
+
+<section class="paths" aria-label="How traffic reaches the Mac">
+<div class="path"><span class="path-label">a visit</span><span class="chip">you</span><span class="arrow" aria-hidden="true">→</span><span class="chip">Cloudflare</span><span class="arrow" aria-hidden="true">→</span><span class="chip">a tunnel</span><span class="arrow" aria-hidden="true">→</span><span class="chip dark">the Mac</span><span class="arrow" aria-hidden="true">→</span><span class="chip">the site</span></div>
+<div class="path"><span class="path-label">ssh</span><span class="chip">you</span><span class="arrow" aria-hidden="true">→</span><span class="chip">the home router</span><span class="arrow" aria-hidden="true">→</span><span class="chip dark">the Mac</span><span class="arrow" aria-hidden="true">→</span><span class="chip">the terminal portfolio</span></div>
+<div class="path"><span class="path-label">lookups</span><span class="chip dark">the Mac</span><span class="arrow" aria-hidden="true">→</span><span class="chip">its own DNS filter</span><span class="arrow" aria-hidden="true">→</span><span class="chip">encrypted DNS</span></div>
+</section>
+
+<section class="list">
+<div class="row head tunnels"><span></span><h2>Tunnels</h2><span class="muted">carries</span></div>
+{{range .Tunnels}}
+<div class="row tunnels">
+<span class="dot {{if not .Known}}wait{{else if .Up}}ok{{else}}down{{end}}" aria-hidden="true"></span>
+<span class="name">{{.Name}}</span>
+<span class="hosts">{{range .Hosts}}<a class="chip mono" href="https://{{.}}">{{.}}</a>{{end}}{{if .Private}}<span class="muted">{{.Private}}</span>{{end}}</span>
+</div>
+{{end}}
+</section>
+{{end}}

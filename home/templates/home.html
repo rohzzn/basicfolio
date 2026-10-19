@@ -1,0 +1,30 @@
+{{define "body"}}
+<section class="hero">
+<span class="muted">{{.Date}}</span>
+<h1><span data-tz="America/New_York">{{.Time}}</span> in Cincinnati{{if .Weather}}, {{.Weather}}{{end}}.</h1>
+<p class="muted"><span data-tz="Asia/Kolkata">{{.India}}</span> in India. Everything here runs on a MacBook Air under my desk, and {{.Summary}}.</p>
+</section>
+
+{{range .Groups}}
+<section class="list checks">
+<div class="row head"><span></span><h2>{{.Title}}</h2><span class="hist-h">last 24 hours</span><span class="num uptime">uptime</span><span class="num">answer</span></div>
+{{range .Rows}}
+<div class="row">
+<span class="dot {{.Dot}}" aria-hidden="true"></span>
+<span class="who">
+<span class="name-line"><span class="name">{{.Name}}</span>{{if .Link}}<a class="host" href="{{.Link}}">{{.Host}}</a>{{end}}</span>
+<span class="about">{{.About}}</span>
+</span>
+<span class="hist" role="img" aria-label="{{.HistLabel}}">{{range .Bars}}<span class="bar {{.Class}}" title="{{.Title}}"></span>{{end}}</span>
+<span class="num uptime">{{.Uptime}}</span>
+<span class="num answer{{if eq .Dot "down"}} bad{{end}}">{{.Answer}}</span>
+</div>
+{{end}}
+</section>
+{{end}}
+
+<footer class="foot">
+<span>Checked every minute from the Mac itself{{if .Checked}}, last {{.Checked}}{{end}}.</span>
+<a href="https://www.rohan.run">rohan.run</a>
+</footer>
+{{end}}
