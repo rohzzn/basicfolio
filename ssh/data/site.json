@@ -1214,167 +1214,2004 @@
       ]
     }
   ],
+  "latestProjects": [
+    "uidna",
+    "captain-claw"
+  ],
   "writing": [
     {
       "slug": "captain-claw",
       "title": "Captain Claw, Back in a Browser Tab",
       "description": "Captain Claw was my favourite game as a kid. I turned it into a browser game you can play at captainclaw.lol, then added online multiplayer so friends can play it together.",
       "date": "Oct 2026",
-      "category": "tech"
+      "category": "tech",
+      "words": 366,
+      "body": [
+        {
+          "t": "p",
+          "text": "Captain Claw was my favourite game as a kid. It is a pirate platformer Monolith made in 1997: you play a cat captain with a sword and a pistol, fighting your way through fourteen levels of soldiers and treasure."
+        },
+        {
+          "t": "p",
+          "text": "I turned it into a browser game. You can play it at captainclaw.lol: no download, no install, open the page and press Play. Then I added online multiplayer, so you can play it with your friends."
+        },
+        {
+          "t": "embed",
+          "text": "A video plays here"
+        },
+        {
+          "t": "h",
+          "text": "How I did it"
+        },
+        {
+          "t": "p",
+          "text": "I did not rebuild the game from scratch. OpenClaw is an open-source remake of the Captain Claw engine in C++, by pjasicek, that plays the original levels from the original game files. I compiled it to WebAssembly with Emscripten, which turns C++ into something a browser can run, and packed the game files in with it."
+        },
+        {
+          "t": "p",
+          "text": "Getting it to start was the quick part. Making it feel like the original took longer. The copy of the game files I started from had no sound effects in it, so I merged the original sounds back in. I got the sound and the MIDI music playing in the browser, fixed the screen flashing black between scenes, and moved the controls to WASD so nothing clashes with browser shortcuts. A few friends played the early builds, and the bugs they found, like slippery ledges and enemies attacking too fast, got fixed one by one. It all runs from a Mac I use as a server at home."
+        },
+        {
+          "t": "h",
+          "text": "Adding multiplayer"
+        },
+        {
+          "t": "p",
+          "text": "The original is single player, and I wanted to play it with my friends. Now one person creates a room and gets a six-character code, everyone else types in the code, and you all land in the same level. You see each other's Claw running around in real time with names above their heads, and enemies one of you takes out are gone for everyone. A room holds up to eight players."
+        },
+        {
+          "t": "p",
+          "text": "Behind it is a small Node.js server that passes each player's position to the others twenty times a second, and the game smooths the movement in between. The multiplayer menu is built into the game itself, in the same gold lettering as the original menus."
+        },
+        {
+          "t": "p",
+          "text": "Play it at captainclaw.lol."
+        }
+      ]
     },
     {
       "slug": "nobody-said-he-was-wrong",
       "title": "Nobody Said He Was Wrong",
       "description": "A researcher resigned from Anthropic and said the labs are gambling with our lives. Eighty-three minutes later the company's own alignment lead agreed, with a number. On how we ended up in a world where that is an ordinary week.",
       "date": "Sep 2026",
-      "category": "tech"
+      "category": "tech",
+      "words": 1291,
+      "body": [
+        {
+          "t": "p",
+          "text": "On Tuesday night a researcher named Jacob Coxon resigned from Anthropic and posted a thread about why. He had spent three years doing pretraining research, first at OpenAI and then at Anthropic. His summary of both places: neither is acting responsibly, and they are gambling with our lives."
+        },
+        {
+          "t": "p",
+          "text": "Researchers quit companies and write threads about it constantly. I would normally not read past the first post. Here is the whole thing, and then the reply that made me stop."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "The reply is the story"
+        },
+        {
+          "t": "p",
+          "text": "Eighty-three minutes after the thread went up, Evan Hubinger quote-tweeted the third post to agree with it. Hubinger runs Alignment Science at Anthropic. That is the team whose entire job is making sure the models do what we want them to do. He is not a critic, not a competitor, not someone with a book to sell. He is the person you would expect to write the rebuttal."
+        },
+        {
+          "t": "p",
+          "text": "Instead he wrote that Jacob is correct, that they really do earnestly believe AI could kill all humans, and that he personally puts it above ten percent within the next decade. He added that Anthropic is trying its best but does not yet have a plan to solve alignment for superintelligence and is not clearly on track to."
+        },
+        {
+          "t": "p",
+          "text": "He posted this under his own name, from an account whose bio says “opinions my own,” while employed there. Nobody made him. The company did not put out a statement contradicting him. The thread and the reply have something like two hundred million views between them, and as far as I can tell the response from inside the industry was a nod."
+        },
+        {
+          "t": "h",
+          "text": "What that number would mean anywhere else"
+        },
+        {
+          "t": "p",
+          "text": "I want to be careful here because I am not qualified to evaluate the estimate. I do not know how you would build a model that outputs ten percent rather than one percent or fifty, and I am suspicious of anyone who speaks confidently about a probability distribution over the end of the world. That includes the optimists."
+        },
+        {
+          "t": "p",
+          "text": "But I do know what we do with numbers like that in every other field. A one in ten chance of killing everyone on board is not a risk tolerance, it is a grounded fleet. No regulator on earth would let a bridge, a drug, a reactor, or a food additive ship with a failure estimate in that range, and the failure in those cases is measured in a building, a town, a bad decade. We have an enormous, boring, expensive apparatus of inspections and trials and certifications built specifically to push risks down into the parts per million, and we built it for things that can only go so wrong."
+        },
+        {
+          "t": "p",
+          "text": "The thing being described here has no ceiling on how wrong it can go, and the estimate is coming from the safety lead of the company doing it. That combination has no precedent I can think of. The closest analogy people reach for is the Manhattan Project, and that was a government program in a world war, not a product with a subscription tier."
+        },
+        {
+          "t": "h",
+          "text": "So how are we here"
+        },
+        {
+          "t": "p",
+          "text": "Coxon answers this himself, in the fourth post, and his answer is the most useful part of the thread. The obvious objection to anyone claiming this is dangerous is: then why are you building it? His account is that the two labs fail differently. At OpenAI, he says, many people have not really internalized the stakes. At Anthropic, the stakes are understood perfectly well, and they build anyway because they believe nobody else will act responsibly, so it has to be them."
+        },
+        {
+          "t": "p",
+          "text": "That second one is not stupidity. It is a coordination failure, and it is the most familiar shape in the world. Every actor makes the locally rational choice. If I stop, someone less careful wins the race, so stopping makes things worse. Everyone reasons this way simultaneously, everyone keeps going, and the collective outcome is one that no individual participant would have chosen. We have a century of literature about this, mostly written about fisheries and emissions and arms."
+        },
+        {
+          "t": "p",
+          "text": "The version we have now is the same structure with the stakes moved up and the referee removed. Coxon puts it better than I can: this is not a decision that should be launched from a private company's Slack. There is no body that can say stop, no treaty, no licensing regime, no equivalent of the FDA. The people deciding how fast to go are the same people who benefit from going fast, and they are aware of this, and they are doing it anyway because the alternative is to lose."
+        },
+        {
+          "t": "p",
+          "text": "That is the honest answer to how we got into a situation where this is a discussion. Not malice, not stupidity, not some cartoon of a villain. A race that nobody can unilaterally exit, run by people who know exactly what they are running, in a regulatory vacuum, funded by the most enthusiastic capital markets in living memory."
+        },
+        {
+          "t": "h",
+          "text": "The part where I am implicated"
+        },
+        {
+          "t": "p",
+          "text": "I should be honest that I am not an observer here. I use these models every day. Parts of this website were built with one sitting next to me. I have written posts on this same page about which AI features I like and which ones are wasted effort, in the tone of somebody reviewing a laptop. If the estimate is anywhere near right, that tone is insane, and it is mine."
+        },
+        {
+          "t": "p",
+          "text": "I do not have a clean resolution for that. I am not going to announce that I am quitting the tools; I would be lying, and one developer abstaining changes nothing about the race anyway. What I can do is stop treating the topic as a genre. The safety conversation has become a kind of content, with recognizable characters and a comment section, and participating in it as content is a way of not participating in it at all."
+        },
+        {
+          "t": "h",
+          "text": "What a non-expert can actually judge"
+        },
+        {
+          "t": "p",
+          "text": "I cannot check the number. Most people cannot. But there is something adjacent that anyone can check, and it does not require any technical background: who disputed it."
+        },
+        {
+          "t": "p",
+          "text": "A researcher publicly accused his employer of gambling with human lives. The natural corporate response is a denial, or silence, or a carefully worded post about how the departing employee misunderstood the safety framework. What happened instead is that the person in charge of alignment science said, in public, that the guy was right and here is my own number. The disagreement between the person who quit and the person who stayed is not about whether the risk is real. It is about whether staying helps."
+        },
+        {
+          "t": "p",
+          "text": "That is a genuinely strange thing to be able to observe from the outside, and it is the strongest evidence available to someone like me. Not the probability, which I cannot evaluate. The absence of anyone qualified standing up to say it is nonsense."
+        },
+        {
+          "t": "h",
+          "text": "And then it was Wednesday"
+        },
+        {
+          "t": "p",
+          "text": "A hundred and sixty million people saw the first post. That is not a niche safety forum, that is a substantial fraction of everyone online. And then the news cycle moved, and the products shipped, and the funding rounds closed, and I went back to work, and so did everyone who read it."
+        },
+        {
+          "t": "p",
+          "text": "The striking thing about this week is not that somebody said AI might kill everyone. People have been saying that for years, and a reasonable person can file it under things loud people say. The striking thing is the specific combination: an insider says it, the company's own safety lead confirms it with a number, hundreds of millions of people read it, and nothing about anyone's Wednesday changes."
+        },
+        {
+          "t": "p",
+          "text": "I do not know what the correct reaction is. I am fairly sure this was not it."
+        }
+      ]
     },
     {
       "slug": "telugumovies-in",
       "title": "Why I Built telugumovies.in",
       "description": "I wanted a NAS full of Tollywood films and Jellyfin on my parents' TV. Storage math said no, so I built telugumovies.in, a Telugu movie catalog with cinema listings and 500+ free YouTube links. Here is why I paused it.",
       "date": "Jun 2026",
-      "category": "life"
+      "category": "life",
+      "words": 1058,
+      "body": [
+        {
+          "t": "p",
+          "text": "My parents watch almost exclusively Telugu movies. Tollywood, not Bollywood. Not English-language streaming catalogs with a Telugu dub buried three menus deep. When they sit down in the evening, they want a Telugu film: the kind they grew up with, the kind their friends are talking about, the kind that plays in Hyderabad and Vijayawada and every small-town single-screen that still puts up a hand-painted poster on Friday morning."
+        },
+        {
+          "t": "p",
+          "text": "For a long time I had a simple plan for them: buy a NAS, fill it with every Telugu movie ever made, run Jellyfin on the living-room TV, and hand them a remote that just works. No subscriptions. No algorithm pushing Hindi originals. No hunting through five apps to find whether RRR is on Netflix this month or gone next month. One library. Their language. Their movies. Done."
+        },
+        {
+          "t": "h",
+          "text": "The NAS dream and the storage math"
+        },
+        {
+          "t": "p",
+          "text": "The idea was never complicated. Jellyfin is excellent for exactly this use case: a clean interface on a Fire TV or Android box, posters and metadata pulled automatically, resume playback, big text, nothing clever. My parents are not trying to learn Plex server settings at 9 pm. They want to press play."
+        },
+        {
+          "t": "p",
+          "text": "What stopped me was not the software. It was the storage. Tollywood has been releasing somewhere between 150 and 200 films a year for decades. Even if you only care about the catalog from 1980 onward, which is roughly where my parents' nostalgia and mine overlap, you are still talking about thousands of titles. At reasonable quality, that is not a 4 TB drive and a shrug. It is racks of drives, redundancy, power draw, and a number on a spreadsheet that made me quietly close the tab."
+        },
+        {
+          "t": "p",
+          "text": "Storage prices in 2026 are better than they were five years ago. They are still not “download the entire Telugu film industry” better. Not for a side project built for two people on a sofa. The NAS plan is not dead. I still want to build it someday, probably starting with a curated subset rather than everything, but it went on the shelf until I can afford to do it properly."
+        },
+        {
+          "t": "h",
+          "text": "What telugumovies.in actually is"
+        },
+        {
+          "t": "p",
+          "text": "While the NAS idea was on pause, I built something smaller: telugumovies.in. The pitch on the tin is straightforward: every Telugu movie, from 1980 through 2026, with what is playing in cinemas right now, plus a TV section where you can watch more than five hundred films for free."
+        },
+        {
+          "t": "p",
+          "text": "Under the hood it is a Next.js app with TMDb metadata, portrait posters, browse-by-year pages, hero and director filters, and a search bar. The home page pulls live “now playing” data for Telugu-original films in Indian cinemas. The catalog rows are organized by decade and year. There is a parent-friendly layer on top: big mode, favorites, watched history, continue watching, all stored in localStorage so nothing leaves the browser."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "p",
+          "text": "The TV section is where the honest description matters. The site does not host video files. It does not scrape piracy sites. It does not download anything. What it does is search YouTube for likely full-movie uploads, score the candidates, cache the results, and only surface matches that pass a verification step: long runtime, title match, embeddable player, trusted channel when possible. A human can approve or reject borderline matches in an admin panel. Public users only see verified links."
+        },
+        {
+          "t": "p",
+          "text": "In practice, for the time being, this is probably the most legal way my parents could watch a large back catalog without paying for four different streaming services that each own a slice of Tollywood. Many classics and mid-list titles already live on YouTube: official studio channels, licensed aggregators, uploads that have sat there for years. telugumovies.in is, at the end of the day, a YouTube link aggregator with good metadata and a Netflix-style UI wrapped around it."
+        },
+        {
+          "t": "h",
+          "text": "Why I paused it"
+        },
+        {
+          "t": "p",
+          "text": "I want to be direct about that last part because it is the reason the project is paused. The idea is not bad. My parents genuinely used the prototype, and the problem it tries to solve is real, but it is also not great in the way I originally imagined. I did not build a personal Tollywood library. I built a nicer front door to content that already exists elsewhere, maintained by a matching pipeline that eats YouTube API quota and still needs manual review when the scorer gets it wrong."
+        },
+        {
+          "t": "p",
+          "text": "There is a ceiling on how far that goes. Metadata from TMDb is useful but incomplete for older Telugu films. YouTube matches drift: videos get taken down, channels change names, a trailer masquerades as a full movie until someone notices. Every verified link is a dependency on a platform I do not control. The NAS version, expensive as it is, at least owns the files."
+        },
+        {
+          "t": "p",
+          "text": "So I stopped actively working on it. Not because I am embarrassed by it. I am sharing it here, after all, but because I would rather be honest about what it is than pretend I shipped Netflix for Telugu cinema. It is a stopgap I wrote for my parents while I save up for the storage problem. It works well enough for that. It is not the thing I actually wanted to build."
+        },
+        {
+          "t": "h",
+          "text": "What I would do differently"
+        },
+        {
+          "t": "p",
+          "text": "If I pick it back up, the path probably looks like this: keep the catalog and cinema listings, since those are legitimately useful even without the TV section, and treat YouTube matching as optional enrichment rather than the product. Pair the site with a small NAS holding a curated hundred films my parents actually rewatch, Jellyfin for what I own, telugumovies.in for discovery and what is in theaters now. Hybrid, honest, sized to the budget."
+        },
+        {
+          "t": "p",
+          "text": "Until then, the code exists, the domain is live, and the story is worth telling. Sometimes the project you finish is not the project you dreamed about. Sometimes it is the one that teaches you why the dream costs what it costs, and what you are actually willing to build in the meantime."
+        },
+        {
+          "t": "p",
+          "text": "If you are building something similar for your own family, a home media server, a language-specific catalog, anything where “just use Netflix” is not the answer, I hope this helps more than a polished landing page would. The NAS is still the goal. telugumovies.in was the bridge. Bridges are useful. They are also not where you live."
+        }
+      ]
     },
     {
       "slug": "apple-best-ai-feature",
       "title": "Apple's Best AI Feature Is Not Siri",
       "description": "WWDC 2026 buried the most useful agentic AI feature in the Passwords app. A look at what it actually does, why it works, and where it breaks.",
       "date": "Jun 2026",
-      "category": "tech"
+      "category": "tech",
+      "words": 1073,
+      "body": [
+        {
+          "t": "p",
+          "text": "I watched the WWDC 2026 keynote the same way most people did: waiting for the Siri section, sitting through the photo editing demos, nodding at the translation features. The stuff Apple spent forty minutes on. Then, buried in a two-minute segment about Safari and Passwords, Beth Dakin mentioned that the Passwords app can now automatically fix weak and compromised logins with a single tap. No prompting. No back-and-forth with a chatbot. The AI opens Safari, signs into each site, generates a new password, saves it to iCloud Keychain, and moves on. That is the most impressive agentic feature Apple has shipped, and almost nobody is talking about it."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "What Actually Shipped"
+        },
+        {
+          "t": "p",
+          "text": "The Passwords app has flagged weak, reused, and compromised credentials since it launched in iOS 18. That part is not new. What changed in iOS 27 is the action layer. Before, every red warning label was a todo item: open the site, find the password settings page, authenticate, type a new password twice, confirm, save. If you had fifty flagged accounts, that was fifty separate chores spread across fifty different website layouts."
+        },
+        {
+          "t": "p",
+          "text": "Now you open the Security tab, tap Fix Passwords, and an agentic AI handles eligible accounts in sequence. Apple Intelligence and Safari navigate each site, sign in with your saved credentials, upgrade the password, and write the new one back to iCloud Keychain. A Live Activity shows progress: Signing in, Saving strong password, Security upgraded. You can cancel midway. The whole thing runs in the background while you do something else."
+        },
+        {
+          "t": "h",
+          "text": "Why This Is Harder Than Siri"
+        },
+        {
+          "t": "p",
+          "text": "Siri answering a question is a single inference call with a text response. Changing a password on a random website is a multi-step web automation task where every site is different. Some use a settings page buried three menus deep. Some send a confirmation email before the change takes effect. Some require CAPTCHAs. Some have password rules that reject autogenerated strings. Apple is not calling an API here. They are doing computer use: navigating real DOM trees on real websites with a fixed foundation model running on-device and on Private Cloud Compute."
+        },
+        {
+          "t": "p",
+          "text": "That is a fundamentally different problem from generating a poem or summarizing an email. It requires the model to understand form fields, button labels, error states, and multi-page flows. And it has to do this reliably enough that users trust it with their credentials. Google has offered a similar one-tap compromised password change in Chrome since 2021, but Apple's version goes further by batching weak, reused, and leaked passwords together rather than handling them one at a time."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Where It Breaks"
+        },
+        {
+          "t": "p",
+          "text": "The agent is only as good as the second factor you use. Before starting, iOS asks for temporary permission to read one-time verification codes from Messages or Mail. That covers SMS and email OTP flows. It does not cover authenticator apps. If your GitHub account uses Google Authenticator or Authy, the agent signs in, hits the TOTP prompt, has nothing to read, and fails. Same for passkeys, which require a user gesture and device-bound keys the agent cannot invoke."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "p",
+          "text": "This is the same class of problem I wrote about in my piece on broken 2FA implementations, but from the other direction. Your choice of second factor does not just affect login reliability. It now determines whether an automated security tool can help you at all. If you use an authenticator app everywhere, the Fix Passwords button will skip half your accounts and leave you doing manual changes anyway."
+        },
+        {
+          "t": "h",
+          "text": "Why Siri Is Not It"
+        },
+        {
+          "t": "p",
+          "text": "The Siri redesign got the keynote treatment. New personality, on-screen awareness, richer contextual responses, deeper app integrations. It is genuinely better than the Siri of two years ago. But better Siri is still a conversation. You ask, it responds, you ask again. The Passwords agent is different because it completes a task you would otherwise procrastinate on for months."
+        },
+        {
+          "t": "p",
+          "text": "There is a useful distinction between agentic AI that adds capability and agentic AI that removes friction. Siri adding screen awareness is the first kind. Passwords auto-fixing forty leaked logins while you make coffee is the second. The second kind is rarer, harder to build, and actually changes behavior. Most people know they should rotate compromised passwords. Almost nobody does it manually for every account. Removing that friction is worth more than a smarter chatbot."
+        },
+        {
+          "t": "h",
+          "text": "Bounded agent vs open-ended agent"
+        },
+        {
+          "t": "pre",
+          "text": "// Open-ended: high capability, low reliability\nsiri.respond(anything_the_user_says)\n  → infinite input space\n  → hard to verify output\n  → user must evaluate every response\n\n// Bounded: narrow scope, high reliability\npasswords.fix(account)\n  → known input (saved credentials + site URL)\n  → verifiable output (password changed + saved to Keychain)\n  → user evaluates one outcome, not every step"
+        },
+        {
+          "t": "h",
+          "text": "The Part Nobody Is Covering"
+        },
+        {
+          "t": "p",
+          "text": "There is an enterprise angle here that consumer coverage is ignoring. The same one-tap convenience that helps a regular user clean up personal logins could be a problem on a company phone with work credentials saved in Passwords. An employee taps Fix Passwords and the agent starts rotating accounts on services the company IT team manages, with no MDM kill switch visible in the beta and no clear audit trail of what changed. For regulated industries that is not a feature. That is a compliance incident waiting for a help desk ticket."
+        },
+        {
+          "t": "p",
+          "text": "Apple will probably ship an MDM control before the public release in September. They usually do for features like this. But the fact that it was not mentioned at launch tells you where Apple's head is at: this is a consumer convenience feature first, an enterprise consideration second."
+        },
+        {
+          "t": "h",
+          "text": "What Good Agentic AI Looks Like"
+        },
+        {
+          "t": "p",
+          "text": "Every company is racing to slap \"agentic\" on their product pages. Most of it is a chatbot with tool access and a marketing budget. The Passwords feature is a useful reference point for what actually works: a narrow task, a verifiable outcome, explicit user consent before anything runs, and a clear scope of what the agent can and cannot access. It fails predictably on authenticator 2FA rather than silently doing the wrong thing. That is more than you can say for most AI features shipping this year."
+        },
+        {
+          "t": "p",
+          "text": "iOS 27 ships to everyone in September. The developer beta is available now if you want to test it on eligible hardware. Try the Fix Passwords flow on your own flagged accounts and count how many fail on 2FA alone. That number will tell you more about the state of agentic AI than any Siri demo."
+        }
+      ]
     },
     {
       "slug": "discord-widgets",
       "title": "How to Build Discord Profile Widgets",
       "description": "A practical guide to building Discord profile widgets using the new widgets v2 experiment, from setting up your application to displaying live data on your profile.",
       "date": "May 2026",
-      "category": "tech"
+      "category": "tech",
+      "words": 1355,
+      "body": [
+        {
+          "t": "p",
+          "text": "A while back Discord added a feature called Widgets, initially only accessible to specific games like Wuthering Waves and Marvel Rivals, which let them display live stats directly on a user's profile. More recently Discord shipped an experiment called widgets v2 that opens this up to any Discord application. The method to create these has stayed fairly obscure, partly because it's genuinely annoying to set up, but now that people are charging money for what amounts to a documented API it seemed worth writing a proper guide. This is not the definitive way to build these. It's one way that works, and you will need some programming background and comfort with your browser's developer tools to follow along."
+        },
+        {
+          "t": "h",
+          "text": "01Setting Up Your Application"
+        },
+        {
+          "t": "p",
+          "text": "Start at the Discord Developer Portal and create a new application. Once created, navigate to Games then Social SDK in the sidebar. Fill out the short form to get access to the Social SDK, which is the umbrella feature that widgets v2 falls under. You do not need an actual game for this, and you get access immediately after submitting."
+        },
+        {
+          "t": "p",
+          "text": "The widget config editor is hidden behind an experiment flag that is not exposed by default, even on the Developer Portal. Open the developer tools console on the Developer Portal and run the following to unlock it:"
+        },
+        {
+          "t": "pre",
+          "text": "let _mods = webpackChunkdiscord_developers.push([[Symbol()],{},r=>r.c]);\nwebpackChunkdiscord_developers.pop();\n\nlet findByProps = (...props) => {\n    for (let m of Object.values(_mods)) {\n        try {\n            if (!m.exports || m.exports === window) continue;\n            if (props.every((x) => m.exports?.[x])) return m.exports;\n            for (let ex in m.exports) {\n                if (props.every((x) => m.exports?.[ex]?.[x]) && m.exports[ex][Symbol.toStringTag] !== 'IntlMessagesProxy')\n                    return m.exports[ex];\n            }\n        } catch {}\n    }\n}\n\nfindByProps(\"getAll\").getAll().find(e=>e.getName() === \"ApexExperimentStore\")\n  .createOverride(\"2026-03-widget-config-editor\", 1)"
+        },
+        {
+          "t": "p",
+          "text": "After running this, click the back arrow at the top left and reopen your application. Do not refresh the page as the override lives in memory only. You should now see a Widget entry under the Games section in the sidebar."
+        },
+        {
+          "t": "h",
+          "text": "02Building the Widget"
+        },
+        {
+          "t": "p",
+          "text": "Clicking Create Widget drops you into the widget editor. You need to create a Widget Top, a Widget Bottom, and an Add Widget Preview section, with all required fields filled before you can publish."
+        },
+        {
+          "t": "p",
+          "text": "Fields can be one of two types. Custom or Asset fields are static, meaning every user who adds your widget sees the exact same value. User Data fields are dynamic and change per user. If you want the widget title to show each person's username, set the field type to Text, the Value Type to User Data, and the Data Field to whatever key you plan to send (e.g. username). User Data fields also need a fallback value shown while your application has not sent any data for that user yet."
+        },
+        {
+          "t": "p",
+          "text": "Once the layout looks right, open the Sample Data tab at the bottom of the editor. Add every User Data field with realistic demo values so you can see what a fully populated widget looks like. This is also how you catch alignment and truncation issues before publishing."
+        },
+        {
+          "t": "p",
+          "text": "When everything looks correct, click Generate JSON in the top right of the Sample Data window. Save that JSON somewhere, you will need it later. Close the modal, then hit Save Changes and Publish at the top right of the editor."
+        },
+        {
+          "t": "h",
+          "text": "03OAuth Setup"
+        },
+        {
+          "t": "p",
+          "text": "For the widget to display user-specific data, users need to grant your application permission to update their widget. Head to the OAuth2 page under your application and add a redirect URI. You can point it at your own website or, for testing purposes, Discord's homepage works fine."
+        },
+        {
+          "t": "p",
+          "text": "Scroll down to the OAuth2 URL Generator. Check the scopes openid and sdk.social_layer, select your redirect URI, and copy the generated URL. Then change response_type=code to response_type=token in the URL and open it once to confirm there are no scope errors. If you get an invalid scopes error, the Social SDK form from step one was likely not submitted."
+        },
+        {
+          "t": "h",
+          "text": "04Application Identities (Personal Use Only)"
+        },
+        {
+          "t": "p",
+          "text": "If you are building this just for yourself rather than as a service for other people, this step is required. Skipping it causes the widget to show \"Your game stats are still syncing. Keep playing!\" instead of your actual data, and the widget will not be visible to anyone else."
+        },
+        {
+          "t": "p",
+          "text": "First confirm you have authenticated through your application. Go to Authorized Apps in Discord settings and find your application. It should have a specific set of permissions including managing your friends list, updating your activity status, and accessing your profile. If those are missing, go through the OAuth flow again."
+        },
+        {
+          "t": "p",
+          "text": "Then go to the Bot page in the Developer Portal and reset the token. Copy it. Take the sample JSON from the widget editor, add a username field at the root with any value, then stringify it in the browser console:"
+        },
+        {
+          "t": "pre",
+          "text": "JSON.stringify({\n    \"username\": \"your_username\",\n    \"data\": {\n        \"dynamic\": [\n            {\n                \"type\": 1,\n                \"name\": \"display_name\",\n                \"value\": \"Your Name\"\n            }\n        ]\n    }\n})"
+        },
+        {
+          "t": "p",
+          "text": "Copy the resulting string. Then in PowerShell, run the following, replacing the placeholders with your application ID, your Discord user ID, your bot token, and the JSON string from above:"
+        },
+        {
+          "t": "pre",
+          "text": "Invoke-RestMethod `\n  -Uri https://discord.com/api/v9/applications/{appId}/users/{userId}/identities/0/profile `\n  -Method PATCH `\n  -Headers @{\n    \"Content-Type\"=\"application/json\";\n    \"Authorization\"=\"Bot {botToken}\";\n    \"User-Agent\"=\"DiscordBot (https://github.com/discord/discord-api-docs, 1.0.0)\"\n  } `\n  -Body '{jsonString}'"
+        },
+        {
+          "t": "p",
+          "text": "If that completes without errors you can skip the next section and go straight to adding the widget to your profile."
+        },
+        {
+          "t": "h",
+          "text": "05Widget Management With a Bot"
+        },
+        {
+          "t": "p",
+          "text": "If you are building this as a service for other people, you need a bot to handle the data sync. The pattern that works well is a user-installable bot with two slash commands: one to set up and link a user's account, and one to push fresh data to Discord on demand."
+        },
+        {
+          "t": "p",
+          "text": "The setup command walks the user through authorizing your application with the sdk.social_layer scope and then verifying their account with whatever external service your widget represents. The refresh command is what actually sends data to Discord. The endpoint for that is:"
+        },
+        {
+          "t": "pre",
+          "text": "PATCH https://discord.com/api/v9/applications/{appId}/users/{userId}/identities/0/profile"
+        },
+        {
+          "t": "p",
+          "text": "The identity ID (the 0 at the end of that URL) can technically be any unique value but setting it to 0 works consistently. The request body structure mirrors the JSON from the Sample Data tab with the real values substituted in for each user. The three field types are: type 1 for strings, type 2 for numbers, type 3 for images with a URL. For example:"
+        },
+        {
+          "t": "pre",
+          "text": "{\n  \"username\": \"character_name\",\n  \"data\": {\n    \"dynamic\": [\n      { \"type\": 1, \"name\": \"display_name\", \"value\": \"Character Name\" },\n      { \"type\": 1, \"name\": \"server\",       \"value\": \"@Gilgamesh\" },\n      { \"type\": 2, \"name\": \"hours_played\", \"value\": 1240 },\n      { \"type\": 3, \"name\": \"avatar\",       \"value\": { \"url\": \"https://...\" } }\n    ]\n  }\n}"
+        },
+        {
+          "t": "p",
+          "text": "Field names match whatever Data Field values you set in the widget editor. If the user has authorized your app with the right scope, the PATCH succeeds and the widget updates immediately."
+        },
+        {
+          "t": "h",
+          "text": "06Adding the Widget to Your Profile"
+        },
+        {
+          "t": "p",
+          "text": "Adding a widget to your profile currently has to be done through the API directly as Discord has not exposed it in the normal UI yet. The Discord Previews community server has a thread with ready-to-run browser snippets that handle this for you, covering both directly pinning the widget to your profile and adding it to the Add Widget menu at the top right of your profile page. You will also want to make sure the experiment 2026-03-application-widget-v2-renderer is set to Variant 1 on your account."
+        },
+        {
+          "t": "p",
+          "text": "Once that is done and your bot has pushed at least one data update, the widget shows up on your profile."
+        },
+        {
+          "t": "p",
+          "text": "The whole setup is more involved than it looks. You are touching the Developer Portal, OAuth2, bot tokens, undocumented experiment overrides, and a manual API call just to get a working baseline. But once it is running the result is genuinely useful, especially if you are building something that surfaces data people actually care about."
+        },
+        {
+          "t": "p",
+          "text": "Use this responsibly. The feature is still experimental and Discord can pull it at any time, especially if it gets abused. Impersonating staff or spamming nonsense will get it taken away for everyone. If you do build something interesting with this, build it around something you actually care about, a game you play, a service you use, something with data worth displaying."
+        }
+      ]
     },
     {
       "slug": "linux-home-server",
       "title": "Building a Linux Home Server",
       "description": "Planning a self-hosted Linux server to run every personal website, Docker container, photo backup, ad blocker, and side project from one machine.",
       "date": "May 2026",
-      "category": "tech"
+      "category": "tech",
+      "words": 1096,
+      "body": [
+        {
+          "t": "p",
+          "text": "Sometime this year I want to build a home server. Not because I need one right now, but because I have been thinking about it long enough that it has gone from a vague idea to something I have actually planned out. This post is that plan, written down before the parts are ordered and the machine is assembled, so I have something concrete to look back on when it is actually running."
+        },
+        {
+          "t": "p",
+          "text": "The core idea is simple. I want one machine at home that runs everything I currently pay for or go without because the costs add up month after month. A machine that handles my personal websites, photo backups, ad blocking for the whole network, file storage, monitoring, and whatever side projects I am working on at the time. Pay for the hardware once and that is it."
+        },
+        {
+          "t": "h",
+          "text": "The case for self-hosting"
+        },
+        {
+          "t": "p",
+          "text": "The honest reason is money. Right now I pay for Vercel, Railway, Google Photos storage, a managed database, and a handful of other things. None of them are expensive on their own, but together they add up to a real monthly number that never goes away. A home server replaces all of it for the cost of the hardware, which you pay once."
+        },
+        {
+          "t": "p",
+          "text": "The break-even is somewhere around fourteen months. After that, every service running on the machine is effectively free. The numbers below are rough estimates but close enough to make the math obvious."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "The hardware"
+        },
+        {
+          "t": "p",
+          "text": "A home server has different constraints than a gaming build. It will be on around the clock, so power efficiency matters more than peak performance. It needs to be quiet enough to sit in a room. And it needs enough headroom to run two dozen containers simultaneously without struggling, without being so powerful it becomes wasteful."
+        },
+        {
+          "t": "p",
+          "text": "The Ryzen 5 5500 checks all of those boxes. Six cores and twelve threads means Docker can schedule containers without them waiting on each other, and the 65 W TDP stays well below that under typical server workloads. The B550M AORUS ELITE AX comes with Wi-Fi 6 built in, which matters for where this machine will probably live. Three Kingston NV3 drives at 1 TB each give me room to keep different categories of data completely isolated from one another."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "What I want to run"
+        },
+        {
+          "t": "p",
+          "text": "The services split into two groups. Some things should be reachable from the internet: my portfolio, APIs, web apps I want to share. Everything else should only be accessible to me through a VPN. Admin dashboards, photo storage, the ad blocker, databases, monitoring. None of those should have a public port. The table below shows what each service does and what it replaces."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "p",
+          "text": "Immich is the one I am most excited about. It is a self-hosted photo library that behaves almost identically to Google Photos, including mobile backup. Right now my photos are split across too many places. Having them all in one place on hardware I own is something I have wanted for a while. Pi-hole will handle DNS-level ad blocking for every device on the network, which is cleaner than running browser extensions on each one."
+        },
+        {
+          "t": "h",
+          "text": "Storage"
+        },
+        {
+          "t": "p",
+          "text": "Three drives might seem like a lot but the reasoning is straightforward. I want each category of data on its own drive so that a full photo library never crowds out the OS, and a misbehaving container never eats into backup space. Each drive has one job."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "p",
+          "text": "The third drive is purely for backups. Restic will take daily snapshots of the OS drive and deduplicate them, so the storage cost grows slowly rather than linearly. From there, snapshots push offsite to Backblaze B2 automatically. If the machine fails completely, nothing important is lost."
+        },
+        {
+          "t": "h",
+          "text": "Everything runs in Docker"
+        },
+        {
+          "t": "p",
+          "text": "Every service on this machine will live in a Docker container. Containers keep dependencies isolated so different apps can use different versions of the same runtime without conflicting. Updates become safe because rolling back means pulling the previous image. And Docker Compose means every service group is described in a file that I can read, version control, and reproduce on a new machine if I ever need to."
+        },
+        {
+          "t": "p",
+          "text": "The Compose setup will be split by category rather than one giant file. One file for the reverse proxy, one for storage services, one for monitoring, one for personal apps. They all share a Docker bridge network so containers can reach each other by name without any of that being exposed externally."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "How traffic gets routed"
+        },
+        {
+          "t": "p",
+          "text": "The router will open exactly two ports to the internet: 80 and 443. All of that traffic goes to Nginx Proxy Manager, which reads the incoming hostname and routes it to the right container. It also handles SSL certificates automatically through Let's Encrypt. Private services do not go through the reverse proxy at all. They only exist on the Tailscale network and you need the VPN client running to reach them."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "p",
+          "text": "The one wrinkle with a home server is that residential IP addresses change. A Dynamic DNS service watches for that and updates the DNS record automatically, usually within a minute or two. Cloudflare offers this for free and there are Docker containers that handle the update via the Cloudflare API so the whole process is hands-off."
+        },
+        {
+          "t": "h",
+          "text": "What could go wrong"
+        },
+        {
+          "t": "p",
+          "text": "The hardware could fail. PSUs are a known weak point, which is part of why I picked a proper 80+ Gold unit rather than something cheap. Drives fail eventually, which is exactly why the backup setup pushes offsite rather than staying only on the machine. Power outages will take everything offline. A UPS is on the eventual list but not for day one."
+        },
+        {
+          "t": "p",
+          "text": "The more serious ongoing risk is misconfiguration. Accidentally exposing something that should be private, leaving default credentials on an admin panel, falling behind on image updates. Running a server is a responsibility that does not end after setup. Uptime Kuma watching every service and a weekly habit of pulling updates covers most of it."
+        },
+        {
+          "t": "h",
+          "text": "When it actually happens"
+        },
+        {
+          "t": "p",
+          "text": "This is still a plan. The parts are not ordered yet. But writing it out has made the whole thing feel concrete enough to actually do rather than something I keep thinking about. The first milestone is clear: every service in the list above running, my public sites migrated off Vercel, and Immich confirmed backing up photos from my phone."
+        },
+        {
+          "t": "p",
+          "text": "When it is built I will write a follow-up covering the actual setup, what was harder than expected, and what I would have done differently. Jellyfin and Nextcloud are waiting for version two. For now, getting the core stack stable is enough."
+        }
+      ]
     },
     {
       "slug": "what-this-site-loads",
       "title": "Everything This Site Loads Over the Wire",
       "description": "I opened the network tab on my own portfolio and wrote down every request. The fonts, the scripts, the API calls, and what I'd change.",
       "date": "May 2026",
-      "category": "tech"
+      "category": "tech",
+      "words": 702,
+      "body": [
+        {
+          "t": "p",
+          "text": "I built this site, which means I have a lot of opinions about how it works and almost no objective data about what it actually costs someone to visit. Those are different things. So I opened the network tab, did a hard refresh, and wrote down everything."
+        },
+        {
+          "t": "p",
+          "text": "This portfolio is more connected than it looks. There is a visible page load (fonts, scripts, the GitHub contributions calendar), but underneath there are 12 external services the site integrates with, ranging from Steam and Valorant to Hevy workout logs and a Redis KV store for photo likes. Most of them are server-proxied so the API keys never reach your browser. The component below has two views: the waterfall for what loads when you hit the home page, and an inventory of every external service the site talks to."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "What the page load looks like"
+        },
+        {
+          "t": "p",
+          "text": "The document arrives in under 80ms and is server-rendered: the browser gets readable HTML before any JavaScript executes. This matters for first-content metrics and for search indexing. Next.js handles it automatically, but it is worth naming: the page is not an empty shell that React hydrates later."
+        },
+        {
+          "t": "p",
+          "text": "The two big chunks, 45.5KB and 54.2KB, are the React runtime and the vendor bundle. Together they are about 100KB compressed. After the first visit, both are cached by content hash and load from disk in milliseconds. The page-specific JavaScript is 2.3KB. The CSS is 3.2KB, which is the result of Tailwind stripping every unused utility class at build time."
+        },
+        {
+          "t": "p",
+          "text": "The GitHub contributions API is the item I would fix first. The font used to sit next to it on this list, back when it came off a third-party CDN, but Geist now loads through next/font/google, which pulls the files at build time and serves them from this origin. No cross-origin DNS lookup on a cold visit. The GitHub contributions calendar still calls an unofficial third-party scraping API directly from the browser, and it is the last item to arrive (around 600ms), the largest JSON payload on the page, and the most fragile dependency. If that service goes down, the calendar disappears."
+        },
+        {
+          "t": "h",
+          "text": "The API integrations"
+        },
+        {
+          "t": "p",
+          "text": "Twelve external services in total. The hobbies section drives most of this: Steam, Valorant, Leetify, and Allstar for gaming; Hevy for workouts; TMDB, MyAnimeList, and YouTube for entertainment. Most of them are proxied through Next.js API routes so the API keys live only on the server and never reach the browser."
+        },
+        {
+          "t": "p",
+          "text": "The pattern for most of them is the same: client makes a request to /api/[service], the route authenticates with the upstream API using an environment variable, processes the response, and returns cleaned JSON. This keeps credentials off the client and lets me add caching, rate limiting, or content filtering server-side before the data reaches the page."
+        },
+        {
+          "t": "p",
+          "text": "A few are worth calling out specifically. The guestbook uses GitHub Issues as a database. Entries are comments on an issue in this repo, fetched and written via the GitHub API. It sounds odd but it works: free, versioned, and requires no separate database. Gaming clips come from Allstar's GraphQL API, paginated server-side. The MyAnimeList route handles pagination recursively: MAL caps responses at 100 entries, and my list is longer than that."
+        },
+        {
+          "t": "p",
+          "text": "The only persistent state on the site is photo likes, stored in Upstash Redis. Everything else is read-only from the upstream service. The Redis integration is also the only one using a structured KV store rather than a REST API. It uses Upstash's HTTP-based Redis interface so it works in Vercel's edge runtime without a persistent connection."
+        },
+        {
+          "t": "h",
+          "text": "What I would change"
+        },
+        {
+          "t": "p",
+          "text": "Proxy the GitHub contributions API. Move the react-github-calendar data fetch into a server-side route that caches aggressively and returns stale data on failure. The calendar is a nice visual but it should not be the last and most fragile thing on the page."
+        },
+        {
+          "t": "p",
+          "text": "Audit the vendor chunk. 54KB suggests there is a library in there I am using one function from. The most likely candidate is react-github-calendar. It is used on exactly one page, which means it should probably be dynamically imported rather than bundled into the shared chunk. That would cut the initial load by a meaningful amount for every page that is not the home page."
+        }
+      ]
     },
     {
       "slug": "software-i-admire",
       "title": "Software I Admire That I Didn't Write",
       "description": "A look at the C programs, Rust tools, and Go infrastructure I depend on every day but couldn't have built myself.",
       "date": "Apr 2025",
-      "category": "tech"
+      "category": "tech",
+      "words": 535,
+      "body": [
+        {
+          "t": "p",
+          "text": "The software I think about most is not written in TypeScript or Python. It is mostly C. SQLite runs inside my iPhone, my browser's storage layer, and the Firefox profile on my laptop. Nginx is probably handling some request I am making right now. Git runs every time I save work. I have read documentation for all of these. I have filed a bug report against one of them. I have never written a meaningful program in any of their primary languages."
+        },
+        {
+          "t": "p",
+          "text": "I find this interesting as a category. There is software that I use constantly and understand well enough to configure and debug, but that I could not have built, not because of effort, but because the engineering discipline involved is genuinely foreign to me. The people who wrote SQLite or ripgrep were optimizing for things I have never had to optimize for. Reading about how they work has changed how I think about the software I do write."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "What the C programs have in common"
+        },
+        {
+          "t": "p",
+          "text": "The C programs on this list were all built before most modern software tooling existed. No package managers, no memory-safe languages, no ubiquitous cloud infrastructure. The constraints forced a kind of design discipline that is less common now: small binaries, no external dependencies, explicit memory management, portable by default."
+        },
+        {
+          "t": "p",
+          "text": "SQLite's commitment to backward compatibility is the most extreme version of this. The library guarantees that a database file written in 2004 will be readable by any future version. That kind of constraint, held for 25 years, is almost unimaginable in web development. We break APIs between minor versions."
+        },
+        {
+          "t": "h",
+          "text": "What the Rust tools changed"
+        },
+        {
+          "t": "p",
+          "text": "ripgrep and fd are not just C programs rewritten in Rust. They are fundamentally better tools. ripgrep is faster and has better defaults. fd has a sane syntax. The improvements came partly from Rust's performance characteristics, but mostly from someone sitting down and thinking carefully about what the tool should actually do and being willing to make different default choices than the Unix tools they replaced."
+        },
+        {
+          "t": "p",
+          "text": "The Rust programs are also easier to contribute to than the C programs because the safety guarantees make the reviewer's job easier. A pull request to ripgrep that compiles and passes the tests is almost certainly memory-safe. A pull request to a C codebase requires the reviewer to mentally execute the change looking for use-after-free and buffer overflows. That difference affects the rate at which communities can accept outside contributions."
+        },
+        {
+          "t": "h",
+          "text": "What I actually learned"
+        },
+        {
+          "t": "p",
+          "text": "Reading about how these systems work has changed how I write TypeScript and Python in a few specific ways. Studying how Redis implements its sorted sets made me much more careful about when I reach for a sorted array versus a different data structure. Understanding how SQLite handles concurrent reads made me think differently about locking strategies in the services I build. Reading about V8's hidden classes made me write JavaScript objects more carefully: consistent property order across objects, not adding properties after construction."
+        },
+        {
+          "t": "p",
+          "text": "I am not going to write a production C program. But understanding what the people who did write them were optimizing for (and why those constraints produced the designs they did) seems like useful context for writing software in any language."
+        }
+      ]
     },
     {
       "slug": "forty-projects",
       "title": "What I Learned Building 40 Side Projects",
       "description": "Looking back at every side project I have shipped: what got users, what got abandoned, and what the pattern between them actually is.",
       "date": "Feb 2026",
-      "category": "tech"
+      "category": "tech",
+      "words": 823,
+      "body": [
+        {
+          "t": "p",
+          "text": "I just counted. Forty public repositories that are actual projects, not forks, not homework, not hello world. Applications, web tools, games, browser extensions, CLI packages, VS Code themes, Discord bots, iOS apps. Some of them have thousands of users. Most of them have none. I built all of them while doing something else: finishing school, working a job, taking classes at UC. Looking back at them as a set, the patterns are clearer than I expected."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "The projects that got traction shared one thing"
+        },
+        {
+          "t": "p",
+          "text": "Tanoshi, my VS Code theme, has 1,700 downloads. The DSA Roadmap has 12,000 visits. The Figma Pages plugin has 800 users. The Pokemon platformer has 6,800 visits. What those have in common is that I built them because I personally wanted them to exist and could not find an existing version I liked. Tanoshi started because I was bothered by how existing themes handled certain syntax colors. The DSA Roadmap started because I was frustrated by how fragmented existing algorithm learning resources were."
+        },
+        {
+          "t": "p",
+          "text": "The projects I built for a portfolio, or to learn a technology, or because someone suggested it as a project idea. Almost none of those got any traction. The motivation came from the wrong place. Building something to learn React is fine for learning React. It is not a good origin story for something other people want to use."
+        },
+        {
+          "t": "h",
+          "text": "Finishing is a separate skill from building"
+        },
+        {
+          "t": "p",
+          "text": "I have dozens of projects that exist in a state I would describe as shipped but not finished. They work. They are deployed. The README explains them. But there are known rough edges, missing features, and things I planned to add that I never did. For a long time I felt like this was a character flaw. Now I think it is just how most solo projects work."
+        },
+        {
+          "t": "p",
+          "text": "The distinction that matters is between shipped and unshipped, not between finished and unfinished. Something working and publicly accessible is infinitely more useful than something perfect that lives in a private repository. The wordle clone is not polished. It has no statistics page, no share button, nothing that the real Wordle has. But it is a working game at a public URL, and people have played it. That is better than a local build with a perfect animations system."
+        },
+        {
+          "t": "h",
+          "text": "Technology choices mostly do not matter at the start"
+        },
+        {
+          "t": "p",
+          "text": "My older projects use a completely different stack from my recent ones. Early JavaScript, then React, then Next.js, then TypeScript everywhere. A bunch of Python CLI tools. One Go service. A React Native app and a Swift app. Looking back at the old code is humbling. The structure is different, the patterns are different, some of it is embarrassing. None of that matters because the projects shipped and people used them."
+        },
+        {
+          "t": "p",
+          "text": "I spent a lot of energy early on debating what to build with instead of just building. Whether to use React or Vue. Whether to use a CSS framework or write my own styles. Whether to use MongoDB or PostgreSQL. These decisions feel important at the start and they are almost never the thing that determines whether a project succeeds or fails. Execution and shipping are what determine that. The technology is usually fine either way."
+        },
+        {
+          "t": "h",
+          "text": "The ones I am proudest of are not the most popular"
+        },
+        {
+          "t": "p",
+          "text": "Keel, the React Native subscription tracker, has fewer users than several of my other projects. But building a React Native app that went through App Review and got into the App Store taught me more than any of the web projects. Mobile navigation patterns, in-app purchases, the constraints of building on a phone, the specific ways Apple wants you to handle data. None of that transfers cleanly from web development. It was a genuinely new domain."
+        },
+        {
+          "t": "p",
+          "text": "Same with the Catan game. Nobody was asking for another online Catan. But building a real-time multiplayer board game from scratch forced me to think carefully about game state, server architecture, and the specific challenges of distributed state in a way that building another CRUD app would not have. The skills compounded in useful directions."
+        },
+        {
+          "t": "h",
+          "text": "What I would tell myself at project one"
+        },
+        {
+          "t": "p",
+          "text": "Ship faster. Not because speed is inherently good, but because the feedback you get from real users is categorically different from the feedback you can generate yourself. Every hour you spend polishing something before anyone has tried it is potentially wasted if you are polishing the wrong thing."
+        },
+        {
+          "t": "p",
+          "text": "Build for a problem you personally have. The projects I built out of genuine frustration with a gap in existing tools are the ones that got users, because I was the first user and could tell when something was actually working versus just technically functional."
+        },
+        {
+          "t": "p",
+          "text": "And use Git from the first commit, add a README before you do anything else, and put a real domain on it even if it is just a GitHub Pages URL. Every barrier between your project and a potential user is one too many."
+        }
+      ]
     },
     {
       "slug": "moving-to-cincinnati",
       "title": "From Hyderabad to Cincinnati",
       "description": "The whole process of finishing a degree in India, applying to grad school, getting a visa, and arriving alone in a city 14,000km away.",
       "date": "Aug 2024",
-      "category": "life"
+      "category": "life",
+      "words": 913,
+      "body": [
+        {
+          "t": "p",
+          "text": "I landed at Cincinnati/Northern Kentucky Airport at midnight on a Tuesday in early August 2024. My two suitcases weighed exactly 23kg each, the checked bag limit. My carry-on held a laptop, some snacks from Hyderabad, and a folder of documents I had been told to never let out of my sight. I had never been to America before. I did not know anyone in Cincinnati. The Uber driver asked me where I was from and whether I liked American food. I said yes to both, which was a lie on the second count."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "The application process"
+        },
+        {
+          "t": "p",
+          "text": "I started applications in November 2023, toward the end of my final year at MREC. The process has a lot of moving parts that all need to happen in the right order. GRE first, then IELTS, then transcripts, then letters of recommendation, then the statement of purpose. The SOP is the part nobody warns you about properly. You write a few hundred words about who you are and why you want to study at this specific school, and everything sounds both too humble and too arrogant at the same time. I rewrote mine two times."
+        },
+        {
+          "t": "p",
+          "text": "I applied to three schools. UC came back with an acceptance in January. The Master of Engineering in Computer Science program had the right mix of what I wanted: strong algorithms curriculum, research opportunities, and a location that was not too expensive to live in relative to the coastal cities. I accepted and started the visa process."
+        },
+        {
+          "t": "h",
+          "text": "The visa interview"
+        },
+        {
+          "t": "p",
+          "text": "The US student visa interview is a strange experience. You prepare documents for weeks. Financial statements, acceptance letters, I-20 form, SEVIS fee receipt, ties to your home country. You wake up at five in the morning to get to the consulate on time. You wait in a long queue outside. Then inside. Then you reach the window and the officer asks you three questions in 90 seconds and says your visa is approved. The preparation felt disproportionate to the interview itself, but I understand why it has to be that way."
+        },
+        {
+          "t": "h",
+          "text": "The packing problem"
+        },
+        {
+          "t": "p",
+          "text": "Two bags, 23kg each, to represent everything you want from 23 years of life in one place. You quickly learn what actually matters. Clothes compress well. Books do not. I brought two books. I brought a small framed photo. I brought all my electronics. I brought too many jackets for a city where I did not know how cold the winter actually gets, which turned out to be very cold."
+        },
+        {
+          "t": "p",
+          "text": "There is a specific feeling of leaving behind things you own that have no real value but have been with you for years. A desk you sat at for thousands of hours. Posters on a wall. A gaming setup that cannot travel. You do not mourn the objects exactly. It is more that you are aware that the person who used those things is also not exactly coming with you. You arrive somewhere new and become a slightly different version of yourself out of necessity."
+        },
+        {
+          "t": "h",
+          "text": "The first weeks"
+        },
+        {
+          "t": "p",
+          "text": "Cincinnati is a mid-sized city in southwest Ohio. It is not what most people picture when they think of America. It does not have the density of New York or the tech industry gravity of San Francisco. What it has is affordable rent, good architecture, hills, and a university that takes up a significant piece of it. The campus is genuinely beautiful in a way I did not expect. Red brick buildings, the 1819 Innovation Hub, green spaces that bloom dramatically in spring."
+        },
+        {
+          "t": "p",
+          "text": "The first thing you notice when you arrive as an international student is how much you do not know about how things work. Simple things. Where to get a SIM card. How to open a bank account without a Social Security Number. How the bus system works. Whether you need to tip at a food truck. These are not hard problems but they arrive all at once and you are also jet-lagged and sleeping somewhere unfamiliar."
+        },
+        {
+          "t": "h",
+          "text": "What actually helped"
+        },
+        {
+          "t": "p",
+          "text": "The international student community at UC is large and the university does orientation well. Within the first week you meet people from all over who are navigating the exact same confusion you are. Some of my closest friendships here formed in that first month, among people who had nothing in common except that they were all figuring out American grocery stores for the first time together."
+        },
+        {
+          "t": "p",
+          "text": "The esports arena in the 1819 Innovation Hub was genuinely meaningful. I found it in the second week and spent an afternoon there. Meeting people through gaming in a new city felt familiar in a way that most of the orientation activities did not. I already spoke that language fluently."
+        },
+        {
+          "t": "h",
+          "text": "What I miss"
+        },
+        {
+          "t": "p",
+          "text": "The food is the honest answer. Not just in the sense that American food is worse, but in the specific sense that Hyderabad food is extraordinary and irreplaceable. Biryani from the right place. Tea made correctly. The specific combination of spices in things that does not exist here at the same level. I have found decent approximations. None of them are the thing."
+        },
+        {
+          "t": "p",
+          "text": "The other thing is the ease of being somewhere that already knows you. In Hyderabad I understood the context for everything without thinking about it. The unspoken rules, the right amount of small talk with a stranger, what different things mean. Here every interaction involves slightly more effort. That fades over time but it does not disappear fully. You just learn a new set of defaults."
+        }
+      ]
     },
     {
       "slug": "catan-coop",
       "title": "Building Multiplayer Catan From Scratch",
       "description": "How I built a full-featured online Settlers of Catan: hex grid geometry, server-authoritative game state, Socket.IO rooms, and Web Audio all from scratch.",
       "date": "May 2026",
-      "category": "tech"
+      "category": "tech",
+      "words": 1259,
+      "body": [
+        {
+          "t": "p",
+          "text": "I have been playing Catan since high school. My family bought a copy at a mall and that weekend I probably spent six hours placing settlements and arguing about trades. Something about the mix of strategy and luck and player interaction felt different from other board games. When I wanted a project to push my real-time web skills, building an online version seemed like the obvious choice. Complex enough to stay interesting, familiar enough that I would know immediately when something was wrong. The live version is at catan.rohan.run. It supports 2 to 4 players through room codes and implements the full ruleset including dev cards, port trading, longest road, and largest army."
+        },
+        {
+          "t": "h",
+          "text": "Deciding where state lives"
+        },
+        {
+          "t": "p",
+          "text": "Before writing any game logic I had to settle one architectural question: which machine is the source of truth? The naive approach lets each client validate their own moves and sync state across the group. That falls apart fast. Two players click at the same time and you get conflicts. One client drops a packet and silently diverges from everyone else. Someone opens devtools and reads the entire game state including other players hidden dev cards."
+        },
+        {
+          "t": "p",
+          "text": "The right model is server-authoritative state. The server holds one game state object per room. Players send action events. The server validates each one, mutates the state, and broadcasts the updated object to everyone in the room. Clients are purely a rendering layer that receives state and draws it. When I added dev cards three days into the project I did not touch a single React component. I just extended the action handler on the server. That kind of clean separation is worth every extra round trip."
+        },
+        {
+          "t": "h",
+          "text": "The board"
+        },
+        {
+          "t": "p",
+          "text": "The board is 19 hexagonal tiles in five rows. The server generates it once when the game starts: shuffle resources, assign number tokens, place the robber on the desert. The client receives the finished board description and renders it as SVG. Nothing about the board ever changes except where the robber sits. Hover any tile below to see what it produces and how often that number comes up."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Making the geometry work"
+        },
+        {
+          "t": "p",
+          "text": "What makes a hex board tricky in code is that adjacent tiles share geometry. A single corner vertex belongs to up to three tiles. If you model each tile independently with its own six corners you end up with duplicate vertex objects for the same physical point. Two tiles each have their own data for one intersection, and placing a settlement there only registers on one tile."
+        },
+        {
+          "t": "p",
+          "text": "The fix is a global graph. I used axial coordinates to place tile centers, derived pixel positions from those, then computed the six corner positions for each tile. The key is rounding each pixel coordinate before using it as a map key. Neighboring tiles that share a vertex compute the same rounded pixel position and automatically reference the same entry in the vertices map. No deduplication logic, just consistent arithmetic. The result is 54 unique vertices and 72 unique edges shared correctly across all 19 tiles."
+        },
+        {
+          "t": "h",
+          "text": "Numbers and probability"
+        },
+        {
+          "t": "p",
+          "text": "Each tile has a number token showing which dice total produces resources from it. The numbers in red are 6 and 8, the most common rolls. A 7 triggers the robber and produces nothing. Most of the strategic depth in Catan comes from deciding where to place your initial settlements relative to these tokens. The dice roller below is fully functional. Roll a few times and watch where the results cluster."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Building rules"
+        },
+        {
+          "t": "p",
+          "text": "Every placement goes through a validation function on the server. Settlements need a vertex that has no adjacent settlements (the distance rule), is connected by at least one of your roads except during initial setup, and is not already occupied. Roads need an edge touching at least one of your existing roads or settlements. Cities can only replace your own settlements. All of this runs in one function so there is a single place to read when debugging a rule."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Longest road is harder than it looks"
+        },
+        {
+          "t": "p",
+          "text": "I expected Longest Road to be a straightforward graph search. It is not. Catan counts the longest continuous path through your road network, not total roads. Your network can have branches and loops. You can backtrack through junctions but you cannot pass through an opponent settlement that sits at a crossing."
+        },
+        {
+          "t": "p",
+          "text": "The correct approach is DFS with backtracking. For each starting edge, extend along adjacent roads you have not visited yet in this particular path, stopping when an opponent settlement blocks the crossing. Track the maximum length found across all starting points and all starting edges. Run this for every player after any road placement or settlement that could disrupt a path."
+        },
+        {
+          "t": "p",
+          "text": "The tie-breaking rule catches people off guard. Once you earn the Longest Road card you keep it until someone strictly exceeds your count. Tying it is not enough to take it away. The card stays with the current holder until someone definitively beats the number."
+        },
+        {
+          "t": "h",
+          "text": "Hidden victory points"
+        },
+        {
+          "t": "p",
+          "text": "Dev cards include VP cards that you hold in secret until you win. The server tracks two numbers per player. The real VP total includes everything, including hidden dev card VPs. The public total excludes them. When broadcasting state, each player receives their own true count but sees only the public total for opponents. Your display shows a small asterisk when your VP includes hidden points. The win condition check only runs server-side so no client can fake the win."
+        },
+        {
+          "t": "h",
+          "text": "Sound without audio files"
+        },
+        {
+          "t": "p",
+          "text": "I wanted sound for key moments without dealing with audio licensing or CDN hosting. The Web Audio API lets you synthesize sound directly from oscillators and noise. The build sound is an oscillator sweeping from 400Hz to 800Hz over 100ms then decaying. The dice sound is filtered white noise that lasts about 200ms. The win sound is a short ascending chord. The app watches each incoming state broadcast and diffs it against the previous one to decide which sound to fire."
+        },
+        {
+          "t": "h",
+          "text": "Deployment"
+        },
+        {
+          "t": "p",
+          "text": "The project is a monorepo with a Node and Express server alongside a Vite React client. In development they run on separate ports with Vite proxying WebSocket connections. In production a single build command compiles the client to a dist folder and Express serves it as static files. One process, one Render service, a health endpoint at /health for the platform. All game state is in memory so a server restart drops active games, which is fine for a side project but would need Redis or a database for anything real."
+        },
+        {
+          "t": "h",
+          "text": "What I would change"
+        },
+        {
+          "t": "p",
+          "text": "A few things still bother me. When a 7 rolls and multiple opponents are adjacent to the robber placement, the game uses window.prompt to pick who to steal from rather than a proper in-game modal. It works but it breaks the UI flow every time. Discarding resources on a 7 is also handled by randomly removing cards on the server instead of letting the player choose, which removes a real decision from the game. Reconnection does not exist, so a dropped connection leaves a ghost player in the room for the rest of the game. All three are solvable but I ran out of motivation once the core game was playable."
+        },
+        {
+          "t": "p",
+          "text": "Building a board game turned out to be a good exercise in software design specifically because the rules are finite and unambiguous. Any mismatch between spec and code shows up immediately when you play. You cannot hide a bug behind edge case input. If the Longest Road algorithm is wrong you feel it in the first game."
+        }
+      ]
     },
     {
       "slug": "first-spring",
       "title": "Second Semester at UC",
       "description": "Reflecting on challenging academics, leadership, and life in Cincinnati during my second semester at the University of Cincinnati.",
       "date": "Apr 2025",
-      "category": "life"
+      "category": "life",
+      "words": 622,
+      "body": [
+        {
+          "t": "p",
+          "text": "Spring semester was harder than fall. The coursework stepped up, I took on a team lead role I had not planned for, and I started a research position at Cincinnati Children's Hospital at the same time. By April I was running on less sleep than I should have been, but I finished with all A+ again (another 4.0) and a clearer sense of what I want out of the rest of the program."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Leading a team of 13"
+        },
+        {
+          "t": "p",
+          "text": "Large Scale Software Engineering was the course I underestimated most. I ended up as team lead for a group of 13 students, which sounds straightforward until you are the one coordinating sprint planning while also writing code, managing merge conflicts from ten different branches, and figuring out why two people on the team have a dynamic that makes every standup uncomfortable."
+        },
+        {
+          "t": "p",
+          "text": "I learned things in that course that I could not have learned from a textbook or a side project. Delegating tasks when you could just do them yourself faster. Having direct conversations about missed deadlines without making it personal. Keeping the team moving when the requirements changed mid-sprint because the professor revised the project scope. The technical work was fine. The people part was where I actually grew."
+        },
+        {
+          "t": "h",
+          "text": "The other courses"
+        },
+        {
+          "t": "p",
+          "text": "Advanced Algorithms II picked up exactly where the first one left off: harder problems, tighter time constraints, more expected of you. Network Security was the course I enjoyed most. The assignments were hands-on in a way that most courses are not: you were implementing things, not just studying them. The 2FA post on this site came directly out of work I did in that class, looking at how TOTP verification is commonly implemented wrong. Software Testing was a course I went in expecting to find dry, and it turned out to be one of the more useful ones. The habit of thinking about edge cases and failure modes before writing code is one I actually kept."
+        },
+        {
+          "t": "h",
+          "text": "Research at CCHMC"
+        },
+        {
+          "t": "p",
+          "text": "Partway through the semester I got a Graduate Research Assistant position at Cincinnati Children's Hospital. The work sits at the intersection of software engineering and healthcare infrastructure, the kind of thing where the stakes are different from building a web app because the systems you are working on actually matter to patient outcomes."
+        },
+        {
+          "t": "p",
+          "text": "It was the first time I was being paid to do research, which felt different from coursework in ways I found hard to articulate at first. The timeline is longer. The definition of done is fuzzier. You are not working toward a deadline set by a syllabus but toward understanding something that is genuinely not understood yet. I am still getting used to that mode of working, but I think it suits me."
+        },
+        {
+          "t": "h",
+          "text": "Cincinnati in spring"
+        },
+        {
+          "t": "p",
+          "text": "The city looks completely different in spring. Coming from Hyderabad, I had experienced seasons in theory but not the specific way a Midwestern city shifts from gray to color in March and April. Eden Park in April is genuinely worth the visit. The campus got better too. The walks that were just functional in the winter became actual reasons to leave the library."
+        },
+        {
+          "t": "h",
+          "text": "Where things stand"
+        },
+        {
+          "t": "p",
+          "text": "I finished with another 4.0, all A+ again for the second semester in a row. I am going back to India for the summer before the fall semester starts, first time home since I left in August 2024. The research position continues in the fall. The program has two more semesters after that. I feel more settled in Cincinnati than I expected to after less than a year, and less certain than I expected to be about exactly what I want to do after graduation. Both of those feel like the right places to be at this point."
+        }
+      ]
     },
     {
       "slug": "uc-experience",
       "title": "First Semester at UC",
       "description": "My experience navigating grad school, new friendships, and adjusting to life in Cincinnati during my first semester.",
       "date": "Dec 2024",
-      "category": "life"
+      "category": "life",
+      "words": 542,
+      "body": [
+        {
+          "t": "p",
+          "text": "I landed in Cincinnati in August with two suitcases, a laptop, and no idea what grad school in America was actually going to feel like. The moving post covers the logistics of getting here. This one is about what the first four months were like once I actually arrived."
+        },
+        {
+          "t": "p",
+          "text": "The short version: harder than I expected academically, better than I expected socially, and I finished with a 4.0, all A+. The longer version is below."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "The coursework"
+        },
+        {
+          "t": "p",
+          "text": "Advanced Algorithms I was the course I was most nervous about and the one I spent the most time on. The gap between knowing that dynamic programming exists and being able to apply it cleanly under exam pressure is larger than I remembered. I spent most of September re-learning things I thought I knew. The Distributed Operating Systems course was dense in a different way: the content was new, not a refresher, and understanding how distributed state actually stays consistent changed how I think about the systems I build."
+        },
+        {
+          "t": "p",
+          "text": "Cloud Computing was the most immediately practical. We were deploying things to AWS and Azure within the first few weeks. I had used both before but having to understand the IAM model and the cost implications of every architecture decision made it feel different from just following a tutorial. Innovation Design Thinking was a useful gear change: thinking about problems from the user's perspective before jumping to the technical solution is not instinctive for engineers, and the course forced that habit."
+        },
+        {
+          "t": "h",
+          "text": "The campus"
+        },
+        {
+          "t": "p",
+          "text": "The 1819 Innovation Hub was the first thing on campus that made me think I had chosen the right place. It has an esports arena with professional-grade setups and a community of people who take gaming seriously, which is not something I expected to find at a grad school. I found my people there in the first week, which mattered more than I would have admitted at the time."
+        },
+        {
+          "t": "p",
+          "text": "Langsam Library became my default study spot by October. The quiet floors are actually quiet. I worked through most of my algorithms problem sets there, usually late enough that the place was nearly empty. There is something about a library at 11pm that makes hard problems feel more manageable."
+        },
+        {
+          "t": "h",
+          "text": "The Package Center"
+        },
+        {
+          "t": "p",
+          "text": "I got a part-time job at the Bearcats Package Center early in the semester, which was a good decision for reasons beyond the paycheck. On an F1 visa you can only work on campus, and this was the job that was available. I took it expecting to just sort boxes for a few hours a week. It turned out to be the easiest way to meet people outside my program. The team was a mix of students from completely different departments, and Tyler and Terrance ran it well enough that it never felt like dead time."
+        },
+        {
+          "t": "h",
+          "text": "How it ended"
+        },
+        {
+          "t": "p",
+          "text": "I finished the semester with A+ in every course (4.0 GPA), which I am genuinely proud of given how much of it was new terrain: new country, new academic system, new city, all at once. By December I had a rhythm: classes in the morning, Langsam in the afternoon, the esports lab in the evenings when I needed to decompress. The spring semester would be harder in some ways and better in others."
+        }
+      ]
     },
     {
       "slug": "variables-exposure",
       "title": "Environment Variables Dont Hide Data",
       "description": "That super-secret API key you tucked away in a Vercel environment variable? It might not be as hidden as you think.",
       "date": "Dec 2024",
-      "category": "tech"
+      "category": "tech",
+      "words": 611,
+      "body": [
+        {
+          "t": "p",
+          "text": "That super-secret API key you've just tucked away in a Vercel environment variable? Yeah, it might not be as hidden as you think. I spent a weekend playing security researcher with Burp Suite, and what I found should make every web developer a little nervous."
+        },
+        {
+          "t": "p",
+          "text": "Let's be real: we've all been there. You've got some sensitive API keys, maybe a webhook URL or two, and you do the responsible thing: you throw them in environment variables. No more hardcoded secrets in your Git repository, right? Except here's the thing: that might be the digital equivalent of hiding your house key under a doormat that's made of clear plastic."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "The False Promise of.env Files"
+        },
+        {
+          "t": "p",
+          "text": "Environment variables are the darling of modern web development. They're the go-to solution for keeping secrets out of your code, and every deployment platform from Vercel to Netlify treats them like digital Fort Knox. The problem isn't with the concept. It's with how we're using them. And trust me, we're using them wrong."
+        },
+        {
+          "t": "h",
+          "text": "Breaking Into My Own App"
+        },
+        {
+          "t": "p",
+          "text": "Armed with nothing but Burp Suite (think of it as Chrome DevTools on steroids) and a healthy dose of curiosity, I decided to see just how secure those environment variables really were. Spoiler alert: it took less than an hour to expose every single secret in my test application."
+        },
+        {
+          "t": "h",
+          "text": "The Setup: A Perfect Storm"
+        },
+        {
+          "t": "p",
+          "text": "I built what looks like a typical modern web app: React frontend, Node.js API routes, all deployed on Vercel. Everything by the book, including environment variables for all the sensitive stuff. The kind of setup you'd find in thousands of production applications right now."
+        },
+        {
+          "t": "h",
+          "text": "The Hunt: Following the Data"
+        },
+        {
+          "t": "p",
+          "text": "With Burp Suite watching every network request, the truth started to emerge. Those environment variables? They were leaking everywhere. Every time the app made an API call, bits of sensitive data were hitching a ride in the response. It's like having a secret conversation in a room full of people wearing parabolic microphones."
+        },
+        {
+          "t": "h",
+          "text": "The Wake-Up Call"
+        },
+        {
+          "t": "p",
+          "text": "Here's the uncomfortable truth: environment variables aren't magic. They're just variables, and they're only as secure as the code that handles them. When your client-side application needs to make an authenticated API call, those credentials have to exist somewhere. And somewhere is usually a lot more accessible than you'd think."
+        },
+        {
+          "t": "h",
+          "text": "How to Actually Keep Secrets"
+        },
+        {
+          "t": "p",
+          "text": "After thoroughly breaking my own security, I put together a battle plan for keeping sensitive data actually sensitive:"
+        },
+        {
+          "t": "li",
+          "text": "Trust No One: Treat your frontend like it's already compromised. Because it is. Any secret that touches client-side code isn't a secret anymore."
+        },
+        {
+          "t": "li",
+          "text": "Fortress Your Backend: Build an API that never, ever returns raw environment variables. Instead, use them to generate limited-scope tokens or filtered responses."
+        },
+        {
+          "t": "li",
+          "text": "Segment Everything: Different environments, different secrets. Your staging API key getting leaked should be annoying, not catastrophic."
+        },
+        {
+          "t": "li",
+          "text": "Watch Like a Hawk: Set up monitoring that alerts you when environment variables are accessed in unusual ways. Better paranoid than pwned."
+        },
+        {
+          "t": "li",
+          "text": "Encrypt What Matters: Add encryption at rest and in transit. It's not foolproof, but it makes an attacker's job significantly harder."
+        },
+        {
+          "t": "h",
+          "text": "The New Reality"
+        },
+        {
+          "t": "p",
+          "text": "We're building web applications in an era where the line between frontend and backend is increasingly blurry. Environment variables are a useful tool, but they're not a security panacea. The sooner we stop treating them like one, the better our applications will be."
+        },
+        {
+          "t": "p",
+          "text": "The next time you're about to stash a secret in an environment variable, ask yourself: do I really understand where this data might end up? Because in the world of modern web development, what's hidden server-side doesn't always stay server-side. And that's a lesson better learned in a controlled experiment than from a security breach notification."
+        }
+      ]
     },
     {
       "slug": "modern-tech-stacks",
       "title": "Modern Tech Stacks Kill Startups",
       "description": "Why chasing the latest frameworks and tools can kill a startup before it ever ships anything of value.",
       "date": "Jun 2024",
-      "category": "tech"
+      "category": "tech",
+      "words": 624,
+      "body": [
+        {
+          "t": "p",
+          "text": "There is a specific kind of startup failure that nobody talks about because it does not look like failure from the outside. The team is talented, the idea is good, the GitHub organization is full of well-named repositories. But six months in there is no product. There is infrastructure. There is a Terraform setup, a Kubernetes cluster, a service mesh, an API gateway. There just is not anything a user can use. I have watched this happen. I have been adjacent to it in hackathons. And I have made the mistake myself on smaller side projects."
+        },
+        {
+          "t": "h",
+          "text": "The Pattern"
+        },
+        {
+          "t": "p",
+          "text": "It starts with stack selection. A first-time founder reads about microservices on Hacker News, sees that the big companies use Kubernetes, and decides the MVP should be built that way so it can scale. A few weeks later they are debugging service discovery issues and writing YAML files for services that do not have a single user yet. The product never ships because the infrastructure became the product."
+        },
+        {
+          "t": "p",
+          "text": "The counterintuitive insight is that boring technology often scales better in practice than the modern alternative, at least for the first few years. PHP and MySQL run Facebook at its beginning. Rails ran GitHub for a long time. The technology is not the constraint. The constraint is that you have not found product-market fit yet, which means you cannot predict what you need to scale."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "The Hidden Cost of Complexity"
+        },
+        {
+          "t": "p",
+          "text": "Kubernetes is a sophisticated piece of technology built by Google to solve problems Google has at Google's scale. If you have fewer than a million daily active users you almost certainly do not have those problems. But you do now have the operational overhead of running a distributed container orchestration system with a small team that is also supposed to be building product."
+        },
+        {
+          "t": "p",
+          "text": "The cost shows up in unexpected places. Every new engineer you hire needs to understand your entire infrastructure before they can ship a feature. Debugging a user-facing bug now requires understanding which of your twelve services is involved. Your deployment pipeline has five more failure modes than a simple git push to a server. Each of these is a small drag that compounds over time."
+        },
+        {
+          "t": "h",
+          "text": "What Actually Matters Early"
+        },
+        {
+          "t": "p",
+          "text": "The question to ask at the start of a project is not what stack will scale best. It is what stack lets you ship and change fastest. Early stage startups do not die from scaling too slowly. They die from not shipping, or from shipping the wrong thing and not being able to pivot fast enough. A monolith that deploys in 30 seconds is more valuable than a microservices architecture that deploys in 45 minutes when you are still figuring out what to build."
+        },
+        {
+          "t": "p",
+          "text": "The right time to introduce complexity is when the pain of not having it is greater than the cost of adding it. When your monolith genuinely becomes a bottleneck, split it. When you have a specific service that needs different scaling characteristics, extract it. Do not build for future problems you have not encountered yet."
+        },
+        {
+          "t": "h",
+          "text": "Exceptions"
+        },
+        {
+          "t": "p",
+          "text": "None of this applies if your core product is inherently distributed. Real-time collaborative tools, systems that process large volumes of streaming data, or products that need geographic distribution from day one have legitimate reasons for more complex stacks. The point is not that microservices are always wrong. It is that most startups adopt them as a status signal rather than a solution to an actual technical problem."
+        },
+        {
+          "t": "p",
+          "text": "The engineers who end up building the most interesting systems are usually the ones who understood the tradeoffs deeply enough to start simple, ship fast, and reach the point where they actually needed to solve hard infrastructure problems. You cannot get to interesting scale problems without first having scale."
+        }
+      ]
     },
     {
       "slug": "security-article",
       "title": "Your 2FA Is Broken",
       "description": "Two-factor authentication feels safe, but most implementations have critical weaknesses that attackers exploit every day.",
       "date": "May 2024",
-      "category": "tech"
+      "category": "tech",
+      "words": 607,
+      "body": [
+        {
+          "t": "p",
+          "text": "Adding TOTP (the six-digit code from an authenticator app) to a login flow feels like real security. And it is better than nothing. But while studying how TOTP verification is commonly implemented, and testing patterns in my own Network Security coursework at UC, I kept running into the same class of flaw. The algorithm itself is sound. The way most code actually checks the code is not."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "How TOTP Is Supposed to Work"
+        },
+        {
+          "t": "p",
+          "text": "TOTP generates a code from two inputs: a shared secret and the current timestamp divided into 30-second windows. Both your phone and the server perform the same calculation independently. If the results match, you are who you say you are. The code changes every 30 seconds so a stolen code quickly becomes useless."
+        },
+        {
+          "t": "p",
+          "text": "The demo above shows the real problem. Toggle between the vulnerable and secure modes to see it. A naive implementation only accepts codes from the exact current 30-second window. But clocks drift. Your phone might be a few seconds behind or ahead of the server. A strict single-window check fails legitimate users whenever their clock is off by more than a few seconds, which happens more often than you would expect."
+        },
+        {
+          "t": "h",
+          "text": "The Drift Problem"
+        },
+        {
+          "t": "p",
+          "text": "RFC 6238 (the TOTP standard) explicitly recommends accepting codes from one window before and after the current one to handle clock drift. That means a 90-second total acceptance window instead of 30. Most developers who write TOTP verification from scratch miss this and check only the current window. The result: legitimate users get locked out during DST transitions or when their phone battery ran out and the time resynced slightly off."
+        },
+        {
+          "t": "h",
+          "text": "Vulnerable vs correct TOTP check"
+        },
+        {
+          "t": "pre",
+          "text": "// Vulnerable: only checks current 30-second window\nfunction verifyTOTP(token: string, secret: string): boolean {\n  const now = Math.floor(Date.now() / 30000);\n  return token === generateTOTP(secret, now);\n}\n\n// Correct: accepts one window either side (RFC 6238 recommendation)\nfunction verifyTOTPSecure(token: string, secret: string): boolean {\n  const now = Math.floor(Date.now() / 30000);\n  for (let i = -1; i <= 1; i++) {\n    if (token === generateTOTP(secret, now + i)) return true;\n  }\n  return false;\n}"
+        },
+        {
+          "t": "h",
+          "text": "Replay Attacks"
+        },
+        {
+          "t": "p",
+          "text": "The other common gap is replay protection. A TOTP code is valid for its entire 30-second window (or longer with drift compensation). An attacker who intercepts a valid code can reuse it within that window. The fix is straightforward: store the last successfully used code per user and reject it if it appears again. This is mentioned in the RFC but frequently skipped in real implementations."
+        },
+        {
+          "t": "h",
+          "text": "Adding replay protection"
+        },
+        {
+          "t": "pre",
+          "text": "// Track used codes in Redis with TTL matching the acceptance window\nasync function verifyWithReplayProtection(\n  userId: string,\n  token: string,\n  secret: string\n): Promise<boolean> {\n  const key = `totp:used:\\${userId}:\\${token}`;\n\n  // Check if this code was already used\n  const alreadyUsed = await redis.get(key);\n  if (alreadyUsed) return false;\n\n  // Verify the code itself\n  if (!verifyTOTPSecure(token, secret)) return false;\n\n  // Mark it as used with 90s TTL (our acceptance window)\n  await redis.set(key, '1', 'EX', 90);\n  return true;\n}"
+        },
+        {
+          "t": "h",
+          "text": "What This Means Practically"
+        },
+        {
+          "t": "p",
+          "text": "None of these flaws break TOTP completely. A motivated attacker would need to intercept the code in transit, or the user would need a significantly drifted clock, for these to matter. But these gaps are the difference between an implementation that follows the specification and one that does not. If you are implementing TOTP yourself rather than using a library, check against RFC 6238, add replay protection, and handle drift."
+        },
+        {
+          "t": "p",
+          "text": "If you are using a library, check that it implements drift compensation. Most well-maintained TOTP libraries (like speakeasy in Node or pyotp in Python) do this correctly by default. The danger is rolling your own without reading the spec carefully."
+        }
+      ]
     },
     {
       "slug": "boring-performance",
       "title": "Boring Guide to 10x Frontend Performance",
       "description": "The unsexy, practical steps that actually make your frontend fast: no magic, just fundamentals done right.",
       "date": "Apr 2024",
-      "category": "tech"
+      "category": "tech",
+      "words": 629,
+      "body": [
+        {
+          "t": "p",
+          "text": "Every developer who has shipped a production frontend eventually hits the moment where the app feels slow and they have no idea why. I have been there more than once. After auditing my own projects and diving into the Lighthouse reports of sites I was building at Abhibus, a pattern kept showing up: the biggest wins were almost never in the JavaScript. They were in the boring stuff that everyone skips."
+        },
+        {
+          "t": "h",
+          "text": "The Bundle Size Problem"
+        },
+        {
+          "t": "p",
+          "text": "Unused code is probably responsible for a larger share of your bundle than you think. A typical React app imports a full UI library to use three components. It ships development-mode warnings. It includes every locale string for a date library when you only need English. The fastest way to audit this is to run npx @next/bundle-analyzer or the webpack bundle analyzer and look for anything suspiciously large. You will almost always find something that can be swapped for a smaller alternative or lazy-loaded."
+        },
+        {
+          "t": "h",
+          "text": "Code splitting with Next.js dynamic imports"
+        },
+        {
+          "t": "pre",
+          "text": "import dynamic from 'next/dynamic';\n\n// Heavy chart library only loads when the component is actually rendered\nconst Chart = dynamic(() => import('./HeavyChart'), {\n  loading: () => <div className=\"h-64 bg-zinc-100 animate-pulse rounded\" />,\n  ssr: false,\n});"
+        },
+        {
+          "t": "h",
+          "text": "Memory Leaks in React"
+        },
+        {
+          "t": "p",
+          "text": "The most common memory leak I have seen is a missing cleanup in a useEffect. You set up an interval or subscription, but you never return a cleanup function. The component unmounts but the timer keeps running, keeping references to stale state alive. If this happens in a list that mounts and unmounts a lot you will see memory grow over time."
+        },
+        {
+          "t": "h",
+          "text": "Missing cleanup vs correct cleanup"
+        },
+        {
+          "t": "pre",
+          "text": "// Leaks memory: interval keeps running after unmount\nuseEffect(() => {\n  const interval = setInterval(() => {\n    setData(prev => [...prev, fetchLatest()]);\n  }, 1000);\n  // Missing return\n}, []);\n\n// Correct — cleanup runs on unmount\nuseEffect(() => {\n  const interval = setInterval(() => {\n    setData(prev => [...prev.slice(-100), fetchLatest()]);\n  }, 1000);\n  return () => clearInterval(interval);\n}, []);"
+        },
+        {
+          "t": "h",
+          "text": "Network: The Biggest Win Nobody Does"
+        },
+        {
+          "t": "p",
+          "text": "Setting proper cache headers on your static assets is one of the highest-leverage performance changes you can make and it takes about five minutes. Images and fonts that change rarely should have a very long max-age. JavaScript bundles built with content hashes can be cached indefinitely because the URL changes whenever the content changes. Most developers never set these and wonder why their Lighthouse score shows poor cache policy."
+        },
+        {
+          "t": "h",
+          "text": "vercel.json cache configuration"
+        },
+        {
+          "t": "pre",
+          "text": "{\n  \"headers\": [\n    {\n      \"source\": \"/static/(.*)\",\n      \"headers\": [\n        {\n          \"key\": \"Cache-Control\",\n          \"value\": \"public, max-age=31536000, immutable\"\n        }\n      ]\n    },\n    {\n      \"source\": \"/(.*)\",\n      \"headers\": [\n        { \"key\": \"X-Frame-Options\", \"value\": \"DENY\" },\n        { \"key\": \"X-Content-Type-Options\", \"value\": \"nosniff\" }\n      ]\n    }\n  ]\n}"
+        },
+        {
+          "t": "h",
+          "text": "Measure Before Optimizing"
+        },
+        {
+          "t": "p",
+          "text": "The most important rule is one that gets ignored most often. Run Lighthouse or WebPageTest on your app before touching anything. Find the actual bottleneck. Nine times out of ten it is not what you assumed it was. I have spent hours micro-optimizing a React component tree when the real problem was a 400KB image served without compression. Do not optimize what you have not measured."
+        },
+        {
+          "t": "h",
+          "text": "What these changes actually look like"
+        },
+        {
+          "t": "p",
+          "text": "Applied together across a typical mid-sized React app, the improvements compound. Bundle analysis and code splitting handle the load time. Proper cleanup prevents memory from growing unchecked in long sessions. Cache headers mean returning users get instant loads from the second visit onward. None of these are exciting. They are just the fundamentals done right."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Where to start"
+        },
+        {
+          "t": "p",
+          "text": "Open Lighthouse right now on your production site. Look at the three lowest-scoring sections. Fix those first. Then look at your bundle with a bundle analyzer. Remove or lazy-load anything you can. Check your cache headers. These three steps will get you most of the way there without touching a single component."
+        }
+      ]
     },
     {
       "slug": "discord-article",
       "title": "How Discord Survived 2024s Biggest Launch",
       "description": "A deep dive into how Discord's infrastructure scaled to handle millions of concurrent users during a massive game launch.",
       "date": "Mar 2024",
-      "category": "tech"
+      "category": "tech",
+      "words": 628,
+      "body": [
+        {
+          "t": "p",
+          "text": "When Starfield launched in September 2023, Discord faced a traffic spike unlike anything a typical app ever sees. Millions of people jumped into voice channels simultaneously. The gaming community flooded servers with messages. Activity timestamps, presence updates, and push notifications all fired at once for tens of millions of users. I spent some time reading through Discord's engineering blog posts and their public postmortems to understand how they actually handle this, and the architecture decisions involved are genuinely interesting."
+        },
+        {
+          "t": "h",
+          "text": "The Problem With Gaming Launches"
+        },
+        {
+          "t": "p",
+          "text": "Most apps scale for gradual growth. You add capacity as traffic increases week over week. Gaming launches break that model. You go from baseline to absolute peak within minutes of a release. The traffic pattern looks less like a slope and more like a wall. Discord has to pre-scale infrastructure before they even know how bad it will be, based on game pre-order numbers and community signals."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "How Discord Shards Its Gateway"
+        },
+        {
+          "t": "p",
+          "text": "Discord's public developer documentation explains how their gateway (the WebSocket layer clients connect to) works at scale. Connections are distributed across shards, where each shard handles a subset of guilds. Large bots are required to use sharding because a single connection cannot handle the volume of events from millions of guilds. The same principle applies to the internal infrastructure: no single process owns all the state."
+        },
+        {
+          "t": "p",
+          "text": "Discord's engineering blog documented their move from a Node.js message broker to a Rust implementation. The core motivation was latency and memory efficiency. Node.js handles IO well but every message object in JavaScript has overhead. Rust lets you process more messages with the same memory budget and get more consistent latency without GC pauses. For a system handling billions of events per day, that difference compounds."
+        },
+        {
+          "t": "h",
+          "text": "The architecture tradeoff in simplified form"
+        },
+        {
+          "t": "pre",
+          "text": "// Node.js: easy to write, GC pauses at high load\nclass MessageQueue {\n  private queue = new Map<string, Message[]>();\n\n  async enqueue(msg: Message) {\n    const key = `\\${msg.channelId}:\\${msg.guildId}`;\n    this.queue.get(key)?.push(msg) ?? this.queue.set(key, [msg]);\n    // GC pressure grows with queue depth\n  }\n}\n\n// Rust: more code, but predictable memory and latency\n// use dashmap::DashMap;\n// use tokio::sync::mpsc;\n// Each channel gets a separate Tokio task with bounded queue\n// No GC, no unpredictable pauses at peak load"
+        },
+        {
+          "t": "h",
+          "text": "Rate Limiting at Scale"
+        },
+        {
+          "t": "p",
+          "text": "During a launch, many bots and clients hammer the API simultaneously. Without aggressive rate limiting, a traffic spike can cascade into a denial of service against your own infrastructure. Discord open-sourced parts of their rate limiting work. The interesting design choice is a sliding window algorithm implemented directly in Redis using sorted sets, which makes rate limit decisions in microseconds without a separate service hop."
+        },
+        {
+          "t": "h",
+          "text": "Sliding window rate limiter in Redis"
+        },
+        {
+          "t": "pre",
+          "text": "-- Lua script runs atomically in Redis\nlocal key = KEYS[1]\nlocal limit = tonumber(ARGV[1])\nlocal window = tonumber(ARGV[2])\nlocal now = tonumber(ARGV[3])\n\n-- Remove entries outside the window\nredis.call('ZREMRANGEBYSCORE', key, 0, now - window)\n\nlocal count = redis.call('ZCARD', key)\nif count >= limit then return 0 end\n\nredis.call('ZADD', key, now, now)\nredis.call('EXPIRE', key, window)\nreturn 1"
+        },
+        {
+          "t": "h",
+          "text": "What Makes This Hard"
+        },
+        {
+          "t": "p",
+          "text": "Reading through Discord's engineering posts, the recurring theme is that distributed systems at their scale surface every assumption your architecture made. Things like clock drift between servers, the cost of serialization under load, and the interaction between rate limiting and retry logic all become real problems that you never see at smaller scale. The solutions are almost always boring: reduce shared mutable state, bound queue sizes, prefer simpler data structures."
+        },
+        {
+          "t": "p",
+          "text": "What I find useful about studying how Discord does this is that the underlying principles apply even to much smaller systems. Bounding your queues, making rate limiting decisions as early in the stack as possible, and choosing predictable latency over peak throughput are ideas worth internalizing regardless of how many users you have."
+        }
+      ]
     },
     {
       "slug": "esports-journey",
       "title": "My Time in Esports",
       "description": "From LAN cafes to online tournaments: my personal journey through competitive gaming and the esports scene.",
       "date": "Mar 2024",
-      "category": "life"
+      "category": "life",
+      "words": 556,
+      "body": [
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "The Beginning: Falling in Love with Counter-Strike"
+        },
+        {
+          "t": "p",
+          "text": "It all started in 2014 when I first encountered Counter-Strike. From the moment I witnessed its raw and beautiful gameplay, I was hooked. The intricate movement mechanics, the thrilling skin economy, and the vibrant community drew me in like a moth to a flame. At the tender age of 16, the memories this game created for me were truly special, and the people I met through it became some of my closest real-life friends."
+        },
+        {
+          "t": "h",
+          "text": "Taking the Plunge: My First Tournaments"
+        },
+        {
+          "t": "p",
+          "text": "In 2017, I took the plunge and began playing tournaments in my city. Our team secured an impressive 3rd place finish at a fancy 5-star restaurant event conducted by the wonderful people at AMD GameOn. This was the beginning of an annual tradition, as our team was fortunate enough to participate in their tournaments every year."
+        },
+        {
+          "t": "p",
+          "text": "That same year, we also played at Gamer's Connect by Nvidia, securing another 3rd place finish. The competitive spirit was ignited, and we were hungry for more."
+        },
+        {
+          "t": "h",
+          "text": "The Comic-Con Collaboration and Expanding Horizons"
+        },
+        {
+          "t": "p",
+          "text": "From 2018 onwards, Comic-Con collaborated with AMD GameOn, and they started conducting the tournaments together. Our team's hard work paid off as we secured 2nd place in both 2018 and 2019. Determined to expand my horizons, I also ventured into PUBG in 2019, where I earned an impressive 2nd place. However, my skills in Fortnite left much to be desired."
+        },
+        {
+          "t": "h",
+          "text": "The Pandemic and Online Transition"
+        },
+        {
+          "t": "p",
+          "text": "When the COVID-19 pandemic hit in 2020, AMD GameOn shut down, and we transitioned to playing online games. That year, Act, a WiFi company, conducted an online CSGO 1v1 tournament, and without a team to hold me back, I secured 1st place. This was a testament to my individual skills and determination."
+        },
+        {
+          "t": "p",
+          "text": "The pandemic also brought about the rise of Valorant, and I was fortunate enough to gain access to the beta. After a couple of months of dedicated grinding, I reached the coveted Immortal rank. This opened up new opportunities, as I had the chance to play at the NIIT college fest with a few friends, earning 2nd place in both 2020 and 2021."
+        },
+        {
+          "t": "h",
+          "text": "The Return to LAN"
+        },
+        {
+          "t": "p",
+          "text": "In 2020, our team, Trinity Gaming, secured 1st place at the TAGVALO tournament, where we had the honor of defeating the YouTuber SnaxGaming. This was a significant milestone in our esports journey and a testament to our teamwork and dedication."
+        },
+        {
+          "t": "p",
+          "text": "Finally, in 2024, after a long break, we proved that our skills were still sharp as we became the Valorant runners-up at the Comic-Con x AMD GameOn x The Arena event. This achievement filled me with immense pride and reminded me of the incredible journey I had embarked upon."
+        },
+        {
+          "t": "h",
+          "text": "Conclusion"
+        },
+        {
+          "t": "p",
+          "text": "My journey in the world of esports has been a thrilling ride filled with countless memories, accomplishments, and friendships forged through the heat of competition. From the raw and beautiful gameplay of Counter-Strike to the electrifying Valorant tournaments, each step has been a testament to my passion for gaming and the incredible community that surrounds it."
+        },
+        {
+          "t": "p",
+          "text": "As I look back on this exhilarating journey, I am filled with gratitude for the opportunities and experiences it has provided me. The memories and friendships formed along the way will forever hold a special place in my heart, and I eagerly anticipate the next chapter in my esports adventure."
+        }
+      ]
     },
     {
       "slug": "chatgpt-interface",
       "title": "Building My Own ChatGPT UI",
       "description": "Why I built a custom ChatGPT interface instead of using the default, and what I learned along the way.",
       "date": "Jan 2024",
-      "category": "tech"
+      "category": "tech",
+      "words": 602,
+      "body": [
+        {
+          "t": "p",
+          "text": "I use ChatGPT every day for coding, writing, and research. Early on I found the default interface frustrating in small but consistent ways: no persistent system prompts per conversation type, no keyboard shortcuts, text that renders as a wall of markdown, and no way to see token counts before I burn through a context window. So I built my own wrapper around the OpenAI API. It is not complicated, but the process taught me a lot about what makes AI interfaces feel good versus feel annoying."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Streaming is Not Optional"
+        },
+        {
+          "t": "p",
+          "text": "The single biggest thing that makes an AI chat interface feel fast or slow is whether you stream the response. Without streaming you wait for the full response, then it appears all at once. With streaming you see characters appear almost immediately, which makes a 10-second response feel acceptable in a way a 10-second blank wait never does. The OpenAI API supports server-sent events for streaming. Wiring it up in a Next.js app takes about 20 lines."
+        },
+        {
+          "t": "h",
+          "text": "Streaming response in a Next.js route handler"
+        },
+        {
+          "t": "pre",
+          "text": "// app/api/chat/route.ts\nimport OpenAI from 'openai';\n\nconst openai = new OpenAI();\n\nexport async function POST(req: Request) {\n  const { messages } = await req.json();\n\n  const stream = await openai.chat.completions.create({\n    model: 'gpt-4o',\n    messages,\n    stream: true,\n  });\n\n  const encoder = new TextEncoder();\n  const readable = new ReadableStream({\n    async start(controller) {\n      for await (const chunk of stream) {\n        const text = chunk.choices[0]?.delta?.content ?? '';\n        controller.enqueue(encoder.encode(text));\n      }\n      controller.close();\n    },\n  });\n\n  return new Response(readable, {\n    headers: { 'Content-Type': 'text/plain; charset=utf-8' },\n  });\n}"
+        },
+        {
+          "t": "h",
+          "text": "System Prompts Per Context"
+        },
+        {
+          "t": "p",
+          "text": "One of the most useful features I added was the ability to save system prompts as presets. When I am asking coding questions I want a different prompt than when I am asking for writing feedback. Storing a handful of named system prompts in localStorage and letting me switch between them with a dropdown took maybe an hour to build and improved how useful the tool felt for me personally by a lot."
+        },
+        {
+          "t": "p",
+          "text": "The specific system prompts I use for coding work tell the model to keep responses concise, prefer TypeScript, assume Next.js App Router, and not repeat the question back to me. Small constraints like these make the output much more useful than the default general-purpose behavior."
+        },
+        {
+          "t": "h",
+          "text": "Context Window Management"
+        },
+        {
+          "t": "p",
+          "text": "The default ChatGPT interface gives you no visibility into how much context you have used. In a long conversation you can hit the limit and suddenly the model starts losing track of earlier parts of the discussion, often without making it obvious. I added a simple token counter (using the tiktoken library) that shows a bar filling up as the conversation grows and warns you when you are getting close. When the conversation is approaching the limit I automatically summarize older messages and replace them with the summary to keep the most relevant context."
+        },
+        {
+          "t": "h",
+          "text": "What I Learned"
+        },
+        {
+          "t": "p",
+          "text": "Building the interface made me a lot more aware of how much of the AI experience is actually UI rather than model quality. The model is the same. But whether responses feel fast or slow, whether you feel in control or confused, whether you can find a conversation from last week. All of that is interface design. The underlying model could double in capability and a bad interface would still make it frustrating to use."
+        },
+        {
+          "t": "p",
+          "text": "I also stopped using my custom wrapper after about three months when the official ChatGPT app improved enough to cover most of what I had built. That is fine. The exercise was still worth it. I understand the API well enough now that integrating GPT into other projects feels straightforward rather than mysterious."
+        }
+      ]
     },
     {
       "slug": "ixigo-experience",
       "title": "SDE Intern at Abhibus (Ixigo)",
       "description": "Lessons from my software engineering internship at Abhibus, a subsidiary of Ixigo, India's leading travel platform.",
       "date": "Oct 2023",
-      "category": "life"
+      "category": "life",
+      "words": 506,
+      "body": [
+        {
+          "t": "p",
+          "text": "As I reflect on my SDE (Software Development Engineer) internship experience at Abhibus Ixigo, I'm filled with a sense of accomplishment and gratitude. It was a journey that began with curiosity, and it led me through various projects, challenges, and new friendships."
+        },
+        {
+          "t": "h",
+          "text": "Getting Started"
+        },
+        {
+          "t": "p",
+          "text": "My initial days at Abhibus were marked by excitement and a bit of apprehension. I was just getting started with the architecture and system design, trying to wrap my head around the company's tech stack and workflows. The learning curve was steep, but the support I received from my team was invaluable. I found myself surrounded by talented individuals who were always willing to guide me."
+        },
+        {
+          "t": "h",
+          "text": "Versatility in Projects"
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "p",
+          "text": "One of the unique aspects of my internship was the variety of projects I got to work on. Since I was the only intern on the team, I had the opportunity to explore different domains:"
+        },
+        {
+          "t": "li",
+          "text": "KSRTC Tourist Packages Report Fetching - Enhanced user experience through improved report presentation"
+        },
+        {
+          "t": "li",
+          "text": "HRTC Feedback Alignment - Implemented dynamic data fetching for up-to-date information"
+        },
+        {
+          "t": "li",
+          "text": "Soup UI Gender and Senior Concession Total Fare Error Fix - Resolved critical calculation issues"
+        },
+        {
+          "t": "li",
+          "text": "Banner Updates on All RTC - Enhanced visual appeal across platforms"
+        },
+        {
+          "t": "li",
+          "text": "KSRTC Ant to Maven Project Conversion - Improved build and dependency management"
+        },
+        {
+          "t": "li",
+          "text": "Solr Debug Fix for KSRTC - Enhanced search capabilities"
+        },
+        {
+          "t": "li",
+          "text": "GST Details in Final Ticket - Ensured tax compliance in ticket generation"
+        },
+        {
+          "t": "li",
+          "text": "Service Feedback Hyperlink Fix - Improved user feedback system"
+        },
+        {
+          "t": "li",
+          "text": "PM2 Fix for React KSRTC - Implemented robust process management"
+        },
+        {
+          "t": "li",
+          "text": "Sleeper API Layout Issue - Enhanced UI for berth visualization"
+        },
+        {
+          "t": "li",
+          "text": "User Session Working in React KSRTC - Improved session management"
+        },
+        {
+          "t": "h",
+          "text": "Memorable Moments"
+        },
+        {
+          "t": "p",
+          "text": "While each project came with its unique set of challenges, my most memorable moments were when I successfully integrated user sessions and PM2 for the KSRTC React app. These tasks were not only technically challenging but also crucial for the project's overall stability and user experience. It was incredibly rewarding to see the positive impact these changes had on the application."
+        },
+        {
+          "t": "h",
+          "text": "The Team"
+        },
+        {
+          "t": "p",
+          "text": "I must express my gratitude to the amazing team I had the privilege of working with during my internship at Abhibus. My colleagues were not just mentors but also friends who created a supportive and inclusive work environment. Our team lead, in particular, played an instrumental role in guiding me through the complexities of software development and fostering my growth."
+        },
+        {
+          "t": "h",
+          "text": "Conclusion"
+        },
+        {
+          "t": "p",
+          "text": "My SDE internship at Abhibus (Ixigo) was an enriching experience that allowed me to grow both personally and professionally. I learned the importance of adaptability and versatility in a dynamic work environment. The exposure to a wide range of projects and the guidance of a supportive team helped me gain invaluable skills and knowledge."
+        },
+        {
+          "t": "p",
+          "text": "As I look back on my journey, I'm filled with a sense of achievement and gratitude for the opportunity to contribute to such meaningful projects and to work alongside talented individuals. My time at Abhibus was not just a stepping stone in my career, but a memorable chapter in my life that I will cherish forever."
+        }
+      ]
     },
     {
       "slug": "beginners-guide-programming",
       "title": "Beginners Guide for Programming",
       "description": "A practical, no-nonsense starting point for anyone who wants to learn to code but has no idea where to begin.",
       "date": "Apr 2021",
-      "category": "tech"
+      "category": "tech",
+      "words": 638,
+      "body": [
+        {
+          "t": "p",
+          "text": "I started coding seriously around 2018, mostly to automate things in games and build small tools I wanted to exist. I did not have a structured learning path. I bounced between YouTube tutorials, Stack Overflow answers, and half-finished Udemy courses. Looking back, the things that actually moved the needle were simple and nothing like what most beginner advice says. This is the version of that advice I wish I had read first."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Pick one language and stay with it"
+        },
+        {
+          "t": "p",
+          "text": "The single biggest mistake beginners make is switching languages every few weeks. Python looks easier, then JavaScript looks more practical, then someone mentions Java and now you are doing all three badly. Programming concepts (loops, functions, data structures, recursion) are the same in every language. Once you know them solidly in one language, picking up another takes weeks rather than months. Pick Python or JavaScript. Commit. Do not switch for at least a year."
+        },
+        {
+          "t": "p",
+          "text": "I started with Python and I am glad I did. The syntax is clean, error messages are readable, and the standard library handles most things you want to do without third-party packages. Once I understood Python well, picking up JavaScript for web work felt natural. I now use TypeScript for almost everything. But none of that was possible without the Python foundation."
+        },
+        {
+          "t": "h",
+          "text": "Tutorials are a trap after the first week"
+        },
+        {
+          "t": "p",
+          "text": "Watch one beginner tutorial to understand the syntax. Then stop watching and start building something. Tutorials feel productive because you are following along and the code works. But you are not learning to problem-solve. You are learning to copy. The moment you try to do something not covered in the tutorial, you will feel like you know nothing, because you effectively do not."
+        },
+        {
+          "t": "p",
+          "text": "The projects that actually taught me things were embarrassingly small: a script to rename files in a folder, a Discord bot that responded to commands, a webpage that fetched an API and displayed data. Each one forced me to read documentation, debug real errors, and make real decisions. That process is the actual learning."
+        },
+        {
+          "t": "h",
+          "text": "Learn to read errors before anything else"
+        },
+        {
+          "t": "p",
+          "text": "New programmers are afraid of error messages and try to close them as fast as possible. This is backwards. The error message is almost always telling you exactly what is wrong, often including the file and line number. Learning to read a stack trace slowly and actually understand what it says will save you more time than any other skill you develop early on."
+        },
+        {
+          "t": "p",
+          "text": "When you are stuck: read the full error message. Google the exact error text in quotes. Read the Stack Overflow answers, not just the accepted one. Try to understand why the solution works before applying it. This habit is what separates people who can actually debug from people who just paste errors into ChatGPT and hope the suggestion works."
+        },
+        {
+          "t": "h",
+          "text": "Use Git from day one"
+        },
+        {
+          "t": "p",
+          "text": "I did not start using Git until embarrassingly late and I regret it. You do not need to understand branching or rebasing right away. Just learn git init, git add, git commit, and git push. Commit every time you make something work. Put every project on GitHub. When you break something, you can always go back. When you are applying for jobs, you have a public record of what you have built."
+        },
+        {
+          "t": "h",
+          "text": "The path that worked for me"
+        },
+        {
+          "t": "p",
+          "text": "I went from Python scripts to web development (HTML, CSS, JavaScript) to backend work (Node.js, Express) to full-stack projects. Along the way I picked up TypeScript because codebases with type safety are much more pleasant to work in. I learned C++ briefly for algorithms coursework. I built iOS apps with Swift during a phase of wanting to ship something to the App Store. Each step added tools without replacing the previous ones. The foundation is always the same: write code, break things, fix them, repeat."
+        }
+      ]
     },
     {
       "slug": "beginners-guide-design",
       "title": "Beginners Guide for Design",
       "description": "The core principles, tools, and resources that helped me go from zero design knowledge to building real products.",
       "date": "Apr 2021",
-      "category": "tech"
+      "category": "tech",
+      "words": 640,
+      "body": [
+        {
+          "t": "p",
+          "text": "I came to design through programming, not the other way around. I was building projects and they looked terrible, which bothered me enough to start learning why. I picked up Photoshop first, then Illustrator, then eventually Figma once it became the clear industry standard. Along the way I built a VS Code theme (Tanoshi), designed logos and merch, and got comfortable enough with the tools to consider design a real part of my skill set rather than just something I muddle through. This is what I would tell myself at the start."
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "h",
+          "text": "Learn Figma. Skip everything else for now."
+        },
+        {
+          "t": "p",
+          "text": "When I started, the advice was to learn Photoshop or Illustrator. Both are still worth knowing, but Figma is now where almost all UI and product design work happens. It is free, browser-based, great for collaboration, and has a community of plugins that extend it endlessly. If you are building things for screens, start with Figma. Photoshop is useful for photo editing and image manipulation. Illustrator is useful for vector illustration and logo work. You can come back to those when you have a specific need."
+        },
+        {
+          "t": "h",
+          "text": "Study before you copy"
+        },
+        {
+          "t": "p",
+          "text": "The fastest way to develop taste is to look at a lot of good work and understand why it works. Not just passively scrolling Dribbble, but actually asking: what makes this feel clean? Why do the sections feel well-separated? What is the visual hierarchy? Sites like Mobbin and Awwwards are useful references. For UI patterns specifically, Mobbin captures real interfaces from real apps, which is more useful than design awards that often prioritize visual novelty over usability."
+        },
+        {
+          "t": "h",
+          "text": "The four principles that cover most problems"
+        },
+        {
+          "t": "p",
+          "text": "Robin Williams wrote a book called The Non-Designer's Design Book that covers four principles: contrast, repetition, alignment, and proximity. These four things explain a huge proportion of why designs look good or bad. The interactive demo above shows them. When a layout feels off and you cannot explain why, going through those four principles one at a time almost always surfaces the problem."
+        },
+        {
+          "t": "p",
+          "text": "Contrast is the one that helps most in the beginning. If something is meant to be important, make it look important: bigger, bolder, or more saturated than the things around it. If two things have the same visual weight, the reader does not know which one to look at first. Hierarchy comes from contrast."
+        },
+        {
+          "t": "h",
+          "text": "Typography is half the work"
+        },
+        {
+          "t": "p",
+          "text": "Most beginners focus on colors and ignore type. This is backwards. Typography does more to determine whether a design feels professional or amateurish than any other single element. Using a system font like Inter or a well-chosen Google Font, setting a consistent type scale (e.g. 12 / 14 / 16 / 20 / 28px), and getting line height right (1.5 to 1.6 for body text) will make almost any design look significantly better immediately."
+        },
+        {
+          "t": "p",
+          "text": "For my projects, I use Geist for most things and Inter as a fallback. Both are clean, legible, and free. Avoid decorative fonts for body text. Save them for headlines if you use them at all."
+        },
+        {
+          "t": "h",
+          "text": "Build something real as fast as possible"
+        },
+        {
+          "t": "p",
+          "text": "The Tanoshi VS Code theme was one of the projects that taught me the most about design. It forced me to think carefully about every color choice because the stakes were real. People were actually installing it and using it to code. Designing for a specific use case with real constraints is more educational than any amount of practice projects with fake briefs."
+        },
+        {
+          "t": "p",
+          "text": "Take on a real project as early as possible. Redesign an app you use. Build a visual for a project you are already working on. Design a logo for something that matters to you. The feedback loop from making something real is faster and more useful than tutorials, because the question is never just what looks good abstractly but what works for this specific thing."
+        }
+      ]
     }
   ],
   "books": [

@@ -31,7 +31,21 @@ type Snapshot struct {
 	Workouts []Workout
 }
 
-type Track struct{ Name, Artists, URL string }
+type Track struct {
+	Name, Artists, URL string
+	Progress, Duration time.Duration
+	At                 time.Time // when Progress was read
+}
+
+// Elapsed is how far into the song it is now, counting on from when it was read.
+func (t *Track) Elapsed() time.Duration {
+	e := t.Progress + time.Since(t.At)
+	if t.Duration > 0 && e > t.Duration {
+		return t.Duration
+	}
+	return e
+}
+
 type Game struct {
 	Name    string
 	Minutes int // in the last two weeks
@@ -103,18 +117,25 @@ func (l *Live) Pull() {
 
 	run(func() {
 		var r struct {
-			IsPlaying bool `json:"isPlaying"`
-			Track     *struct {
-				Name       string `json:"name"`
-				Artists    string `json:"artists"`
-				SpotifyURL string `json:"spotifyUrl"`
+			IsPlaying  bool    `json:"isPlaying"`
+			ProgressMs float64 `json:"progressMs"`
+			Track      *struct {
+				Name       string  `json:"name"`
+				Artists    string  `json:"artists"`
+				SpotifyURL string  `json:"spotifyUrl"`
+				DurationMs float64 `json:"durationMs"`
 			} `json:"track"`
 		}
 		if l.get("/api/spotify/currently-playing", &r) == nil {
 			set(func() {
 				next.Track = nil
 				if r.IsPlaying && r.Track != nil {
-					next.Track = &Track{Name: r.Track.Name, Artists: r.Track.Artists, URL: r.Track.SpotifyURL}
+					next.Track = &Track{
+						Name: r.Track.Name, Artists: r.Track.Artists, URL: r.Track.SpotifyURL,
+						Progress: time.Duration(r.ProgressMs) * time.Millisecond,
+						Duration: time.Duration(r.Track.DurationMs) * time.Millisecond,
+						At:       time.Now(),
+					}
 				}
 			})
 		}

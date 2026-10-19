@@ -11,8 +11,10 @@ import (
 	"errors"
 	"os"
 	"os/signal"
+	"sync/atomic"
 	"syscall"
 	"time"
+	_ "time/tzdata" // the Cincinnati clock, wherever this runs
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/log"
@@ -24,6 +26,19 @@ import (
 	"github.com/charmbracelet/wish/ratelimiter"
 	"golang.org/x/time/rate"
 )
+
+// online is how many people are in the app right now, for the "here now" count.
+var online atomic.Int64
+
+func countOnline() wish.Middleware {
+	return func(next ssh.Handler) ssh.Handler {
+		return func(s ssh.Session) {
+			online.Add(1)
+			defer online.Add(-1)
+			next(s)
+		}
+	}
+}
 
 func env(k, def string) string {
 	if v := os.Getenv(k); v != "" {
@@ -50,11 +65,12 @@ func main() {
 		wish.WithVersion("rohan.my"),
 		wish.WithIdleTimeout(15*time.Minute),
 		wish.WithMaxTimeout(2*time.Hour),
-		// Middlewares run last to first: log, limit, require a terminal, then the app.
+		// Middlewares run last to first: log, limit, require a terminal, count, then the app.
 		wish.WithMiddleware(
 			bm.Middleware(func(s ssh.Session) (tea.Model, []tea.ProgramOption) {
-				return newModel(s, live), []tea.ProgramOption{tea.WithAltScreen(), tea.WithMouseCellMotion()}
+				return newModel(s, live, online.Load), []tea.ProgramOption{tea.WithAltScreen(), tea.WithMouseCellMotion()}
 			}),
+			countOnline(),
 			activeterm.Middleware(),
 			// per client address: one new session a second, bursts of five
 			ratelimiter.Middleware(ratelimiter.NewRateLimiter(rate.Every(time.Second), 5, 2000)),
