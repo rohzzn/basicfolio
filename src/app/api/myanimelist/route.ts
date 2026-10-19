@@ -40,6 +40,8 @@ interface ProcessedAnime {
   genres: string[];
   year: number | null;
   image: string | null;
+  /** When the entry last changed on MyAnimeList, so a reader can find the latest ones. */
+  updatedAt: string | null;
 }
 
 // Mapping MAL status to our app's status format
@@ -134,7 +136,8 @@ export async function GET(request: Request) {
             status: mapStatus(item.list_status.status),
             genres: item.node.genres?.map(genre => genre.name) || [],
             year: item.node.start_season?.year || null,
-            image: item.node.main_picture?.large || item.node.main_picture?.medium || null
+            image: item.node.main_picture?.large || item.node.main_picture?.medium || null,
+            updatedAt: item.list_status.updated_at || null
           };
         } catch (err) {
           console.error('Error processing anime item:', err, item);
@@ -146,7 +149,8 @@ export async function GET(request: Request) {
             status: 'plan_to_watch',
             genres: [],
             year: null,
-            image: null
+            image: null,
+            updatedAt: null
           };
         }
       });
