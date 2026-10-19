@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- ssh rohan.my: the portfolio as a terminal app, on the Mac at home. Installed by deploy.sh. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>my.rohan.ssh</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/rohan/srv/rohan-ssh/bin/rohan-ssh</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/rohan/srv/rohan-ssh</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>SSH_ADDR</key>
+    <string>0.0.0.0:2222</string>
+    <key>SSH_HOST_KEY</key>
+    <string>/Users/rohan/srv/rohan-ssh/.ssh/rohan_my_ed25519</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+  <key>StandardOutPath</key>
+  <string>/Users/rohan/srv/rohan-ssh/logs/ssh.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/rohan/srv/rohan-ssh/logs/ssh.log</string>
+</dict>
+</plist>

@@ -1,0 +1,1684 @@
+{
+  "projectGroups": [
+    {
+      "label": "Apps",
+      "projects": [
+        {
+          "slug": "same-sky",
+          "title": "Same Sky",
+          "description": "Their time, their light, on your Home Screen",
+          "year": 2026,
+          "tech": [
+            "Swift",
+            "SwiftUI",
+            "WidgetKit",
+            "CloudKit",
+            "iOS 26"
+          ],
+          "links": [
+            {
+              "label": "Live",
+              "url": "https://www.sameskyapp.com"
+            }
+          ],
+          "install": "",
+          "story": "Two people, two time zones, and the same sum done a hundred times. Nine and a half hours, forward or back, and does that mean they are asleep, about to be, or already three hours into their day. Same Sky answers it before you have finished asking.\n\nOpen it and you are looking at both of your skies at once, meeting at a horizon in the middle. Their half is the light where they are and yours is the light where you are, and the colours are not decoration: they come from the real position of the sun at each of your coordinates, worked out on the phone from published astronomy with no network involved. Their half is genuinely dawn while yours is genuinely dusk. The moon between the two halves is tonight's moon at its real phase, which is the same one you are both under.\n\nBoth clocks, that moon and the hours you overlap sit on the Home Screen. On the Lock Screen their time sits beside the date with a ring showing how far through their day they are, and it works in StandBy and offline too. Days is a journal the two of you keep together, one photo a day each, no streak to break. There is a call window showing how much of today's overlap is left, countdowns to the next time you are together, and one tap to point at the moon and say you are thinking of them. Nothing the app sends lands while the person receiving it is asleep: it waits for their morning.\n\nThere is no server, which is architecture rather than a slogan. Your pair, your countdowns and your journal live on the phone, the astronomy is computed there, and pairing creates a shared record zone inside your own iCloud that nobody else can read. Sign in with Apple is the only sign in offered and it is optional. No analytics package, no attribution SDK, no ad network.\n\nComing soon on the App Store. iPhone, iOS 26 or later, free, all of it."
+        },
+        {
+          "slug": "argus",
+          "title": "Argus",
+          "description": "Discord bot with everything written down",
+          "year": 2026,
+          "tech": [
+            "TypeScript",
+            "Discord.js",
+            "Node.js",
+            "Lavalink",
+            "Next.js",
+            "Express"
+          ],
+          "links": [
+            {
+              "label": "Live",
+              "url": "https://argus.xin"
+            },
+            {
+              "label": "Invite",
+              "url": "https://discord.com/oauth2/authorize?client_id=1518803529869951046&permissions=1374711573686&scope=bot+applications.commands+identify+guilds"
+            }
+          ],
+          "install": "",
+          "story": "Every Discord bot I have run wanted a different slash command for every setting, and none of them could tell me what had actually happened in the server last night. Argus is the answer to both: eighty-three commands, all of them configurable from one dashboard page, and an audit trail that records edits, deletions, joins, role changes, channel renames and moderation actions in seven separately switchable categories.\n\nThe moderation side leans on Discord's own AutoMod rule engine, so the rules keep holding even when the bot is offline, and every violation feeds a strike pool with points that decay: three points is a warning and a DM, six is an hour of timeout, ten swaps the member role for the muted one, fifteen is a ban with the last day of messages removed. Levels count message and voice XP apart on a curve that gets steeper each time, and the rank cards, welcome cards, leaderboards and music panel are all drawn server-side in a palette each server picks.\n\nAround that sit a permanent Lavalink player that lives in one message it edits forever, an economy with blackjack, roulette, plinko, poker and a crash channel you bet in by typing a number, RSS, YouTube, Twitch, AniList and Steam feeds, inbound webhooks so anything that can POST lands in Discord formatted, and audiobooks: drop an EPUB and it reads aloud while everyone keeps their own place. Free, with every feature, currently watching about a thousand members across fourteen servers."
+        },
+        {
+          "slug": "beam",
+          "title": "Beam",
+          "description": "Screen recording for Windows",
+          "year": 2026,
+          "tech": [
+            "Electron",
+            "React",
+            "TypeScript",
+            "FFmpeg",
+            "Whisper"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/beam"
+            },
+            {
+              "label": "Live",
+              "url": "https://beam.rohan.run/"
+            }
+          ],
+          "install": "",
+          "story": "Tools like Loom and Screen Studio are good, but they are subscriptions and your recordings pass through someone else's server before they land on your hard drive. I built Beam to do the same job entirely on your machine: no account, no cloud upload, nothing leaving your PC. Capture full screen, a single window, or a custom region. A draggable webcam bubble composites automatically. Auto-zoom follows your clicks, with optional click ripples and a keystroke overlay for tutorials. Trim in a real editor, export to MP4 or GIF, copy to clipboard, or run offline AI transcription with a local Whisper model. Global hotkeys, mic and system audio, quality presets, and GitHub-only update checks. macOS and Linux builds are next; the core is already cross-platform Electron."
+        },
+        {
+          "slug": "cursors",
+          "title": "Cursors",
+          "description": "One-click cursor packs for Windows",
+          "year": 2026,
+          "tech": [
+            "C#",
+            "WinForms",
+            ".NET Framework 4.8",
+            "Win32"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/cursors"
+            },
+            {
+              "label": "Download",
+              "url": "https://github.com/rohzzn/cursors/releases/latest"
+            }
+          ],
+          "install": "",
+          "story": "Changing your cursor on Windows means the Mouse Properties dialog, a Pointers tab that has not been redesigned since XP, and setting seventeen roles one dropdown at a time (Normal Select, Help Select, Working In Background, all of them) before you can even see what you picked. I wanted to click a card and be done.\n\nCursors is a 184 KB WinForms executable that applies a whole scheme at once. Sixty packs ship with it across nine categories: 20 minimal, 10 neon, 9 cute, 5 retro, 5 pixel and gaming, 4 macOS-style, 4 animated, 3 glass, and the 4 Windows defaults, and another 500 community sets are pulled from rw-designer.com, sortable and searchable by name, style or creator. Cards preview live, animated packs play in place, and anything you drop on the window is installed: a .zip, an install.inf, a loose pile of .cur and .ani files, or a link pasted straight from the browser.\n\nIt needs no administrator rights, leaves no background process running, keeps no telemetry, and works offline once the community index is cached. The scheme survives a restart because it is written where Windows actually reads it, and `Cursors.exe --uninstall` puts every default back."
+        },
+        {
+          "slug": "relay",
+          "title": "Relay",
+          "description": "Uptime monitoring and status pages in one binary",
+          "year": 2026,
+          "tech": [
+            "Go",
+            "SQLite",
+            "Docker",
+            "WebSocket",
+            "HTMX"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/relay"
+            },
+            {
+              "label": "Live",
+              "url": "https://relay.rohan.run"
+            }
+          ],
+          "install": "",
+          "story": "I built Relay because I was running Uptime Kuma for alerts and still needed something else for a public status page. Two tools, two configs, nothing talking to each other. Relay is both: it checks your services on a schedule, opens incidents when things break, and serves a shareable status page your users can subscribe to. It is a single Go binary with SQLite, templates embedded in the binary, and a Docker image under 20 MB. No Node runtime, no Postgres. It supports HTTP, TCP, TLS, DNS, and heartbeat monitors, with Slack, webhook, and SMTP alerts and cooldown-aware dispatch."
+        },
+        {
+          "slug": "uidna",
+          "title": "UI DNA",
+          "description": "Reverse-engineer an interface into code you own",
+          "year": 2026,
+          "tech": [
+            "TypeScript",
+            "Node.js",
+            "Playwright",
+            "MCP",
+            "Zod",
+            "React",
+            "Tailwind CSS",
+            "Vite"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/uidna"
+            },
+            {
+              "label": "npm",
+              "url": "https://www.npmjs.com/package/@rohzzn/uidna"
+            }
+          ],
+          "install": "npm install -g @rohzzn/uidna",
+          "story": "See an interface you like, understand how it is built down to the token, the component and the state transition, then rebuild it as code you own and prove the rebuild matches. UI DNA is an MCP server and a CLI that gives a coding agent the instruments for that loop. It is to interfaces what REA is to binaries.\n\nThe rule it is built around: the agent is the brain and UI DNA is the instrument. It makes no model calls and needs no API keys. It drives a real Chromium, or attaches to your own Chrome over the DevTools Protocol, and records the DOM, computed styles, boxes, the accessibility tree, fonts and assets at every viewport. Then it explores the page the safe way: hover, focus, Escape, menus, tabs and accordions, every action snapshotted, diffed and reverted, nothing submitted and no link followed off the site. What comes out is a UI DNA document in which every value carries where it came from: measured, observed, inferred, or unknown with a reason. Only the agent can write inferred, and its reading is stored beside the measurement, never over it.\n\nFrom that document it generates a React, TypeScript, Tailwind and Vite project with the tokens as CSS variables, the repeated structures as components, the observed transitions as state and a Playwright suite that replays them. Then it checks the rebuild against the original with a pixel diff, SSIM, geometry, computed styles and a replay of every recorded transition, and reports one finding per concrete difference instead of a single blended score. On the reference page the rebuild replays 73 of 73 transitions and differs from the original in under one percent of its pixels at all three widths.\n\nVersion 0.2.0 crawls whole sites, explores forms with synthetic values while every submission is blocked, and turns captured JSON into typed mocks. Twelve tools, identical over MCP and the CLI, one evidence envelope for every result, and the document schema published on its own as @rohzzn/uidna-schema so other tools can read it. MIT licensed."
+        },
+        {
+          "slug": "world-clock",
+          "title": "World Clock",
+          "description": "Stream Deck plugin for live city clocks",
+          "year": 2026,
+          "tech": [
+            "TypeScript",
+            "Node.js",
+            "SVG",
+            "Stream Deck SDK"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/elgato_clock"
+            },
+            {
+              "label": "Marketplace",
+              "url": "https://marketplace.elgato.com/product/world-clock-b9d5f7ee-68ee-44e3-bd63-61efa0c6b67b"
+            }
+          ],
+          "install": "",
+          "story": "I wanted a wall of city clocks on my Stream Deck that actually looked like clocks, not a row of static labels. World Clock is a plugin for Stream Deck 7.1+: drop the action on as many keys as you want, point each one at any IANA timezone, and they tick live. Every key draws as an SVG: large tabular digits so the time never jumps width when the minutes flip, a city label, a hairline seconds ring in that key's accent colour, and a background that drifts cooler at night and warmer at midday for that city. Times come from Intl.DateTimeFormat, so DST and odd offsets like Kathmandu's UTC+5:45 are handled by the IANA database. All visible keys share one second-aligned ticker, so idle pages cost nothing. Press a key to toggle the seconds readout. On the Elgato Marketplace for Mac and Windows."
+        },
+        {
+          "slug": "git-time-machine",
+          "title": "Git Time Machine",
+          "description": "Visual git history in the terminal",
+          "year": 2023,
+          "tech": [
+            "Node.js",
+            "Commander.js",
+            "Inquirer",
+            "Chalk"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/git-time-machine"
+            },
+            {
+              "label": "npm",
+              "url": "https://www.npmjs.com/package/git-time-machine"
+            }
+          ],
+          "install": "npm install -g git-time-machine",
+          "story": "A command-line tool for navigating git history interactively. Instead of parsing raw git log output, it gives you a scrollable visual timeline with commit details, diff previews, and the ability to check out any point. Named after the obvious reference. Two hundred and twenty-five downloads on npm."
+        },
+        {
+          "slug": "keel",
+          "title": "Keel",
+          "description": "Subscription tracker with renewal reminders",
+          "year": 2023,
+          "tech": [
+            "React Native"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/keel-site"
+            },
+            {
+              "label": "App Store",
+              "url": "https://usekeel.co"
+            }
+          ],
+          "install": "",
+          "story": "I built Keel because I kept forgetting about subscriptions until they showed up on my bank statement. It is a React Native app, my first real mobile ship to the App Store. The first submission to App Review got rejected over a UI detail that took three hours to track down. The second went through. Getting an app past App Review felt genuinely different from shipping a website: the process, the constraints, the platform. React Native let me move fast on the UI, but in-app purchases and App Store plumbing still took time to get right. It tracks recurring subscriptions with monthly and annual summaries and sends reminders before renewal dates."
+        },
+        {
+          "slug": "pages-figma",
+          "title": "Pages",
+          "description": "Manage pages in big Figma files",
+          "year": 2023,
+          "tech": [
+            "Figma API",
+            "TypeScript",
+            "React"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/pages"
+            },
+            {
+              "label": "Figma Community",
+              "url": "https://www.figma.com/community/plugin/1106104074775818911/pages"
+            }
+          ],
+          "install": "",
+          "story": "A Figma plugin for managing pages in large design files. When a document grows to dozens of pages, Figma's sidebar becomes tedious. Pages adds search, bulk renaming, and reordering. Eight hundred designers use it, which is more than I expected when I published it."
+        },
+        {
+          "slug": "cs-stats",
+          "title": "CS Stats",
+          "description": "CS2 stats on Steam profiles",
+          "year": 2022,
+          "tech": [
+            "JavaScript",
+            "Chrome Extensions",
+            "CSS"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/csstats"
+            },
+            {
+              "label": "Chrome Store",
+              "url": "https://chromewebstore.google.com/detail/cs-stats/fdnhgmlohooaabloinhbgmkhpebckapp"
+            }
+          ],
+          "install": "",
+          "story": "Overlays CS2 statistics directly on Steam profile pages. When you visit a player's Steam profile, the extension fetches their publicly available CS2 match data and renders it inline. K/D, win rate, hours. without leaving the Steam platform. A hundred people use it actively."
+        },
+        {
+          "slug": "hexr",
+          "title": "Hexr",
+          "description": "Pick colors from any webpage",
+          "year": 2022,
+          "tech": [
+            "JavaScript",
+            "Chrome Extensions",
+            "CSS"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/hexpicker"
+            },
+            {
+              "label": "Chrome Store",
+              "url": "https://chrome.google.com/webstore/detail/hex-picker/jmnkgndafoldkblpnmmollbgkdfemmfc"
+            }
+          ],
+          "install": "",
+          "story": "A Chrome extension for picking colors from any webpage. Click the extension icon, activate the eye-dropper, hover over any element, and get the hex code instantly. Built because I kept bouncing between browser devtools and design tools just to grab a color value. Eighty active users."
+        },
+        {
+          "slug": "ipynb-extractor",
+          "title": "Ipynb Image Extractor",
+          "description": "Extract images from Jupyter notebooks",
+          "year": 2022,
+          "tech": [
+            "Python",
+            "Nbformat",
+            "Pillow"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/ipynb-image-extract"
+            },
+            {
+              "label": "PyPI",
+              "url": "https://pypi.org/project/ipynb-image-extract/"
+            }
+          ],
+          "install": "pip install ipynb-image-extract",
+          "story": "Extracts all images from Jupyter notebook files into a directory with one command. The kind of tool you build because you needed it once, spent twenty minutes looking for an existing one, found nothing good, and wrote it in an afternoon. Fifty people have found it since."
+        },
+        {
+          "slug": "meet",
+          "title": "Meet",
+          "description": "Group video calls with screen share",
+          "year": 2022,
+          "tech": [
+            "React",
+            "Node.js",
+            "Socket.io"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/meet"
+            },
+            {
+              "label": "Demo",
+              "url": "https://ckvyqugj7184663idk0i811d0su-8rbb2fvau-calatop.vercel.app/authenticate"
+            }
+          ],
+          "install": "",
+          "story": "Video calling with screen sharing, built when I wanted to understand how WebRTC actually worked in practice. Supports group video calls, screen sharing, and real-time chat alongside the video. Authentication via Google, Slack, or Microsoft. Won first place at Vishesh MREC hackathon."
+        },
+        {
+          "slug": "scrapetron",
+          "title": "Scrapetron",
+          "description": "Python scraping with simple config",
+          "year": 2022,
+          "tech": [
+            "Python",
+            "BeautifulSoup",
+            "Scrapy"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/scrapetron"
+            },
+            {
+              "label": "PyPI",
+              "url": "https://pypi.org/project/scrapetron/"
+            }
+          ],
+          "install": "pip install scrapetron",
+          "story": "A Python web scraping framework built on BeautifulSoup and Scrapy with a simplified configuration interface. I kept rewriting the same scraper boilerplate for different projects, so I packaged the pattern into something reusable."
+        },
+        {
+          "slug": "shuttab",
+          "title": "ShutTab",
+          "description": "Block distracting sites in Chrome",
+          "year": 2022,
+          "tech": [
+            "JavaScript",
+            "Chrome Extensions",
+            "CSS"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/ShutTab"
+            },
+            {
+              "label": "Chrome Store",
+              "url": "https://chromewebstore.google.com/detail/shuttab-%E2%80%93-free-site-block/lmkjcljgmcbechfhpkpamniadalgjojc"
+            }
+          ],
+          "install": "",
+          "story": "A Chrome extension that blocks websites you add to a blocklist. useful for blocking social media during work sessions. The chrome.declarativeNetRequest API made it more involved than the concept suggests. Twenty people have it installed, which means twenty people trusted me to run code in their browser on every page load."
+        },
+        {
+          "slug": "customer-management",
+          "title": "Customer Management App",
+          "description": "CRM with PostgreSQL backend",
+          "year": 2021,
+          "tech": [
+            "React",
+            "Node.js",
+            "Express",
+            "PostgreSQL"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/CustomerManagement"
+            }
+          ],
+          "install": "",
+          "story": "A CRM system with customer records, interaction history, and a PostgreSQL backend. Built to understand full-stack development with a relational database. foreign keys, joins, and migrations. after spending time with MongoDB."
+        },
+        {
+          "slug": "tanoshi",
+          "title": "Tanoshi",
+          "description": "Easy-on-the-eyes VS Code theme",
+          "year": 2021,
+          "tech": [
+            "CSS",
+            "JSON"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/tanoshi"
+            },
+            {
+              "label": "VS Code Marketplace",
+              "url": "https://marketplace.visualstudio.com/items?itemName=RohanSanjeev.tanoshi"
+            }
+          ],
+          "install": "",
+          "story": "An eye-friendly VS Code color theme designed for long coding sessions. The palette is desaturated enough to reduce strain but not so muted that it loses the utility of syntax highlighting. Every color decision was made for a specific reason: keyword colors, string colors, comment opacity. Seventeen hundred installs and fourteen GitHub stars. It stays consistent across twenty plus languages and ships in dark and light modes."
+        },
+        {
+          "slug": "todo-ios",
+          "title": "Todo iOS App",
+          "description": "Native iOS todos with iCloud sync",
+          "year": 2021,
+          "tech": [
+            "Swift",
+            "UIKit",
+            "CoreData"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/todoapp"
+            }
+          ],
+          "install": "",
+          "story": "A native iOS to-do app with iCloud sync, built to learn UIKit and CoreData properly. The interface follows iOS conventions closely. it should feel like it belongs on the platform. CoreData handles local persistence with iCloud sync for cross-device access."
+        },
+        {
+          "slug": "zenitsu-bot",
+          "title": "Zenitsu Bot",
+          "description": "Discord moderation and mini-games",
+          "year": 2021,
+          "tech": [
+            "JavaScript",
+            "Discord.js",
+            "Node.js"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/Zenitsu-bot"
+            },
+            {
+              "label": "Invite",
+              "url": "https://discord.com/oauth2/authorize?client_id=766218598913146901"
+            }
+          ],
+          "install": "",
+          "story": "A Discord bot for server moderation and games, named after the character from Demon Slayer. Running in multiple servers with two hundred users. Full moderation toolkit plus an economy system with daily rewards, a shop, and trivia and dice mini-games. Discord.js made the API surface manageable but slash command migration required a significant rewrite."
+        }
+      ]
+    },
+    {
+      "label": "Web",
+      "projects": [
+        {
+          "slug": "languages-lat",
+          "title": "Languages",
+          "description": "Human language history",
+          "year": 2026,
+          "tech": [
+            "HTML",
+            "CSS",
+            "JavaScript"
+          ],
+          "links": [
+            {
+              "label": "Live",
+              "url": "https://www.languages.lat/"
+            }
+          ],
+          "install": "",
+          "story": "An interactive archive of human language: scroll backward through attested evidence, from languages of living memory to the first writing on clay. Filters, collections, proportional timelines, and a free JSON dataset."
+        },
+        {
+          "slug": "mac",
+          "title": "Mac",
+          "description": "macOS in the browser",
+          "year": 2026,
+          "tech": [
+            "HTML",
+            "CSS",
+            "JavaScript"
+          ],
+          "links": [
+            {
+              "label": "Live",
+              "url": "https://mac.rohan.run/"
+            }
+          ],
+          "install": "",
+          "story": "A browser-based macOS experience with a full desktop shell, dock, and native-feeling apps. Messages and FaceTime are fully functional."
+        },
+        {
+          "slug": "quire",
+          "title": "Quire",
+          "description": "Private in-browser PDF editor",
+          "year": 2026,
+          "tech": [
+            "React",
+            "TypeScript",
+            "Vite",
+            "pdf-lib",
+            "react-pdf",
+            "Zustand",
+            "Tailwind CSS"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/quire"
+            },
+            {
+              "label": "Live",
+              "url": "https://pdf.rohan.run/"
+            }
+          ],
+          "install": "",
+          "story": "Quire is a private PDF editor that runs entirely in the browser. Rendering uses pdf.js through react-pdf; editing and export use pdf-lib with fontkit for embedding Google fonts and fonts extracted from the open document. Edit text in place with detected font matching, add signatures and images, annotate, fill or add form fields, reorder pages, and export a clean PDF with no watermark. A separate tools hub adds merge, split, compress, convert, watermark, page numbers, headers and footers, password protection, and metadata editing. There is no backend: files never leave the device."
+        },
+        {
+          "slug": "space",
+          "title": "Still Flying",
+          "description": "Live spacecraft map & space dashboard",
+          "year": 2026,
+          "tech": [
+            "React",
+            "TypeScript",
+            "Vite",
+            "Express",
+            "Node.js"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/still_flying"
+            },
+            {
+              "label": "Live",
+              "url": "https://space.rohan.run/"
+            }
+          ],
+          "install": "",
+          "story": "Still Flying is a live dashboard for everything humanity still has operating beyond Earth. The fleet map pulls heliocentric positions from NASA JPL Horizons, projects them onto a log-scale solar map with true orbital angles, and groups 25 active craft from Voyager 1 out in the Kuiper Belt down to the Mars surface fleet. Around that core, the site adds who's in orbit right now, Mars rover and NASA image feeds, APOD wallpapers, and an upcoming launch calendar backed by a small Express API with cached upstream fetches."
+        },
+        {
+          "slug": "api-clinic",
+          "title": "API Clinic",
+          "description": "API testing in the browser",
+          "year": 2023,
+          "tech": [
+            "Next.js",
+            "React",
+            "Tailwind CSS",
+            "TypeScript"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/api-clinic"
+            },
+            {
+              "label": "Live",
+              "url": "https://apiclinic.vercel.app/"
+            }
+          ],
+          "install": "",
+          "story": "A browser-based API testing tool. like a lightweight Postman that requires no installation. Request builder with headers, query params, and body editing. response inspector with JSON formatting and status display. request history. I built it because I kept reaching for a full Postman install just to make one test request."
+        },
+        {
+          "slug": "contests",
+          "title": "Contests",
+          "description": "Contest and hackathon calendar",
+          "year": 2023,
+          "tech": [
+            "Next.js",
+            "React",
+            "Tailwind CSS",
+            "TypeScript"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/contests"
+            },
+            {
+              "label": "Live",
+              "url": "http://contests.dev/"
+            }
+          ],
+          "install": "",
+          "story": "Built because I kept missing competitive programming contests by not checking enough different calendars. Aggregates events from Codeforces, LeetCode, HackerRank, AtCoder, and others into a single view. Two hundred people use it regularly. The notification system was the feature that made people actually keep coming back."
+        },
+        {
+          "slug": "margin",
+          "title": "Margin",
+          "description": "Minimal EPUB reader",
+          "year": 2023,
+          "tech": [
+            "React",
+            "TypeScript",
+            "Vite"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/margin"
+            },
+            {
+              "label": "Live",
+              "url": "https://marginreader.com/"
+            }
+          ],
+          "install": "",
+          "story": "Most EPUB readers are either feature-heavy or ugly. I built Margin to be the reader I actually wanted: minimal interface, clean typography, nothing competing with the text. Drop an EPUB file in and start reading. The rendering pipeline handles the EPUB zip format, parses the OPF manifest, and renders chapters through a consistent typographic system. It also tracks bookmarks and reading progress."
+        },
+        {
+          "slug": "codechef-mrec",
+          "title": "CodeChef MREC",
+          "description": "CodeChef chapter site for MREC",
+          "year": 2022,
+          "tech": [
+            "Next.js",
+            "React",
+            "Tailwind CSS",
+            "TypeScript"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/mreccodechef/Website"
+            },
+            {
+              "label": "Chapter",
+              "url": "https://github.com/mreccodechef"
+            }
+          ],
+          "install": "",
+          "story": "The official website for the CodeChef chapter I co-founded at MREC. Built to handle event listings, contest results, member profiles, and chapter announcements. We ran contests with over a thousand participants from this site."
+        },
+        {
+          "slug": "dsa-roadmap",
+          "title": "DSA Roadmap",
+          "description": "DSA interview prep roadmap",
+          "year": 2022,
+          "tech": [
+            "Next.js",
+            "React",
+            "Tailwind CSS",
+            "TypeScript"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/dsa"
+            },
+            {
+              "label": "Live",
+              "url": "https://dsa.gay"
+            }
+          ],
+          "install": "",
+          "story": "A structured learning path for data structures and algorithms, built when I was studying for interviews and frustrated by how scattered the resources were online. Twelve thousand visits before AI search made curated roadmaps like this much less novel. It still runs and people still find it useful."
+        },
+        {
+          "slug": "portfolio-v4",
+          "title": "Win95 Desktop (v4)",
+          "description": "Portfolio as a Windows 95 desktop",
+          "year": 2022,
+          "tech": [
+            "React",
+            "Styled Components",
+            "95.css"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/windows95"
+            },
+            {
+              "label": "Demo",
+              "url": "https://rohzzn.github.io/windows95/"
+            }
+          ],
+          "install": "",
+          "story": "A portfolio styled as a Windows 95 desktop. Projects open as draggable and resizable windows, the taskbar tracks open applications, and 95.css handles the authentic visual styling. The skeuomorphic design was a deliberate contrast to flat design conventions."
+        },
+        {
+          "slug": "dekho-car",
+          "title": "Dekho Car",
+          "description": "Car rental search and booking",
+          "year": 2021,
+          "tech": [
+            "React",
+            "Node.js",
+            "MongoDB"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/dekhocar"
+            },
+            {
+              "label": "Demo",
+              "url": "https://dekhocar.vercel.app/"
+            }
+          ],
+          "install": "",
+          "story": "A full car rental marketplace with search, availability calendar, booking flow, and a MongoDB backend for cars, users, and reservations. Two thousand visits. The booking state machine. pending, confirmed, active, returned, cancelled. was the most interesting design challenge."
+        },
+        {
+          "slug": "portfolio-v3",
+          "title": "Framer Scroll (v3)",
+          "description": "One-page Framer-style scroll portfolio",
+          "year": 2021,
+          "tech": [
+            "React",
+            "CSS3",
+            "JavaScript"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/portfolio_v3"
+            },
+            {
+              "label": "Demo",
+              "url": "https://rohzzn.github.io/portfolio_v3/"
+            }
+          ],
+          "install": "",
+          "story": "Typography-first, minimal. White space as the primary design element. The iteration after learning that visual noise was working against me."
+        },
+        {
+          "slug": "mcu-timeline",
+          "title": "Marvel Cinematic Universe Timeline",
+          "description": "MCU in story order",
+          "year": 2021,
+          "tech": [
+            "HTML",
+            "CSS",
+            "JavaScript"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/mcu_timeline"
+            },
+            {
+              "label": "Demo",
+              "url": "https://rohzzn.github.io/mcu_timeline/"
+            }
+          ],
+          "install": "",
+          "story": "An interactive chronological timeline of the Marvel Cinematic Universe, letting you browse all movies and shows in in-universe story order rather than release order. Hover details for each entry. Four thousand visits."
+        },
+        {
+          "slug": "portfolio-v2",
+          "title": "Peak Design (v2)",
+          "description": "Most polished portfolio build",
+          "year": 2021,
+          "tech": [
+            "React",
+            "GSAP",
+            "Sass"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/portfolio_v2"
+            },
+            {
+              "label": "Demo",
+              "url": "https://rohzzn.github.io/portfolio_v2/"
+            }
+          ],
+          "install": "",
+          "story": "Portfolio with GSAP-powered animations. page transitions, scroll-triggered reveals, and cursor effects. The highest-traffic version of all five portfolios, mostly from people finding the GSAP implementation useful as reference."
+        },
+        {
+          "slug": "qr-generator",
+          "title": "QR Generator",
+          "description": "Client-side QR code generator",
+          "year": 2021,
+          "tech": [
+            "JavaScript",
+            "HTML5",
+            "CSS3"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/qr"
+            },
+            {
+              "label": "Demo",
+              "url": "https://rohzzn.github.io/qr/"
+            }
+          ],
+          "install": "",
+          "story": "Generates QR codes for URLs, plain text, and contact cards entirely client-side. No server, no backend. the QR encoding happens in the browser. Three thousand five hundred visits."
+        },
+        {
+          "slug": "youtube-thumbnails",
+          "title": "YouTube Thumbnail Downloader",
+          "description": "Download YouTube thumbnails by URL",
+          "year": 2021,
+          "tech": [
+            "JavaScript",
+            "HTML",
+            "CSS"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/thumbnails"
+            },
+            {
+              "label": "Demo",
+              "url": "https://rohzzn.github.io/thumbnails/"
+            }
+          ],
+          "install": "",
+          "story": "Downloads YouTube video thumbnails in any available resolution from a video URL. Saves the step of digging through page source to find the CDN URL. Constructs the thumbnail URL from the video ID, which YouTube exposes at a predictable path for all resolution variants."
+        },
+        {
+          "slug": "portfolio-v1",
+          "title": "Anime Theme (v1)",
+          "description": "Anime-inspired first portfolio",
+          "year": 2020,
+          "tech": [
+            "HTML5",
+            "CSS3",
+            "JavaScript"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/portfolio_v1"
+            },
+            {
+              "label": "Demo",
+              "url": "https://rohzzn.github.io/portfolio_v1/"
+            }
+          ],
+          "install": "",
+          "story": "The first portfolio, shipped publicly. Anime-inspired visual design. Everything about it is wrong from a professional portfolio standpoint, but it was the first thing I built that I was willing to put my name on."
+        }
+      ]
+    },
+    {
+      "label": "Games",
+      "projects": [
+        {
+          "slug": "captain-claw",
+          "title": "Captain Claw",
+          "description": "The 1997 pirate classic, in your browser",
+          "year": 2026,
+          "tech": [
+            "C++",
+            "SDL2",
+            "Emscripten",
+            "WebAssembly",
+            "Box2D",
+            "Node.js",
+            "WebSocket",
+            "Playwright"
+          ],
+          "links": [
+            {
+              "label": "Play",
+              "url": "https://captainclaw.lol"
+            },
+            {
+              "label": "Donate",
+              "url": "https://donate.rohan.run"
+            }
+          ],
+          "install": "",
+          "story": "Captain Claw is Monolith's 1997 pirate platformer, and OpenClaw is an open-source C++ and SDL2 reimplementation of its engine. This is OpenClaw compiled to WebAssembly with Emscripten, so the whole game runs in a browser tab at captainclaw.lol. No download, no installer: WASD to move, Space to jump, J for the sword, K for the pistol, or the original arrow keys if your hands remember them.\n\nGetting it to run was mostly the parts nobody had finished for the web. The CD rip's CLAW.REZ has no sound effects in it, so one tool unpacks the InstallShield cabinet without running the installer and another merges the 1,151 original WAV files back in. The real SDL2_mixer port replaces the stubbed audio, the music is MIDI played by a TinySoundFont synthesizer in the page, the death and teleport fades are drawn over a frozen frame so WebGL never flashes black, and the picture scales by whole pixels so the art does not shimmer on a Retina screen. The first build died on a MacBook with \"memory access out of bounds\": elevators were holding on to the physics bodies of enemies that had already been killed while riding them. On the desktop that is silent corruption. In WebAssembly it is a hard stop.\n\nThen it grew past a port. A small Node relay hands out six-letter room codes and up to eight players share a level, each Claw in their own colour with a name tag, with kills and treasure counting for everyone. The codes never contain an X or a Z, because the multiplayer menu is lettered with glyphs cut at load time from the original menu art, and the 1997 lettering has neither. Lifting and throwing powder kegs and soldiers, which the original had and OpenClaw never implemented, works with Claw's own animations. Every menu option works, saves stay in the browser per player, custom levels load from a file, and PLEASE DONATE sits on the main menu in the same gold lettering.\n\nIt is served from a Mac at home, with the relay behind the same domain. Before an update goes out, a Playwright suite plays the game in Chromium and Firefox: 29 single-player checks, two browsers in one room, lift and throw, every menu page."
+        },
+        {
+          "slug": "catan-online",
+          "title": "Catan Online",
+          "description": "Multiplayer Catan in the browser",
+          "year": 2026,
+          "tech": [
+            "React",
+            "Node.js",
+            "Socket.IO",
+            "Express",
+            "Vite"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/catan"
+            },
+            {
+              "label": "Live",
+              "url": "https://catan.rohan.run"
+            }
+          ],
+          "install": "",
+          "story": "Building a complete board game from scratch forces you to think about state in a way that CRUD apps never do. The hex grid geometry was the first challenge. Pointy-top hexagons have specific offset math that is easy to get slightly wrong. Keeping game state server-authoritative so players cannot cheat required careful thought about what information each client should receive and when. The game implements full Catan rules: resource production, trading, building, and the robber. The Web Audio dice sounds were a last-minute addition that made the whole thing feel more alive."
+        },
+        {
+          "slug": "dock-poker",
+          "title": "Dock Poker",
+          "description": "Private Texas Hold'em with friends online",
+          "year": 2022,
+          "tech": [
+            "React",
+            "Node.js",
+            "Socket.IO",
+            "Express"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/dock.poker"
+            },
+            {
+              "label": "Live",
+              "url": "https://dock.poker"
+            }
+          ],
+          "install": "",
+          "story": "Built for private games with friends. Full Texas Hold'em rules, private rooms with join codes, real-time game state synchronized via Socket.IO. The hand evaluation logic took longer than I expected. The number of edge cases in poker hand ranking is surprisingly large. It handles disconnect and reconnect mid-game. This project taught me more about managing distributed real-time state than anything else I have built."
+        },
+        {
+          "slug": "greed-island-dex",
+          "title": "Greed Island Dex",
+          "description": "Greed Island card catalog from HXH",
+          "year": 2022,
+          "tech": [
+            "React",
+            "TypeScript",
+            "Vite"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/hxh"
+            },
+            {
+              "label": "Live",
+              "url": "https://hxh.rohan.run/"
+            }
+          ],
+          "install": "",
+          "story": "A complete card catalog for the Greed Island arc from Hunter x Hunter. Every named card with its effects, rarity, and lore. You can search and filter by card type and rarity. I wanted the visual design to match the source material rather than being a generic list view. The card layout tries to evoke the actual card game aesthetic from the arc."
+        },
+        {
+          "slug": "wordle",
+          "title": "Wordle Clone",
+          "description": "Weekend Wordle clone",
+          "year": 2022,
+          "tech": [
+            "JavaScript",
+            "HTML",
+            "CSS"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/wordle"
+            },
+            {
+              "label": "Live",
+              "url": "https://rohzzn.github.io/wordle/"
+            }
+          ],
+          "install": "",
+          "story": "Built in a weekend to understand how Wordle worked under the hood. Core mechanic: five letter words, six guesses, color-coded feedback on each guess. No statistics page, no streak tracking, just the game. The letter-frequency scoring for the word list took some thought to get the difficulty curve right."
+        },
+        {
+          "slug": "pokedex",
+          "title": "Pokedex",
+          "description": "Pokemon encyclopedia via PokeAPI",
+          "year": 2021,
+          "tech": [
+            "JavaScript",
+            "PokéAPI"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/pokedex"
+            },
+            {
+              "label": "Demo",
+              "url": "https://rohzzn.github.io/pokedex/"
+            }
+          ],
+          "install": "",
+          "story": "A Pokemon encyclopedia built against the public PokéAPI. Search by name or number, filter by type, view base stats as visual bars, and follow evolution chains. The first project where I consumed a well-documented public REST API, which made the development unusually smooth."
+        },
+        {
+          "slug": "pokemon-platformer",
+          "title": "Pokemon 2d Platformer",
+          "description": "2D Pokemon-style platformer",
+          "year": 2021,
+          "tech": [
+            "JavaScript",
+            "Tiled"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/pokemon"
+            },
+            {
+              "label": "Play",
+              "url": "https://rohzzn.github.io/pokemon/"
+            }
+          ],
+          "install": "",
+          "story": "A 2D platformer set in a Pokemon-style world, built with a JavaScript game engine and Tiled for level design. Character movement, collision detection, and the map tile rendering all custom-built. Six thousand eight hundred visits. the most traffic any of my hobby projects has gotten."
+        }
+      ]
+    },
+    {
+      "label": "Other",
+      "projects": [
+        {
+          "slug": "interactions",
+          "title": "Interactions",
+          "description": "Seven UI experiments in seven days",
+          "year": 2023,
+          "tech": [
+            "Next.js",
+            "React",
+            "Tailwind CSS",
+            "TypeScript"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/interactions"
+            },
+            {
+              "label": "Live",
+              "url": "https://interactions.rohan.run/"
+            }
+          ],
+          "install": "",
+          "story": "Seven days, seven UI interaction concepts. one per day. Custom cursor behaviors, physics-based animations, magnetic hover effects, gesture-driven menus. The one-day constraint forced rapid decisions over polish, which is actually a useful mode for exploring interaction ideas."
+        },
+        {
+          "slug": "anomaly-detection",
+          "title": "Anomaly Detection in Wireless Networks",
+          "description": "ML model for network intrusions",
+          "year": 2022,
+          "tech": [
+            "Python",
+            "Machine Learning",
+            "TensorFlow"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/nids"
+            }
+          ],
+          "install": "",
+          "story": "A TensorFlow neural network for detecting anomalies in wireless network traffic. specifically network intrusion patterns. Trained on publicly available network datasets. Built as a research-grade implementation for academic work in network security."
+        },
+        {
+          "slug": "discord-mirror",
+          "title": "Discord Mirror",
+          "description": "Sync channels across Discord servers",
+          "year": 2022,
+          "tech": [
+            "Node.js"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/discordmirror"
+            }
+          ],
+          "install": "",
+          "story": "A Node.js bot that mirrors messages between Discord servers in real time. Useful for syncing announcement channels across multiple communities without having to post to each separately. Configurable channel mapping per server pair."
+        },
+        {
+          "slug": "overthewire",
+          "title": "OverTheWire Challenges",
+          "description": "OverTheWire wargame writeups",
+          "year": 2022,
+          "tech": [
+            "Command-line scripting"
+          ],
+          "links": [
+            {
+              "label": "OverTheWire",
+              "url": "https://overthewire.org/wargames/"
+            },
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/overthewire"
+            }
+          ],
+          "install": "",
+          "story": "Writeups and solutions for the OverTheWire wargame challenges. progressive CTF-style security challenges covering Linux fundamentals, privilege escalation, web exploitation, and cryptography. Documented for reference and to help others working through the same problems."
+        },
+        {
+          "slug": "automobile-analytics",
+          "title": "Automobile Analytics",
+          "description": "Automotive sales data analysis",
+          "year": 2021,
+          "tech": [
+            "Python",
+            "Pandas",
+            "Matplotlib"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/automobile"
+            },
+            {
+              "label": "Notebook",
+              "url": "https://github.com/rohzzn/automobile/blob/main/colab.ipynb"
+            }
+          ],
+          "install": "",
+          "story": "Marketing strategy analysis for the automotive industry using publicly available sales data. Pandas for data cleaning and aggregation, Matplotlib for visualization, the full analysis documented in a Jupyter notebook."
+        },
+        {
+          "slug": "block-steam-invites",
+          "title": "Block-Steam-Invites",
+          "description": "Block unwanted Steam invites",
+          "year": 2021,
+          "tech": [
+            "JavaScript",
+            "Tampermonkey/Greasemonkey"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/block-steam-invites"
+            },
+            {
+              "label": "Tutorial",
+              "url": "https://www.youtube.com/watch?v=KhLYxv3iry0"
+            }
+          ],
+          "install": "",
+          "story": "A Tampermonkey userscript that intercepts and blocks unwanted Steam friend request notifications. Runs client-side in the browser and filters them out before they appear. The YouTube tutorial explaining how to install it got more views than I expected."
+        },
+        {
+          "slug": "github-any-year",
+          "title": "GitHub Repo Any Year Any Day",
+          "description": "Backdate GitHub commits from a script",
+          "year": 2021,
+          "tech": [
+            "Shell Script"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/2001-script"
+            },
+            {
+              "label": "Script",
+              "url": "https://github.com/rohzzn/2001-script/blob/main/index.sh"
+            }
+          ],
+          "install": "bash index.sh",
+          "story": "A shell script that creates GitHub repositories with backdated commits using Git's author date and committer date environment variables. Makes your contribution graph show activity from any date you specify. Simpler than it sounds. Git has always supported arbitrary commit dates."
+        },
+        {
+          "slug": "smart-agriculture",
+          "title": "Smart Agriculture",
+          "description": "Sensor-driven automated irrigation",
+          "year": 2021,
+          "tech": [
+            "Arduino",
+            "C++",
+            "Sensors"
+          ],
+          "links": [
+            {
+              "label": "GitHub",
+              "url": "https://github.com/rohzzn/smart_agriculture"
+            },
+            {
+              "label": "Paper",
+              "url": "https://github.com/rohzzn/smart_agriculture/blob/main/Smart.pdf"
+            }
+          ],
+          "install": "",
+          "story": "An Arduino-based automated farming system using soil moisture, temperature, and light sensors to monitor conditions and trigger irrigation automatically. The sensor calibration for different soil types was the most time-consuming part. The project was written up as a research paper."
+        }
+      ]
+    }
+  ],
+  "writing": [
+    {
+      "slug": "captain-claw",
+      "title": "Captain Claw, Back in a Browser Tab",
+      "description": "Captain Claw was my favourite game as a kid. I turned it into a browser game you can play at captainclaw.lol, then added online multiplayer so friends can play it together.",
+      "date": "Oct 2026",
+      "category": "tech"
+    },
+    {
+      "slug": "nobody-said-he-was-wrong",
+      "title": "Nobody Said He Was Wrong",
+      "description": "A researcher resigned from Anthropic and said the labs are gambling with our lives. Eighty-three minutes later the company's own alignment lead agreed, with a number. On how we ended up in a world where that is an ordinary week.",
+      "date": "Sep 2026",
+      "category": "tech"
+    },
+    {
+      "slug": "telugumovies-in",
+      "title": "Why I Built telugumovies.in",
+      "description": "I wanted a NAS full of Tollywood films and Jellyfin on my parents' TV. Storage math said no, so I built telugumovies.in, a Telugu movie catalog with cinema listings and 500+ free YouTube links. Here is why I paused it.",
+      "date": "Jun 2026",
+      "category": "life"
+    },
+    {
+      "slug": "apple-best-ai-feature",
+      "title": "Apple's Best AI Feature Is Not Siri",
+      "description": "WWDC 2026 buried the most useful agentic AI feature in the Passwords app. A look at what it actually does, why it works, and where it breaks.",
+      "date": "Jun 2026",
+      "category": "tech"
+    },
+    {
+      "slug": "discord-widgets",
+      "title": "How to Build Discord Profile Widgets",
+      "description": "A practical guide to building Discord profile widgets using the new widgets v2 experiment, from setting up your application to displaying live data on your profile.",
+      "date": "May 2026",
+      "category": "tech"
+    },
+    {
+      "slug": "linux-home-server",
+      "title": "Building a Linux Home Server",
+      "description": "Planning a self-hosted Linux server to run every personal website, Docker container, photo backup, ad blocker, and side project from one machine.",
+      "date": "May 2026",
+      "category": "tech"
+    },
+    {
+      "slug": "what-this-site-loads",
+      "title": "Everything This Site Loads Over the Wire",
+      "description": "I opened the network tab on my own portfolio and wrote down every request. The fonts, the scripts, the API calls, and what I'd change.",
+      "date": "May 2026",
+      "category": "tech"
+    },
+    {
+      "slug": "software-i-admire",
+      "title": "Software I Admire That I Didn't Write",
+      "description": "A look at the C programs, Rust tools, and Go infrastructure I depend on every day but couldn't have built myself.",
+      "date": "Apr 2025",
+      "category": "tech"
+    },
+    {
+      "slug": "forty-projects",
+      "title": "What I Learned Building 40 Side Projects",
+      "description": "Looking back at every side project I have shipped: what got users, what got abandoned, and what the pattern between them actually is.",
+      "date": "Feb 2026",
+      "category": "tech"
+    },
+    {
+      "slug": "moving-to-cincinnati",
+      "title": "From Hyderabad to Cincinnati",
+      "description": "The whole process of finishing a degree in India, applying to grad school, getting a visa, and arriving alone in a city 14,000km away.",
+      "date": "Aug 2024",
+      "category": "life"
+    },
+    {
+      "slug": "catan-coop",
+      "title": "Building Multiplayer Catan From Scratch",
+      "description": "How I built a full-featured online Settlers of Catan: hex grid geometry, server-authoritative game state, Socket.IO rooms, and Web Audio all from scratch.",
+      "date": "May 2026",
+      "category": "tech"
+    },
+    {
+      "slug": "first-spring",
+      "title": "Second Semester at UC",
+      "description": "Reflecting on challenging academics, leadership, and life in Cincinnati during my second semester at the University of Cincinnati.",
+      "date": "Apr 2025",
+      "category": "life"
+    },
+    {
+      "slug": "uc-experience",
+      "title": "First Semester at UC",
+      "description": "My experience navigating grad school, new friendships, and adjusting to life in Cincinnati during my first semester.",
+      "date": "Dec 2024",
+      "category": "life"
+    },
+    {
+      "slug": "variables-exposure",
+      "title": "Environment Variables Dont Hide Data",
+      "description": "That super-secret API key you tucked away in a Vercel environment variable? It might not be as hidden as you think.",
+      "date": "Dec 2024",
+      "category": "tech"
+    },
+    {
+      "slug": "modern-tech-stacks",
+      "title": "Modern Tech Stacks Kill Startups",
+      "description": "Why chasing the latest frameworks and tools can kill a startup before it ever ships anything of value.",
+      "date": "Jun 2024",
+      "category": "tech"
+    },
+    {
+      "slug": "security-article",
+      "title": "Your 2FA Is Broken",
+      "description": "Two-factor authentication feels safe, but most implementations have critical weaknesses that attackers exploit every day.",
+      "date": "May 2024",
+      "category": "tech"
+    },
+    {
+      "slug": "boring-performance",
+      "title": "Boring Guide to 10x Frontend Performance",
+      "description": "The unsexy, practical steps that actually make your frontend fast: no magic, just fundamentals done right.",
+      "date": "Apr 2024",
+      "category": "tech"
+    },
+    {
+      "slug": "discord-article",
+      "title": "How Discord Survived 2024s Biggest Launch",
+      "description": "A deep dive into how Discord's infrastructure scaled to handle millions of concurrent users during a massive game launch.",
+      "date": "Mar 2024",
+      "category": "tech"
+    },
+    {
+      "slug": "esports-journey",
+      "title": "My Time in Esports",
+      "description": "From LAN cafes to online tournaments: my personal journey through competitive gaming and the esports scene.",
+      "date": "Mar 2024",
+      "category": "life"
+    },
+    {
+      "slug": "chatgpt-interface",
+      "title": "Building My Own ChatGPT UI",
+      "description": "Why I built a custom ChatGPT interface instead of using the default, and what I learned along the way.",
+      "date": "Jan 2024",
+      "category": "tech"
+    },
+    {
+      "slug": "ixigo-experience",
+      "title": "SDE Intern at Abhibus (Ixigo)",
+      "description": "Lessons from my software engineering internship at Abhibus, a subsidiary of Ixigo, India's leading travel platform.",
+      "date": "Oct 2023",
+      "category": "life"
+    },
+    {
+      "slug": "beginners-guide-programming",
+      "title": "Beginners Guide for Programming",
+      "description": "A practical, no-nonsense starting point for anyone who wants to learn to code but has no idea where to begin.",
+      "date": "Apr 2021",
+      "category": "tech"
+    },
+    {
+      "slug": "beginners-guide-design",
+      "title": "Beginners Guide for Design",
+      "description": "The core principles, tools, and resources that helped me go from zero design knowledge to building real products.",
+      "date": "Apr 2021",
+      "category": "tech"
+    }
+  ],
+  "books": [
+    {
+      "title": "12 Rules for Life",
+      "review": "Practical wisdom on order and meaning.",
+      "score": 5
+    },
+    {
+      "title": "Freakonomics",
+      "review": "Unconventional insights into hidden economic forces.",
+      "score": 5
+    },
+    {
+      "title": "The Subtle Art of Not Giving a F*ck",
+      "review": "Refreshing honesty about priorities.",
+      "score": 4
+    },
+    {
+      "title": "Shoe Dog",
+      "review": "A raw look into Nike's origin.",
+      "score": 5
+    },
+    {
+      "title": "Make Time",
+      "review": "Tactical tips for focusing on what matters.",
+      "score": 4
+    },
+    {
+      "title": "Show Your Work",
+      "review": "Encourages sharing your process openly.",
+      "score": 4
+    },
+    {
+      "title": "The Song of Achilles",
+      "review": "A beautiful retelling of myth with depth.",
+      "score": 5
+    },
+    {
+      "title": "The Sailor Who Fell from Grace with the Sea",
+      "review": "Haunting exploration of honor and morality.",
+      "score": 4
+    },
+    {
+      "title": "The Psychology of Money",
+      "review": "Insights into how we think about wealth.",
+      "score": 5
+    },
+    {
+      "title": "The Design of Everyday Things",
+      "review": "Essential principles of user-centered design.",
+      "score": 5
+    },
+    {
+      "title": "Man's Search for Meaning",
+      "review": "Profound reflections on purpose and suffering.",
+      "score": 5
+    },
+    {
+      "title": "Beyond Good and Evil",
+      "review": "Challenges conventional morality frameworks.",
+      "score": 4
+    },
+    {
+      "title": "Die with Zero",
+      "review": "Optimizing life experiences over accumulation.",
+      "score": 4
+    },
+    {
+      "title": "The Four Agreements",
+      "review": "A simple guide to personal freedom.",
+      "score": 4
+    },
+    {
+      "title": "Creative Confidence",
+      "review": "Inspiring methods to unlock creativity.",
+      "score": 4
+    },
+    {
+      "title": "The Black Swan",
+      "review": "Understanding rare, impactful events.",
+      "score": 5
+    },
+    {
+      "title": "The Creative Act",
+      "review": "A fresh look at artistry in everyday life.",
+      "score": 4
+    },
+    {
+      "title": "Steal Like an Artist",
+      "review": "Inspiring creative thinking.",
+      "score": 4
+    },
+    {
+      "title": "Keep Going",
+      "review": "A reminder to stay consistent.",
+      "score": 4
+    },
+    {
+      "title": "The Almanack of Naval Ravikant",
+      "review": "Timeless wisdom on wealth and happiness.",
+      "score": 5
+    },
+    {
+      "title": "The Book of Five Rings",
+      "review": "Strategies and philosophy from a legendary samurai.",
+      "score": 4
+    },
+    {
+      "title": "Flowers for Algernon",
+      "review": "A touching, tragic look at intelligence and empathy.",
+      "score": 5
+    },
+    {
+      "title": "Atomic Habits",
+      "review": "Practical steps to build better habits.",
+      "score": 5
+    },
+    {
+      "title": "Why We Sleep",
+      "review": "Eye-opening insights into sleep's crucial role.",
+      "score": 5
+    },
+    {
+      "title": "The 4-Hour Workweek",
+      "review": "Rethinking productivity and lifestyle design.",
+      "score": 4
+    },
+    {
+      "title": "Sapiens",
+      "review": "A sweeping overview of our species' journey.",
+      "score": 5
+    }
+  ],
+  "linkGroups": [
+    {
+      "label": "Socials",
+      "links": [
+        {
+          "title": "Twitter",
+          "description": "Tweets",
+          "url": "https://twitter.com/rohzzn"
+        },
+        {
+          "title": "Instagram",
+          "description": "Touching grass",
+          "url": "https://instagram.com/rohzzn"
+        },
+        {
+          "title": "Discord",
+          "description": "Second home",
+          "url": "https://discord.gg/86H5fscts9"
+        },
+        {
+          "title": "LinkedIn",
+          "description": "Hire me!",
+          "url": "https://linkedin.com/in/rohzzn"
+        },
+        {
+          "title": "Spotify",
+          "description": "Playlists",
+          "url": "https://open.spotify.com/user/rohansanjeev"
+        },
+        {
+          "title": "YouTube",
+          "description": "Content",
+          "url": "https://youtube.com/rohzzn"
+        },
+        {
+          "title": "Reddit",
+          "description": "Posts & comments",
+          "url": "https://www.reddit.com/user/rohzzn/"
+        }
+      ]
+    },
+    {
+      "label": "Development",
+      "links": [
+        {
+          "title": "GitHub",
+          "description": "Commits",
+          "url": "https://github.com/rohzzn"
+        },
+        {
+          "title": "Kaggle",
+          "description": "Notebooks",
+          "url": "https://kaggle.com/rohzzn"
+        },
+        {
+          "title": "CodeChef",
+          "description": "3 Stars",
+          "url": "https://codechef.com/users/rohzzzn"
+        },
+        {
+          "title": "Codeforces",
+          "description": "Nightmares",
+          "url": "https://codeforces.com/profile/rohzzn"
+        },
+        {
+          "title": "LeetCode",
+          "description": "Never gonna be a knight",
+          "url": "https://leetcode.com/rohzzn"
+        }
+      ]
+    },
+    {
+      "label": "Creative",
+      "links": [
+        {
+          "title": "Dribbble",
+          "description": "Illustrations & more",
+          "url": "https://dribbble.com/rohzzn"
+        },
+        {
+          "title": "Figma",
+          "description": "Basically a Jamboard",
+          "url": "https://figma.com/@rohzzn"
+        },
+        {
+          "title": "Behance",
+          "description": "Branding & more",
+          "url": "https://behance.net/rohzzn"
+        }
+      ]
+    },
+    {
+      "label": "Gaming",
+      "links": [
+        {
+          "title": "Steam",
+          "description": "Level 100",
+          "url": "https://steamcommunity.com/id/rohzzn"
+        },
+        {
+          "title": "CS Settings",
+          "description": "CS config",
+          "url": "https://settings.gg/rohzzn"
+        },
+        {
+          "title": "FACEIT",
+          "description": "Peak Level 8",
+          "url": "https://www.faceit.com/en/players/Calatop"
+        },
+        {
+          "title": "Leetify",
+          "description": "CS2 performance analytics",
+          "url": "https://leetify.com/@rohzzn"
+        },
+        {
+          "title": "CSWatch",
+          "description": "CS2 match history",
+          "url": "https://cswatch.in/player/76561198239653194"
+        },
+        {
+          "title": "Epic Games",
+          "description": "Library",
+          "url": "https://store.epicgames.com/u/1bd07ece9fd14b2da2c64b2c31f6f96a"
+        }
+      ]
+    },
+    {
+      "label": "Other",
+      "links": [
+        {
+          "title": "Peerlist",
+          "description": "Linked but better",
+          "url": "https://peerlist.io/rohzzn"
+        },
+        {
+          "title": "DevPost",
+          "description": "Hackathons",
+          "url": "https://devpost.com/rohzzn"
+        },
+        {
+          "title": "Devfolio",
+          "description": "More Hackathons",
+          "url": "https://devfolio.co/@rohzzn"
+        },
+        {
+          "title": "Monkeytype",
+          "description": "Typing Speed",
+          "url": "https://monkeytype.com/profile/Rohzzn"
+        },
+        {
+          "title": "Twitch",
+          "description": "Stream",
+          "url": "https://twitch.tv/rohzzn"
+        },
+        {
+          "title": "Buy me a coffee",
+          "description": "Support",
+          "url": "https://buymeacoffee.com/rohzzn"
+        },
+        {
+          "title": "Product Hunt",
+          "description": "Hunts",
+          "url": "https://www.producthunt.com/@rohzzn"
+        },
+        {
+          "title": "Gumroad",
+          "description": "Products",
+          "url": "https://gumroad.com/rohzzn"
+        }
+      ]
+    }
+  ]
+}
