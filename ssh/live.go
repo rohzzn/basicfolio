@@ -20,6 +20,8 @@ type Live struct {
 	snap     Snapshot
 	lastPull time.Time
 	pulling  bool
+	wantRoom time.Time // the last time someone was in the server room
+	roomBusy bool
 }
 
 type Snapshot struct {
@@ -31,6 +33,11 @@ type Snapshot struct {
 	Films    []Film
 	Anime    []Anime
 	Workouts []Workout
+
+	// the server room, filled only while someone is in it (room.go)
+	Services    []Service
+	Machine     *Machine
+	RoomChecked time.Time
 }
 
 // Discord is the presence Discord shows: online, idle, dnd or offline, and what he is doing.
@@ -99,6 +106,9 @@ func (l *Live) Run(ctx context.Context) {
 			return
 		case <-t.C:
 			l.Pull()
+			if l.roomWanted() {
+				go l.checkRoom()
+			}
 		}
 	}
 }
@@ -277,6 +287,8 @@ func (l *Live) Pull() {
 
 	l.mu.Lock()
 	next.Updated = time.Now()
+	// the room is checked on its own schedule; keep whatever it found while this pull ran
+	next.Services, next.Machine, next.RoomChecked = l.snap.Services, l.snap.Machine, l.snap.RoomChecked
 	l.snap = next
 	l.lastPull = time.Now()
 	l.pulling = false

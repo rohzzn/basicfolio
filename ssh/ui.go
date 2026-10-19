@@ -50,10 +50,10 @@ var cincinnati = func() *time.Location {
 }()
 
 type styles struct {
-	text, bold, dim, faint, accent, sel, green, blue, gold, cursor lipgloss.Style
-	pillOn, pillOff, chip, chipOn                                  lipgloss.Style
-	row, rowSel, rowDim                                            lipgloss.Style
-	bar, barDim, barGreen, barAccent, mode                         lipgloss.Style
+	text, bold, dim, faint, accent, sel, green, blue, gold, red, cursor lipgloss.Style
+	pillOn, pillOff, chip, chipOn                                       lipgloss.Style
+	row, rowSel, rowDim                                                 lipgloss.Style
+	bar, barDim, barGreen, barAccent, mode                              lipgloss.Style
 }
 
 func newStyles(r *lipgloss.Renderer) styles {
@@ -76,6 +76,7 @@ func newStyles(r *lipgloss.Renderer) styles {
 		green:     n().Foreground(green),
 		blue:      n().Foreground(lipgloss.AdaptiveColor{Light: "#2f6ea3", Dark: "#8ab4d8"}),
 		gold:      n().Foreground(lipgloss.AdaptiveColor{Light: "#a8801c", Dark: "#e6c36a"}),
+		red:       n().Foreground(lipgloss.AdaptiveColor{Light: "#b4412f", Dark: "#e07a6a"}),
 		cursor:    n().Background(accent),
 		pillOn:    n().Background(accent).Foreground(ink).Bold(true).Padding(0, 1),
 		pillOff:   n().Foreground(dim).Padding(0, 1),
@@ -103,6 +104,8 @@ type model struct {
 	splash bool
 	page   page
 	open   bool // a project's story or a post is open
+	room   bool // in the server room
+	code   []codeKey
 
 	filter    int // Projects: 0 is all, then each group
 	query     string
@@ -179,6 +182,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.resize(msg.Width, msg.Height)
 		}
 	case tickMsg:
+		if m.room {
+			m.live.WantRoom()
+		}
 		m.snap = m.live.Snapshot()
 		m.refresh()
 		return m, tick()
@@ -226,7 +232,14 @@ func (m *model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.refresh()
 		return m, nil
 	}
-	listingProjects := m.page == pageProjects && !m.open
+	if m.konami(k) {
+		m.room = true
+		m.live.WantRoom()
+		m.vp.SetYOffset(0)
+		m.refresh()
+		return m, tea.Tick(3*time.Second, func(time.Time) tea.Msg { return pulledMsg{} })
+	}
+	listingProjects := m.page == pageProjects && !m.open && !m.room
 	switch k {
 	case "q":
 		return m, tea.Quit
@@ -275,7 +288,10 @@ func (m *model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			m.refresh()
 		}
 	case "esc", "backspace":
-		if m.open {
+		if m.room {
+			m.room = false
+			m.refresh()
+		} else if m.open {
 			m.open = false
 			m.refresh()
 		} else if listingProjects && m.query != "" {
@@ -309,11 +325,14 @@ func (m *model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 // selecting is a page of rows to choose from, rather than one to scroll through.
 func (m *model) selecting() bool {
+	if m.room {
+		return false
+	}
 	return !m.open && (m.page == pageProjects || m.page == pageWriting) || m.page == pageLinks
 }
 
 func (m *model) goTo(p page) {
-	m.page, m.open = p, false
+	m.page, m.open, m.room = p, false, false
 	m.vp.SetYOffset(0)
 	m.refresh()
 }
@@ -353,7 +372,7 @@ func (m *model) refresh() {
 	if m.reading() {
 		m.vp.Width = m.cw - 2
 	}
-	if m.page == pageProjects && !m.open {
+	if m.page == pageProjects && !m.open && !m.room {
 		ph := m.bodyH() - 2
 		if m.pcur < m.ptop {
 			m.ptop = m.pcur
@@ -377,6 +396,9 @@ func (m *model) refresh() {
 func (m *model) reading() bool { return m.page == pageWriting && m.open }
 
 func (m *model) body() (string, int) {
+	if m.room {
+		return m.roomView(), -1
+	}
 	switch m.page {
 	case pageProjects:
 		list := m.projects()
@@ -409,7 +431,7 @@ func (m *model) View() string {
 	}
 	var body string
 	switch {
-	case m.page == pageProjects && !m.open:
+	case m.page == pageProjects && !m.open && !m.room:
 		body = m.projectsPane()
 	case m.reading():
 		body = m.withGutter(m.vp.View())
@@ -466,6 +488,13 @@ func (m *model) statusParts() (mode, hints, right string) {
 	pct := ""
 	if !m.vp.AtTop() || !m.vp.AtBottom() {
 		pct = st.barDim.Render(fmt.Sprintf("%.0f%%", m.vp.ScrollPercent()*100))
+	}
+	if m.room {
+		checked := st.barDim.Render("checking")
+		if !m.snap.RoomChecked.IsZero() {
+			checked = st.barDim.Render("checked " + since(m.snap.RoomChecked))
+		}
+		return "SERVER ROOM", "↑↓ look around   esc leave quietly", checked
 	}
 	switch m.page {
 	case pageProjects:
@@ -1117,6 +1146,143 @@ func (m *model) linksView() (string, int) {
 		widths = append(widths, cwid)
 	}
 	return joinCols(colStrs, widths, 2), at
+}
+
+// ── the server room ──
+
+var konamiCode = [...]string{"up", "up", "down", "down", "left", "right", "left", "right", "b", "a"}
+
+type codeKey struct {
+	k string
+	p page // the page the visitor was on when this key went in
+}
+
+// konami notes a key and says whether it finished the Konami code. The arrows in it have already
+// moved things by the time it completes, so the room opens on the page the code began on.
+func (m *model) konami(k string) bool {
+	m.code = append(m.code, codeKey{k, m.page})
+	if len(m.code) > len(konamiCode) {
+		m.code = m.code[len(m.code)-len(konamiCode):]
+	}
+	if len(m.code) < len(konamiCode) {
+		return false
+	}
+	for i, c := range m.code {
+		if c.k != konamiCode[i] {
+			return false
+		}
+	}
+	m.page, m.open = m.code[0].p, false
+	m.code = nil
+	return true
+}
+
+func (m *model) roomView() string {
+	st, cw := m.st, m.cw
+	s := m.snap
+	up, checked := 0, 0
+	for _, sv := range s.Services {
+		if sv.Checked {
+			checked++
+			if sv.OK {
+				up++
+			}
+		}
+	}
+	state := st.faint.Render("●") + st.dim.Render(" checking")
+	switch {
+	case checked > 0 && up == checked:
+		state = st.green.Render("●") + " all green"
+	case checked > 0:
+		state = st.red.Render("●") + fmt.Sprintf(" %d down", checked-up)
+	}
+	head := spread(st.sel.Render("↑ ↑ ↓ ↓ ← → ← → b a")+st.dim.Render("   you found the server room"), state, cw)
+
+	two := cw >= 86
+	rw := cw
+	if two {
+		rw = cw - 38
+	}
+	list := s.Services
+	if len(list) == 0 {
+		list = roomServices
+	}
+	inner := rw - 4
+	var units []string
+	for _, sv := range list {
+		led, word, took := st.faint.Render("●"), st.dim.Render("…"), ""
+		if sv.Checked {
+			took = st.dim.Render(fmt.Sprintf("%dms", sv.Took.Milliseconds()))
+			led, word = st.green.Render("●"), st.green.Render("up")
+			if !sv.OK {
+				led, word = st.red.Render("●"), st.red.Render("down")
+			}
+		}
+		right := took + "  " + fit(word, 4)
+		left := led + " " + fit(trunc(sv.Name, 19), 20) + st.dim.Render(trunc(sv.Kind, max(4, inner-24-lipgloss.Width(right))))
+		units = append(units, spread(left, right, inner))
+	}
+	units = append(units, spread(st.accent.Render("●")+" "+st.sel.Render(fit("ssh rohan.my", 20))+st.dim.Render("you are here · :2222"), fit(st.accent.Render("up"), 4), inner))
+	rack := m.box("Rack", units, rw, false)
+
+	card := m.macCard(34, up, checked)
+	if !two {
+		return head + "\n\n" + rack + "\n\n" + card
+	}
+	return head + "\n\n" + joinCols([]string{rack, card}, []int{rw, 34}, 4)
+}
+
+func (m *model) macCard(width, up, checked int) string {
+	st, s := m.st, m.snap
+	row := func(k, v string) string { return spread(st.dim.Render(k), v, width-4) }
+	or := func(v string) string {
+		if v == "" {
+			return st.dim.Render("n/a")
+		}
+		return v
+	}
+	var l []string
+	if mc := s.Machine; mc == nil {
+		l = append(l, st.dim.Render("reading the Mac…"))
+	} else {
+		uptime := ""
+		if !mc.Boot.IsZero() {
+			uptime = span(time.Since(mc.Boot))
+		}
+		containers := st.red.Render("docker is off")
+		if mc.Containers >= 0 {
+			containers = fmt.Sprint(mc.Containers)
+		}
+		checks := st.green.Render(fmt.Sprintf("%d green", up))
+		if up < checked {
+			checks = st.red.Render(fmt.Sprintf("%d of %d green", up, checked))
+		}
+		l = append(l,
+			row("machine", or(mc.Model)),
+			row("macOS", or(mc.OS)),
+			row("up for", or(uptime)),
+			row("tunnels", fmt.Sprint(mc.Tunnels)),
+			row("containers", containers),
+			row("checks", checks),
+		)
+	}
+	out := m.box("The Mac under the desk", l, width, false)
+	for _, line := range lines(st.dim, "No ports open but this one. Everything else leaves through Cloudflare tunnels, outbound only.", width) {
+		out += "\n" + line
+	}
+	return out
+}
+
+// span is a stretch of time in its two largest units: "3 days 4 h", "5 h 12 m".
+func span(d time.Duration) string {
+	days, hrs, mins := int(d.Hours())/24, int(d.Hours())%24, int(d.Minutes())%60
+	switch {
+	case days > 1:
+		return fmt.Sprintf("%d days %d h", days, hrs)
+	case days == 1:
+		return fmt.Sprintf("1 day %d h", hrs)
+	}
+	return fmt.Sprintf("%d h %d m", hrs, mins)
 }
 
 // ── drawing helpers ──

@@ -44,6 +44,10 @@ func TestScreens(t *testing.T) {
 				switch k {
 				case "right":
 					msg = tea.KeyMsg{Type: tea.KeyRight}
+				case "left":
+					msg = tea.KeyMsg{Type: tea.KeyLeft}
+				case "up":
+					msg = tea.KeyMsg{Type: tea.KeyUp}
 				case "down":
 					msg = tea.KeyMsg{Type: tea.KeyDown}
 				case "enter":
@@ -96,5 +100,21 @@ func TestScreens(t *testing.T) {
 		shot("hobbies")
 		keys("5", "down", "down", "down", "down", "down", "down", "down", "down", "c")
 		shot("links")
+		keys("up", "up", "down", "down", "left", "right", "left", "right", "b", "a")
+		if !m.room || m.page != pageLinks {
+			t.Errorf("%dx%d: the Konami code should open the room over Links (room %v, page %v)", w, h, m.room, m.page)
+		}
+		if os.Getenv("OFFLINE") == "" {
+			// opening the room started a check in the background; wait for it
+			for i := 0; i < 150 && live.Snapshot().RoomChecked.IsZero(); i++ {
+				time.Sleep(100 * time.Millisecond)
+			}
+			m.Update(pulledMsg{})
+		}
+		shot("server room")
+		keys("esc")
+		if m.room || m.page != pageLinks {
+			t.Errorf("%dx%d: esc should leave the room back to Links", w, h)
+		}
 	}
 }
