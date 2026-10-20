@@ -2,22 +2,11 @@ import React from 'react';
 import Link from 'next/link';
 import PostReads from '@/components/PostReads';
 import PostFilm from '@/components/PostFilm';
-import Image from '@/components/SiteImage';
+import TvLoop from './TvLoop';
 
 const P = 'text-zinc-600 dark:text-neutral-400 mb-4';
 const H2 = 'text-base font-medium mt-10 mb-4 dark:text-paper';
 const ASSETS = '/writing/fast-tv';
-
-function Shot({ src, alt, caption }: { src: string; alt: string; caption: string }) {
-  return (
-    <figure className="mb-6 mt-2">
-      <div className="overflow-hidden rounded-lg border border-zinc-200 bg-black dark:border-neutral-700">
-        <Image src={`${ASSETS}/${src}`} alt={alt} width={1600} height={900} className="h-auto w-full" />
-      </div>
-      <figcaption className="mt-2 text-xs text-zinc-500 dark:text-neutral-500">{caption}</figcaption>
-    </figure>
-  );
-}
 
 // measured over adb with dumpsys meminfo and gfxinfo, on the Google TV home screen before and on mine after
 const NUMBERS: [string, string, string][] = [
@@ -104,30 +93,35 @@ export default function FastTv() {
 
         <p className={P}>
           The home screen is three pages stacked on top of each other, and up and down on the remote move between
-          them. The middle one is the apps: one row of big tiles on black. The PlayStation comes first because it is
-          what I use most, and selecting it switches the TV to HDMI 1. The rest are ordered by how much I have watched
-          each one over the last 30 days. The focused tile turns its brand colour and grows a little, and there is a
-          soft tick as you move. The clock and the weather sit above.
+          them. This is the TV itself, recorded straight off its screen, with nothing sped up:
         </p>
 
-        <Shot
-          src="apps.webp"
-          alt="The apps page: a large clock and the weather above one row of tiles, the PlayStation tile focused in blue"
-          caption="The apps, the page the TV opens on."
-        />
+        <figure className="mb-6 mt-2">
+          <div className="overflow-hidden rounded-lg border border-zinc-200 bg-black dark:border-neutral-700">
+            <TvLoop
+              src={`${ASSETS}/tv-ui.mp4`}
+              poster={`${ASSETS}/tv-ui.webp`}
+              label="A screen recording of the TV: the focus moves along the row of app tiles, one press up opens the dashboard with the weather and calendar, and one press down from the apps opens the Watch page with rows of shows and videos"
+            />
+          </div>
+          <figcaption className="mt-2 text-xs text-zinc-500 dark:text-neutral-500">
+            Along the apps, up to the dashboard, back down, and down through the Watch page.
+          </figcaption>
+        </figure>
+
+        <p className={P}>
+          The middle page is the apps: one row of big tiles on black. The PlayStation comes first because it is what I
+          use most, and selecting it switches the TV to HDMI 1. The rest are ordered by how much I have watched each
+          one over the last 30 days. The focused tile turns its brand colour and grows a little, and there is a soft
+          tick as you move. The clock, the weather and whatever is playing on my Spotify sit above.
+        </p>
 
         <p className={P}>
           Up from the apps is the dashboard: a greeting, the date and the time here and in India, the weather with a
           five-day forecast, and my calendar for the week. When India is playing cricket or a Formula 1 session is on,
-          the live score takes the greeting&apos;s place. It also shows what is playing on my Spotify and a few stock
-          prices. Nothing on it moves, so it costs nothing to leave up.
+          the live score takes the greeting&apos;s place, and a few stock prices can sit there too. Nothing on it moves,
+          so it costs nothing to leave up.
         </p>
-
-        <Shot
-          src="dashboard.webp"
-          alt="The dashboard: Good afternoon, Rohan, the time, today's weather and a five-day forecast, and this week's calendar"
-          caption="The dashboard, one press up."
-        />
 
         <p className={P}>
           Down from the apps is the Watch page. The first row is everything I am in the middle of, from Netflix,
@@ -135,12 +129,6 @@ export default function FastTv() {
           videos, then trending anime and Netflix&apos;s Top 10. Picking a card opens it in its own app, right where I
           left off.
         </p>
-
-        <Shot
-          src="watch.webp"
-          alt="The Watch page: rows of show and video artwork under Continue, YouTube and Anime, with SPY x FAMILY focused"
-          caption="The Watch page, one press down."
-        />
 
         <h2 className={H2}>The rest of the remote</h2>
 
