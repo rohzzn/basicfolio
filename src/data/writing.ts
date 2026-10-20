@@ -10,6 +10,15 @@ export type Post = {
 
 export const posts: Post[] = [
   {
+    slug: 'fast-tv',
+    title: 'Making My TV Fast Again',
+    description:
+      'My TCL Google TV took a moment to react to everything. I switched off 34 apps it came with and wrote my own home screen for it, and now it keeps up with the remote.',
+    date: '2026-10-20',
+    displayDate: 'Oct 2026',
+    category: 'tech',
+  },
+  {
     slug: 'captain-claw',
     title: 'Captain Claw, Back in a Browser Tab',
     description:

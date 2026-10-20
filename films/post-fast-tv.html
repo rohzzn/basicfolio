@@ -1,0 +1,140 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>post-fast-tv</title>
+<link rel="stylesheet" href="film.css">
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="kit.js"></script>
+<script>
+'use strict';
+// BRIEF
+// Subject: Making My TV Fast Again - a slow Google TV, its preinstalled apps switched off, and a home screen of my own.
+// Look: ink in a dark living room, the screen pure black. Anchor: the TV on its cabinet. Signature: the cluttered
+// screen with its spinner empties tile by tile, one clean row slides in and the focus races along it.
+// t     dur   scene   what changes                                                       kit
+// 0.0   1.7   slow    a crowded grid of grey tiles and banners, a loading ring turning     RR grid, arcPts
+// 1.7   1.35  clear   the tiles drop off the screen one at a time, on the twos             RR, clip
+// 3.05  2.0   fast    five tiles slide in, focus jumps along the row, "fast again" written writeOn
+
+const PAL_TV = makePalette({
+  paper: '#1c1814', paperBand: null, ink: '#f1ece4', night: '#110e0b', chalk: '#f1ece4', chalkDim: '#7a6f62', guide: 'rgba(241,236,228,.22)',
+  fills: ['#0d0d0e', '#3b2b20', '#000000', '#2f6fe0', '#e2403a', '#2fb35f', '#4a4540', '#e8b341'],
+  shade: '#0a0806', light: '#f6f2ea', blush: '#e2403a',
+  accents: ['#2f6fe0', '#e2403a', '#2fb35f', '#e8b341'], inks: ['#f1ece4', '#2f6fe0'], finish: 'ink',
+}, 'blueprintNight');
+
+const TVX = CX - 560, TVY = 120, TVW = 1120, TVH = 640, M = 22;
+const SX = TVX + M, SY = TVY + M, SW = TVW - 2 * M, SH = TVH - 2 * M;
+
+function room(c, i) {
+  paper(c);
+  grain(c, rectPath(0, 0, W, H), [0, 0, W, H], 320, PAL.light, .25, 3, 3);
+  // the cabinet the TV stands on, and the lamp light on the wall behind it
+  for (let r = 4; r >= 1; r--) { c.fillStyle = alpha(PAL.fills[7], .025); c.beginPath(); c.ellipse(CX, TVY + 260, 520 + r * 120, 300 + r * 70, 0, 0, TAU); c.fill(); }
+  draw(c, RR(TVX - 60, TVY + TVH + 70, TVW + 120, 220, 18), PAL.fills[1], 5, { lw: 6, texo: { density: .35, color: PAL.chalkDim } });
+  for (const k of [-1, 1]) stroke(c, [[CX + k * 300, TVY + TVH + 120], [CX + k * 300, TVY + TVH + 250]], 6 + k, { lw: 5, alpha: .5 });
+  // the TV's feet
+  for (const k of [-1, 1]) stroke(c, [[CX + k * 420, TVY + TVH], [CX + k * 450, TVY + TVH + 70]], 8 + k, { lw: 12 });
+  draw(c, RR(TVX, TVY, TVW, TVH, 18), PAL.fills[0], 9, { lw: 6, tex: false });
+  c.fillStyle = PAL.fills[2]; c.fillRect(SX, SY, SW, SH);
+}
+function clipScreen(c) { c.save(); c.beginPath(); c.rect(SX, SY, SW, SH); c.clip(); }
+
+// the old home screen: a banner, then rows of small muddy tiles
+const COLS = 6, ROWS = 3, GW = 128, GH = 84, GX = SX + 70, GY = SY + 230, GAP = 26;
+const MUD = ['#4a4540', '#5a524a', '#3f3a35', '#6a5f55', '#514a43'];
+function clutterTile(c, k, dy, rot, seed) {
+  const col = k % COLS, row = Math.floor(k / COLS);
+  const x = GX + col * (GW + GAP), y = GY + row * (GH + GAP) + dy;
+  c.save(); c.translate(x + GW / 2, y + GH / 2); c.rotate(rot);
+  draw(c, RR(-GW / 2, -GH / 2, GW, GH, 10), MUD[k % MUD.length], seed, { lw: 4, texo: { density: .3, color: PAL.chalkDim } });
+  textBar(c, -GW / 2 + 16, GH / 2 - 18, 60 + (k * 13) % 40, alpha(PAL.light, .35), 9);
+  c.restore();
+}
+function banner(c, dy, seed) {
+  draw(c, RR(SX + 70, SY + 50 + dy, SW - 140, 140, 14), '#6b4f3e', seed, { lw: 4, texo: { density: .35, color: PAL.chalkDim } });
+  textBar(c, SX + 110, SY + 100 + dy, 360, alpha(PAL.light, .55), 18);
+  textBar(c, SX + 110, SY + 140 + dy, 220, alpha(PAL.light, .35), 12);
+  draw(c, RR(SX + SW - 300, SY + 82 + dy, 150, 76, 10), PAL.fills[7], seed + 1, { lw: 4, tex: false });
+}
+function spinner(c, i, a) {
+  if (a <= 0) return;
+  c.save(); c.globalAlpha = a;
+  stroke(c, arcPts(CX, SY + SH / 2 + 40, 64, 64, 0, TAU, 40), 40, { raw: true, lw: 10, color: alpha(PAL.light, .2) });
+  const a0 = (Math.floor(i / 2) * .55) % TAU;
+  stroke(c, arcPts(CX, SY + SH / 2 + 40, 64, 64, a0, a0 + 1.6, 18), 41, { raw: true, lw: 12, color: PAL.light });
+  c.restore();
+}
+
+function sceneSlow(c, tau, i) {
+  room(c, i);
+  clipScreen(c);
+  banner(c, 0, 20);
+  for (let k = 0; k < COLS * ROWS; k++) clutterTile(c, k, 0, 0, 30 + k);
+  c.fillStyle = alpha(PAL.fills[2], .45); c.fillRect(SX, SY, SW, SH);
+  spinner(c, i, 1);
+  c.restore();
+}
+function sceneClear(c, tau, i) {
+  room(c, i);
+  clipScreen(c);
+  // the banner goes first, then the tiles one at a time, each falling out of the bottom of the screen
+  const pb = sm(0, .25, tau, easeIO);
+  banner(c, pb * (SH + 200), 20);
+  for (let k = 0; k < COLS * ROWS; k++) {
+    const t0 = .08 + k * .04, p = sm(t0, t0 + .22, tau, t => t * t);
+    if (p >= 1) continue;
+    clutterTile(c, k, p * (SH + 300), p * (k % 2 ? .5 : -.4), 30 + k);
+  }
+  spinner(c, i, 1 - sm(0, .5, tau, t => t));
+  c.restore();
+}
+
+// the new home screen: a clock, one row of big tiles, the focused one in its color
+const TILES = [PAL_TV.fills[3], PAL_TV.fills[4], PAL_TV.fills[5], PAL_TV.fills[7], PAL_TV.fills[6]];
+const TW = 170, TH = 112, TG = 22, RX = SX + (SW - (5 * 170 + 4 * 22)) / 2, RY = SY + 300;
+function glyph(c, k, x, y, s) {
+  c.fillStyle = PAL.light; c.strokeStyle = PAL.light; c.lineWidth = 7 * s; c.lineCap = 'round';
+  if (k === 0) { c.beginPath(); c.arc(x, y, 22 * s, 0, TAU); c.stroke(); }
+  else if (k === 1) { c.beginPath(); c.moveTo(x - 14 * s, y - 20 * s); c.lineTo(x + 20 * s, y); c.lineTo(x - 14 * s, y + 20 * s); c.closePath(); c.fill(); }
+  else if (k === 2) for (let a = 0; a < 3; a++) { c.beginPath(); c.arc(x - 16 * s, y + 10 * s, (12 + a * 11) * s, -1.1, .1); c.stroke(); }
+  else if (k === 3) { c.fillRect(x - 18 * s, y - 18 * s, 36 * s, 36 * s); }
+  else { c.beginPath(); c.arc(x, y, 6 * s, 0, TAU); c.fill(); c.beginPath(); c.arc(x - 20 * s, y, 6 * s, 0, TAU); c.fill(); c.beginPath(); c.arc(x + 20 * s, y, 6 * s, 0, TAU); c.fill(); }
+}
+function row(c, tau, i, focus, slide) {
+  TILES.forEach((col, k) => {
+    const t0 = k * .05, p = slide ? sm(t0, t0 + .3, tau, easeOut) : 1;
+    if (p <= 0) return;
+    const on = k === focus, g = on ? 1.14 : 1;
+    const w = TW * g, h = TH * g, x = RX + k * (TW + TG) + lerp(SW, 0, p) - (w - TW) / 2, y = RY + TH - h;
+    draw(c, RR(x, y, w, h, 16), on ? col : '#1d1d1f', 60 + k, { lw: on ? 5 : 3, tex: false, lc: on ? PAL.light : '#3a3a3c' });
+    glyph(c, k, x + w / 2, y + h / 2, g * (on ? 1 : .85));
+  });
+}
+function sceneFast(c, tau, i) {
+  room(c, i);
+  clipScreen(c);
+  // the clock and the weather line at the top left
+  const pc = sm(0, .2, tau, easeOut);
+  c.save(); c.globalAlpha = pc;
+  textBar(c, SX + 70, SY + 110, 230, PAL.light, 64);
+  textBar(c, SX + 70, SY + 175, 300, alpha(PAL.light, .45), 12);
+  c.restore();
+  // the focus races along the row: a new tile every two drawn frames once the row is in
+  const steps = Math.floor(Math.max(0, tau - .38) * 2.0 * 12 / 2);
+  const focus = tau < .38 ? 0 : [0, 1, 2, 3, 4, 3, 2, 1, 0][Math.min(8, steps)];
+  row(c, tau, i, focus, true);
+  // the focused tile's name under the row is what gets written
+  writeOn(c, 'fast again', CX, RY + TH + 130, sm(.62, 1, tau, t => t), { size: 120, align: 'center', pen: PAL.light, ink: PAL.light, ink2: null });
+  c.restore();
+}
+
+portfolioFilm({
+  look: 'ink', palette: PAL_TV, poster: 4.9,
+  beats: [
+    { name: 'slow', dur: 1.7, fn: sceneSlow },
+    { name: 'clear', dur: 1.35, fn: sceneClear },
+    { name: 'fast', dur: 2.0, fn: sceneFast },
+  ],
+});
+</script>

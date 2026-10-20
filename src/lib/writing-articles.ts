@@ -4,6 +4,7 @@ type ArticleModule = { default: ComponentType };
 
 /** Explicit per-slug imports so webpack always bundles every article folder. */
 export const articleImports: Record<string, () => Promise<ArticleModule>> = {
+  'fast-tv': () => import('@/app/writing/fast-tv/Article'),
   'captain-claw': () => import('@/app/writing/captain-claw/Article'),
   'nobody-said-he-was-wrong': () => import('@/app/writing/nobody-said-he-was-wrong/Article'),
   'telugumovies-in': () => import('@/app/writing/telugumovies-in/Article'),
