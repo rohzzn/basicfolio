@@ -442,3 +442,24 @@ html.e-reader-mode pre {
     }
   }
 }
+
+/* The sidebar heart (Heartbeat.tsx) beats once per --beat, which is set from
+   the latest reading, so it keeps the same time as the real one. */
+@keyframes heartbeat {
+  0%, 40%, 100% {
+    transform: scale(1);
+  }
+  12% {
+    transform: scale(1.22);
+  }
+  26% {
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .heartbeat {
+    animation: heartbeat var(--beat, 1s) ease-out infinite;
+    transform-origin: center;
+  }
+}

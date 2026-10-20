@@ -8,7 +8,8 @@
     "registry": "node scripts/build-registry.mjs",
     "start": "next start",
     "lint": "next lint",
-    "ping-sitemap": "node scripts/ping-sitemap.js"
+    "ping-sitemap": "node scripts/ping-sitemap.js",
+    "health:auth": "node scripts/google-health-auth.mjs"
   },
   "dependencies": {
     "@dicebear/adventurer": "^9.4.2",
