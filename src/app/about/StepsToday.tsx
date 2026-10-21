@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-const POLL_MS = 120_000;
+const POLL_MS = 30_000;
 const SLOW_DAY = 5_000;
 
 // Finishes the bio's "tweaking my setup" sentence with today's steps from my
@@ -35,9 +35,7 @@ const StepsToday: React.FC = () => {
   if (steps === null) return <>.</>;
 
   const count = (
-    <span style={{ fontVariantNumeric: 'tabular-nums' }} title="From my Fitbit Air, a few minutes behind">
-      {steps.toLocaleString('en-US')}
-    </span>
+    <span style={{ fontVariantNumeric: 'tabular-nums' }}>{steps.toLocaleString('en-US')}</span>
   );
   const unit = steps === 1 ? 'step' : 'steps';
 

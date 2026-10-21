@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getStepsToday, isGoogleHealthConfigured } from '@/lib/google-health';
 
-// The band only syncs every few minutes, so the CDN answers for two of them
-// and Google is asked at most that often, however many people are reading.
-const CACHE = 'public, s-maxage=120, stale-while-revalidate=600';
+// The page asks every 30 seconds, and the CDN answers for those 30 seconds so
+// Google is asked at most that often, however many people are reading.
+const CACHE = 'public, s-maxage=30, stale-while-revalidate=600';
 
 export async function GET() {
   if (!isGoogleHealthConfigured()) {
