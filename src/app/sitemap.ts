@@ -13,6 +13,7 @@ const STATIC_PATHS: string[] = [
   '/links',
   '/resume',
   '/timeline',
+  '/privacy',
   '/projects',
   '/writing',
   '/hobbies',
