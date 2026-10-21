@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "@/components/SiteImage";
 import { usePathname } from "next/navigation";
 import SpotifyCurrentlyPlaying from './SpotifyCurrentlyPlaying';
-import Steps from './Steps';
 import { SpotifyPreviewProvider, useSpotifyPreviewActive } from '@/contexts/SpotifyPreviewContext';
 
 // These are all opt-in extras (keyboard-shortcut palette, click sound, konami
@@ -429,7 +428,6 @@ const PortfolioShell: React.FC<LayoutProps> = ({ children }) => {
                   </>
                 )}
               </div>
-              <Steps />
             </div>
             {!isLoading && !error && lanyardData && (
               <div className="mt-4 flex flex-col items-start gap-4 w-full empty:hidden">

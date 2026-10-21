@@ -4,6 +4,7 @@ import { ActivityCalendar } from 'react-activity-calendar';
 import Image from '@/components/SiteImage';
 import Link from 'next/link';
 import type { CalendarActivity } from '@/lib/github-calendar';
+import StepsToday from './StepsToday';
 
 const CAL_MARGIN = 3;
 const MAX_BLOCK = 28;
@@ -183,7 +184,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ calendarData }) => {
               Software engineer and CS grad student who loves building things that matter. <span ref={ageRef} style={{ fontVariantNumeric: 'tabular-nums' }} /> years old, currently pursuing my Masters at the University of Cincinnati while working part-time in healthcare tech.
             </p>
             <p className="text-sm text-zinc-500 dark:text-neutral-400 leading-relaxed">
-              When I&apos;m not coding, you&apos;ll find me taking photos, gaming with friends, or working on random design projects. I also spend way too much time tweaking my setup.
+              When I&apos;m not coding, you&apos;ll find me taking photos, gaming with friends, or working on random design projects. I also spend way too much time tweaking my setup<StepsToday />
             </p>
           </div>
 
