@@ -17,7 +17,12 @@ import { join, resolve } from 'path';
 
 const PORT = 53682;
 const REDIRECT_URI = `http://localhost:${PORT}/callback`;
-const SCOPE = 'https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly';
+// Read-only, and only what the site can show: heart and other body metrics, activity, and sleep.
+const SCOPE = [
+  'https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly',
+  'https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly',
+  'https://www.googleapis.com/auth/googlehealth.sleep.readonly',
+].join(' ');
 const ENV_PATH = resolve(process.cwd(), '.env');
 
 function loadEnv() {
