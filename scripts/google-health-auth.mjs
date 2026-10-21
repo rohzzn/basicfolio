@@ -1,4 +1,4 @@
-// One-time sign-in for the sidebar heart rate (src/lib/google-health.ts).
+// One-time sign-in for the sidebar step count (src/lib/google-health.ts).
 //
 //   node scripts/google-health-auth.mjs [path/to/client_secret.json]
 //

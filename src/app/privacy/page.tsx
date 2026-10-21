@@ -50,8 +50,8 @@ export default function PrivacyPage() {
         <h2 className={H2}>My own data on the site</h2>
         <p className={P}>
           Some of what you see is my own data, read from services I use: what I am playing or listening to (Discord and
-          Spotify), my workouts (Hevy), my GitHub activity, what I watch and read, and my heart rate and activity from
-          my Fitbit through the Google Health API. Access to the Google Health API is read-only and covers only my own
+          Spotify), my workouts (Hevy), my GitHub activity, what I watch and read, and my daily steps from my Fitbit
+          through the Google Health API. Access to the Google Health API is read-only and covers only my own
           account. It is used for nothing except showing those numbers on this site, it is never sold, shared or used
           for advertising, and no visitor&apos;s health data is ever requested or seen.
         </p>
