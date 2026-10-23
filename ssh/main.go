@@ -4,6 +4,7 @@
 //	SSH_ADDR      where to listen            (default 0.0.0.0:2222)
 //	SSH_HOST_KEY  the server's own key file  (default .ssh/rohan_my_ed25519, made on first run)
 //	SITE_API      where the live data is     (default https://www.rohan.run)
+//	SCORES        the Arcade's high scores   (default scores.json)
 package main
 
 import (
@@ -44,6 +45,7 @@ func main() {
 
 	live := NewLive(env("SITE_API", "https://www.rohan.run"))
 	go live.Run(ctx)
+	arc := NewArcade(env("SCORES", "scores.json"))
 
 	srv, err := wish.NewServer(
 		wish.WithAddress(addr),
@@ -51,11 +53,12 @@ func main() {
 		wish.WithVersion("rohan.my"),
 		wish.WithIdleTimeout(15*time.Minute),
 		wish.WithMaxTimeout(2*time.Hour),
-		// Middlewares run last to first: log, limit, require a terminal, then the app.
+		// Middlewares run last to first: log, limit, require a terminal, count who is here, then the app.
 		wish.WithMiddleware(
 			bm.Middleware(func(s ssh.Session) (tea.Model, []tea.ProgramOption) {
-				return newModel(s, live), []tea.ProgramOption{tea.WithAltScreen(), tea.WithMouseCellMotion()}
+				return newModel(s, live, arc), []tea.ProgramOption{tea.WithAltScreen(), tea.WithMouseCellMotion()}
 			}),
+			arc.Count,
 			activeterm.Middleware(),
 			// per client address: one new session a second, bursts of five
 			ratelimiter.Middleware(ratelimiter.NewRateLimiter(rate.Every(time.Second), 5, 2000)),

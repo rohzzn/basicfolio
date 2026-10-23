@@ -25,10 +25,11 @@ const (
 	pageWriting
 	pageHobbies
 	pageLinks
+	pageArcade
 	pageCount
 )
 
-var tabNames = [pageCount]string{"Home", "Projects", "Writing", "Hobbies", "Links"}
+var tabNames = [pageCount]string{"Home", "Projects", "Writing", "Hobbies", "Links", "Arcade"}
 
 // The column the app is laid out in, centred in whatever terminal it lands in.
 const maxWidth = 96
@@ -95,9 +96,12 @@ func newStyles(r *lipgloss.Renderer) styles {
 
 type model struct {
 	st   styles
+	ren  *lipgloss.Renderer
 	live *Live
+	arc  *Arcade
 	out  io.Writer // the session, for copying a link to the visitor's clipboard
 	snap Snapshot
+	name string // what the visitor connected as, for the high scores
 	w, h int
 	cw   int // content width
 
@@ -118,6 +122,11 @@ type model struct {
 	noteUntil time.Time
 
 	vp viewport.Model
+
+	acur    int             // Arcade: the chosen game
+	game    game            // the open game, nil on the list
+	games   map[string]game // every game opened this visit, so going back to one carries on
+	gameGen int             // counts openings and closings, so a closed game's clock stops
 }
 
 type tickMsg struct{}
@@ -125,13 +134,15 @@ type pulledMsg struct{}
 
 func tick() tea.Cmd { return tea.Tick(5*time.Second, func(time.Time) tea.Msg { return tickMsg{} }) }
 
-func newModel(s ssh.Session, live *Live) *model {
+func newModel(s ssh.Session, live *Live, arc *Arcade) *model {
 	pty, _, _ := s.Pty()
 	w, h := pty.Window.Width, pty.Window.Height
 	if w == 0 || h == 0 { // a client that has not said how big it is yet
 		w, h = 80, 24
 	}
-	return newModelWith(sessionRenderer(s), live, s, w, h)
+	m := newModelWith(sessionRenderer(s), live, arc, s, w, h)
+	m.name = cleanName(s.User())
+	return m
 }
 
 // sessionRenderer styles for the visitor's terminal. It is wish's MakeRenderer without its
@@ -158,8 +169,8 @@ func (e sshEnviron) Getenv(k string) string {
 	return ""
 }
 
-func newModelWith(r *lipgloss.Renderer, live *Live, out io.Writer, w, h int) *model {
-	m := &model{st: newStyles(r), live: live, out: out, snap: live.Snapshot(), vp: viewport.New(0, 0), splash: true}
+func newModelWith(r *lipgloss.Renderer, live *Live, arc *Arcade, out io.Writer, w, h int) *model {
+	m := &model{st: newStyles(r), ren: r, live: live, arc: arc, out: out, name: "guest", snap: live.Snapshot(), vp: viewport.New(0, 0), splash: true}
 	m.vp.MouseWheelEnabled = true
 	m.resize(w, h)
 	return m
@@ -192,13 +203,30 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.snap = m.live.Snapshot()
 		m.refresh()
 	case tea.MouseMsg:
-		if !m.splash {
-			var cmd tea.Cmd
-			m.vp, cmd = m.vp.Update(msg)
-			return m, cmd
+		if m.splash {
+			return m, nil
 		}
+		// counted from the body's top left: a blank line, the header and another blank line are above it
+		msg.X -= max(0, (m.w-m.cw)/2)
+		msg.Y -= 3
+		if m.game != nil {
+			return m, m.game.update(m, msg)
+		}
+		if m.page == pageArcade && msg.Action == tea.MouseActionPress && msg.Button == tea.MouseButtonLeft {
+			if i := msg.Y - arcadeRows + m.vp.YOffset; i >= 0 && i < len(gameList) && msg.X >= 0 && msg.X < m.cw-34 {
+				m.acur = i
+				return m, m.openGame(gameList[i].id)
+			}
+		}
+		var cmd tea.Cmd
+		m.vp, cmd = m.vp.Update(msg)
+		return m, cmd
 	case tea.KeyMsg:
 		return m.key(msg)
+	case owned:
+		if m.game != nil && msg.owner() == m.gameGen {
+			return m, m.game.update(m, msg)
+		}
 	}
 	return m, nil
 }
@@ -222,6 +250,9 @@ func (m *model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.splash = false
 		m.refresh()
 		return m, nil
+	}
+	if m.game != nil {
+		return m, m.game.update(m, msg)
 	}
 	if m.searching {
 		switch msg.Type {
@@ -254,7 +285,7 @@ func (m *model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch k {
 	case "q":
 		return m, tea.Quit
-	case "1", "2", "3", "4", "5":
+	case "1", "2", "3", "4", "5", "6":
 		m.goTo(page(k[0] - '1'))
 	case "right", "l":
 		m.goTo((m.page + 1) % pageCount)
@@ -293,6 +324,9 @@ func (m *model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "end", "G":
 		m.move(1 << 20)
 	case "enter":
+		if m.page == pageArcade && !m.room {
+			return m, m.openGame(gameList[m.acur].id)
+		}
 		if (m.page == pageProjects && len(m.projects()) > 0 || m.page == pageWriting) && !m.open {
 			m.open = true
 			m.vp.SetYOffset(0)
@@ -339,7 +373,7 @@ func (m *model) selecting() bool {
 	if m.room {
 		return false
 	}
-	return !m.open && (m.page == pageProjects || m.page == pageWriting) || m.page == pageLinks
+	return !m.open && (m.page == pageProjects || m.page == pageWriting) || m.page == pageLinks || m.page == pageArcade
 }
 
 func (m *model) goTo(p page) {
@@ -370,6 +404,8 @@ func (m *model) move(d int) {
 		m.wcur = clamp(m.wcur, len(site.Writing))
 	case pageLinks:
 		m.lcur = clamp(m.lcur, len(m.linkOrder()))
+	case pageArcade:
+		m.acur = clamp(m.acur, len(gameList))
 	}
 	m.refresh()
 }
@@ -382,6 +418,9 @@ func (m *model) refresh() {
 	m.vp.Width, m.vp.Height = m.cw, m.bodyH()
 	if m.reading() {
 		m.vp.Width = m.cw - 2
+	}
+	if m.game != nil {
+		return // the game draws itself
 	}
 	if m.page == pageProjects && !m.open && !m.room {
 		ph := m.bodyH() - 2
@@ -425,6 +464,8 @@ func (m *model) body() (string, int) {
 		return m.hobbiesView(), -1
 	case pageLinks:
 		return m.linksView()
+	case pageArcade:
+		return m.arcadeView()
 	case pageHome:
 		return m.homeView(), -1
 	}
@@ -442,6 +483,8 @@ func (m *model) View() string {
 	}
 	var body string
 	switch {
+	case m.game != nil:
+		body = m.game.view(m)
 	case m.page == pageProjects && !m.open && !m.room:
 		body = m.projectsPane()
 	case m.reading():
@@ -512,6 +555,9 @@ func (m *model) statusParts() (mode, hints, right string) {
 		}
 		return "SERVER ROOM", "↑↓ ws look around   esc leave quietly", checked
 	}
+	if m.game != nil {
+		return m.game.status(m)
+	}
 	switch m.page {
 	case pageProjects:
 		if m.open {
@@ -536,6 +582,12 @@ func (m *model) statusParts() (mode, hints, right string) {
 		}
 		url := m.selectedLink()
 		return "LINKS", "↑↓ ws choose   ←→ ad pages   c copy", ansi.SetHyperlink(url) + st.barAccent.Render(short(url)) + ansi.ResetHyperlink()
+	case pageArcade:
+		here := "just you here"
+		if n := m.arc.online.Load(); n > 1 {
+			here = fmt.Sprintf("%d here now", n)
+		}
+		return "ARCADE", "↑↓ ws choose   ←→ ad pages   enter play", st.barDim.Render(here)
 	}
 	right = st.barDim.Render(time.Now().In(cincinnati).Format("3:04 PM") + " in Cincinnati")
 	if p := m.presence(true); p != "" {
