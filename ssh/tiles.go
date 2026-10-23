@@ -43,7 +43,7 @@ type tilesGame struct {
 }
 
 type slide struct {
-	v                    int
+	v                      int
 	fromR, fromC, toR, toC int
 }
 

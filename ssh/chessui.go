@@ -585,8 +585,8 @@ func (g *chessGame) view(m *model) string {
 		thinking = st.dim.Render("  thinking ") + st.accent.Render(string(spin[time.Now().UnixMilli()/100%int64(len(spin))]))
 	}
 	add(st.bold.Render("Chess")+st.dim.Render("  ·  "+levelNames[g.level]), "")
-	add(turn(g.white)+" You      "+st.dim.Render(you))
-	add(turn(!g.white)+" The Mac  "+st.dim.Render(mac)+thinking)
+	add(turn(g.white) + " You      " + st.dim.Render(you))
+	add(turn(!g.white) + " The Mac  " + st.dim.Render(mac) + thinking)
 	add("")
 
 	// the move list, as much of the end of it as fits

@@ -1220,6 +1220,100 @@
   ],
   "writing": [
     {
+      "slug": "fast-tv",
+      "title": "Making My TV Fast Again",
+      "description": "My TCL Google TV took a moment to react to everything. I switched off 34 apps it came with and wrote my own home screen for it, and now it keeps up with the remote.",
+      "date": "Oct 2026",
+      "category": "tech",
+      "words": 866,
+      "body": [
+        {
+          "t": "p",
+          "text": "My TV is a TCL Google TV. The screen is fine. The software on it was slow. I would press a button on the remote and wait for the TV to catch up, and opening Netflix meant watching the home screen stutter first. The TV has 1.8 GB of memory and a modest Realtek chip, and the software it came with behaved as if it had a lot more than that."
+        },
+        {
+          "t": "p",
+          "text": "So I took it apart. I switched off most of what TCL and Google put on it and wrote a new home screen from scratch. It is now the fastest this TV has ever been."
+        },
+        {
+          "t": "h",
+          "text": "What was slowing it down"
+        },
+        {
+          "t": "p",
+          "text": "I connected to the TV from my laptop over the network with adb, Android's debugging tool, and looked at what was running. The Google TV home screen alone was using about 150 MB across its two processes. Around it sat things I never asked for: Samba TV, which recognises what is on screen so it can sell the data to advertisers, a bundle of TCL telemetry, TCL's demo and hotel modes, an Alexa app, the Google Assistant, Chromecast and AirPlay receivers, and Google's ambient mode with two processes of its own. Sitting on the home screen doing nothing, the TV had about 520 MB of its 1.8 GB free."
+        },
+        {
+          "t": "h",
+          "text": "Switching things off"
+        },
+        {
+          "t": "p",
+          "text": "I turned off 34 of those apps. Nothing was deleted. Android lets you disable an app for your user without touching the system, so a factory reset brings every one of them back. One script turns them off, another turns them all back on, and a third runs after a TCL update and puts back anything the update changed."
+        },
+        {
+          "t": "p",
+          "text": "I also turned off the animation when an app opens or closes, sped the rest up, and stopped a handful of streaming apps from running in the background when I'm not using them."
+        },
+        {
+          "t": "h",
+          "text": "A home screen of my own"
+        },
+        {
+          "t": "p",
+          "text": "With the Google TV home screen off, the TV needs something else to show when you press Home. I tried Projectivy first, a popular replacement launcher, and it was better, but it still used 70 to 90 MB and had far more settings than I would ever touch. So I wrote my own: a small Android app in plain Java, built from Android's own views with no libraries."
+        },
+        {
+          "t": "p",
+          "text": "It uses about 40 MB on the home screen and lets go of most of it the moment an app opens, down to about 27 MB. It draws at 60 frames a second on this TV: half its frames take 8 milliseconds or less, and 95% of them fit in the 16 milliseconds a frame gets."
+        },
+        {
+          "t": "h",
+          "text": "Three pages"
+        },
+        {
+          "t": "p",
+          "text": "The home screen is three pages stacked on top of each other, and up and down on the remote move between them. This is the TV itself, recorded straight off its screen, with nothing sped up:"
+        },
+        {
+          "t": "embed",
+          "text": "An interactive part of this post"
+        },
+        {
+          "t": "p",
+          "text": "The middle page is the apps: one row of big tiles on black. The PlayStation comes first because it is what I use most, and selecting it switches the TV to HDMI 1. The rest are ordered by how much I have watched each one over the last 30 days. The focused tile turns its brand colour and grows a little, and there is a soft tick as you move. The clock, the weather and whatever is playing on my Spotify sit above."
+        },
+        {
+          "t": "p",
+          "text": "Up from the apps is the dashboard: a greeting, the date and the time here and in India, the weather with a five-day forecast, and my calendar for the week. When India is playing cricket or a Formula 1 session is on, the live score takes the greeting's place, and a few stock prices can sit there too. Nothing on it moves, so it costs nothing to leave up."
+        },
+        {
+          "t": "p",
+          "text": "Down from the apps is the Watch page. The first row is everything I am in the middle of, from Netflix, Crunchyroll, Prime Video and Jellyfin, with a thin bar showing how far in I am. Below it are my latest YouTube videos, then trending anime and Netflix's Top 10. Picking a card opens it in its own app, right where I left off."
+        },
+        {
+          "t": "h",
+          "text": "The rest of the remote"
+        },
+        {
+          "t": "p",
+          "text": "The mic button is mine now too. Instead of the Google Assistant it runs a short list of commands I wrote: \"open Netflix\", \"continue Young Sheldon\", \"volume 20\", \"sleep in 30 minutes\", and \"goodnight\", which turns the TV off and puts the PlayStation to rest with it."
+        },
+        {
+          "t": "p",
+          "text": "The TV also serves a small web page on my home Wi-Fi, so my phone works as a remote with a real keyboard, and I can send a YouTube link or photos from my phone to the screen. There is nothing to install on the phone. The screensaver is a thin clock on black that moves to a new spot every minute, so nothing burns in."
+        },
+        {
+          "t": "h",
+          "text": "Before and after"
+        },
+        {
+          "t": "p",
+          "text": "The difference is not subtle. The screen moves when the remote does, opening an app no longer waits on the home screen, and the TV wakes from standby in about two seconds. And because nothing was deleted, all of it can be undone with one script."
+        }
+      ]
+    },
+    {
       "slug": "captain-claw",
       "title": "Captain Claw, Back in a Browser Tab",
       "description": "Captain Claw was my favourite game as a kid. I turned it into a browser game you can play at captainclaw.lol, then added online multiplayer so friends can play it together.",
